@@ -3,20 +3,18 @@
 *.ap_
 
 # .idea files
-.idea/*
+mobile/.idea/*
 *.iml
 
 # Gradle files
 .gradle/
 build/
 
-# Java class files
-*.class
-
 # Generated files
 bin/
 gen/
 out/
+*.class
 
 # Log Files
 *.log
