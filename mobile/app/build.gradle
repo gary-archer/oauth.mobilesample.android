@@ -12,6 +12,11 @@ android {
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
+
+        // Added to match the redirect URI used in res/raw/mobileConfig.json,
+        manifestPlaceholders = [
+                'appAuthRedirectScheme': 'com.mycompany.mobileapp'
+        ]
     }
     buildTypes {
         release {
@@ -21,9 +26,17 @@ android {
     }
 }
 
+// Added to download the AppAuth libraries from maven
+repositories {
+    mavenCentral()
+}
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+
+    // Add the AppAuth library reference
+    implementation 'net.openid.appauth:0.7.1'
 }
