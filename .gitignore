@@ -2,9 +2,10 @@
 *.apk
 *.ap_
 
-# .idea files
+# Locally generated files
 mobile/.idea/*
 *.iml
+local.properties
 
 # Gradle files
 .gradle/
