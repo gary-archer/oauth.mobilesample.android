@@ -13,7 +13,7 @@ android {
         versionCode 1
         versionName "1.0"
 
-        // Added to match the redirect URI used in res/raw/mobileConfig.json,
+        // Added to match the redirect URI used in res/raw/mobile_config.json,
         manifestPlaceholders = [
                 'appAuthRedirectScheme': 'com.mycompany.mobileapp'
         ]
