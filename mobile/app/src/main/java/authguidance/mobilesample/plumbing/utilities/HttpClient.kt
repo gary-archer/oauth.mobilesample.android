@@ -14,6 +14,8 @@ class HttpClient(authenticator: Authenticator) {
      */
     fun callApi(url: String) {
         _authenticator.getAccessToken()
-        println("*** DEBUG: CALLING API over " + url);
+
+        var logger = MobileLogger();
+        logger.debug("Calling API over $url");
     }
 }
