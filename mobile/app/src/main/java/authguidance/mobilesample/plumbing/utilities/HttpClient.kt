@@ -7,7 +7,7 @@ import authguidance.mobilesample.plumbing.oauth.Authenticator
  */
 class HttpClient(authenticator: Authenticator) {
 
-    val _authenticator = authenticator;
+    private val _authenticator = authenticator;
 
     /*
      * The entry point for calling an API
