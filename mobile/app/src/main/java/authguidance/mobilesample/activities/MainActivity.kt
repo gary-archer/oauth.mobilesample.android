@@ -30,6 +30,6 @@ class MainActivity : BaseActivity() {
         val httpClient = HttpClient(authenticator)
         httpClient.callApi("https://api.authguidance-examples.com/api/companies")
 
-        throw Exception("It all went horribly wrong");
+        // throw Exception("It all went horribly wrong");
     }
 }

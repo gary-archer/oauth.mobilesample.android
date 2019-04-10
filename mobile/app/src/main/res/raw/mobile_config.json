@@ -5,7 +5,7 @@
   "oauth": {
     "authority":        "https://dev-843469.oktapreview.com/oauth2/default",
     "clientId":         "0oak713r62g21262Z0h7",
-    "appUri":           "com.mycompany.mobileapp:/callback",
+    "redirectUri":      "com.mycompany.mobileapp:/callback",
     "scope":            "openid profile email"
   }
 }

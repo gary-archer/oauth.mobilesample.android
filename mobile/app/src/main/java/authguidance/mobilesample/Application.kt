@@ -1,4 +1,7 @@
 package authguidance.mobilesample
+
+import authguidance.mobilesample.configuration.Configuration
+import authguidance.mobilesample.configuration.ConfigurationLoader
 import authguidance.mobilesample.plumbing.utilities.MobileLogger
 
 /*
@@ -6,31 +9,45 @@ import authguidance.mobilesample.plumbing.utilities.MobileLogger
  */
 class Application : android.app.Application() {
 
-    private lateinit var defaultExceptionHandler: Thread.UncaughtExceptionHandler
+    // The exception handler we override
+    private lateinit var originalExceptionHandler: Thread.UncaughtExceptionHandler
 
+    // The application configuration
+    private lateinit var configuration: Configuration
+
+    /*
+     * Application startup logic
+     */
     override fun onCreate() {
         super.onCreate()
 
         // Override the default exception handler
-        this.defaultExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
+        this.originalExceptionHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { t, e -> this.onException(t, e) }
+
+        // Load application configuration
+        this.configuration = ConfigurationLoader().loadConfiguration(this.applicationContext)
+
+        val logger = MobileLogger()
+        logger.debug("APP STARTUP COMPLETED")
+
     }
 
     /*
-     * Unhandled exceptions are caught and handled here
+     * Unhandled exception logic
      */
     private fun onException(thread: Thread, exception: Throwable) {
 
         // Do our handling
         val logger = MobileLogger()
-        logger.debug("Unhandled exception")
+        logger.debug("UNHANDLED EXCEPTION")
         val text = exception.message ?: exception.toString()
         logger.debug(text)
 
         // Call the default handler and allow the app to terminate
-        this.defaultExceptionHandler.uncaughtException(thread, exception)
+        this.originalExceptionHandler.uncaughtException(thread, exception)
 
-        // This looks promising
+        // This looks promising???
         // https://github.com/Idolon-V/android-crash-catcher
 
         /*

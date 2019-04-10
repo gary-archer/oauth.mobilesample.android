@@ -32,6 +32,12 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
 
-    // Add the AppAuth library reference
+    // The AppAuth library to handle security
     implementation 'net.openid:appauth:0.7.1'
+
+    // A utility for file reading
+    implementation 'com.squareup.okio:okio:2.2.2'
+
+    // A utility for reading JSON into objects
+    implementation 'com.google.code.gson:gson:2.8.5'
 }
