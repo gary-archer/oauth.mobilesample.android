@@ -2,6 +2,7 @@ package authguidance.mobilesample.configuration
 
 import android.content.Context
 import authguidance.mobilesample.R
+import authguidance.mobilesample.plumbing.utilities.MobileLogger
 import com.google.gson.Gson
 import okio.Buffer
 import okio.buffer

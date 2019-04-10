@@ -4,8 +4,8 @@ package authguidance.mobilesample.configuration
  * OAuth configuration settings
  */
 class OAuthConfiguration {
-    val authority: String? = null
-    val clientId: String? = null
-    val redirectUri: String? = null
-    val scope: String? = null
+    lateinit var authority: String
+    lateinit var clientId: String
+    lateinit var redirectUri: String
+    lateinit var scope: String
 }
