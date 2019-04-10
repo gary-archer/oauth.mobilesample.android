@@ -13,7 +13,7 @@ android {
         versionCode 1
         versionName "1.0"
 
-        // Added to match the redirect URI used in res/raw/mobile_config.json,
+        // Added to match the redirect URI used in res/raw/mobile_config.json
         manifestPlaceholders = [
                 'appAuthRedirectScheme': 'com.mycompany.mobileapp'
         ]
@@ -24,6 +24,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    // This seems to be necessary after including kotlinx.coroutines for the async syntax
+    // https://github.com/Kotlin/kotlinx.coroutines/issues/1064
+    packagingOptions {
+        pickFirst("META-INF/atomicfu.kotlin_module")
+    }
 }
 
 dependencies {
@@ -32,12 +38,21 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
 
-    // The AppAuth library to handle security
+    // The AppAuth library handles OAuth security
     implementation 'net.openid:appauth:0.7.1'
 
     // A utility for file reading
     implementation 'com.squareup.okio:okio:2.2.2'
 
-    // A utility for reading JSON into objects
+    // Used for async await syntax
+    // https://github.com/Kotlin/kotlinx.coroutines
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.0-alpha-2'
+
+    // A library for async HTTP requests
+    // https://github.com/kittinunf/fuel
+    implementation 'com.github.kittinunf.fuel:fuel:2.0.1'
+    implementation 'com.github.kittinunf.fuel:fuel-coroutines:2.0.1'
+
+    // A utility for deserializing JSON into objects
     implementation 'com.google.code.gson:gson:2.8.5'
 }

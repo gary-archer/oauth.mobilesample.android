@@ -92,6 +92,11 @@ class Application : android.app.Application(), Application.ActivityLifecycleCall
         startActivity(errorIntent)
     }
 
+    /*
+     * Lifecycle events enable us to keep track of the current activity
+     * TODO: Is there more than one and what happens on back???
+     * Be careful about preventing disposal
+     */
     override fun onActivityCreated(activity: Activity?, savedInstanceState: Bundle?) {
         this.currentActivity = activity;
     }
