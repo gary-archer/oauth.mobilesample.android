@@ -1,30 +1,34 @@
 package authguidance.mobilesample.plumbing.utilities
 
 import authguidance.mobilesample.plumbing.oauth.Authenticator
-import com.github.kittinunf.fuel.Fuel
-import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
 import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
+import okhttp3.OkHttpClient
 
 /*
- * Logic related to making HTTP calls
+ * Logic related to making HTTP calls, and we follow the type of modern approach from this article
+ * https://android.jlelse.eu/android-networking-in-2019-retrofit-with-kotlins-coroutines-aefe82c4d777
  */
 class HttpClient(authenticator: Authenticator) {
 
     private val _authenticator = authenticator;
 
     /*
-     * The entry point for calling an API
-     * For now this just returns the status code
+     * The entry point for calling an API in a parameterised manner
      */
-    suspend fun callApi(url: String): Deferred<Int> {
+    suspend fun callApi(method: String, url: String): Deferred<String> {
 
-        _authenticator.getAccessToken()
+        val accessToken = _authenticator.getAccessToken()
 
-        var logger = MobileLogger();
-        logger.debug("Calling API over $url");
+        var logger = MobileLogger()
+        logger.debug("Calling API over $url")
 
+        // Get a request object
+        val client = OkHttpClient().newBuilder().build()
+
+        // Make the request and return an object
+    }
+
+        /*
         // Syntax from here
         // https://github.com/kittinunf/fuel/blob/master/fuel-coroutines/README.md
         return GlobalScope.async {
@@ -43,6 +47,5 @@ class HttpClient(authenticator: Authenticator) {
             // Return the result
             // response.statusCode
             status
-        }
-    }
+        }*/
 }
