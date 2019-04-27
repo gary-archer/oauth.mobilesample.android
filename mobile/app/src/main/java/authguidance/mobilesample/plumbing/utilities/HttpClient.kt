@@ -1,51 +1,47 @@
 package authguidance.mobilesample.plumbing.utilities
 
+import authguidance.mobilesample.configuration.AppConfiguration
 import authguidance.mobilesample.plumbing.oauth.Authenticator
-import kotlinx.coroutines.Deferred
 import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
 
 /*
- * Logic related to making HTTP calls, and we follow the type of modern approach from this article
- * https://android.jlelse.eu/android-networking-in-2019-retrofit-with-kotlins-coroutines-aefe82c4d777
+ * Plumbing related to making HTTP calls
  */
-class HttpClient(authenticator: Authenticator) {
+class HttpClient(configuration: AppConfiguration, authenticator: Authenticator) {
 
-    private val _authenticator = authenticator;
+    private val authenticator = authenticator;
+    private val configuration = configuration;
 
     /*
      * The entry point for calling an API in a parameterised manner
      */
-    suspend fun callApi(method: String, url: String): Deferred<String> {
+    suspend fun callApi(method: String, path: String): String {
 
-        val accessToken = _authenticator.getAccessToken()
+        val accessToken = this.authenticator.getAccessToken()
 
-        var logger = MobileLogger()
-        logger.debug("Calling API over $url")
+        // Create and configure the client
+        val client = OkHttpClient.Builder().build();
 
-        // Get a request object
-        val client = OkHttpClient().newBuilder().build()
+        // Create the request
+        val request = Request.Builder()
+            .header("Accept", "application/json")
+            .header("Authorization", "Bearer $accessToken")
+            .method("GET", null)
+            // .url("${this.configuration.apiBaseUrl}/$path")
+            .url("https://www.baeldung.com")
+            .build()
 
-        // Make the request and return an object
+        // Receive the response
+        var response: Response? = null;
+        try {
+            response = client.newCall(request).execute()
+            MobileLogger.debug("Got API response")
+            return "Status: ${response.code()}"
+        }
+        finally {
+            response?.close();
+        }
     }
-
-        /*
-        // Syntax from here
-        // https://github.com/kittinunf/fuel/blob/master/fuel-coroutines/README.md
-        return GlobalScope.async {
-
-            val (_, response, result) = Fuel.get(url).awaitStringResponseResult()
-
-            var status = 0
-            result.fold(
-                { data -> status = 200 },
-                { error -> status = error.response.statusCode }
-            )
-
-            logger.debug("RESPONSE RECEIVED")
-            logger.debug(status.toString())
-
-            // Return the result
-            // response.statusCode
-            status
-        }*/
 }

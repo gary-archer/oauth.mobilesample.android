@@ -16,8 +16,7 @@ class ErrorActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_error)
 
-        val logger = MobileLogger()
-        logger.debug("Create error activity")
+        MobileLogger.debug("Create error activity")
     }
 
     /*
@@ -26,7 +25,6 @@ class ErrorActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
 
-        val logger = MobileLogger()
-        logger.debug("In error activity")
+        MobileLogger.debug("In error activity")
     }
 }

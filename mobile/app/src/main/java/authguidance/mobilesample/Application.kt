@@ -68,12 +68,11 @@ class Application : android.app.Application(), Application.ActivityLifecycleCall
      */
     private fun handleStartupError(exception: Throwable) {
 
-        val logger = MobileLogger()
-        logger.debug("STARTUP EXCEPTION")
+        MobileLogger.debug("STARTUP EXCEPTION")
 
         // Write details to debug output
         val text = exception.message ?: exception.toString()
-        logger.debug(text)
+        MobileLogger.debug(text)
     }
 
     /*
@@ -81,9 +80,8 @@ class Application : android.app.Application(), Application.ActivityLifecycleCall
      */
     private fun handleActivityError(exception: Throwable) {
 
-        val logger = MobileLogger()
-        logger.debug("ACTIVITY EXCEPTION")
-        logger.debug(exception.toString());
+        MobileLogger.debug("ACTIVITY EXCEPTION")
+        MobileLogger.debug(exception.toString());
 
         // Navigate to the error view
         val errorIntent = Intent(this, ErrorActivity::class.java)

@@ -1,14 +1,13 @@
 package authguidance.mobilesample.activities
 
 import android.os.Bundle
-import authguidance.mobilesample.Application
+import android.widget.TextView
 import authguidance.mobilesample.R
-import authguidance.mobilesample.plumbing.oauth.Authenticator
-import authguidance.mobilesample.plumbing.utilities.HttpClient
 import authguidance.mobilesample.plumbing.utilities.MobileLogger
-import com.github.kittinunf.fuel.core.Method
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /*
  * Our main activity shows the company list
@@ -36,29 +35,27 @@ class MainActivity : BaseActivity() {
      */
     private fun getData() {
 
-        // TODO:
-        // Focus on getting things working plus the coding model
-        // 1. println string output
-        // 2. textview string output
-        // 3. textview error output
-        // 4. textview object output
-        // 5. presentation
+        /*
+         * TODO:
+         * 1. Call wrong URL and present error - ErrorView constraint layout basics list of error fields
+         * 2. Get real data and deserialize into objects via GSON
+         * 3. Download images from REST API and display in Android?
+         */
 
-        runBlocking {
+        CoroutineScope(Dispatchers.IO).launch {
 
-            val logger = MobileLogger()
-            logger.debug("Entered async region")
+            MobileLogger.debug("Calling API")
 
-            // Get the HTTP client
-            var app = application as Application
-            val authenticator = Authenticator()
-            val httpClient = HttpClient(authenticator)
+            // Make the HTTP call on a background thread
+            val httpClient = super.getHttpClient()
+            val result = httpClient.callApi("GET", "/companies")
 
-            // Call it to get data
-            logger.debug("Calling API")
-            val result = httpClient.callApi("GET", "${app.configuration.app.apiBaseUrl}/companies").await()
-            logger.debug("Got result from API")
-            println(result)
+            CoroutineScope(Dispatchers.Main).launch {
+
+                // Update the UI on the main thread
+                val debug = findViewById<TextView>(R.id.textDebug);
+                debug.text = "Got result from API: $result";
+            }
         }
     }
 
@@ -66,53 +63,6 @@ class MainActivity : BaseActivity() {
      * The home button will force a refresh later
      */
     private fun onHome() {
-        val logger = MobileLogger()
-        logger.debug("Home Button Clicked")
+        MobileLogger.debug("Home Button Clicked")
     }
-
-    /*
-     * Call the API in the resume event
-     */
-    override fun onResume() {
-
-        /*
-        super.onResume()
-
-        // TODO: Reduce getting data to one liners - and turn off API security to make the request succeed
-        // Get deserialization working, and error cases, and basic data displaying in list view
-
-        var logger = MobileLogger();
-        logger.debug("Starting async API call");
-
-        var app = application as Application;
-        val authenticator = Authenticator()
-        val httpClient = HttpClient(authenticator)
-
-        logger.debug("Sending request")
-        val result = async {
-
-        }
-
-        val value: Int = httpClient.callApi("${app.configuration.app.apiBaseUrl}/companies").await()
-        logger.debug("Received response value $value")
-
-        // Get data for the view asynchronously
-        try {
-
-        } catch(ex: Throwable) {
-        }
-
-        var response
-        GlobalScope.async {
-
-            logger.debug("Sending request")
-            val value: Int = httpClient.callApi("${app.configuration.app.apiBaseUrl}/companies").await()
-            logger.debug("Received response value $value")
-        }
-
-        // throw Exception("It all went horribly wrong");
-        */
-    }
-
-
 }
