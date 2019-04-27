@@ -4,6 +4,7 @@ import authguidance.mobilesample.configuration.AppConfiguration
 import authguidance.mobilesample.plumbing.oauth.Authenticator
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.Response
 
 /*
@@ -11,13 +12,13 @@ import okhttp3.Response
  */
 class HttpClient(configuration: AppConfiguration, authenticator: Authenticator) {
 
-    private val authenticator = authenticator;
-    private val configuration = configuration;
+    private val authenticator = authenticator
+    private val configuration = configuration
 
     /*
      * The entry point for calling an API in a parameterised manner
      */
-    suspend fun callApi(method: String, path: String): String {
+    suspend fun callApi(method: String, data: String?, path: String): String? {
 
         val accessToken = this.authenticator.getAccessToken()
 
@@ -25,23 +26,37 @@ class HttpClient(configuration: AppConfiguration, authenticator: Authenticator) 
         val client = OkHttpClient.Builder().build();
 
         // Create the request
+        var body: RequestBody? = null;
         val request = Request.Builder()
             .header("Accept", "application/json")
             .header("Authorization", "Bearer $accessToken")
-            .method("GET", null)
-            // .url("${this.configuration.apiBaseUrl}/$path")
-            .url("https://www.baeldung.com")
+            .method(method, body)
+            .url("${this.configuration.apiBaseUrl}/$path")
             .build()
 
         // Receive the response
-        var response: Response? = null;
-        try {
-            response = client.newCall(request).execute()
-            MobileLogger.debug("Got API response")
-            return "Status: ${response.code()}"
+        this.makeRequest(client, request).use {
+
+            if(it.isSuccessful) {
+                return it.body()?.string()
+            }
+            else {
+                var result = "Status: ${it.code()} : ${it.body()?.string()}";
+                throw RuntimeException(result)
+            }
         }
-        finally {
-            response?.close();
+    }
+
+    /*
+     * Make the request and return the response or throw a translated error
+     */
+    fun makeRequest(client: OkHttpClient, request: Request): Response {
+
+        try {
+            return client.newCall(request).execute()
+        }
+        catch(ex: Throwable) {
+            throw ex;
         }
     }
 }

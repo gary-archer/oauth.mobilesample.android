@@ -1,8 +1,9 @@
 package authguidance.mobilesample.activities
 
 import android.os.Bundle
+import android.widget.ArrayAdapter
+import android.widget.ListView
 import authguidance.mobilesample.R
-import authguidance.mobilesample.plumbing.utilities.MobileLogger
 
 /*
  * An activity to display unexpected error details
@@ -16,15 +17,37 @@ class ErrorActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_error)
 
-        MobileLogger.debug("Create error activity")
+        // Customise the title
+        this.title = "Error View"
+
+        val exception = this.intent.getSerializableExtra("EXCEPTION_DATA") as Throwable
+        this.renderError(exception);
     }
 
     /*
-     * Render error details in the on resume event
+     * Render error items in the list view
      */
-    override fun onResume() {
-        super.onResume()
+    fun renderError(error: Throwable) {
 
-        MobileLogger.debug("In error activity")
+        // Set error items
+        val items = mutableListOf<String>()
+        items += "Message: ${this.getErrorDescription(error)}"
+
+        // Update the adapter
+        val list = findViewById<ListView>(R.id.listErrorItems);
+        list.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items)
+    }
+
+    /*
+     * Get the error message property's value
+     */
+    fun getErrorDescription(error: Throwable): String {
+
+        val result = error.message
+        if(result != null) {
+            return result
+        } else {
+            return error.toString()
+        }
     }
 }

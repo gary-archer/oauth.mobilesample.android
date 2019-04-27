@@ -12,7 +12,7 @@ class MobileLogger {
      */
     companion object {
         @JvmStatic
-        fun debug(info: String) {
+        fun debug(info: String?) {
             Log.d("BasicMobileApp", info)
         }
     }

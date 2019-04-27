@@ -1,10 +1,9 @@
 package authguidance.mobilesample.activities
 
 import android.os.Bundle
-import android.widget.TextView
+import android.widget.ArrayAdapter
+import android.widget.ListView
 import authguidance.mobilesample.R
-import authguidance.mobilesample.plumbing.utilities.MobileLogger
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,8 +22,8 @@ class MainActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Handle button clicks
-        this.btnHome.setOnClickListener{this.onHome()}
+        // Customise the title
+        this.title = "Company List"
 
         // Call the API to get data
         getData()
@@ -35,34 +34,32 @@ class MainActivity : BaseActivity() {
      */
     private fun getData() {
 
-        /*
-         * TODO:
-         * 1. Call wrong URL and present error - ErrorView constraint layout basics list of error fields
-         * 2. Get real data and deserialize into objects via GSON
-         * 3. Download images from REST API and display in Android?
-         */
-
+        // Make the HTTP call on a background thread
         CoroutineScope(Dispatchers.IO).launch {
 
-            MobileLogger.debug("Calling API")
-
-            // Make the HTTP call on a background thread
             val httpClient = super.getHttpClient()
-            val result = httpClient.callApi("GET", "/companies")
+            val result = httpClient.callApi("GET", null,"/companies")
 
+            // Switch back to the UI thread for rendering
             CoroutineScope(Dispatchers.Main).launch {
-
-                // Update the UI on the main thread
-                val debug = findViewById<TextView>(R.id.textDebug);
-                debug.text = "Got result from API: $result";
+                if(result != null) {
+                    renderData(result);
+                }
             }
         }
     }
 
     /*
-     * The home button will force a refresh later
+     * Render API data on the UI thread
      */
-    private fun onHome() {
-        MobileLogger.debug("Home Button Clicked")
+    private fun renderData(data: String) {
+
+        // Set the company items
+        val items = mutableListOf<String>()
+        items += data
+
+        // Update UI controls
+        val list = findViewById<ListView>(R.id.listCompanies);
+        list.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items)
     }
 }

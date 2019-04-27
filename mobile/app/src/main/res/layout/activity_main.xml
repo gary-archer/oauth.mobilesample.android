@@ -6,22 +6,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".activities.MainActivity">
-    <Button
-            android:text="Home"
-            android:layout_width="161dp"
-            android:layout_height="63dp" tools:layout_editor_absoluteY="30dp"
-            android:id="@+id/btnHome" android:layout_marginEnd="186dp" app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="138dp"
-            app:layout_constraintHorizontal_bias="0.175"/>
-    <TextView
-            android:text="TextView"
-            android:layout_width="wrap_content"
-            android:layout_height="13dp" tools:layout_editor_absoluteY="192dp"
-            android:id="@+id/textDebug" app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"/>
     <ListView
-            android:layout_width="405dp"
-            android:layout_height="414dp" tools:layout_editor_absoluteY="309dp" tools:layout_editor_absoluteX="8dp"
+            android:layout_width="395dp"
+            android:layout_height="715dp" tools:layout_editor_absoluteY="8dp" tools:layout_editor_absoluteX="8dp"
             android:id="@+id/listCompanies"/>
-
 </android.support.constraint.ConstraintLayout>

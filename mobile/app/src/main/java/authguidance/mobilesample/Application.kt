@@ -2,16 +2,14 @@ package authguidance.mobilesample
 
 import android.app.Activity
 import android.app.Application
-import android.app.PendingIntent
-import android.app.TaskStackBuilder
 import authguidance.mobilesample.configuration.Configuration
 import authguidance.mobilesample.configuration.ConfigurationLoader
 import authguidance.mobilesample.plumbing.utilities.MobileLogger
 import android.os.Looper
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.NotificationCompat
 import authguidance.mobilesample.activities.ErrorActivity
+import java.io.Serializable
 
 /*
  * Our custom application class
@@ -33,17 +31,15 @@ class Application : android.app.Application(), Application.ActivityLifecycleCall
     override fun onCreate() {
         super.onCreate()
 
-        // Set the exception handler for startup errors
+        // First set an unhandled exception handler
         this.systemUncaughtHandler = Thread.getDefaultUncaughtExceptionHandler()
-        Thread.setDefaultUncaughtExceptionHandler { _, e -> this.handleStartupError(e) }
+        Thread.setDefaultUncaughtExceptionHandler { _, e -> this.handleActivityError(e) }
 
         // Load application configuration
         this.configuration = ConfigurationLoader().loadConfiguration(this.applicationContext)
+        this.configureExceptionLoop()
 
-        // After startup work, configure to catch activity errors
-        this.configureActivityErrorHandler()
-
-        //
+        // Set up callbacks so that we can track the active activity
         this.registerActivityLifecycleCallbacks(this)
     }
 
@@ -51,7 +47,7 @@ class Application : android.app.Application(), Application.ActivityLifecycleCall
      * Use the technique from the below post to handle activity errors without restarting the app
      * https://github.com/Idolon-V/android-crash-catcher
      */
-    private fun configureActivityErrorHandler() {
+    private fun configureExceptionLoop() {
 
         while (true) {
             try {
@@ -64,29 +60,16 @@ class Application : android.app.Application(), Application.ActivityLifecycleCall
     }
 
     /*
-     * Handle startup exceptions by terminating the app
-     */
-    private fun handleStartupError(exception: Throwable) {
-
-        MobileLogger.debug("STARTUP EXCEPTION")
-
-        // Write details to debug output
-        val text = exception.message ?: exception.toString()
-        MobileLogger.debug(text)
-    }
-
-    /*
      * Handle activity exceptions by terminating the app
      */
     private fun handleActivityError(exception: Throwable) {
 
-        MobileLogger.debug("ACTIVITY EXCEPTION")
-        MobileLogger.debug(exception.toString());
+        MobileLogger.debug("ACTIVITY EXCEPTION: ${exception.message}")
 
         // Navigate to the error view
         val errorIntent = Intent(this, ErrorActivity::class.java)
         errorIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        errorIntent.putExtra("EXCEPTION_DATA", exception)
+        errorIntent.putExtra("EXCEPTION_DATA", exception as Serializable);
         startActivity(errorIntent)
     }
 
