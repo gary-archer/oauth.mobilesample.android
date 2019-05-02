@@ -3,11 +3,11 @@ package authguidance.mobilesample.entities
 /*
  * An error entity for display
  */
-class UIError {
+data class UIError(
 
-    /*val code: String;
+    val code: String,
 
-    val message: String;
+    val message: String,
 
-    val userMessage: String;*/
-}
+    val userMessage: String
+)

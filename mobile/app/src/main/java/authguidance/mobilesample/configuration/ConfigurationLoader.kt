@@ -2,12 +2,10 @@ package authguidance.mobilesample.configuration
 
 import android.content.Context
 import authguidance.mobilesample.R
-import authguidance.mobilesample.plumbing.utilities.MobileLogger
 import com.google.gson.Gson
 import okio.Buffer
 import okio.buffer
 import okio.source
-import org.json.JSONObject
 import java.nio.charset.Charset
 
 /*
@@ -27,11 +25,10 @@ class ConfigurationLoader {
         // Read it as JSON text
         val configBuffer = Buffer()
         configSource.readAll(configBuffer)
-        val configJson = JSONObject(configBuffer.readString(Charset.forName("UTF-8")))
-        val configJsonText = configJson.toString()
+        val configJson = configBuffer.readString(Charset.forName("UTF-8"))
 
         // Deserialize it into objects
         val gson = Gson()
-        return gson.fromJson<Configuration>(configJsonText, Configuration::class.java)
+        return gson.fromJson<Configuration>(configJson, Configuration::class.java)
     }
 }

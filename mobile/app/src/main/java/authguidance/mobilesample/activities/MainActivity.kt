@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import authguidance.mobilesample.R
+import authguidance.mobilesample.entities.Company
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,13 +39,11 @@ class MainActivity : BaseActivity() {
         CoroutineScope(Dispatchers.IO).launch {
 
             val httpClient = super.getHttpClient()
-            val result = httpClient.callApi("GET", null,"/companies")
+            val result = httpClient.callApi("GET", "/companies", null, Array<Company>::class.java)
 
             // Switch back to the UI thread for rendering
             CoroutineScope(Dispatchers.Main).launch {
-                if(result != null) {
-                    renderData(result);
-                }
+                renderData(result)
             }
         }
     }
@@ -52,11 +51,13 @@ class MainActivity : BaseActivity() {
     /*
      * Render API data on the UI thread
      */
-    private fun renderData(data: String) {
+    private fun renderData(companies: Array<Company>) {
 
         // Set the company items
         val items = mutableListOf<String>()
-        items += data
+        companies.forEach {
+            items += it.name
+        }
 
         // Update UI controls
         val list = findViewById<ListView>(R.id.listCompanies);
