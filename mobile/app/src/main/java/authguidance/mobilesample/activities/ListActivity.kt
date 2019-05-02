@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 /*
  * Our main activity shows the company list
  */
-class MainActivity : BaseActivity() {
+class ListActivity : BaseActivity() {
 
     /*
      * Activity startup
@@ -35,6 +35,12 @@ class MainActivity : BaseActivity() {
      */
     private fun getData() {
 
+        /* TODO NEXT
+           1: Improve error activity with the same UI fields as for SPA
+           2: Refresh button in base activity
+           3: Render a list view with a hyperlink so that I can do navigation
+        */
+
         // Make the HTTP call on a background thread
         CoroutineScope(Dispatchers.IO).launch {
 
@@ -49,14 +55,14 @@ class MainActivity : BaseActivity() {
     }
 
     /*
-     * Render API data on the UI thread
+     * Render API response data on the UI thread
      */
     private fun renderData(companies: Array<Company>) {
 
         // Set the company items
         val items = mutableListOf<String>()
         companies.forEach {
-            items += it.name
+            items += "Id: ${it.id}, Name: ${it.name}, TargetUsd: ${it.targetUsd}"
         }
 
         // Update UI controls

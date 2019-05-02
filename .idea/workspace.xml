@@ -2,11 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="25f1f12d-1974-41f1-a5a6-6c3b3a62b763" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/mobile/app/src/main/java/authguidance/mobilesample/activities/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/app/src/main/java/authguidance/mobilesample/activities/MainActivity.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile/app/src/main/java/authguidance/mobilesample/configuration/ConfigurationLoader.kt" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/app/src/main/java/authguidance/mobilesample/configuration/ConfigurationLoader.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile/app/src/main/java/authguidance/mobilesample/entities/Company.kt" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/app/src/main/java/authguidance/mobilesample/entities/Company.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mobile/app/src/main/java/authguidance/mobilesample/entities/UIError.kt" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/app/src/main/java/authguidance/mobilesample/entities/UIError.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/app/src/main/java/authguidance/mobilesample/activities/MainActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/app/src/main/java/authguidance/mobilesample/activities/ListActivity.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/mobile/app/src/main/java/authguidance/mobilesample/plumbing/utilities/HttpClient.kt" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/app/src/main/java/authguidance/mobilesample/plumbing/utilities/HttpClient.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/mobile/app/src/main/res/layout/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/mobile/app/src/main/res/layout/activity_main.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
