@@ -3,6 +3,7 @@
 *.ap_
 
 # Locally generated files
+.idea/*
 mobile/.idea/*
 *.iml
 local.properties
