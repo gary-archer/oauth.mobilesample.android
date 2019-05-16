@@ -1,10 +1,12 @@
 package authguidance.mobilesample.activities
 
 import android.os.Bundle
-import android.widget.ArrayAdapter
-import android.widget.ListView
+import android.util.Log
+import android.widget.*
 import authguidance.mobilesample.R
 import authguidance.mobilesample.entities.Company
+import authguidance.mobilesample.logic.CompanyArrayAdapter
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,8 +25,14 @@ class ListActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Customise the title
+        // TODO: Set this in markup
         this.title = "Company List"
+
+        // Button handlers
+        val buttonHome = findViewById<Button>(R.id.btnHome);
+        buttonHome.setOnClickListener {
+            getData();
+        }
 
         // Call the API to get data
         getData()
@@ -34,12 +42,6 @@ class ListActivity : BaseActivity() {
      * Do the work of calling the API
      */
     private fun getData() {
-
-        /* TODO NEXT
-           1: Improve error activity with the same UI fields as for SPA
-           2: Refresh button in base activity
-           3: Render a list view with a hyperlink so that I can do navigation
-        */
 
         // Make the HTTP call on a background thread
         CoroutineScope(Dispatchers.IO).launch {
@@ -67,6 +69,14 @@ class ListActivity : BaseActivity() {
 
         // Update UI controls
         val list = findViewById<ListView>(R.id.listCompanies);
-        list.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items)
+        list.adapter = CompanyArrayAdapter(this, companies.toList())
+        list.onItemClickListener = AdapterView.OnItemClickListener{ parent, view, position, id ->
+
+            // Toast.makeText(this, "Clicked item : $position", Toast.LENGTH_SHORT).show()
+
+            // TODO: Move activity
+            val selectedItem = parent.getItemAtPosition(position) as Company
+            Log.d("BasicMobileApp", "Selected item is ${selectedItem.id}")
+        }
     }
 }
