@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.widget.*
 import authguidance.mobilesample.R
 import authguidance.mobilesample.entities.CompanyTransactions
-// import authguidance.mobilesample.logic.TransactionsArrayAdapter
+import authguidance.mobilesample.logic.TransactionArrayAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -72,8 +72,7 @@ class TransactionsActivity : BaseActivity() {
      */
     private fun renderData(data: CompanyTransactions) {
 
-        // Update UI controls
-        // val list = findViewById<ListView>(R.id.listCompanies);
-        // list.adapter = TransactionsArrayAdapter(this, data.transactions.toList())
+        val list = findViewById<ListView>(R.id.listTransactions);
+        list.adapter = TransactionArrayAdapter(this, data.transactions.toList())
     }
 }

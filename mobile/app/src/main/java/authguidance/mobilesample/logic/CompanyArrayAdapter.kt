@@ -22,15 +22,17 @@ class CompanyArrayAdapter(context: Context, companies: List<Company>) :
 
         val rootView = convertView ?: LayoutInflater.from(context).inflate(R.layout.company_list_item, parent, false)
         val currentCompany = getItem(position)
+        if(currentCompany != null) {
 
-        // The first row shows the company image and name
-        // rootView.companyImageId.setImageResource(currentCompany.id)
-        rootView.companyName.text = currentCompany.name;
+            // The first row shows the company image and name
+            // rootView.companyImageId.setImageResource(currentCompany.id)
+            rootView.companyName.text = currentCompany.name;
+            // Next we show a list of labels and values
 
-        // Next we show a list of labels and values
-        rootView.targetUsd.text = currentCompany.targetUsd.toString()
-        rootView.investmentUsd.text = currentCompany.investmentUsd.toString()
-        rootView.noInvestors.text = currentCompany.noInvestors.toString()
+            rootView.targetUsd.text = currentCompany.targetUsd.toString()
+            rootView.investmentUsd.text = currentCompany.investmentUsd.toString()
+            rootView.noInvestors.text = currentCompany.noInvestors.toString()
+        }
 
         return rootView
     }
