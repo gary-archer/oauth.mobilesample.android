@@ -1,14 +1,12 @@
 IMMEDIATE
 ---------
-1. Error activity with home button + extra fields
+1. Try to get images rendering
 
-2. Try to get images rendering
+2. Improve displays + colours a little
 
-3. Improve displays + colours a little
+3. RecyclerView - from book
 
-4. RecyclerView
-
-5. Revisit application class and storing of activities
+4. Revisit application class and storing of activities
    Am I leaking any resources?
 
 5. Latest 9.0 emulator

@@ -25,7 +25,7 @@ class CompanyArrayAdapter(context: Context, companies: List<Company>) :
         if(currentCompany != null) {
 
             // The first row shows the company image and name
-            // rootView.companyImageId.setImageResource(currentCompany.id)
+            rootView.companyImageId.setImageResource(currentCompany.id)
             rootView.companyName.text = currentCompany.name;
             // Next we show a list of labels and values
 
