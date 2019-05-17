@@ -7,32 +7,46 @@
         android:layout_height="match_parent"
         tools:context=".activities.ListActivity">
 
-    <!-- The first horizontal row contains buttons -->
+    <!-- The first row contains buttons for testing data and token operations -->
     <LinearLayout
-            android:id="@+id/buttonContainer"
+            android:id="@+id/buttonRow"
             android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="100dp"
             tools:layout_editor_absoluteX="8dp"
             tools:layout_editor_absoluteY="8dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintLeft_toLeftOf="parent">
+
         <Button
                 android:id="@+id/btnHome"
                 android:text="Home"
-                android:layout_width="200dp"
-                android:layout_height="80dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+
+        <Button
+                android:id="@+id/btnRefreshData"
+                android:text="Refresh Data"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"/>
     </LinearLayout>
 
-    <!-- The rest of the view contains the list view -->
+    <!-- The second row is the rest of the screen and contains list items -->
     <ListView
             android:id="@+id/listCompanies"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@+id/buttonContainer"
-            app:layout_constraintBottom_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/buttonRow"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"/>
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"/>
+
 </android.support.constraint.ConstraintLayout>

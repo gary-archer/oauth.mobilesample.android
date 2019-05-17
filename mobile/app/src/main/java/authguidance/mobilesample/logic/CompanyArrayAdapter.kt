@@ -9,7 +9,6 @@ import authguidance.mobilesample.entities.Company
 import kotlinx.android.synthetic.main.company_list_item.view.*
 import authguidance.mobilesample.R
 
-
 /*
  * An adapter to render company items in a custom manner
  */

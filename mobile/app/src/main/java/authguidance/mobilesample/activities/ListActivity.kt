@@ -6,7 +6,6 @@ import android.widget.*
 import authguidance.mobilesample.R
 import authguidance.mobilesample.entities.Company
 import authguidance.mobilesample.logic.CompanyArrayAdapter
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,13 +27,19 @@ class ListActivity : BaseActivity() {
         // TODO: Set this in markup
         this.title = "Company List"
 
-        // Button handlers
-        val buttonHome = findViewById<Button>(R.id.btnHome);
+        // Reload the activity when home is clicked
+        val buttonHome = findViewById<Button>(R.id.btnHome)
         buttonHome.setOnClickListener {
-            getData();
+            this.recreate()
         }
 
-        // Call the API to get data
+        // Reload the activity when home is clicked
+        val buttonRefresh = findViewById<Button>(R.id.btnRefreshData)
+        buttonRefresh.setOnClickListener {
+            this.getData()
+        }
+
+        // Load data on creation
         getData()
     }
 
@@ -47,7 +52,7 @@ class ListActivity : BaseActivity() {
         CoroutineScope(Dispatchers.IO).launch {
 
             val httpClient = super.getHttpClient()
-            val result = httpClient.callApi("GET", "/companies", null, Array<Company>::class.java)
+            val result = httpClient.callApi("GET", "companies", null, Array<Company>::class.java)
 
             // Switch back to the UI thread for rendering
             CoroutineScope(Dispatchers.Main).launch {
@@ -71,8 +76,6 @@ class ListActivity : BaseActivity() {
         val list = findViewById<ListView>(R.id.listCompanies);
         list.adapter = CompanyArrayAdapter(this, companies.toList())
         list.onItemClickListener = AdapterView.OnItemClickListener{ parent, view, position, id ->
-
-            // Toast.makeText(this, "Clicked item : $position", Toast.LENGTH_SHORT).show()
 
             // TODO: Move activity
             val selectedItem = parent.getItemAtPosition(position) as Company
