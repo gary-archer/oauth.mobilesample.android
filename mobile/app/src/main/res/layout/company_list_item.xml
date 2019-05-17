@@ -36,7 +36,7 @@
                 android:layout_height="fill_parent">
 
             <TextView
-                    android:text="Target USD"
+                    android:text="@string/target_usd"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_column="1" />
@@ -53,7 +53,7 @@
                 android:layout_height="fill_parent">
 
             <TextView
-                    android:text="Investment USD"
+                    android:text="@string/investment_usd"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_column="1" />
@@ -70,7 +70,7 @@
                 android:layout_height="fill_parent">
 
             <TextView
-                    android:text="# Investors"
+                    android:text="@string/no_investors"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_column="1" />

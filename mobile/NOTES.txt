@@ -1,9 +1,11 @@
-1. Use string resources for display values
+1. Button fragment
 
-2. Try to get images rendering and improve displays + colours a little
+2. Error fragment and startup error activity with home button
 
-3. Button fragment
+3. Try to get images rendering and improve displays + colours a little
 
-4. Error fragment and startup error activity with home button
+4. RecyclerView
 
 5. Latest 9.0 emulator
+
+6. Castle device

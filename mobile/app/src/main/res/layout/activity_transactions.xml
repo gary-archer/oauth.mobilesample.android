@@ -21,7 +21,7 @@
 
         <Button
                 android:id="@+id/btnHome"
-                android:text="Home"
+                android:text="@string/home_button"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -31,7 +31,7 @@
 
         <Button
                 android:id="@+id/btnRefreshData"
-                android:text="Refresh Data"
+                android:text="@string/refresh_button"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"

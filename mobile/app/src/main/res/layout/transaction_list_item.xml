@@ -14,7 +14,7 @@
                 android:layout_height="fill_parent">
 
             <TextView
-                    android:text="Transaction Id"
+                    android:text="@string/transaction_id"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_column="1" />
@@ -31,7 +31,7 @@
                 android:layout_height="fill_parent">
 
             <TextView
-                    android:text="Investor Id"
+                    android:text="@string/investor_id"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_column="1" />
@@ -48,7 +48,7 @@
                 android:layout_height="fill_parent">
 
             <TextView
-                    android:text=""
+                    android:text="@string/amount_usd"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_column="1" />
