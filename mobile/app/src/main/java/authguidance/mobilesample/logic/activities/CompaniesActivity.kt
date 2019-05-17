@@ -1,11 +1,11 @@
-package authguidance.mobilesample.activities
+package authguidance.mobilesample.logic.activities
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.*
 import authguidance.mobilesample.R
-import authguidance.mobilesample.entities.Company
-import authguidance.mobilesample.logic.CompanyArrayAdapter
+import authguidance.mobilesample.logic.entities.Company
+import authguidance.mobilesample.logic.adapters.CompanyArrayAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

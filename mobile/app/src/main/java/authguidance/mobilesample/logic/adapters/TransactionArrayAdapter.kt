@@ -1,4 +1,4 @@
-package authguidance.mobilesample.logic
+package authguidance.mobilesample.logic.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import authguidance.mobilesample.R
-import authguidance.mobilesample.entities.Transaction
+import authguidance.mobilesample.logic.entities.Transaction
 import kotlinx.android.synthetic.main.transaction_list_item.view.*
 
 /*

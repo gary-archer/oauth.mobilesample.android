@@ -1,4 +1,4 @@
-package authguidance.mobilesample.activities
+package authguidance.mobilesample.logic.activities
 
 import android.os.Bundle
 import android.widget.ArrayAdapter

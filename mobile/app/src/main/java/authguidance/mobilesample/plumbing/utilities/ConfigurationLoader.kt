@@ -1,7 +1,8 @@
-package authguidance.mobilesample.configuration
+package authguidance.mobilesample.plumbing.utilities
 
 import android.content.Context
 import authguidance.mobilesample.R
+import authguidance.mobilesample.configuration.Configuration
 import com.google.gson.Gson
 import okio.Buffer
 import okio.buffer

@@ -1,11 +1,11 @@
-package authguidance.mobilesample.logic
+package authguidance.mobilesample.logic.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import authguidance.mobilesample.entities.Company
+import authguidance.mobilesample.logic.entities.Company
 import kotlinx.android.synthetic.main.company_list_item.view.*
 import authguidance.mobilesample.R
 

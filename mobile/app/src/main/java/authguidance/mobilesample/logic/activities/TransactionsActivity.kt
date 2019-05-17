@@ -1,11 +1,11 @@
-package authguidance.mobilesample.activities
+package authguidance.mobilesample.logic.activities
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.*
 import authguidance.mobilesample.R
-import authguidance.mobilesample.entities.CompanyTransactions
-import authguidance.mobilesample.logic.TransactionArrayAdapter
+import authguidance.mobilesample.logic.entities.CompanyTransactions
+import authguidance.mobilesample.logic.adapters.TransactionArrayAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -73,6 +73,7 @@ class TransactionsActivity : BaseActivity() {
     private fun renderData(data: CompanyTransactions) {
 
         val list = findViewById<ListView>(R.id.listTransactions);
-        list.adapter = TransactionArrayAdapter(this, data.transactions.toList())
+        list.adapter =
+            TransactionArrayAdapter(this, data.transactions.toList())
     }
 }

@@ -1,4 +1,4 @@
-package authguidance.mobilesample.activities
+package authguidance.mobilesample.logic.activities
 
 import android.support.v7.app.AppCompatActivity
 import authguidance.mobilesample.Application;

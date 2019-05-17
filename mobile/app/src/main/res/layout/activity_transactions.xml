@@ -5,7 +5,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".activities.TransactionsActivity">
+        tools:context=".logic.activities.TransactionsActivity">
 
     <!-- The first row contains buttons for testing data and token operations -->
     <LinearLayout

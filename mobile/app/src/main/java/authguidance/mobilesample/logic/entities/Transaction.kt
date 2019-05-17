@@ -1,4 +1,4 @@
-package authguidance.mobilesample.entities
+package authguidance.mobilesample.logic.entities
 
 /*
  * A transaction entity returned from the API

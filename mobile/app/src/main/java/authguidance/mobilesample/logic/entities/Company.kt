@@ -1,4 +1,4 @@
-package authguidance.mobilesample.entities
+package authguidance.mobilesample.logic.entities
 
 /*
  * A company entity returned from the API

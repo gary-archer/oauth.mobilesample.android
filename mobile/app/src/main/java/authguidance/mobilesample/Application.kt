@@ -3,12 +3,12 @@ package authguidance.mobilesample
 import android.app.Activity
 import android.app.Application
 import authguidance.mobilesample.configuration.Configuration
-import authguidance.mobilesample.configuration.ConfigurationLoader
+import authguidance.mobilesample.plumbing.utilities.ConfigurationLoader
 import authguidance.mobilesample.plumbing.utilities.MobileLogger
 import android.os.Looper
 import android.content.Intent
 import android.os.Bundle
-import authguidance.mobilesample.activities.ErrorActivity
+import authguidance.mobilesample.logic.activities.ErrorActivity
 import java.io.Serializable
 
 /*

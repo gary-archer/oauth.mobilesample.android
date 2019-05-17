@@ -1,4 +1,4 @@
-package authguidance.mobilesample.entities
+package authguidance.mobilesample.logic.entities
 
 /*
  * A composite entity of a company and its transactions

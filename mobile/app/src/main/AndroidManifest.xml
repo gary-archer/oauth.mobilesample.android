@@ -12,7 +12,7 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             android:networkSecurityConfig="@xml/network_security_config">
-        <activity android:name=".activities.CompaniesActivity"
+        <activity android:name="authguidance.mobilesample.logic.activities.CompaniesActivity"
                   android:label="@string/company_activity_title">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -21,9 +21,9 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".activities.TransactionsActivity"
+        <activity android:name="authguidance.mobilesample.logic.activities.TransactionsActivity"
                   android:label="@string/transactions_activity_title"/>
-        <activity android:name=".activities.ErrorActivity" />
+        <activity android:name="authguidance.mobilesample.logic.activities.ErrorActivity" />
     </application>
 
 </manifest>

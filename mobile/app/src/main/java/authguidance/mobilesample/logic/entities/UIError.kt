@@ -1,4 +1,4 @@
-package authguidance.mobilesample.entities
+package authguidance.mobilesample.logic.entities
 
 /*
  * An error entity for display
