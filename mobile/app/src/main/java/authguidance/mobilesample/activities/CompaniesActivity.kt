@@ -1,7 +1,7 @@
 package authguidance.mobilesample.activities
 
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.*
 import authguidance.mobilesample.R
 import authguidance.mobilesample.entities.Company
@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 /*
  * Our main activity shows the company list
  */
-class ListActivity : BaseActivity() {
+class CompaniesActivity : BaseActivity() {
 
     /*
      * Activity startup
@@ -22,10 +22,7 @@ class ListActivity : BaseActivity() {
 
         // Standard app setup
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
-        // TODO: Set this in markup
-        this.title = "Company List"
+        setContentView(R.layout.activity_companies)
 
         // Reload the activity when home is clicked
         val buttonHome = findViewById<Button>(R.id.btnHome)
@@ -66,20 +63,21 @@ class ListActivity : BaseActivity() {
      */
     private fun renderData(companies: Array<Company>) {
 
-        // Set the company items
-        val items = mutableListOf<String>()
-        companies.forEach {
-            items += "Id: ${it.id}, Name: ${it.name}, TargetUsd: ${it.targetUsd}"
-        }
-
-        // Update UI controls
+        // Render the company data via the adapter class
         val list = findViewById<ListView>(R.id.listCompanies);
         list.adapter = CompanyArrayAdapter(this, companies.toList())
-        list.onItemClickListener = AdapterView.OnItemClickListener{ parent, view, position, id ->
 
-            // TODO: Move activity
-            val selectedItem = parent.getItemAtPosition(position) as Company
-            Log.d("BasicMobileApp", "Selected item is ${selectedItem.id}")
+        // When an item is tapped, move to the transactions activity
+        list.onItemClickListener = AdapterView.OnItemClickListener{ parent, _, position, _ ->
+
+            // Get the company
+            val company = parent.getItemAtPosition(position) as Company
+
+            // Move to the transactions view
+            val intent = Intent(this, TransactionsActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            intent.putExtra("COMPANY_ID", company.id)
+            startActivity(intent)
         }
     }
 }

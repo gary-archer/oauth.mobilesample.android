@@ -12,16 +12,18 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             android:networkSecurityConfig="@xml/network_security_config">
-        <activity android:name=".activities.ListActivity">
+        <activity android:name=".activities.CompaniesActivity"
+                  android:label="@string/company_activity_title">
             <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".activities.ErrorActivity"
-                  android:parentActivityName=".activities.ListActivity" >
-        </activity>
+        <activity android:name=".activities.TransactionsActivity"
+                  android:label="@string/transactions_activity_title"/>
+        <activity android:name=".activities.ErrorActivity" />
     </application>
 
 </manifest>

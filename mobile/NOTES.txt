@@ -1,0 +1,22 @@
+ Volume in drive C is Windows
+ Volume Serial Number is EC4A-3E89
+
+ Directory of C:\DEV2\authguidance.mobilesample.android\mobile
+
+17/05/2019  10:10    <DIR>          .
+17/05/2019  10:10    <DIR>          ..
+16/05/2019  14:05    <DIR>          .gradle
+17/05/2019  10:09    <DIR>          .idea
+17/05/2019  10:07    <DIR>          app
+16/05/2019  14:12    <DIR>          build
+16/05/2019  14:03               554 build.gradle
+16/05/2019  14:03    <DIR>          gradle
+16/05/2019  14:03               832 gradle.properties
+16/05/2019  14:03             5,468 gradlew
+16/05/2019  14:03             2,260 gradlew.bat
+16/05/2019  14:05               374 local.properties
+16/05/2019  14:13               901 mobile.iml
+17/05/2019  10:10                 0 NOTES.txt
+16/05/2019  14:03                16 settings.gradle
+               8 File(s)         10,405 bytes
+               7 Dir(s)  139,379,400,704 bytes free

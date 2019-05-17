@@ -1,7 +1,7 @@
 package authguidance.mobilesample.entities
 
 /*
- * The company entity returned from the API
+ * A company entity returned from the API
  */
 data class Company(
 

@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">BasicMobileApp</string>
+    <string name="company_activity_title">Company List</string>
+    <string name="transactions_activity_title">Transactions</string>
 </resources>
