@@ -6,8 +6,25 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".logic.activities.ErrorActivity">
+
+    <!-- The first row contains the home button -->
+    <fragment
+            android:id="@+id/buttonHeaderFragment"
+            android:name="authguidance.mobilesample.logic.fragments.HeaderButtonsFragment"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_header_buttons"/>
+
+    <!-- The remainder of the view shows error details -->
     <ListView
-            android:layout_width="395dp"
-            android:layout_height="715dp" tools:layout_editor_absoluteY="8dp" tools:layout_editor_absoluteX="8dp"
-            android:id="@+id/listErrorItems"/>
+            android:id="@+id/listErrorItems"
+            app:layout_constraintTop_toBottomOf="@+id/buttonHeaderFragment"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"/>
+
 </android.support.constraint.ConstraintLayout>

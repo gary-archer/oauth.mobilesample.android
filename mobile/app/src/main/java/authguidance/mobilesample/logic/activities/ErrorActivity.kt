@@ -4,11 +4,12 @@ import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.ListView
 import authguidance.mobilesample.R
+import authguidance.mobilesample.logic.fragments.HeaderButtonClickListener
 
 /*
  * An activity to display unexpected error details
  */
-class ErrorActivity : BaseActivity() {
+class ErrorActivity : BaseActivity(), HeaderButtonClickListener {
 
     /*
      * Standard initialisation
@@ -22,6 +23,13 @@ class ErrorActivity : BaseActivity() {
 
         val exception = this.intent.getSerializableExtra("EXCEPTION_DATA") as Throwable
         this.renderError(exception);
+    }
+
+    /*
+     * Override the base view to only show the home button
+     */
+    override fun showAllButtons(): Boolean {
+        return false;
     }
 
     /*

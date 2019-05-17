@@ -13,4 +13,7 @@
     <string name="transaction_id">Transaction Id</string>
     <string name="investor_id">Investor Id</string>
     <string name="amount_usd">Amount USD</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

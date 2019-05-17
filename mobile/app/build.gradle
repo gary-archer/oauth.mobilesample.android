@@ -59,7 +59,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 
     // Import the AppAuth library to manage OAuth security and make it use the latest supportlib
-    implementation ("net.openid:appauth:$appauth_version") {
+    implementation("net.openid:appauth:$appauth_version") {
         exclude group: "com.android.support"
     }
 
@@ -71,4 +71,5 @@ dependencies {
 
     // A library for file reading
     implementation "com.squareup.okio:okio:$okio_version"
+    implementation 'com.android.support:support-v4:28.0.0'
 }

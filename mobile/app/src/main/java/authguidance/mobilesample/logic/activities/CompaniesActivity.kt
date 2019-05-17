@@ -15,8 +15,9 @@ import kotlinx.coroutines.launch
  */
 class CompaniesActivity : BaseActivity() {
 
+
     /*
-     * Activity startup
+     * Activity creation
      */
     override fun onCreate(savedInstanceState: Bundle?) {
 
@@ -24,20 +25,22 @@ class CompaniesActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_companies)
 
-        // Reload the activity when home is clicked
-        val buttonHome = findViewById<Button>(R.id.btnHome)
-        buttonHome.setOnClickListener {
-            this.recreate()
-        }
-
-        // Reload the activity when home is clicked
-        val buttonRefresh = findViewById<Button>(R.id.btnRefreshData)
-        buttonRefresh.setOnClickListener {
-            this.getData()
-        }
-
         // Load data on creation
         getData()
+    }
+
+    /*
+     * Override the base class to recreate the view
+     */
+    override fun onHome() {
+        this.recreate()
+    }
+
+    /*
+     * Override the base class to get this view's data
+     */
+    override fun onRefreshData() {
+        this.getData()
     }
 
     /*

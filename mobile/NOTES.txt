@@ -1,11 +1,20 @@
-1. Button fragment
+IMMEDIATE
+---------
+1. Error activity with home button + extra fields
 
-2. Error fragment and startup error activity with home button
+2. Try to get images rendering
 
-3. Try to get images rendering and improve displays + colours a little
+3. Improve displays + colours a little
 
 4. RecyclerView
+
+5. Revisit application class and storing of activities
+   Am I leaking any resources?
 
 5. Latest 9.0 emulator
 
 6. Castle device
+
+RELATED
+-------
+Improve API error response for serverless sample

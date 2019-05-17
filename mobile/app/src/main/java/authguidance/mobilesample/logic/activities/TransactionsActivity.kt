@@ -1,6 +1,5 @@
 package authguidance.mobilesample.logic.activities
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.*
 import authguidance.mobilesample.R
@@ -30,22 +29,15 @@ class TransactionsActivity : BaseActivity() {
         this.companyId = this.intent.getIntExtra("COMPANY_ID", 0)
         this.title = "Transactions for Company ${this.companyId}"
 
-        // Move back to the home activity when the home button is clicked
-        val buttonHome = findViewById<Button>(R.id.btnHome)
-        buttonHome.setOnClickListener {
-            val intent = Intent(this, CompaniesActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(intent)
-        }
-
-        // Get API data again when refresh is clicked
-        val buttonRefresh = findViewById<Button>(R.id.btnRefreshData)
-        buttonRefresh.setOnClickListener {
-            this.getData()
-        }
-
         // Load data on creation
         getData()
+    }
+
+    /*
+     * Override the base class to get this view's data
+     */
+    override fun onRefreshData() {
+        this.getData()
     }
 
     /*
