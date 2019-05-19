@@ -25,10 +25,11 @@ class CompanyArrayAdapter(context: Context, companies: List<Company>) :
         if(currentCompany != null) {
 
             // The first row shows the company image and name
-            rootView.companyImageId.setImageResource(currentCompany.id)
+            val id = this.context.resources.getIdentifier("company_${currentCompany.id}", "drawable", context.packageName)
+            rootView.companyImageId.setImageResource(id);
             rootView.companyName.text = currentCompany.name;
-            // Next we show a list of labels and values
 
+            // Next we show a list of labels and values
             rootView.targetUsd.text = currentCompany.targetUsd.toString()
             rootView.investmentUsd.text = currentCompany.investmentUsd.toString()
             rootView.noInvestors.text = currentCompany.noInvestors.toString()

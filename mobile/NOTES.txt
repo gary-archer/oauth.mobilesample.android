@@ -1,7 +1,5 @@
 IMMEDIATE
 ---------
-1. Try to get images rendering
-
 2. Improve displays + colours a little
 
 3. RecyclerView - from book
@@ -9,10 +7,16 @@ IMMEDIATE
 4. Revisit application class and storing of activities
    Am I leaking any resources?
 
-5. Latest 9.0 emulator
+1. Latest 9.0 emulator on Windows
 
 6. Castle device
 
 RELATED
 -------
 Improve API error response for serverless sample
+
+ANDROID TIPS
+------------
+1. Select Import option when first getting code (not Open Existing)
+
+2. Add to home screen via Google Find option
