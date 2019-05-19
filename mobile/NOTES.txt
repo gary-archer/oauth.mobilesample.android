@@ -1,15 +1,20 @@
 IMMEDIATE
 ---------
-2. Improve displays + colours a little
+1. Translation for HTTP errors - write an ErrorHandler class and improve error UI
 
-3. RecyclerView - from book
+2. RecyclerView - from book
 
-4. Revisit application class and storing of activities
-   Am I leaking any resources?
+3. Improve list and transactions displays with better fonts, spacing and colours
 
-1. Latest 9.0 emulator on Windows
+4. Application class and storing of activities - am I leaking any resources?
 
-6. Castle device
+5. Latest 9.0 emulator on Windows
+
+6. Run on Castle device
+
+7. Improve App Icon at some point - to indicate an OAuth Sample
+
+8. Better mobile logging
 
 RELATED
 -------
@@ -17,6 +22,6 @@ Improve API error response for serverless sample
 
 ANDROID TIPS
 ------------
-1. Select Import option when first getting code (not Open Existing)
+1. Select Import option when first getting code (don't use Open Existing)
 
-2. Add to home screen via Google Find option
+2. Add App to mobile home screen via Google Find option
