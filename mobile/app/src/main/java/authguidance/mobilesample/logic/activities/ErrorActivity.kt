@@ -1,10 +1,12 @@
 package authguidance.mobilesample.logic.activities
 
 import android.os.Bundle
-import android.widget.ArrayAdapter
 import android.widget.ListView
 import authguidance.mobilesample.R
+import authguidance.mobilesample.logic.adapters.ErrorItemArrayAdapter
 import authguidance.mobilesample.logic.fragments.HeaderButtonClickListener
+import authguidance.mobilesample.plumbing.errors.ErrorField
+import authguidance.mobilesample.plumbing.errors.UIError
 
 /*
  * An activity to display unexpected error details
@@ -21,43 +23,66 @@ class ErrorActivity : BaseActivity(), HeaderButtonClickListener {
         // Customise the title
         this.title = "Error View"
 
-        val exception = this.intent.getSerializableExtra("EXCEPTION_DATA") as Throwable
-        this.renderError(exception)
+        val error = this.intent.getSerializableExtra("EXCEPTION_DATA") as UIError
+        this.renderData(error)
     }
 
     /*
      * Override the base view to only show the home button
      */
     override fun showAllButtons(): Boolean {
-        return false;
+        return false
     }
 
     /*
      * Render error items in the list view
      */
-    fun renderError(error: Throwable) {
+    private fun renderData(error: UIError) {
 
-        // TODO: Use a collection of error items and render each within a list
+        val items = this.getErrorItemList(error)
 
-        // Set error items
-        val items = mutableListOf<String>()
-        items += "Message: ${this.getErrorDescription(error)}"
-
-        // Update the adapter
-        val list = findViewById<ListView>(R.id.listErrorItems);
-        list.adapter = ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, items)
+        // Render the company data via the adapter class
+        val list = findViewById<ListView>(R.id.listErrorItems)
+        list.adapter = ErrorItemArrayAdapter(this, items.toList())
     }
 
     /*
-     * Get the error message property's value
+     * Translate the error object into an object list to be rendered in a list view
      */
-    private fun getErrorDescription(error: Throwable): String {
+    private fun getErrorItemList(error: UIError): List<ErrorField> {
 
-        val result = error.message
-        if(result != null) {
-            return result
-        } else {
-            return error.toString()
+        val result = ArrayList<ErrorField>()
+
+        // TODO: This should be rendered differently in a larger font
+        if (!error.message.isNullOrBlank()) {
+            result.add(ErrorField("UserMessage", error.message))
         }
+
+        if (!error.area.isNullOrBlank()) {
+            result.add(ErrorField("Area", error.area))
+        }
+
+        if (!error.errorCode.isNullOrBlank()) {
+            result.add(ErrorField("Error Code", error.errorCode))
+        }
+
+        if (!error.utcTime.isNullOrBlank()) {
+            result.add(ErrorField("UTC Time", error.utcTime))
+        }
+
+        if (error.statusCode != 0) {
+            result.add(ErrorField("Status Code", error.statusCode.toString()))
+        }
+
+        if (error.instanceId != 0) {
+            result.add(ErrorField("Instance Id", error.instanceId.toString()))
+        }
+
+        if (!error.details.isNullOrBlank()) {
+            result.add(ErrorField("Details", error.details))
+        }
+
+        // TODO: Url and stack trace
+        return result
     }
 }

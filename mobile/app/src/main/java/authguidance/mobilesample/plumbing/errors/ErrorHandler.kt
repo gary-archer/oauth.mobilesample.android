@@ -11,11 +11,11 @@ class ErrorHandler {
     /*
      * Return an error from a general UI exception
      */
-    fun fromException(exception: Exception): UIError {
+    fun fromException(exception: Throwable): UIError {
 
         // Already handled
         if(exception is UIError) {
-            return exception;
+            return exception
         }
 
         // Create the error
@@ -67,5 +67,18 @@ class ErrorHandler {
      * Try to update the default API error with response details
      */
     private fun updateFromApiErrorResponse(error: UIError, response: Response) {
+    }
+
+    /*
+     * Get the error message property's value
+     */
+    private fun getErrorDescription(error: Throwable): String {
+
+        val result = error.message
+        if(result != null) {
+            return result
+        } else {
+            return error.toString()
+        }
     }
 }

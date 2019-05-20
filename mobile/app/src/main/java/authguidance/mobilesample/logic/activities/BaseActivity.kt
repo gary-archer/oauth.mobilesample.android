@@ -16,6 +16,8 @@ abstract class BaseActivity : FragmentActivity(), HeaderButtonClickListener {
      * By default activities use all buttons
      */
     override fun showAllButtons(): Boolean {
+
+        // TODO: Only show the home button for the error activity
         return true
     }
 
@@ -37,7 +39,7 @@ abstract class BaseActivity : FragmentActivity(), HeaderButtonClickListener {
     /*
      * A utility to reduce code in activities
      */
-    fun getHttpClient(): HttpClient {
+    protected fun getHttpClient(): HttpClient {
         var app = application as Application
         val authenticator = Authenticator()
         return HttpClient(app.configuration.app, authenticator)

@@ -1,29 +1,24 @@
 package authguidance.mobilesample
 
-import android.app.Activity
-import android.app.Application
 import authguidance.mobilesample.configuration.Configuration
 import authguidance.mobilesample.plumbing.utilities.ConfigurationLoader
 import android.os.Looper
 import android.content.Intent
-import android.os.Bundle
 import android.util.Log
 import authguidance.mobilesample.logic.activities.ErrorActivity
+import authguidance.mobilesample.plumbing.errors.ErrorHandler
 import java.io.Serializable
 
 /*
  * Our custom application class
  */
-class Application : android.app.Application(), Application.ActivityLifecycleCallbacks {
+class Application : android.app.Application() {
 
     // The configuration is loaded during application startup
     lateinit var configuration: Configuration private set
 
     // The system exception handler
-    private lateinit var systemUncaughtHandler: Thread.UncaughtExceptionHandler;
-
-    // The current activity
-    private var currentActivity: Activity? = null;
+    private lateinit var systemUncaughtHandler: Thread.UncaughtExceptionHandler
 
     /*
      * Application startup logic
@@ -38,9 +33,6 @@ class Application : android.app.Application(), Application.ActivityLifecycleCall
         // Load application configuration
         this.configuration = ConfigurationLoader().loadConfiguration(this.applicationContext)
         this.configureExceptionLoop()
-
-        // Set up callbacks so that we can track the active activity
-        this.registerActivityLifecycleCallbacks(this)
     }
 
     /*
@@ -60,44 +52,19 @@ class Application : android.app.Application(), Application.ActivityLifecycleCall
     }
 
     /*
-     * Handle activity exceptions by terminating the app
+     * Handle exceptions by moving to the error activity
      */
     private fun handleActivityError(exception: Throwable) {
 
         Log.d("BasicMobileApp", exception.message)
 
+        val handler = ErrorHandler()
+        val error = handler.fromException(exception)
+
         // Navigate to the error view
         val errorIntent = Intent(this, ErrorActivity::class.java)
         errorIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        errorIntent.putExtra("EXCEPTION_DATA", exception as Serializable);
+        errorIntent.putExtra("EXCEPTION_DATA", error as Serializable)
         startActivity(errorIntent)
-    }
-
-    /*
-     * Lifecycle events enable us to keep track of the current activity
-     * TODO: Is there more than one and what happens on back???
-     * Be careful about preventing disposal
-     */
-    override fun onActivityCreated(activity: Activity?, savedInstanceState: Bundle?) {
-        this.currentActivity = activity;
-    }
-
-    override fun onActivityStarted(activity: Activity?) {
-    }
-
-    override fun onActivityResumed(activity: Activity?) {
-    }
-
-    override fun onActivityPaused(activity: Activity?) {
-    }
-
-    override fun onActivityStopped(activity: Activity?) {
-    }
-
-    override fun onActivitySaveInstanceState(activity: Activity?, outState: Bundle?) {
-    }
-
-    override fun onActivityDestroyed(activity: Activity?) {
-        this.currentActivity = null;
     }
 }

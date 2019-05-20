@@ -1,14 +1,14 @@
 IMMEDIATE
 ---------
-1. Implement error UI as a list view of error items
+1. Complete error refinements
 
-2. RecyclerView - from book - for all 3 activities
+2. Minor displays improvements
 
-3. Improve displays with better fonts, spacing and colours
+3. RecyclerView - from book - for all 3 activities
 
-4. Application class and storing of activities - am I leaking any resources?
+4. AppAuth libraries to get started with
 
-5. AppAuth libraries to get started with
+5. Deep linking
 
 THEN
 -------
@@ -17,11 +17,11 @@ Then update serverless UI and serverless desktop as well as mobile app
 
 ANDROID MINOR - SEE TIGER SPIKE
 -------------------------------
-5. Latest 9.0 emulator on Windows
+1. See what I can learn from Tiger Spike re logging etc
 
-6. Improve App Icon at some point - to indicate an OAuth Sample
+2. Improve App Icon at some point - to indicate an OAuth Sample
 
-7. Better mobile logging
+3. Latest 9.0 emulator on Windows
 
 ANDROID TIPS
 ------------

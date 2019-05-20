@@ -9,6 +9,6 @@ class Authenticator {
      * Get the current access token or redirect the user to login
      */
     fun getAccessToken(): String? {
-        return "ABC123";
+        return "ABC123"
     }
 }

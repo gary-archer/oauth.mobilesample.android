@@ -16,7 +16,7 @@ class TransactionArrayAdapter(context: Context, transactions: List<Transaction>)
     ArrayAdapter<Transaction>(context, 0, transactions) {
 
     /*
-     * Return the view for a company item
+     * Each item contains a set of transaction fields
      */
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
 

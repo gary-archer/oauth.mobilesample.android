@@ -1,9 +1,9 @@
 package authguidance.mobilesample.plumbing.errors
 
 /*
- * A simpled field value pair
+ * A simple field value pair
  */
-data class ErrorItem(
+data class ErrorField(
     val name: String,
-    val value: Any
+    val value: String
 )
