@@ -1,6 +1,7 @@
-package authguidance.mobilesample.plumbing.utilities
+package authguidance.mobilesample.plumbing.api
 
 import authguidance.mobilesample.configuration.AppConfiguration
+import authguidance.mobilesample.plumbing.errors.ErrorHandler
 import authguidance.mobilesample.plumbing.oauth.Authenticator
 import com.google.gson.Gson
 import java.io.IOException
@@ -35,15 +36,16 @@ class HttpClient(configuration: AppConfiguration, authenticator: Authenticator) 
         }
 
         // Build the full request
+        val url = "${this.configuration.apiBaseUrl}/$path"
         val request = Request.Builder()
             .header("Accept", "application/json")
             .header("Authorization", "Bearer $accessToken")
             .method(method, body)
-            .url("${this.configuration.apiBaseUrl}/$path")
+            .url(url)
             .build()
 
         // Make the request
-        this.makeRequest(client, request).use {
+        this.makeRequest(client, url, request).use {
 
             if(it.isSuccessful) {
 
@@ -54,8 +56,8 @@ class HttpClient(configuration: AppConfiguration, authenticator: Authenticator) 
             else {
 
                 // Handle failed responses
-                var result = "Status: ${it.code()} : ${it.body()?.string()}";
-                throw RuntimeException(result)
+                val errorHandler = ErrorHandler()
+                throw errorHandler.fromApiResponseError(it, url)
             }
         }
     }
@@ -63,7 +65,7 @@ class HttpClient(configuration: AppConfiguration, authenticator: Authenticator) 
     /*
      * Use the okhttp library to make an async request for data
      */
-    private suspend fun makeRequest(client: OkHttpClient, request: Request): Response {
+    private suspend fun makeRequest(client: OkHttpClient, url: String, request: Request): Response {
 
         return suspendCancellableCoroutine { continuation ->
 
@@ -77,11 +79,13 @@ class HttpClient(configuration: AppConfiguration, authenticator: Authenticator) 
 
                 override fun onFailure(call: Call?, e: IOException?) {
 
+                    val errorHandler = ErrorHandler()
+                    val exception = errorHandler.fromApiRequestError(e, url)
+
                     // Return a translated error on failure
-                    var exception =  RuntimeException("Error making HTTP request", e)
                     continuation.resumeWithException(exception)
                 }
-            });
+            })
         }
     }
 }

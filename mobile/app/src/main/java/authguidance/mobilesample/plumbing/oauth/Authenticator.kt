@@ -1,7 +1,5 @@
 package authguidance.mobilesample.plumbing.oauth
 
-import authguidance.mobilesample.plumbing.utilities.MobileLogger
-
 /*
  * The authenticator class manages integration with the AppAuth libraries
  */

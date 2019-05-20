@@ -5,7 +5,7 @@ import android.support.v4.app.FragmentActivity
 import authguidance.mobilesample.Application;
 import authguidance.mobilesample.logic.fragments.HeaderButtonClickListener
 import authguidance.mobilesample.plumbing.oauth.Authenticator;
-import authguidance.mobilesample.plumbing.utilities.HttpClient
+import authguidance.mobilesample.plumbing.api.HttpClient
 
 /*
  * A base activity for our displays

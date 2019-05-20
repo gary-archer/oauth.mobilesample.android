@@ -1,24 +1,27 @@
 IMMEDIATE
 ---------
-1. Translation for HTTP errors - write an ErrorHandler class and improve error UI
+1. Implement error UI as a list view of error items
 
-2. RecyclerView - from book
+2. RecyclerView - from book - for all 3 activities
 
-3. Improve list and transactions displays with better fonts, spacing and colours
+3. Improve displays with better fonts, spacing and colours
 
 4. Application class and storing of activities - am I leaking any resources?
 
+5. AppAuth libraries to get started with
+
+THEN
+-------
+Improve API error response payloads for serverless sample
+Then update serverless UI and serverless desktop as well as mobile app
+
+ANDROID MINOR - SEE TIGER SPIKE
+-------------------------------
 5. Latest 9.0 emulator on Windows
 
-6. Run on Castle device
+6. Improve App Icon at some point - to indicate an OAuth Sample
 
-7. Improve App Icon at some point - to indicate an OAuth Sample
-
-8. Better mobile logging
-
-RELATED
--------
-Improve API error response for serverless sample
+7. Better mobile logging
 
 ANDROID TIPS
 ------------

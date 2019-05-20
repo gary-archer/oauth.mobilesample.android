@@ -22,7 +22,7 @@ class ErrorActivity : BaseActivity(), HeaderButtonClickListener {
         this.title = "Error View"
 
         val exception = this.intent.getSerializableExtra("EXCEPTION_DATA") as Throwable
-        this.renderError(exception);
+        this.renderError(exception)
     }
 
     /*
@@ -37,6 +37,8 @@ class ErrorActivity : BaseActivity(), HeaderButtonClickListener {
      */
     fun renderError(error: Throwable) {
 
+        // TODO: Use a collection of error items and render each within a list
+
         // Set error items
         val items = mutableListOf<String>()
         items += "Message: ${this.getErrorDescription(error)}"
@@ -49,7 +51,7 @@ class ErrorActivity : BaseActivity(), HeaderButtonClickListener {
     /*
      * Get the error message property's value
      */
-    fun getErrorDescription(error: Throwable): String {
+    private fun getErrorDescription(error: Throwable): String {
 
         val result = error.message
         if(result != null) {

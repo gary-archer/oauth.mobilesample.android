@@ -4,10 +4,10 @@ import android.app.Activity
 import android.app.Application
 import authguidance.mobilesample.configuration.Configuration
 import authguidance.mobilesample.plumbing.utilities.ConfigurationLoader
-import authguidance.mobilesample.plumbing.utilities.MobileLogger
 import android.os.Looper
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import authguidance.mobilesample.logic.activities.ErrorActivity
 import java.io.Serializable
 
@@ -64,7 +64,7 @@ class Application : android.app.Application(), Application.ActivityLifecycleCall
      */
     private fun handleActivityError(exception: Throwable) {
 
-        MobileLogger.debug("ACTIVITY EXCEPTION: ${exception.message}")
+        Log.d("BasicMobileApp", exception.message)
 
         // Navigate to the error view
         val errorIntent = Intent(this, ErrorActivity::class.java)
