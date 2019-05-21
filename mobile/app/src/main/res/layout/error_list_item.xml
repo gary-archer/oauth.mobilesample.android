@@ -11,19 +11,25 @@
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:paddingLeft="16dp">
+            android:paddingLeft="5dp">
 
         <TextView
                 android:id="@+id/errorField"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/black" />
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:textColor="#0000FF"
+                android:textSize="16sp"/>
 
         <TextView
                 android:id="@+id/errorValue"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/black" />
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:textColor="#0000FF"
+                android:textSize="16sp"/>
     </LinearLayout>
 
 </LinearLayout>

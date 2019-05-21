@@ -4,60 +4,88 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical"
-              android:padding="16dp">
+              android:padding="5dp">
 
     <!-- Show a table of label / value pairs -->
-    <TableLayout android:layout_width="fill_parent" android:layout_height="fill_parent">
+    <TableLayout android:layout_width="fill_parent"
+                 android:layout_height="fill_parent">
 
         <TableRow
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
+                android:layout_height="fill_parent"
+                android:layout_marginBottom="20dp">
 
             <TextView
                     android:text="@string/transaction_id"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_column="1" />
+                    android:layout_marginLeft="50dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_column="1"
+                    android:textColor="#0000FF"
+                    android:textSize="16sp"/>
 
             <TextView
                     android:id="@+id/transactionId"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_column="2" />
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_column="2"
+                    android:textColor="#0000FF"
+                    android:textSize="16sp"/>
         </TableRow>
 
         <TableRow
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
+                android:layout_height="fill_parent"
+                android:layout_marginBottom="20dp">
 
             <TextView
                     android:text="@string/investor_id"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_column="1" />
+                    android:layout_marginLeft="50dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_column="1"
+                    android:textColor="#0000FF"
+                    android:textSize="16sp"/>
 
             <TextView
                     android:id="@+id/investorId"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_column="2" />
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_column="2"
+                    android:textColor="#0000FF"
+                    android:textSize="16sp"/>
         </TableRow>
 
         <TableRow
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
+                android:layout_height="fill_parent"
+                android:layout_marginBottom="20dp">
 
             <TextView
                     android:text="@string/amount_usd"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_column="1" />
+                    android:layout_marginLeft="50dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_column="1"
+                    android:textColor="#0000FF"
+                    android:textSize="16sp"/>
 
             <TextView
                     android:id="@+id/amountUsd"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_column="2" />
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_column="2"
+                    android:textColor="#0000FF"
+                    android:textSize="16sp"/>
         </TableRow>
 
     </TableLayout>

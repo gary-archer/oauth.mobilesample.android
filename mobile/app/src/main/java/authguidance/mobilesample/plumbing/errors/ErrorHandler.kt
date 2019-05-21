@@ -1,7 +1,12 @@
 package authguidance.mobilesample.plumbing.errors
 
+import com.google.gson.Gson
 import okhttp3.Response
 import java.io.IOException
+import com.google.gson.JsonElement
+import com.google.gson.JsonParser
+
+
 
 /*
  * A class to manage error translation
@@ -38,8 +43,12 @@ class ErrorHandler {
             "api_uncontactable",
             "A network problem occurred when the UI called the server")
 
-        // Previous code
-        // RuntimeException("Error making HTTP request", e)
+        // Set other details
+        if(exception != null) {
+            error.details = this.getErrorDescription(exception)
+        }
+
+        error.url = url
 
         // TODO: Set other fields
         return error
@@ -58,15 +67,29 @@ class ErrorHandler {
         // Previous code
         // var result = "Status: ${it.code()} : ${it.body()?.string()}";
 
+        error.statusCode = response.code()
+        error.url = url
+
         // TODO: Set other fields
-        this.updateFromApiErrorResponse(error, response)
+        this.updateFromApiErrorResponse(error, response.body()?.string())
         return error
     }
 
     /*
      * Try to update the default API error with response details
      */
-    private fun updateFromApiErrorResponse(error: UIError, response: Response) {
+    private fun updateFromApiErrorResponse(error: UIError, response: String?) {
+
+        if(response != null) {
+            val parser = JsonParser()
+            val tree = parser.parse(response)
+            if(tree != null) {
+
+                // Read raw properties for now
+                val data = tree.asJsonObject
+                error.details = data.get("message").asString
+            }
+        }
     }
 
     /*

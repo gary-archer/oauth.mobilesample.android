@@ -82,6 +82,10 @@ class ErrorActivity : BaseActivity(), HeaderButtonClickListener {
             result.add(ErrorField("Details", error.details))
         }
 
+        if (!error.url.isNullOrBlank()) {
+            result.add(ErrorField("URL", error.url))
+        }
+
         // TODO: Url and stack trace
         return result
     }
