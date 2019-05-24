@@ -37,11 +37,11 @@ abstract class BaseActivity : FragmentActivity(), HeaderButtonClickListener {
     }
 
     /*
-     * A utility to reduce code in activities
+     * Get the HTTP client before requesting data
      */
     protected fun getHttpClient(): HttpClient {
         var app = application as Application
-        val authenticator = Authenticator()
+        val authenticator = Authenticator(app.configuration.oauth)
         return HttpClient(app.configuration.app, authenticator)
     }
 }

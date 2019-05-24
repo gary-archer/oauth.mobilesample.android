@@ -6,6 +6,7 @@ import android.os.Looper
 import android.content.Intent
 import android.util.Log
 import authguidance.mobilesample.logic.activities.ErrorActivity
+import authguidance.mobilesample.logic.activities.LoginActivity
 import authguidance.mobilesample.plumbing.errors.ErrorHandler
 import java.io.Serializable
 
@@ -58,13 +59,24 @@ class Application : android.app.Application() {
 
         Log.d("BasicMobileApp", exception.message)
 
+        // Get the error as an object
         val handler = ErrorHandler()
         val error = handler.fromException(exception)
 
-        // Navigate to the error view
-        val errorIntent = Intent(this, ErrorActivity::class.java)
-        errorIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        errorIntent.putExtra("EXCEPTION_DATA", error as Serializable)
-        startActivity(errorIntent)
+        if(error.errorCode == "login_required") {
+
+            // Navigate to the login view for this known error condition
+            val loginIntent = Intent(this, LoginActivity::class.java)
+            loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(loginIntent)
+        }
+        else {
+
+            // Navigate to the error view for other errors
+            val errorIntent = Intent(this, ErrorActivity::class.java)
+            errorIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            errorIntent.putExtra("EXCEPTION_DATA", error as Serializable)
+            startActivity(errorIntent)
+        }
     }
 }

@@ -34,6 +34,17 @@ class ErrorHandler {
     }
 
     /*
+     * Return an error that will be handled specially to indicate that a login is needed
+     */
+    fun fromLoginRequired(): UIError {
+
+        return UIError(
+            "Login",
+            "login_required",
+            "No access token is available and a login is required")
+    }
+
+    /*
      * Translate a failed API request into a presentable error response
      */
     fun fromApiRequestError(exception: IOException?, url: String): UIError {
