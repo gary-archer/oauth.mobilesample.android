@@ -21,6 +21,8 @@ class CompaniesActivity : BaseActivity() {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
 
+        // TODO: Show header area with activity name
+
         // Standard app setup
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_companies)

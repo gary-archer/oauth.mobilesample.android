@@ -37,11 +37,18 @@ abstract class BaseActivity : FragmentActivity(), HeaderButtonClickListener {
     }
 
     /*
-     * Get the HTTP client before requesting data
+     * Return the authenticator to enable login related operations
+     */
+    protected fun getAuthenticator(): Authenticator {
+        var app = application as Application
+        return app.authenticator
+    }
+
+    /*
+     * Return the HTTP client to enable activities to get data
      */
     protected fun getHttpClient(): HttpClient {
         var app = application as Application
-        val authenticator = Authenticator(app.configuration.oauth)
-        return HttpClient(app.configuration.app, authenticator)
+        return HttpClient(app.configuration.app, this.getAuthenticator())
     }
 }

@@ -1,15 +1,14 @@
 package authguidance.mobilesample.plumbing.oauth
 
 import android.app.Activity
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import authguidance.mobilesample.configuration.OAuthConfiguration
 import authguidance.mobilesample.plumbing.errors.ErrorHandler
 import kotlinx.coroutines.suspendCancellableCoroutine
-import net.openid.appauth.AppAuthConfiguration
-import net.openid.appauth.AuthorizationRequest
-import net.openid.appauth.AuthorizationService
-import net.openid.appauth.AuthorizationServiceConfiguration
+import net.openid.appauth.*
 import net.openid.appauth.browser.AnyBrowserMatcher
 import net.openid.appauth.connectivity.DefaultConnectionBuilder
 import kotlin.coroutines.resumeWithException
@@ -17,27 +16,45 @@ import kotlin.coroutines.resumeWithException
 /*
  * The authenticator class manages integration with the AppAuth libraries
  */
-class Authenticator(val configuration: OAuthConfiguration) {
+class Authenticator(val configuration: OAuthConfiguration, context: Context) {
+
+    private val authStateManager: AuthStateManager
+
+    init {
+        this.authStateManager = AuthStateManager.getInstance(context)
+    }
 
     /*
      * Get the current access token or redirect the user to login
      */
     fun getAccessToken(): String? {
 
-        // Throw an error that will start the login activity
+        // Return a token if possible
+        val token = this.authStateManager.current.accessToken
+        if (!token.isNullOrBlank()) {
+            return token
+        }
+
+        // Otherwise throw an error that will start the login activity
         val handler = ErrorHandler()
-        throw handler.fromLoginRequired();
+        throw handler.fromLoginRequired()
     }
 
     /*
      * Do the plumbing to get the authorization intent
      */
-    suspend fun getAuthorizationIntent(activity: Activity): Intent {
+    suspend fun startAuthorization(
+        activity: Activity,
+        tabHeaderColor: Int,
+        successIntent: PendingIntent,
+        failureIntent: PendingIntent) {
 
-        // First get metadata from the authenticator
+        // TODO: Query auth state for metadata, get if required, then save auth state
+
+        // First get metadata
         val metadata = this.getMetadata()
 
-        // Create the AppAuth request object
+        // Create the AppAuth request object and use the standard mobile value of 'response_type=code'
         val request = AuthorizationRequest.Builder(
             metadata,
             this.configuration.clientId,
@@ -51,10 +68,27 @@ class Authenticator(val configuration: OAuthConfiguration) {
         builder.setConnectionBuilder(DefaultConnectionBuilder.INSTANCE)
         val authService = AuthorizationService(activity, builder.build())
 
-        // Create and return the intent
+        // Create and return the custom tabs intent
         val intentBuilder = authService.createCustomTabsIntentBuilder(request.toUri())
+        intentBuilder.setToolbarColor(tabHeaderColor);
         val customTabsIntent = intentBuilder.build()
-        return authService.getAuthorizationRequestIntent(request, customTabsIntent)
+
+        // Perform the redirect
+        authService.performAuthorizationRequest(request, successIntent, failureIntent, customTabsIntent)
+    }
+
+    /*
+     * TODO: Update auth state here
+     */
+    fun finishAuthorization(intent: Intent) {
+
+        val response = AuthorizationResponse.fromIntent(intent)
+        val ex = AuthorizationException.fromIntent(intent)
+        if (response != null || ex != null) {
+            // TODO: Handle both cases
+        }
+
+        // TODO: Update auth state
     }
 
     /*
@@ -77,8 +111,8 @@ class Authenticator(val configuration: OAuthConfiguration) {
 
                         // Report null results
                         serviceConfiguration == null -> {
-                            val ex = RuntimeException("Metadata request returned an empty result")
-                            continuation.resumeWithException(ex)
+                            val empty = RuntimeException("Metadata request returned an empty result")
+                            continuation.resumeWithException(empty)
                         }
 
                         // Return metadata on success

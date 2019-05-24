@@ -8,6 +8,7 @@ import android.util.Log
 import authguidance.mobilesample.logic.activities.ErrorActivity
 import authguidance.mobilesample.logic.activities.LoginActivity
 import authguidance.mobilesample.plumbing.errors.ErrorHandler
+import authguidance.mobilesample.plumbing.oauth.Authenticator
 import java.io.Serializable
 
 /*
@@ -15,11 +16,14 @@ import java.io.Serializable
  */
 class Application : android.app.Application() {
 
+    // The system exception handler
+    private lateinit var systemUncaughtHandler: Thread.UncaughtExceptionHandler
+
     // The configuration is loaded during application startup
     lateinit var configuration: Configuration private set
 
-    // The system exception handler
-    private lateinit var systemUncaughtHandler: Thread.UncaughtExceptionHandler
+    // The authenticator is created during application startup
+    lateinit var authenticator: Authenticator private set
 
     /*
      * Application startup logic
@@ -34,6 +38,9 @@ class Application : android.app.Application() {
         // Load application configuration
         this.configuration = ConfigurationLoader().loadConfiguration(this.applicationContext)
         this.configureExceptionLoop()
+
+        // Create the authenticator
+        this.authenticator = Authenticator(this.configuration.oauth, this)
     }
 
     /*

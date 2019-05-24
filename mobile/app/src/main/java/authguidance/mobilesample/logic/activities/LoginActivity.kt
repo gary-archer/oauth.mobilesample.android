@@ -1,11 +1,12 @@
 package authguidance.mobilesample.logic.activities
 
+import android.app.PendingIntent
+import android.content.Intent
+import android.os.Build
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat
-import authguidance.mobilesample.Application
+import android.util.Log
 import authguidance.mobilesample.R
 import authguidance.mobilesample.logic.fragments.HeaderButtonClickListener
-import authguidance.mobilesample.plumbing.oauth.Authenticator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -16,7 +17,8 @@ import kotlinx.coroutines.launch
  */
 class LoginActivity : BaseActivity(), HeaderButtonClickListener {
 
-    private val RESULT_CODE_AUTHORIZE = 100
+    // Constants
+    private val EXTRA_LOGIN_RESULT = "login_result"
 
     /*
      * Standard initialisation
@@ -25,8 +27,34 @@ class LoginActivity : BaseActivity(), HeaderButtonClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        // Trigger the login process when we load
-        this.startLogin()
+        // Look at intent state
+        val loginResult = intent.getIntExtra(EXTRA_LOGIN_RESULT, 0)
+        when {
+            loginResult == 0 -> {
+
+                // Trigger a login redirect when we first come here
+                Log.d("GJA", "Login activity invoked due to missing token")
+                this.startLogin()
+            }
+            loginResult < 0 ->
+
+                // Handle completion after Chrome Custom Tab cancellation
+                Log.d("GJA", "Login activity entered after login failure")
+
+                // TODO: Show trouble signing in controls
+
+            else -> {
+
+                // Handle completion after login completion, which could be success or failure
+                Log.d("GJA", "Login activity entered after login completion")
+
+                // Handle completion after login success
+                super.getAuthenticator().finishAuthorization(intent)
+
+                // TODO: Report failures
+                // TODO: Return immediately to original view via a deep link and maintain state
+            }
+        }
     }
 
     /*
@@ -43,15 +71,38 @@ class LoginActivity : BaseActivity(), HeaderButtonClickListener {
 
         CoroutineScope(Dispatchers.IO).launch {
 
-            // Create the authenticator
-            val app = application as Application
-            val authenticator = Authenticator(app.configuration.oauth)
+            // The activity's this reference
+            val that = this@LoginActivity
 
-            // Ask it for a Chrome Custom Tabs authorization intent, so that we log in on a secure sandbox
-            val intent = authenticator.getAuthorizationIntent(this@LoginActivity)
+            // Return here with a positive response if authorization succeeds
+            val successIntent = Intent(that, LoginActivity::class.java)
+            successIntent.putExtra(EXTRA_LOGIN_RESULT, 1)
+            successIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
 
-            // Start the intent
-            ActivityCompat.startActivityForResult(this@LoginActivity, intent, RESULT_CODE_AUTHORIZE, null)
+            // Return here with a negative response if authorization fails
+            val failureIntent = Intent(that, LoginActivity::class.java)
+            failureIntent.putExtra(EXTRA_LOGIN_RESULT, -1)
+            failureIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+
+            // Start the redirect
+            super.getAuthenticator().startAuthorization(
+                that,
+                that.getTabColor(),
+                PendingIntent.getActivity(that, 0, successIntent, 0),
+                PendingIntent.getActivity(that, 0, failureIntent, 0))
+        }
+    }
+
+    /*
+     * Use the App Bar's colour for the Chrome Custom Tab header
+     */
+    private fun getTabColor(): Int {
+
+        val color =  R.color.colorPrimary
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            getColor(color)
+        } else {
+            resources.getColor(color)
         }
     }
 }
