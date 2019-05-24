@@ -27,6 +27,8 @@ class LoginActivity : BaseActivity(), HeaderButtonClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
+        // TODO: Update application to indicate chrome custom tab is no longer active
+
         // Look at intent state
         val loginResult = intent.getIntExtra(EXTRA_LOGIN_RESULT, 0)
         when {
@@ -90,6 +92,8 @@ class LoginActivity : BaseActivity(), HeaderButtonClickListener {
                 that.getTabColor(),
                 PendingIntent.getActivity(that, 0, successIntent, 0),
                 PendingIntent.getActivity(that, 0, failureIntent, 0))
+
+            // TODO: Update application to indicate chrome custom tab is active
         }
     }
 
