@@ -20,6 +20,8 @@ class ErrorActivity : BaseActivity(), HeaderButtonClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_error)
 
+        // TODO: Render current general_exception in an improved manner - since description is missing - also add some logging
+
         // Customise the title
         this.title = "Error View"
 
