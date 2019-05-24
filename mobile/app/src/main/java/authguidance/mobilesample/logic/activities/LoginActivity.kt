@@ -1,7 +1,7 @@
 package authguidance.mobilesample.logic.activities
 
 import android.os.Bundle
-import android.util.Log
+import android.support.v4.app.ActivityCompat
 import authguidance.mobilesample.Application
 import authguidance.mobilesample.R
 import authguidance.mobilesample.logic.fragments.HeaderButtonClickListener
@@ -11,9 +11,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /*
- * An activity shown when a login is needed
+ * This activity is invoked when a login is needed and immediately redirects
+ * If login is cancelled or fails, this screen remains in place so that the user can retry
  */
 class LoginActivity : BaseActivity(), HeaderButtonClickListener {
+
+    private val RESULT_CODE_AUTHORIZE = 100
 
     /*
      * Standard initialisation
@@ -40,11 +43,15 @@ class LoginActivity : BaseActivity(), HeaderButtonClickListener {
 
         CoroutineScope(Dispatchers.IO).launch {
 
+            // Create the authenticator
             val app = application as Application
             val authenticator = Authenticator(app.configuration.oauth)
 
-            val result = authenticator.startLogin()
-            Log.d("GJA", "RESULT IS $result")
+            // Ask it for a Chrome Custom Tabs authorization intent, so that we log in on a secure sandbox
+            val intent = authenticator.getAuthorizationIntent(this@LoginActivity)
+
+            // Start the intent
+            ActivityCompat.startActivityForResult(this@LoginActivity, intent, RESULT_CODE_AUTHORIZE, null)
         }
     }
 }

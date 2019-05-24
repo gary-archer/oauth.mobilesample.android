@@ -46,6 +46,7 @@ android {
 
 // Dependency versions
 ext {
+    support_lib_version = '28.0.0'
     appauth_version = '0.7.1'
     coroutines_version = '1.2.0'
     okhttp3_version = "3.14.1"
@@ -64,10 +65,13 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 
-    // Import the AppAuth library to manage OAuth security and make it use the latest supportlib
+    // Import the AppAuth library to manage OAuth security and make it use the latest support lib
     implementation("net.openid:appauth:$appauth_version") {
         exclude group: "com.android.support"
     }
+
+    // Include Chrome Custom tabs for the login window
+    implementation "com.android.support:customtabs:$support_lib_version"
 
     // A library for API requests
     implementation "com.squareup.okhttp3:okhttp:$okhttp3_version"
