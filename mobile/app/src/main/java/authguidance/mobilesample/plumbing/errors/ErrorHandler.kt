@@ -28,8 +28,7 @@ class ErrorHandler {
             "UI",
             "general_exception",
             "A technical problem was encountered in the UI")
-
-        // TODO: Set other fields
+        error.details = this.getErrorDescription(exception)
         return error
     }
 

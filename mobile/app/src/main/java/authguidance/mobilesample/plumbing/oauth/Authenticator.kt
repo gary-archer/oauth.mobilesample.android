@@ -3,14 +3,15 @@ package authguidance.mobilesample.plumbing.oauth
 import android.app.Activity
 import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import authguidance.mobilesample.configuration.OAuthConfiguration
 import authguidance.mobilesample.plumbing.errors.ErrorHandler
 import kotlinx.coroutines.suspendCancellableCoroutine
 import net.openid.appauth.*
 import net.openid.appauth.browser.AnyBrowserMatcher
 import net.openid.appauth.connectivity.DefaultConnectionBuilder
+import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 /*
@@ -20,8 +21,10 @@ class Authenticator(val configuration: OAuthConfiguration, context: Context) {
 
     private val authStateManager: AuthStateManager
 
+    // For now we remove tokens on every application startup
     init {
         this.authStateManager = AuthStateManager.getInstance(context)
+        this.authStateManager.replace(AuthState())
     }
 
     /*
@@ -32,10 +35,12 @@ class Authenticator(val configuration: OAuthConfiguration, context: Context) {
         // Return a token if possible
         val token = this.authStateManager.current.accessToken
         if (!token.isNullOrBlank()) {
+            Log.d("GJA", "Authenticator found access token")
             return token
         }
 
         // Otherwise throw an error that will start the login activity
+        Log.d("GJA", "Authenticator cannot get access token")
         val handler = ErrorHandler()
         throw handler.fromLoginRequired()
     }
@@ -48,8 +53,6 @@ class Authenticator(val configuration: OAuthConfiguration, context: Context) {
         tabHeaderColor: Int,
         successIntent: PendingIntent,
         failureIntent: PendingIntent) {
-
-        // TODO: Query auth state for metadata, get if required, then save auth state
 
         // First get metadata
         val metadata = this.getMetadata()
@@ -78,17 +81,40 @@ class Authenticator(val configuration: OAuthConfiguration, context: Context) {
     }
 
     /*
-     * TODO: Update auth state here
+     * When a login redirect completes, process the login response here
      */
-    fun finishAuthorization(intent: Intent) {
+    suspend fun finishAuthorization(activity: Activity): Boolean {
 
-        val response = AuthorizationResponse.fromIntent(intent)
+        // Get the response details
+        val intent = activity.intent
+        val authorizationResponse = AuthorizationResponse.fromIntent(intent)
         val ex = AuthorizationException.fromIntent(intent)
-        if (response != null || ex != null) {
-            // TODO: Handle both cases
+
+        // First update auth state
+        this.authStateManager.updateAfterAuthorization(authorizationResponse, ex)
+
+        when {
+            ex != null -> {
+                if(ex.code == 1) {
+                    Log.d("GJA", "Authorization redirect cancelled: ${ex.code}, ${ex.type}, ${ex.message}")
+                }
+                else {
+                    Log.d("GJA", "Authorization redirect failed: ${ex.code}, ${ex.type}, ${ex.message}")
+                }
+            }
+            authorizationResponse != null -> {
+
+                // Next swap the authorization code for tokens
+                this.exchangeAuthorizationCode(activity, authorizationResponse)
+
+                // Indicate that authorization succeeded
+                return true
+
+            }
         }
 
-        // TODO: Update auth state
+        // Indicate failure
+        return false
     }
 
     /*
@@ -96,13 +122,14 @@ class Authenticator(val configuration: OAuthConfiguration, context: Context) {
      */
     private suspend fun getMetadata(): AuthorizationServiceConfiguration {
 
+        // Form the metadata URL
+        val metadataAddress = "${this.configuration.authority}/.well-known/openid-configuration"
+        val metadataUri = Uri.parse(metadataAddress)
+
+        // Wrap the callback in a coroutine to support cleaner async await based calls
         return suspendCancellableCoroutine { continuation ->
 
-            // Form the metadata URL
-            val metadataAddress = "${this.configuration.authority}/.well-known/openid-configuration"
-            val metadataUri = Uri.parse(metadataAddress)
-
-            // Receive the result
+            // Receive the result of the metadata request
             val callback =
                 AuthorizationServiceConfiguration.RetrieveConfigurationCallback { serviceConfiguration, ex ->
                     when {
@@ -111,7 +138,7 @@ class Authenticator(val configuration: OAuthConfiguration, context: Context) {
 
                         // Report null results
                         serviceConfiguration == null -> {
-                            val empty = RuntimeException("Metadata request returned an empty result")
+                            val empty = RuntimeException("Metadata request returned an empty response")
                             continuation.resumeWithException(empty)
                         }
 
@@ -120,8 +147,60 @@ class Authenticator(val configuration: OAuthConfiguration, context: Context) {
                     }
                 }
 
-            // Start the metadata lookup
+            // Trigger the metadata lookup
             AuthorizationServiceConfiguration.fetchFromUrl(metadataUri, callback, DefaultConnectionBuilder.INSTANCE)
+        }
+    }
+
+    /*
+     * When a login succeeds, exchange the authorization code for tokens
+     */
+    private suspend fun exchangeAuthorizationCode(activity: Activity, authResponse: AuthorizationResponse): Int {
+
+        // Get the PKCE verifier
+        val clientAuthentication = authStateManager.current.clientAuthentication
+
+        // Create the AppAuth service object
+        val builder = AppAuthConfiguration.Builder()
+        builder.setConnectionBuilder(DefaultConnectionBuilder.INSTANCE)
+        val authService = AuthorizationService(activity, builder.build())
+
+        // Wrap the callback in a coroutine to support cleaner async await based calls
+        return suspendCancellableCoroutine { continuation ->
+
+            // Receive the result of the authorization code grant request
+            val callback =
+                AuthorizationService.TokenResponseCallback { tokenResponse, ex ->
+
+                    // First update the auth state
+                    this.authStateManager.updateAfterTokenResponse(tokenResponse, ex)
+                    when {
+                        // Report errors
+                        ex != null -> {
+                            Log.d("GJA", "Authorization code grant failed: ${ex.code}, ${ex.type}, ${ex.message}")
+                            continuation.resumeWithException(ex)
+                        }
+
+                        // Report null responses
+                        tokenResponse == null -> {
+                            val empty = RuntimeException("Metadata request returned an empty response")
+                            continuation.resumeWithException(empty)
+                        }
+
+                        // Return token details on success
+                        else -> {
+                            continuation.resume(0)
+                        }
+                    }
+                }
+
+            // Trigger the token request
+            val tokenRequest = authResponse.createTokenExchangeRequest()
+            authService.performTokenRequest(
+                tokenRequest,
+                clientAuthentication,
+                callback
+            )
         }
     }
 }

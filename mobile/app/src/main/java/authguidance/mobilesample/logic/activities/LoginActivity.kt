@@ -4,7 +4,6 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import authguidance.mobilesample.R
 import authguidance.mobilesample.logic.fragments.HeaderButtonClickListener
 import kotlinx.coroutines.CoroutineScope
@@ -30,31 +29,23 @@ class LoginActivity : BaseActivity(), HeaderButtonClickListener {
         // TODO: Update application to indicate chrome custom tab is no longer active
 
         // Look at intent state
-        val loginResult = intent.getIntExtra(EXTRA_LOGIN_RESULT, 0)
+        val loginResult = this.intent.getIntExtra(EXTRA_LOGIN_RESULT, 0)
         when {
             loginResult == 0 -> {
 
                 // Trigger a login redirect when we first come here
-                Log.d("GJA", "Login activity invoked due to missing token")
                 this.startLogin()
             }
-            loginResult < 0 ->
+            loginResult < 0 -> {
 
                 // Handle completion after Chrome Custom Tab cancellation
-                Log.d("GJA", "Login activity entered after login failure")
-
-                // TODO: Show trouble signing in controls
-
+                // TODO: Update UI to indicate trouble signing in
+                // TODO: Handle Chrome not installed errors
+            }
             else -> {
 
                 // Handle completion after login completion, which could be success or failure
-                Log.d("GJA", "Login activity entered after login completion")
-
-                // Handle completion after login success
-                super.getAuthenticator().finishAuthorization(intent)
-
-                // TODO: Report failures
-                // TODO: Return immediately to original view via a deep link and maintain state
+                this.handleLoginResponse()
             }
         }
     }
@@ -95,6 +86,29 @@ class LoginActivity : BaseActivity(), HeaderButtonClickListener {
 
             // TODO: Update application to indicate chrome custom tab is active
         }
+    }
+
+    /*
+     * Handle a login response from the Authorization Server, which could be a success or failure response
+     */
+    private fun handleLoginResponse() {
+
+        CoroutineScope(Dispatchers.IO).launch {
+
+            // The activity's this reference
+            val that = this@LoginActivity
+
+            // Handle completion after login success
+            val success = super.getAuthenticator().finishAuthorization(that)
+            if (success) {
+
+                // For now we always return to the home view on success
+                val intent = Intent(that, CompaniesActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(intent)
+            }
+        }
+
     }
 
     /*

@@ -4,7 +4,6 @@ import authguidance.mobilesample.configuration.Configuration
 import authguidance.mobilesample.plumbing.utilities.ConfigurationLoader
 import android.os.Looper
 import android.content.Intent
-import android.util.Log
 import authguidance.mobilesample.logic.activities.ErrorActivity
 import authguidance.mobilesample.logic.activities.LoginActivity
 import authguidance.mobilesample.plumbing.errors.ErrorHandler
@@ -35,12 +34,12 @@ class Application : android.app.Application() {
         this.systemUncaughtHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { _, e -> this.handleActivityError(e) }
 
-        // Load application configuration
+        // Load configuration and create the authenticator
         this.configuration = ConfigurationLoader().loadConfiguration(this.applicationContext)
-        this.configureExceptionLoop()
-
-        // Create the authenticator
         this.authenticator = Authenticator(this.configuration.oauth, this)
+
+        // Listen for unhandled exceptions
+        this.configureExceptionLoop()
     }
 
     /*
@@ -64,8 +63,6 @@ class Application : android.app.Application() {
      */
     private fun handleActivityError(exception: Throwable) {
 
-        Log.d("BasicMobileApp", exception.message)
-
         // Get the error as an object
         val handler = ErrorHandler()
         val error = handler.fromException(exception)
@@ -78,7 +75,6 @@ class Application : android.app.Application() {
             startActivity(loginIntent)
         }
         else {
-
             // Navigate to the error view for other errors
             val errorIntent = Intent(this, ErrorActivity::class.java)
             errorIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

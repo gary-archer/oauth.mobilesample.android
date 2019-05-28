@@ -13,8 +13,6 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-        <activity android:name=".logic.activities.LoginActivity">
-        </activity>
         <activity
                 android:name=".logic.activities.CompaniesActivity"
                 android:label="@string/company_activity_title">
@@ -28,7 +26,12 @@
         <activity
                 android:name=".logic.activities.TransactionsActivity"
                 android:label="@string/transactions_activity_title"/>
-        <activity android:name=".logic.activities.ErrorActivity"/>
+        <activity
+                android:name=".logic.activities.LoginActivity"
+                android:label="@string/login_activity_title"/>
+        <activity
+                android:name=".logic.activities.ErrorActivity"
+                android:label="@string/error_activity_title"/>
     </application>
 
 </manifest>

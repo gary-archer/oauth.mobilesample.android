@@ -18,13 +18,10 @@ class ErrorActivity : BaseActivity(), HeaderButtonClickListener {
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContentView(R.layout.activity_error)
 
-        // TODO: Render current general_exception in an improved manner - since description is missing - also add some logging
-
-        // Customise the title
-        this.title = "Error View"
-
+        // Get the error details
         val error = this.intent.getSerializableExtra("EXCEPTION_DATA") as UIError
         this.renderData(error)
     }

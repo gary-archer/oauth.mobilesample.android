@@ -73,16 +73,15 @@ class HttpClient(configuration: AppConfiguration, authenticator: Authenticator) 
 
                 override fun onResponse(call: Call?, response: Response) {
 
-                    // Return the response on success
+                    // Return the data on success
                     continuation.resumeWith(Result.success(response))
                 }
 
                 override fun onFailure(call: Call?, e: IOException?) {
 
+                    // Translate the API error
                     val errorHandler = ErrorHandler()
                     val exception = errorHandler.fromApiRequestError(e, url)
-
-                    // Return a translated error on failure
                     continuation.resumeWithException(exception)
                 }
             })
