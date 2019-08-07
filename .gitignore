@@ -4,7 +4,7 @@
 
 # Locally generated files
 .idea/*
-mobile/.idea/*
+.idea/*
 *.iml
 local.properties
 
