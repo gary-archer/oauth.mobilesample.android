@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import authguidance.mobilesample.R
 import authguidance.mobilesample.logic.fragments.HeaderButtonClickListener
 import kotlinx.coroutines.CoroutineScope
@@ -14,7 +15,7 @@ import kotlinx.coroutines.launch
  * This activity is invoked when a login is needed and immediately redirects
  * If login is cancelled or fails, this screen remains in place so that the user can retry
  */
-class LoginActivity : BaseActivity(), HeaderButtonClickListener {
+class LoginActivity : AppCompatActivity() {
 
     // Constants
     private val EXTRA_LOGIN_RESULT = "login_result"
@@ -51,17 +52,11 @@ class LoginActivity : BaseActivity(), HeaderButtonClickListener {
     }
 
     /*
-     * Override the base view to only show the home button
-     */
-    override fun showAllButtons(): Boolean {
-        return false
-    }
-
-    /*
      * Start the login process and wait for the result
      */
     private fun startLogin() {
 
+        /*
         CoroutineScope(Dispatchers.IO).launch {
 
             // The activity's this reference
@@ -85,7 +80,7 @@ class LoginActivity : BaseActivity(), HeaderButtonClickListener {
                 PendingIntent.getActivity(that, 0, failureIntent, 0))
 
             // TODO: Update application to indicate chrome custom tab is active
-        }
+        }*/
     }
 
     /*
@@ -93,6 +88,7 @@ class LoginActivity : BaseActivity(), HeaderButtonClickListener {
      */
     private fun handleLoginResponse() {
 
+        /*
         CoroutineScope(Dispatchers.IO).launch {
 
             // The activity's this reference
@@ -107,8 +103,7 @@ class LoginActivity : BaseActivity(), HeaderButtonClickListener {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 startActivity(intent)
             }
-        }
-
+        }*/
     }
 
     /*

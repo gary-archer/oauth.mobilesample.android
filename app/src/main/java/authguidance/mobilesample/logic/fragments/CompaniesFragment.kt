@@ -6,11 +6,10 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import authguidance.mobilesample.R
 import authguidance.mobilesample.databinding.FragmentCompaniesBinding
 import authguidance.mobilesample.logic.activities.MainActivity
 
-class CompaniesFragment : Fragment(), BaseFragment {
+class CompaniesFragment : Fragment() {
 
     private lateinit var binding: FragmentCompaniesBinding
     private lateinit var mainActivity: MainActivity
@@ -27,7 +26,7 @@ class CompaniesFragment : Fragment(), BaseFragment {
         mainActivity = context as MainActivity
     }
 
-    override fun onHome() {
+    /*override fun onHome() {
         println("GJA: onHome not implemented in CompaniesFragment")
     }
 
@@ -35,5 +34,5 @@ class CompaniesFragment : Fragment(), BaseFragment {
         println("GJA: onRefreshData called in CompaniesFragment")
         val args = Bundle()
         mainActivity.navController.navigate(R.id.action_companiesFragment_to_profileFragment, args)
-    }
+    }*/
 }

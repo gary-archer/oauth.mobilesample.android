@@ -1,12 +1,9 @@
 package authguidance.mobilesample.logic.fragments
 
 /*
- * Enables an activity to receive header button events
+ * Enables our main activity to receive events from the header buttons fragment
  */
 interface HeaderButtonClickListener {
-
-    // Ask the activity which buttons to show
-    fun showAllButtons(): Boolean
 
     // Move home
     fun onHome()

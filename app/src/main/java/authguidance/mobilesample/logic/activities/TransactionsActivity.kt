@@ -23,7 +23,7 @@ class TransactionsActivity : BaseActivity() {
 
         // Standard app setup
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_transactions)
+        this.setContentView(R.layout.activity_transactions)
 
         // Set the title
         this.companyId = this.intent.getIntExtra("COMPANY_ID", 0)
@@ -31,13 +31,6 @@ class TransactionsActivity : BaseActivity() {
 
         // Load data on creation
         getData()
-    }
-
-    /*
-     * Override the base class to get this view's data
-     */
-    override fun onRefreshData() {
-        this.getData()
     }
 
     /*
@@ -64,7 +57,7 @@ class TransactionsActivity : BaseActivity() {
      */
     private fun renderData(data: CompanyTransactions) {
 
-        val list = findViewById<ListView>(R.id.listTransactions);
+        val list = this.findViewById<ListView>(R.id.listTransactions);
         list.adapter =
             TransactionArrayAdapter(this, data.transactions.toList())
     }

@@ -6,11 +6,10 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import authguidance.mobilesample.R
 import authguidance.mobilesample.databinding.FragmentProfileBinding
 import authguidance.mobilesample.logic.activities.MainActivity
 
-class ProfileFragment : Fragment(), BaseFragment  {
+class ProfileFragment : Fragment()  {
 
     private lateinit var binding: FragmentProfileBinding
     private lateinit var mainActivity: MainActivity
@@ -22,12 +21,19 @@ class ProfileFragment : Fragment(), BaseFragment  {
         return binding.root
     }
 
+    /*
+     * Wire up button click events
+     */
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+    }
+
     override fun onAttach(context: Context?) {
         super.onAttach(context)
         mainActivity = context as MainActivity
     }
 
-    override fun onHome() {
+    /*override fun onHome() {
         println("GJA: onHome not implemented in ProfileFragment")
 
     }
@@ -36,5 +42,5 @@ class ProfileFragment : Fragment(), BaseFragment  {
         println("GJA: onRefreshData called in ProfilesFragment")
         val args = Bundle()
         mainActivity.navController.navigate(R.id.action_profileFragment_to_companiesFragment, args)
-    }
+    }*/
 }

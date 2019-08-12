@@ -2,19 +2,19 @@ package authguidance.mobilesample.logic.activities
 
 import android.databinding.DataBindingUtil
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.support.v7.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import authguidance.mobilesample.R
 import authguidance.mobilesample.databinding.ActivityMainBinding
-import authguidance.mobilesample.logic.fragments.BaseFragment
+import authguidance.mobilesample.logic.fragments.CompaniesFragment
+import authguidance.mobilesample.logic.fragments.HeaderButtonClickListener
 import kotlinx.android.synthetic.main.activity_main.*
 
 /*
  * Our single activity application's activity
  */
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), HeaderButtonClickListener {
 
     /*
      * Navigation controls accessed from fragments
@@ -31,11 +31,11 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        this.binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
 
-        navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        this.navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
 
-        navController = navHostFragment.navController
+        this.navController = this.navHostFragment.navController
 
         // NavigationUI.setupWithNavController(binding.mainBottomNavigation, navHostFragment.navController)
 
@@ -46,33 +46,38 @@ class MainActivity : AppCompatActivity() {
     /*
      * Handle onHome clicks
      */
-    fun onHome() {
+    override fun onHome() {
 
-        // TODO: Throws an exception and never gets here I think
-        println("GJA: finding fragment in main activity onHome")
-        val fragmentId = NavHostFragment.findNavController(nav_host_fragment).currentDestination!!.id
+        println("In main onHome")
+        try {
+            // Find the fragment
+            val companiesFragment = supportFragmentManager.findFragmentById(R.id.companiesFragment) as CompaniesFragment
+            if (companiesFragment != null) {
 
-        // TODO: Throws an exception and never gets here I think
-        val fragment = supportFragmentManager.findFragmentById(fragmentId)
-        if(fragment is BaseFragment) {
-            println("GJA: fragment found in main activity onHome")
-            fragment.onHome()
+                // Navigate there if it is not current
+                // Refresh its data
+                println("Moving home to companies fragment")
+
+            }
+        } catch(e: Exception) {
+            println("Main activity failed")
+            println(e)
         }
     }
 
     /*
      * Handle onRefresh clicks
      */
-    fun onRefreshData() {
+    override fun onRefreshData() {
 
-        println("GJA: finding fragment in main activity onRefreshData")
+        /*println("GJA: finding fragment in main activity onRefreshData")
         val fragmentId = NavHostFragment.findNavController(nav_host_fragment).currentDestination!!.id
         println("fragment id is")
         val fragment = supportFragmentManager.findFragmentById(fragmentId)
         if(fragment is BaseFragment) {
             println("GJA: fragment found in main activity onRefresh")
             fragment.onRefreshData()
-        }
+        }*/
     }
 
     /*

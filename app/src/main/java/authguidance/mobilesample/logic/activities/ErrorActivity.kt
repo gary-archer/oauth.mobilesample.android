@@ -1,17 +1,17 @@
 package authguidance.mobilesample.logic.activities
 
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.widget.ListView
 import authguidance.mobilesample.R
 import authguidance.mobilesample.logic.adapters.ErrorItemArrayAdapter
-import authguidance.mobilesample.logic.fragments.HeaderButtonClickListener
 import authguidance.mobilesample.plumbing.errors.ErrorField
 import authguidance.mobilesample.plumbing.errors.UIError
 
 /*
  * An activity to display unexpected error details
  */
-class ErrorActivity : BaseActivity(), HeaderButtonClickListener {
+class ErrorActivity : AppCompatActivity() {
 
     /*
      * Standard initialisation
@@ -27,13 +27,6 @@ class ErrorActivity : BaseActivity(), HeaderButtonClickListener {
     }
 
     /*
-     * Override the base view to only show the home button
-     */
-    override fun showAllButtons(): Boolean {
-        return false
-    }
-
-    /*
      * Render error items in the list view
      */
     private fun renderData(error: UIError) {
@@ -41,7 +34,7 @@ class ErrorActivity : BaseActivity(), HeaderButtonClickListener {
         val items = this.getErrorItemList(error)
 
         // Render the company data via the adapter class
-        val list = findViewById<ListView>(R.id.listErrorItems)
+        val list = this.findViewById<ListView>(R.id.listErrorItems)
         list.adapter = ErrorItemArrayAdapter(this, items.toList())
     }
 
