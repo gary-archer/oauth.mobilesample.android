@@ -103,7 +103,7 @@ class LoginActivity : BaseActivity(), HeaderButtonClickListener {
             if (success) {
 
                 // For now we always return to the home view on success
-                val intent = Intent(that, CompaniesActivity::class.java)
+                val intent = Intent(that, MainActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 startActivity(intent)
             }

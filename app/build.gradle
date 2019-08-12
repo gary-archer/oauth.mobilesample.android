@@ -19,7 +19,6 @@ android {
                 'appAuthRedirectScheme': 'com.mycompany.mobileapp'
         ]
     }
-
     buildTypes {
         debug {
             debuggable true
@@ -28,6 +27,9 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    dataBinding {
+        enabled = true
     }
 
     // This seems to be necessary after including kotlinx.coroutines for the async syntax
@@ -47,11 +49,12 @@ android {
 // Dependency versions
 ext {
     support_lib_version = '28.0.0'
-    appauth_version = '0.7.1'
+    nav_version = "1.0.0"
     coroutines_version = '1.2.0'
     okhttp3_version = "3.14.1"
     gson_version = "2.8.5"
     okio_version = "2.2.2"
+    appauth_version = '0.7.1'
 }
 
 dependencies {
@@ -60,6 +63,11 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation 'com.android.support:support-v4:28.0.0'
+
+    // Navigation for Single Activity Apps
+    implementation "android.arch.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "android.arch.navigation:navigation-ui-ktx:$nav_version"
 
     // Kotlin async support
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
@@ -73,13 +81,10 @@ dependencies {
     // Include Chrome Custom tabs for the login window
     implementation "com.android.support:customtabs:$support_lib_version"
 
-    // A library for API requests
+    // API requests and JSON serialization
     implementation "com.squareup.okhttp3:okhttp:$okhttp3_version"
-
-    // A library for JSON serialization
     implementation "com.google.code.gson:gson:$gson_version"
 
     // A library for file reading
     implementation "com.squareup.okio:okio:$okio_version"
-    implementation 'com.android.support:support-v4:28.0.0'
 }
