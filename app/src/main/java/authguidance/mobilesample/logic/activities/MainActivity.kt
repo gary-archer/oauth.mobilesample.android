@@ -22,13 +22,6 @@ class MainActivity : AppCompatActivity() {
     lateinit var navController: NavController
     lateinit var navHostFragment: NavHostFragment
 
-
-    /*
-     * Navigation links
-     * https://blog.usejournal.com/single-activity-app-using-android-navigation-architecture-component-1d41fb29ede6
-     * https://github.com/mlostar/NavigationTutorial
-     */
-
     private lateinit var binding: ActivityMainBinding
 
     /*
