@@ -18,6 +18,12 @@
             tools:layout="@layout/fragment_transactions" >
     </fragment>
     <fragment
+            android:id="@+id/loginRequiredFragment"
+            android:name="authguidance.mobilesample.logic.fragments.LoginRequiredFragment"
+            android:label="Error Details"
+            tools:layout="@layout/fragment_error" >
+    </fragment>
+    <fragment
             android:id="@+id/errorFragment"
             android:name="authguidance.mobilesample.logic.fragments.ErrorFragment"
             android:label="Error Details"

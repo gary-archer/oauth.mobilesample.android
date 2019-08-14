@@ -20,8 +20,6 @@ class Application : android.app.Application() {
     override fun onCreate() {
         super.onCreate()
 
-        println("GJA: Setting unhandled exception handler")
-
         // First set up an unhandled exception handler
         // this.systemUncaughtHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { t, e -> this.handleUnhandledException(t, e) }

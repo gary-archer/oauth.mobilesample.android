@@ -6,7 +6,7 @@ import authguidance.mobilesample.plumbing.oauth.Authenticator
 import com.google.gson.Gson
 import java.io.IOException
 import kotlin.coroutines.resumeWithException
-import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.suspendCoroutine
 import okhttp3.*
 
 /*
@@ -45,7 +45,7 @@ class HttpClient(configuration: AppConfiguration, authenticator: Authenticator) 
             .build()
 
         // Make the request
-        this.makeRequest(client, url, request).use {
+        this.callApiWithToken(client, url, request).use {
 
             if(it.isSuccessful) {
 
@@ -65,9 +65,9 @@ class HttpClient(configuration: AppConfiguration, authenticator: Authenticator) 
     /*
      * Use the okhttp library to make an async request for data
      */
-    private suspend fun makeRequest(client: OkHttpClient, url: String, request: Request): Response {
+    private suspend fun callApiWithToken(client: OkHttpClient, url: String, request: Request): Response {
 
-        return suspendCancellableCoroutine { continuation ->
+        return suspendCoroutine { continuation ->
 
             client.newCall(request).enqueue(object: Callback {
 

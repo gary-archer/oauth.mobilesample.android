@@ -1,53 +1,56 @@
 package authguidance.mobilesample.plumbing.oauth
 
-import android.app.Activity
 import android.app.PendingIntent
-import android.content.Context
+import android.content.Intent
 import android.net.Uri
-import android.util.Log
 import authguidance.mobilesample.configuration.OAuthConfiguration
-import authguidance.mobilesample.plumbing.errors.ErrorHandler
-import kotlinx.coroutines.suspendCancellableCoroutine
+import authguidance.mobilesample.logic.activities.MainActivity
 import net.openid.appauth.*
 import net.openid.appauth.browser.AnyBrowserMatcher
 import net.openid.appauth.connectivity.DefaultConnectionBuilder
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
 /*
  * The authenticator class manages integration with the AppAuth libraries
  */
-class Authenticator(val configuration: OAuthConfiguration, context: Context) {
+class Authenticator(val configuration: OAuthConfiguration, val activity: MainActivity) {
 
     private val authStateManager: AuthStateManager
 
     // For now we remove tokens on every application startup
     init {
-        this.authStateManager = AuthStateManager.getInstance(context)
+        this.authStateManager = AuthStateManager.getInstance(activity)
         this.authStateManager.replace(AuthState())
     }
 
     /*
      * Get the current access token or redirect the user to login
      */
-    fun getAccessToken(): String? {
+    suspend fun getAccessToken(): String? {
 
         // Return a token if possible
         val token = this.authStateManager.current.accessToken
         if (!token.isNullOrBlank()) {
+            println("GJA: IMMEDIATE")
+            println("GJA: " + this.authStateManager.current.accessToken);
             return token
         }
 
-        // Otherwise throw an error that will start the login activity
-        val handler = ErrorHandler()
-        throw handler.fromLoginRequired()
+        // Otherwise wait for a login, which will take an error action on failure
+        this.activity.startLogin()
+
+        // Get the token after a login
+        println("GJA: AFTER LOGIN")
+        println("GJA: " + this.authStateManager.current.accessToken);
+        return this.authStateManager.current.accessToken
     }
 
     /*
      * Do the plumbing to get the authorization intent
      */
     suspend fun startAuthorization(
-        activity: Activity,
         tabHeaderColor: Int,
         successIntent: PendingIntent,
         failureIntent: PendingIntent) {
@@ -67,7 +70,7 @@ class Authenticator(val configuration: OAuthConfiguration, context: Context) {
         val builder = AppAuthConfiguration.Builder()
         builder.setBrowserMatcher(AnyBrowserMatcher.INSTANCE)
         builder.setConnectionBuilder(DefaultConnectionBuilder.INSTANCE)
-        val authService = AuthorizationService(activity, builder.build())
+        val authService = AuthorizationService(this.activity, builder.build())
 
         // Create and return the custom tabs intent
         val intentBuilder = authService.createCustomTabsIntentBuilder(request.toUri())
@@ -80,38 +83,32 @@ class Authenticator(val configuration: OAuthConfiguration, context: Context) {
 
     /*
      * When a login redirect completes, process the login response here
+     * Return true on success, false on cancellation, or throw an exception in other cases
      */
-    suspend fun finishAuthorization(activity: Activity): Boolean {
+    suspend fun finishAuthorization(intent: Intent): Boolean {
 
         // Get the response details
-        val intent = activity.intent
         val authorizationResponse = AuthorizationResponse.fromIntent(intent)
         val ex = AuthorizationException.fromIntent(intent)
 
-        // First update auth state
-        this.authStateManager.updateAfterAuthorization(authorizationResponse, ex)
-
         when {
             ex != null -> {
-                if(ex.code == 1) {
-                    Log.d("GJA", "Authorization redirect cancelled: ${ex.code}, ${ex.type}, ${ex.message}")
-                }
-                else {
-                    Log.d("GJA", "Authorization redirect failed: ${ex.code}, ${ex.type}, ${ex.message}")
-                }
+                throw RuntimeException("Authorization response error: ${ex.type} / ${ex.code} / ${ex.message}")
             }
             authorizationResponse != null -> {
 
+                // First update auth state
+                this.authStateManager.updateAfterAuthorization(authorizationResponse, ex)
+
                 // Next swap the authorization code for tokens
-                this.exchangeAuthorizationCode(activity, authorizationResponse)
+                this.exchangeAuthorizationCode(authorizationResponse)
 
                 // Indicate that authorization succeeded
                 return true
-
             }
         }
 
-        // Indicate failure
+        // Indicate cancellation
         return false
     }
 
@@ -125,7 +122,7 @@ class Authenticator(val configuration: OAuthConfiguration, context: Context) {
         val metadataUri = Uri.parse(metadataAddress)
 
         // Wrap the callback in a coroutine to support cleaner async await based calls
-        return suspendCancellableCoroutine { continuation ->
+        return suspendCoroutine { continuation ->
 
             // Receive the result of the metadata request
             val callback =
@@ -153,7 +150,7 @@ class Authenticator(val configuration: OAuthConfiguration, context: Context) {
     /*
      * When a login succeeds, exchange the authorization code for tokens
      */
-    private suspend fun exchangeAuthorizationCode(activity: Activity, authResponse: AuthorizationResponse): Int {
+    private suspend fun exchangeAuthorizationCode(authResponse: AuthorizationResponse): Int {
 
         // Get the PKCE verifier
         val clientAuthentication = authStateManager.current.clientAuthentication
@@ -164,7 +161,7 @@ class Authenticator(val configuration: OAuthConfiguration, context: Context) {
         val authService = AuthorizationService(activity, builder.build())
 
         // Wrap the callback in a coroutine to support cleaner async await based calls
-        return suspendCancellableCoroutine { continuation ->
+        return suspendCoroutine { continuation ->
 
             // Receive the result of the authorization code grant request
             val callback =
@@ -175,7 +172,6 @@ class Authenticator(val configuration: OAuthConfiguration, context: Context) {
                     when {
                         // Report errors
                         ex != null -> {
-                            Log.d("GJA", "Authorization code grant failed: ${ex.code}, ${ex.type}, ${ex.message}")
                             continuation.resumeWithException(ex)
                         }
 

@@ -60,8 +60,6 @@ class ErrorFragment : Fragment() {
 
         if(this.error != null) {
 
-            println("GJA: Rendering error")
-
             // Get data to render
             val items = this.getErrorItemList(this.error!!)
 

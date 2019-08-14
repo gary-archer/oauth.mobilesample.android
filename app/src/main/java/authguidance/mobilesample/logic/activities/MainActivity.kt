@@ -20,6 +20,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.Serializable
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.suspendCoroutine
 
 /*
  * Our single activity application's only activity
@@ -31,13 +33,13 @@ class MainActivity : AppCompatActivity() {
     lateinit var navController: NavController
     lateinit var navHostFragment: NavHostFragment
 
-    // The configuration is loaded once and a global authenticator object is created
+    // The configuration is loaded once, to create a global authenticator object
     private lateinit var configuration: Configuration
     private lateinit var authenticator: Authenticator
 
-    // Constants
+    // Login details
     private val EXTRA_LOGIN_RESULT = "login_result"
-    @Volatile private var loginInProgress = false
+    private lateinit var loginContinuation: Continuation<Unit>
 
     /*
      * Activity creation
@@ -51,40 +53,12 @@ class MainActivity : AppCompatActivity() {
         navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         navController = navHostFragment.navController
 
-        // Give the application class a reference to ourself for exception handling purposes
+        // Give the application class a reference to the activity, for receiving unhandled exceptions
         (this.application as Application).setActivity(this)
 
-        // Run the application startup logic
-        this.initialiseApp()
-    }
-
-    /*
-     * Receive the login response as a new intent for the existing single activity
-     */
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-
-        println("GJA: new intent received")
-
-        // See if we are processing a login response from the Chrome Custom Tab
-        val loginResult = intent?.getIntExtra(EXTRA_LOGIN_RESULT, 0)
-        if(loginResult != null) {
-
-            println("GJA: login result is $loginResult")
-            when {
-                loginResult < 0 -> {
-
-                    // Handle completion after Chrome Custom Tab cancellation
-                    println("GJA: Custom tab cancelled")
-                }
-                loginResult > 0 -> {
-
-                    // Handle completion after login completion, which could be a success or failure response
-                    println("GJA: Handling login response")
-                    this.handleLoginResponse()
-                }
-            }
-        }
+        // Initialise the app
+        this.configuration = ConfigurationLoader().loadConfiguration(this.applicationContext)
+        this.authenticator = Authenticator(this.configuration.oauth, this)
     }
 
     /*
@@ -95,48 +69,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*
-     * Receive unhandled exceptions and navigate to the error fragment
+     * Start the login redirect
      */
-    fun handleUnhandledException(exception: Throwable) {
+    suspend fun startLogin() {
 
-        // Get the error as a known object
-        val handler = ErrorHandler()
-        val error = handler.fromException(exception)
+        return suspendCoroutine { continuation ->
 
-        if (error.errorCode == "login_required") {
+            // Store the continuation
+            this.loginContinuation = continuation
 
-            // Start the AppAuth redirect to get a new token
-            startLogin()
-        } else {
-
-            // Navigate to the error fragment to render it
-            val args = Bundle()
-            args.putSerializable("EXCEPTION_DATA", error as Serializable)
-            navController.navigate(R.id.errorFragment, args)
-        }
-    }
-
-    /*
-     * Load the configuration and create the authenticator object, used to get tokens during API calls
-     */
-    private fun initialiseApp() {
-        this.configuration = ConfigurationLoader().loadConfiguration(this.applicationContext)
-        this.authenticator = Authenticator(this.configuration.oauth, this)
-    }
-
-    /*
-     * Initialise AppAuth processing
-     */
-    private fun startLogin() {
-
-        if(this.loginInProgress) {
-            println("GJA: loginInProgress - do nothing")
-        }
-
-        if(!this.loginInProgress) {
-
-            println("GJA: startLogin")
-            this.loginInProgress = true
+            // Start the asynchronous work
             CoroutineScope(Dispatchers.IO).launch {
 
                 // The activity's this reference
@@ -154,7 +96,6 @@ class MainActivity : AppCompatActivity() {
 
                 // Start the redirect
                 that.authenticator.startAuthorization(
-                    that,
                     that.getTabColor(),
                     PendingIntent.getActivity(that, 0, successIntent, 0),
                     PendingIntent.getActivity(that, 0, failureIntent, 0)
@@ -164,29 +105,48 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*
-     * Receive the authorization code and trigger the authorization code grant message
+     * Receive the login response as a new intent for the existing single activity
      */
-    private fun handleLoginResponse() {
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
 
-        println("GJA: Login response being handled")
+        // See if we are processing a login response from the Chrome Custom Tab
+        val loginResult = intent?.getIntExtra(EXTRA_LOGIN_RESULT, 0)
+        if(loginResult != null) {
 
-        CoroutineScope(Dispatchers.IO).launch {
+            // Handle completion after login completion, which could be a success or failure response
+            CoroutineScope(Dispatchers.IO).launch {
 
-            // The activity's this reference
-            val that = this@MainActivity
-            that.loginInProgress = false
+                // TODO: Finish authorization and original exception
+                // Cause errors in token exchange
 
-            println("GJA: Doing finish authorization")
+                // Handle completion after login success
+                val that = this@MainActivity
+                val success = that.authenticator.finishAuthorization(intent!!)
+                if (success) {
+                    that.loginContinuation.resumeWith(Result.success(Unit))
 
-            // Handle completion after login success
-            val success = that.authenticator.finishAuthorization(that)
-            if (success) {
-
-                println("GJA: Auth code grant succeeded")
-            } else {
-                println("GJA: Auth code grant failed")
+                } else {
+                    that.loginContinuation.resumeWith(Result.failure(RuntimeException("Auth failed")))
+                    navController.navigate(R.id.loginRequiredFragment)
+                }
             }
         }
+    }
+
+    /*
+     * Receive unhandled exceptions and navigate to the error fragment
+     */
+    fun handleUnhandledException(exception: Throwable) {
+
+        // Get the error as a known object
+        val handler = ErrorHandler()
+        val error = handler.fromException(exception)
+
+        // Navigate to the error fragment to render it
+        val args = Bundle()
+        args.putSerializable("EXCEPTION_DATA", error as Serializable)
+        navController.navigate(R.id.errorFragment, args)
     }
 
     /*
