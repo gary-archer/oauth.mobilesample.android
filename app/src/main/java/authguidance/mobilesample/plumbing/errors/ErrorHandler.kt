@@ -29,14 +29,14 @@ class ErrorHandler {
     }
 
     /*
-     * Return an error that will be handled specially to indicate that a login is needed
+     * Return an error to indicate that the Chrome custom tab window was closed
      */
-    fun fromLoginRequired(): UIError {
+    fun fromLoginCancelled(): UIError {
 
         return UIError(
             "Login",
-            "login_required",
-            "No access token is available and a login is required")
+            "login_cancelled",
+            "The login request was cancelled")
     }
 
     /*

@@ -16,6 +16,7 @@ import authguidance.mobilesample.plumbing.api.HttpClient
 import authguidance.mobilesample.plumbing.errors.ErrorHandler
 import authguidance.mobilesample.plumbing.oauth.Authenticator
 import authguidance.mobilesample.plumbing.utilities.ConfigurationLoader
+import authguidance.mobilesample.plumbing.utilities.Constants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,7 +39,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var authenticator: Authenticator
 
     // Login details
-    private val EXTRA_LOGIN_RESULT = "login_result"
     private lateinit var loginContinuation: Continuation<Unit>
 
     /*
@@ -87,12 +87,12 @@ class MainActivity : AppCompatActivity() {
                 // Return here with a positive response if authorization succeeds
                 val successIntent = Intent(that, MainActivity::class.java)
                 successIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                successIntent.putExtra(EXTRA_LOGIN_RESULT, 1)
+                successIntent.putExtra(Constants.ARG_LOGIN_RESULT, 1)
 
                 // Return here with a negative response if authorization fails
                 val failureIntent = Intent(that, MainActivity::class.java)
                 failureIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-                failureIntent.putExtra(EXTRA_LOGIN_RESULT, -1)
+                failureIntent.putExtra(Constants.ARG_LOGIN_RESULT, -1)
 
                 // Start the redirect
                 that.authenticator.startAuthorization(
@@ -110,25 +110,20 @@ class MainActivity : AppCompatActivity() {
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
 
-        // See if we are processing a login response from the Chrome Custom Tab
-        val loginResult = intent?.getIntExtra(EXTRA_LOGIN_RESULT, 0)
-        if(loginResult != null) {
+        if(intent != null) {
 
-            // Handle completion after login completion, which could be a success or failure response
-            CoroutineScope(Dispatchers.IO).launch {
+            // See if we are processing a login response from the Chrome Custom Tab
+            val loginResult = intent.getIntExtra(Constants.ARG_LOGIN_RESULT, 0)
+            if(loginResult != null) {
 
-                // TODO: Finish authorization and original exception
-                // Cause errors in token exchange
+                // Handle completion after login completion, which could be a success or failure response
+                CoroutineScope(Dispatchers.IO).launch {
 
-                // Handle completion after login success
-                val that = this@MainActivity
-                val success = that.authenticator.finishAuthorization(intent!!)
-                if (success) {
+                    // Handle completion after login success, which will exchange the authorization code for tokens
+                    val that = this@MainActivity
+                    that.authenticator.finishAuthorization(intent)
                     that.loginContinuation.resumeWith(Result.success(Unit))
 
-                } else {
-                    that.loginContinuation.resumeWith(Result.failure(RuntimeException("Auth failed")))
-                    navController.navigate(R.id.loginRequiredFragment)
                 }
             }
         }
@@ -143,10 +138,18 @@ class MainActivity : AppCompatActivity() {
         val handler = ErrorHandler()
         val error = handler.fromException(exception)
 
-        // Navigate to the error fragment to render it
-        val args = Bundle()
-        args.putSerializable("EXCEPTION_DATA", error as Serializable)
-        navController.navigate(R.id.errorFragment, args)
+        if(error.errorCode == "login_cancelled") {
+
+            // If the user has closed the Chrome Custom Tab then move to Login Required
+            navController.navigate(R.id.loginRequiredFragment)
+        }
+        else {
+
+            // Otherwise navigate to the error fragment and render error details
+            val args = Bundle()
+            args.putSerializable(Constants.ARG_ERROR_DATA, error as Serializable)
+            navController.navigate(R.id.errorFragment, args)
+        }
     }
 
     /*

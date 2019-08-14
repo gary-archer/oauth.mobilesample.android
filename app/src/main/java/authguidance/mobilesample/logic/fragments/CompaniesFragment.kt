@@ -14,10 +14,10 @@ import authguidance.mobilesample.databinding.FragmentCompaniesBinding
 import authguidance.mobilesample.logic.activities.MainActivity
 import authguidance.mobilesample.logic.adapters.CompanyArrayAdapter
 import authguidance.mobilesample.logic.entities.Company
+import authguidance.mobilesample.plumbing.utilities.Constants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.lang.RuntimeException
 
 /*
  * The fragment to show the company list
@@ -88,7 +88,7 @@ class CompaniesFragment : Fragment() {
 
             // Navigate to transactions with the company id
             val args = Bundle()
-            args.putInt("COMPANY_ID", company.id)
+            args.putInt(Constants.ARG_COMPANY_ID, company.id)
             findNavController().navigate(R.id.transactionsFragment, args)
         }
     }

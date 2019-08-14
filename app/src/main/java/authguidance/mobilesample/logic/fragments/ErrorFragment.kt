@@ -13,6 +13,7 @@ import authguidance.mobilesample.logic.activities.MainActivity
 import authguidance.mobilesample.logic.adapters.ErrorItemArrayAdapter
 import authguidance.mobilesample.plumbing.errors.ErrorField
 import authguidance.mobilesample.plumbing.errors.UIError
+import authguidance.mobilesample.plumbing.utilities.Constants
 
 /*
  * The fragment to show error details
@@ -38,7 +39,7 @@ class ErrorFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
 
         // Get data passed in
-        this.error = this.arguments?.getSerializable("EXCEPTION_DATA") as UIError
+        this.error = this.arguments?.getSerializable(Constants.ARG_ERROR_DATA) as UIError
 
         // Inflate the view
         this.binding = FragmentErrorBinding.inflate(inflater, container, false)

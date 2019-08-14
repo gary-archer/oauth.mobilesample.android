@@ -20,7 +20,7 @@ class ConfigurationLoader {
     fun loadConfiguration(context: Context): Configuration {
 
         // Get the raw resource
-        val stream = context.getResources().openRawResource(R.raw.mobile_config)
+        val stream = context.resources.openRawResource(R.raw.mobile_config)
         val configSource = stream.source().buffer()
 
         // Read it as JSON text
@@ -30,6 +30,6 @@ class ConfigurationLoader {
 
         // Deserialize it into objects
         val gson = Gson()
-        return gson.fromJson<Configuration>(configJson, Configuration::class.java)
+        return gson.fromJson(configJson, Configuration::class.java)
     }
 }

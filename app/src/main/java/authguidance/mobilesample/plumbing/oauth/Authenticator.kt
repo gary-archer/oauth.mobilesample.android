@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import authguidance.mobilesample.configuration.OAuthConfiguration
 import authguidance.mobilesample.logic.activities.MainActivity
+import authguidance.mobilesample.plumbing.errors.ErrorHandler
 import net.openid.appauth.*
 import net.openid.appauth.browser.AnyBrowserMatcher
 import net.openid.appauth.connectivity.DefaultConnectionBuilder
@@ -33,8 +34,6 @@ class Authenticator(val configuration: OAuthConfiguration, val activity: MainAct
         // Return a token if possible
         val token = this.authStateManager.current.accessToken
         if (!token.isNullOrBlank()) {
-            println("GJA: IMMEDIATE")
-            println("GJA: " + this.authStateManager.current.accessToken);
             return token
         }
 
@@ -42,8 +41,6 @@ class Authenticator(val configuration: OAuthConfiguration, val activity: MainAct
         this.activity.startLogin()
 
         // Get the token after a login
-        println("GJA: AFTER LOGIN")
-        println("GJA: " + this.authStateManager.current.accessToken);
         return this.authStateManager.current.accessToken
     }
 
@@ -83,33 +80,38 @@ class Authenticator(val configuration: OAuthConfiguration, val activity: MainAct
 
     /*
      * When a login redirect completes, process the login response here
-     * Return true on success, false on cancellation, or throw an exception in other cases
      */
-    suspend fun finishAuthorization(intent: Intent): Boolean {
+    suspend fun finishAuthorization(intent: Intent) {
 
         // Get the response details
         val authorizationResponse = AuthorizationResponse.fromIntent(intent)
         val ex = AuthorizationException.fromIntent(intent)
 
+        // First update auth state
+        if(authorizationResponse != null || ex != null) {
+            this.authStateManager.updateAfterAuthorization(authorizationResponse, ex)
+        }
+
         when {
             ex != null -> {
+
+                // Handle the case where the user closes the Chrome Custom Tab rather than logging in
+                if(ex.type == 0 && ex.code == 1) {
+                    val handler = ErrorHandler()
+                    throw handler.fromLoginCancelled()
+                }
+
+                // Handle other errors in a generic manner
                 throw RuntimeException("Authorization response error: ${ex.type} / ${ex.code} / ${ex.message}")
             }
             authorizationResponse != null -> {
 
-                // First update auth state
-                this.authStateManager.updateAfterAuthorization(authorizationResponse, ex)
-
-                // Next swap the authorization code for tokens
+                // Swap the authorization code for tokens
                 this.exchangeAuthorizationCode(authorizationResponse)
-
-                // Indicate that authorization succeeded
-                return true
             }
         }
 
-        // Indicate cancellation
-        return false
+
     }
 
     /*

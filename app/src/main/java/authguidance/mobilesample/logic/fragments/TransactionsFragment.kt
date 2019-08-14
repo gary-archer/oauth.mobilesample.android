@@ -12,6 +12,7 @@ import authguidance.mobilesample.databinding.FragmentTransactionsBinding
 import authguidance.mobilesample.logic.activities.MainActivity
 import authguidance.mobilesample.logic.adapters.TransactionArrayAdapter
 import authguidance.mobilesample.logic.entities.CompanyTransactions
+import authguidance.mobilesample.plumbing.utilities.Constants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -40,7 +41,7 @@ class TransactionsFragment : Fragment() {
                               savedInstanceState: Bundle?): View? {
 
         // Get data passed in
-        this.companyId = this.arguments?.getInt("COMPANY_ID", 0)
+        this.companyId = this.arguments?.getInt(Constants.ARG_COMPANY_ID, 0)
 
         // Inflate the view
         this.binding = FragmentTransactionsBinding.inflate(inflater, container, false)
