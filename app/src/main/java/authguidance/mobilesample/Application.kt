@@ -20,9 +20,11 @@ class Application : android.app.Application() {
     override fun onCreate() {
         super.onCreate()
 
+        println("GJA: Setting unhandled exception handler")
+
         // First set up an unhandled exception handler
-        this.systemUncaughtHandler = Thread.getDefaultUncaughtExceptionHandler()
-        Thread.setDefaultUncaughtExceptionHandler { _, e -> this.handleUnhandledException(e) }
+        // this.systemUncaughtHandler = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { t, e -> this.handleUnhandledException(t, e) }
 
         // Listen for unhandled exceptions while the application runs
         this.configureExceptionLoop()
@@ -45,7 +47,8 @@ class Application : android.app.Application() {
             try {
                 Looper.loop()
             } catch (e: Throwable) {
-                this.handleUnhandledException(e)
+                println("GJA: exception loop")
+                this.handleUnhandledException(Thread.currentThread(), e)
             }
         }
     }
@@ -53,7 +56,8 @@ class Application : android.app.Application() {
     /*
      * Call the single activity to render errors
      */
-    private fun handleUnhandledException(exception: Throwable) {
+    private fun handleUnhandledException(thread: Thread, exception: Throwable) {
+        println("GJA: unhandled exception: on thread ${thread.id} : ${exception.message}")
         activity?.handleUnhandledException(exception)
     }
 }

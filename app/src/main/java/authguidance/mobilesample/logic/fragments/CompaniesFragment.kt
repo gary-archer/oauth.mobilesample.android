@@ -17,6 +17,7 @@ import authguidance.mobilesample.logic.entities.Company
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.lang.RuntimeException
 
 /*
  * The fragment to show the company list
