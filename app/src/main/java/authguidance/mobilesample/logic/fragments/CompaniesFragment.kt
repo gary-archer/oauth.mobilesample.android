@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 /*
  * The fragment to show the company list
  */
-class CompaniesFragment : Fragment() {
+class CompaniesFragment : Fragment(), Refreshable {
 
     private lateinit var binding: FragmentCompaniesBinding
     private lateinit var mainActivity: MainActivity
@@ -50,6 +50,13 @@ class CompaniesFragment : Fragment() {
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        this.getData()
+    }
+
+    /*
+     * Reload data when refresh is clicked
+     */
+    override fun refreshData() {
         this.getData()
     }
 

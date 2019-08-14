@@ -4,24 +4,18 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.support.annotation.AnyThread
 import android.util.Log
-
 import net.openid.appauth.AuthState
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationResponse
 import net.openid.appauth.RegistrationResponse
 import net.openid.appauth.TokenResponse
-
 import org.json.JSONException
-
 import java.lang.ref.WeakReference
 import java.util.concurrent.atomic.AtomicReference
 import java.util.concurrent.locks.ReentrantLock
 
-/**
- * The AppAuth sample's class for persisting tokens
- * An example persistence mechanism for an [AuthState] instance.
- * This stores the instance in a shared preferences file, and provides thread-safe access and
- * mutation.
+/*
+ * Based on the AppAuth sample for storing tokens, but uses Android secure storage
  */
 class AuthStateManager private constructor(context: Context) {
 

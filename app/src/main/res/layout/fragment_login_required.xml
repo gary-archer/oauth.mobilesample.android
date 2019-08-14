@@ -15,6 +15,6 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:text="You are logged out - click HOME to login"
-                android:textSize="18sp"/>
+                android:textSize="16sp"/>
     </LinearLayout>
 </layout>

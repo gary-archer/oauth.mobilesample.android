@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 /*
  * The fragment to show the transactions for a company
  */
-class TransactionsFragment : Fragment() {
+class TransactionsFragment : Fragment(), Refreshable {
 
     private lateinit var binding: FragmentTransactionsBinding
     private lateinit var mainActivity: MainActivity
@@ -53,6 +53,13 @@ class TransactionsFragment : Fragment() {
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        this.getData()
+    }
+
+    /*
+     * Reload data when refresh is clicked
+     */
+    override fun refreshData() {
         this.getData()
     }
 

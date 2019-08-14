@@ -1,10 +1,7 @@
-1. Constants
-   Improve Login required display to be bold etc
-
-2. More error testing
+1. More error testing
    Capture more error data including AppAuth details
 
-3. More buttons
+2. More buttons
    Store auth state properly in account manager
 
-4. Logout
+3. Logout
