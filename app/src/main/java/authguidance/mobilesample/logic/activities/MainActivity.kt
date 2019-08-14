@@ -5,24 +5,29 @@ import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
+import authguidance.mobilesample.Application
 import authguidance.mobilesample.R
+import authguidance.mobilesample.configuration.Configuration
 import authguidance.mobilesample.databinding.ActivityMainBinding
-import authguidance.mobilesample.logic.fragments.CompaniesFragment
-import authguidance.mobilesample.logic.fragments.HeaderButtonClickListener
-import kotlinx.android.synthetic.main.activity_main.*
+import authguidance.mobilesample.plumbing.api.HttpClient
+import authguidance.mobilesample.plumbing.errors.ErrorHandler
+import authguidance.mobilesample.plumbing.oauth.Authenticator
+import authguidance.mobilesample.plumbing.utilities.ConfigurationLoader
+import java.io.Serializable
 
 /*
- * Our single activity application's activity
+ * Our single activity application's only activity
  */
-class MainActivity : AppCompatActivity(), HeaderButtonClickListener {
+class MainActivity : AppCompatActivity() {
 
-    /*
-     * Navigation controls accessed from fragments
-     */
+    // Navigation related fields
+    private lateinit var binding: ActivityMainBinding
     lateinit var navController: NavController
     lateinit var navHostFragment: NavHostFragment
 
-    private lateinit var binding: ActivityMainBinding
+    // The configuration is loaded once and a global authenticator object is created
+    private lateinit var configuration: Configuration
+    private lateinit var authenticator: Authenticator
 
     /*
      * Activity creation
@@ -31,95 +36,60 @@ class MainActivity : AppCompatActivity(), HeaderButtonClickListener {
 
         super.onCreate(savedInstanceState)
 
-        this.binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        // Set up data binding and navigation
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        navController = navHostFragment.navController
 
-        this.navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        // Give the application class a reference to ourself for exception handling purposes
+        (this.application as Application).setActivity(this)
 
-        this.navController = this.navHostFragment.navController
-
-        // NavigationUI.setupWithNavController(binding.mainBottomNavigation, navHostFragment.navController)
-
-        // Load data on creation
-        //getData()
+        // Run the application startup logic
+        this.initialiseApp()
     }
 
     /*
-     * Handle onHome clicks
+     * Return an HTTP client to enable fragments to get data
      */
-    override fun onHome() {
+    fun getHttpClient(): HttpClient {
+        return HttpClient(this.configuration.app, this.authenticator)
+    }
 
-        println("In main onHome")
-        try {
-            // Find the fragment
-            val companiesFragment = supportFragmentManager.findFragmentById(R.id.companiesFragment) as CompaniesFragment
-            if (companiesFragment != null) {
+    /*
+     * Receive unhandled exceptions and navigate to the error fragment
+     */
+    fun handleUnhandledException(exception: Throwable) {
 
-                // Navigate there if it is not current
-                // Refresh its data
-                println("Moving home to companies fragment")
+        // Get the error as a known object
+        val handler = ErrorHandler()
+        val error = handler.fromException(exception)
 
-            }
-        } catch(e: Exception) {
-            println("Main activity failed")
-            println(e)
+        if(error.errorCode == "login_required") {
+
+            // Start the AppAuth redirect to get a new token
+            startLogin()
+        }
+        else {
+
+            // Navigate to the error fragment to render it
+            val args = Bundle()
+            args.putSerializable("EXCEPTION_DATA", error as Serializable)
+            navController.navigate(R.id.errorFragment, args)
         }
     }
 
     /*
-     * Handle onRefresh clicks
+     * Load the configuration and create the authenticator object, used to get tokens during API calls
      */
-    override fun onRefreshData() {
-
-        /*println("GJA: finding fragment in main activity onRefreshData")
-        val fragmentId = NavHostFragment.findNavController(nav_host_fragment).currentDestination!!.id
-        println("fragment id is")
-        val fragment = supportFragmentManager.findFragmentById(fragmentId)
-        if(fragment is BaseFragment) {
-            println("GJA: fragment found in main activity onRefresh")
-            fragment.onRefreshData()
-        }*/
+    private fun initialiseApp() {
+        this.configuration = ConfigurationLoader().loadConfiguration(this.applicationContext)
+        this.authenticator = Authenticator(this.configuration.oauth, this)
     }
 
     /*
-     * Do the work of calling the API
+     * Initialise AppAuth processing
      */
-    /*
-    private fun getData() {
-
-        // Make the HTTP call on a background thread
-        CoroutineScope(Dispatchers.IO).launch {
-
-            val httpClient = super.getHttpClient()
-            val result = httpClient.callApi("GET", "companies", null, Array<Company>::class.java)
-
-            // Switch back to the UI thread for rendering
-            CoroutineScope(Dispatchers.Main).launch {
-                renderData(result)
-            }
-        }
-    }*/
-
-    /*
-     * Render API response data on the UI thread
-     */
-    /*
-    private fun renderData(companies: Array<Company>) {
-
-        // Render the company data via the adapter class
-        val list = findViewById<ListView>(R.id.listCompanies);
-        list.adapter = CompanyArrayAdapter(this, companies.toList())
-
-        // When an item is tapped, move to the transactions activity
-        list.onItemClickListener = AdapterView.OnItemClickListener{ parent, _, position, _ ->
-
-            // Get the company
-            val company = parent.getItemAtPosition(position) as Company
-
-            // Move to the transactions view
-            val intent = Intent(this, TransactionsActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            intent.putExtra("COMPANY_ID", company.id)
-            startActivity(intent)
-        }
-    }*/
+    private fun startLogin() {
+        println("GJA: AppAuth redirect")
+    }
 }

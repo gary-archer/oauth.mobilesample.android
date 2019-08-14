@@ -14,8 +14,8 @@ import okhttp3.*
  */
 class HttpClient(configuration: AppConfiguration, authenticator: Authenticator) {
 
-    private val authenticator = authenticator
     private val configuration = configuration
+    private val authenticator = authenticator
 
     /*
      * The entry point for calling an API in a parameterised manner

@@ -1,12 +1,8 @@
 package authguidance.mobilesample.plumbing.errors
 
-import com.google.gson.Gson
 import okhttp3.Response
 import java.io.IOException
-import com.google.gson.JsonElement
 import com.google.gson.JsonParser
-
-
 
 /*
  * A class to manage error translation
@@ -59,8 +55,6 @@ class ErrorHandler {
         }
 
         error.url = url
-
-        // TODO: Set other fields
         return error
     }
 
@@ -74,13 +68,9 @@ class ErrorHandler {
             "general_api_error",
             "A technical problem occurred when the UI called the server")
 
-        // Previous code
-        // var result = "Status: ${it.code()} : ${it.body()?.string()}";
-
         error.statusCode = response.code()
         error.url = url
 
-        // TODO: Set other fields
         this.updateFromApiErrorResponse(error, response.body()?.string())
         return error
     }
@@ -108,10 +98,6 @@ class ErrorHandler {
     private fun getErrorDescription(error: Throwable): String {
 
         val result = error.message
-        if(result != null) {
-            return result
-        } else {
-            return error.toString()
-        }
+        return result ?: error.toString()
     }
 }

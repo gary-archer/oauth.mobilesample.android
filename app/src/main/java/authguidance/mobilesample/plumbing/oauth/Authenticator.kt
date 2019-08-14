@@ -35,12 +35,10 @@ class Authenticator(val configuration: OAuthConfiguration, context: Context) {
         // Return a token if possible
         val token = this.authStateManager.current.accessToken
         if (!token.isNullOrBlank()) {
-            Log.d("GJA", "Authenticator found access token")
             return token
         }
 
         // Otherwise throw an error that will start the login activity
-        Log.d("GJA", "Authenticator cannot get access token")
         val handler = ErrorHandler()
         throw handler.fromLoginRequired()
     }

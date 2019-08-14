@@ -6,25 +6,24 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.ListView
-import androidx.navigation.fragment.findNavController
 import authguidance.mobilesample.R
-import authguidance.mobilesample.databinding.FragmentCompaniesBinding
+import authguidance.mobilesample.databinding.FragmentTransactionsBinding
 import authguidance.mobilesample.logic.activities.MainActivity
-import authguidance.mobilesample.logic.adapters.CompanyArrayAdapter
-import authguidance.mobilesample.logic.entities.Company
+import authguidance.mobilesample.logic.adapters.TransactionArrayAdapter
+import authguidance.mobilesample.logic.entities.CompanyTransactions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 /*
- * The fragment to show the company list
+ * The fragment to show the transactions for a company
  */
-class CompaniesFragment : Fragment() {
+class TransactionsFragment : Fragment() {
 
-    private lateinit var binding: FragmentCompaniesBinding
+    private lateinit var binding: FragmentTransactionsBinding
     private lateinit var mainActivity: MainActivity
+    private var companyId: Int? = null
 
     /*
      * Get a reference to the main activity
@@ -35,12 +34,16 @@ class CompaniesFragment : Fragment() {
     }
 
     /*
-     * Inflate the view
+     * Initialise the view
      */
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
-        this.binding = FragmentCompaniesBinding.inflate(inflater, container, false)
+        // Get data passed in
+        this.companyId = this.arguments?.getInt("COMPANY_ID", 0)
+
+        // Inflate the view
+        this.binding = FragmentTransactionsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -53,7 +56,7 @@ class CompaniesFragment : Fragment() {
     }
 
     /*
-     * Start an HTTP request to the API for data
+     * Do the work of calling the API
      */
     private fun getData() {
 
@@ -61,11 +64,12 @@ class CompaniesFragment : Fragment() {
         CoroutineScope(Dispatchers.IO).launch {
 
             val httpClient = that.mainActivity.getHttpClient()
-            val result = httpClient.callApi("GET", "companies", null, Array<Company>::class.java)
+            val url = "companies/$companyId/transactions"
+            val result = httpClient.callApi("GET", url, null, CompanyTransactions::class.java)
 
             // Switch back to the UI thread for rendering
             CoroutineScope(Dispatchers.Main).launch {
-                that.renderData(result)
+                renderData(result)
             }
         }
     }
@@ -73,22 +77,9 @@ class CompaniesFragment : Fragment() {
     /*
      * Render API response data on the UI thread
      */
-    private fun renderData(companies: Array<Company>) {
+    private fun renderData(data: CompanyTransactions) {
 
-        // Render the company data via the adapter class
-        val list = getView()?.findViewById<ListView>(R.id.listCompanies)
-        list?.adapter = CompanyArrayAdapter(mainActivity, companies.toList())
-
-        // When an item is tapped, move to the transactions activity
-        list?.onItemClickListener = AdapterView.OnItemClickListener{ parent, _, position, _ ->
-
-            // Get the company
-            val company = parent.getItemAtPosition(position) as Company
-
-            // Navigate to transactions with the company id
-            val args = Bundle()
-            args.putInt("COMPANY_ID", company.id)
-            findNavController().navigate(R.id.transactionsFragment, args)
-        }
+        val list = getView()?.findViewById<ListView>(R.id.listTransactions)
+        list?.adapter = TransactionArrayAdapter(mainActivity, data.transactions.toList())
     }
 }

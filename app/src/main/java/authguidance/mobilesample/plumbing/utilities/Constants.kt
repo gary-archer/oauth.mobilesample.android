@@ -4,5 +4,7 @@ package authguidance.mobilesample.plumbing.utilities
  * Constant values
  */
 data class Constants (
-    val first: String
+
+    // The company id passed when navigating
+    val CompanyId: String
 )

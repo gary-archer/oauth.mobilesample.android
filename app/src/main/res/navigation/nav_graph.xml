@@ -3,24 +3,24 @@
             xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/nav_graph"
-            app:startDestination="@id/profileFragment">
+            app:startDestination="@id/companiesFragment">
 
-    <fragment
-            android:id="@+id/profileFragment"
-            android:name="authguidance.mobilesample.logic.fragments.ProfileFragment"
-            android:label="Fragment Profile"
-            tools:layout="@layout/fragment_profile" >
-            <action
-                android:id="@+id/action_profileFragment_to_companiesFragment"
-                app:destination="@id/companiesFragment" />
-    </fragment>
     <fragment
             android:id="@+id/companiesFragment"
             android:name="authguidance.mobilesample.logic.fragments.CompaniesFragment"
-            android:label="Companies Profile"
+            android:label="Company List"
             tools:layout="@layout/fragment_companies" >
-        <action
-                android:id="@+id/action_companiesFragment_to_profileFragment"
-                app:destination="@id/profileFragment" />
+    </fragment>
+    <fragment
+            android:id="@+id/transactionsFragment"
+            android:name="authguidance.mobilesample.logic.fragments.TransactionsFragment"
+            android:label="Company Transactions"
+            tools:layout="@layout/fragment_transactions" >
+    </fragment>
+    <fragment
+            android:id="@+id/errorFragment"
+            android:name="authguidance.mobilesample.logic.fragments.ErrorFragment"
+            android:label="Error Details"
+            tools:layout="@layout/fragment_error" >
     </fragment>
 </navigation>

@@ -1,29 +1,18 @@
 package authguidance.mobilesample.logic.activities
 
-import android.app.PendingIntent
-import android.content.Intent
-import android.os.Build
-import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import authguidance.mobilesample.R
-import authguidance.mobilesample.logic.fragments.HeaderButtonClickListener
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-
 /*
  * This activity is invoked when a login is needed and immediately redirects
  * If login is cancelled or fails, this screen remains in place so that the user can retry
  */
-class LoginActivity : AppCompatActivity() {
+class LoginActivity {
 
     // Constants
-    private val EXTRA_LOGIN_RESULT = "login_result"
+    // private val EXTRA_LOGIN_RESULT = "login_result"
 
     /*
      * Standard initialisation
      */
-    override fun onCreate(savedInstanceState: Bundle?) {
+    /*override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
@@ -49,14 +38,14 @@ class LoginActivity : AppCompatActivity() {
                 this.handleLoginResponse()
             }
         }
-    }
+    }*/
 
     /*
      * Start the login process and wait for the result
      */
+    /*
     private fun startLogin() {
 
-        /*
         CoroutineScope(Dispatchers.IO).launch {
 
             // The activity's this reference
@@ -80,15 +69,14 @@ class LoginActivity : AppCompatActivity() {
                 PendingIntent.getActivity(that, 0, failureIntent, 0))
 
             // TODO: Update application to indicate chrome custom tab is active
-        }*/
-    }
+        }
+    }*/
 
     /*
      * Handle a login response from the Authorization Server, which could be a success or failure response
      */
-    private fun handleLoginResponse() {
+    /*private fun handleLoginResponse() {
 
-        /*
         CoroutineScope(Dispatchers.IO).launch {
 
             // The activity's this reference
@@ -103,13 +91,13 @@ class LoginActivity : AppCompatActivity() {
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 startActivity(intent)
             }
-        }*/
-    }
+        }
+    }*/
 
     /*
      * Use the App Bar's colour for the Chrome Custom Tab header
      */
-    private fun getTabColor(): Int {
+    /*private fun getTabColor(): Int {
 
         val color =  R.color.colorPrimary
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -117,5 +105,5 @@ class LoginActivity : AppCompatActivity() {
         } else {
             resources.getColor(color)
         }
-    }
+    }*/
 }
