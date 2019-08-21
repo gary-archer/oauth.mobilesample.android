@@ -115,8 +115,8 @@ class EncryptionManager(val context: Context) {
         this.cipher.init(Cipher.DECRYPT_MODE, this.symmetricKey, ivSpec)
 
         // Do the decryption
-        val encryptedData = Base64.decode(parts[1], Base64.DEFAULT)
-        val decryptedBytes = this.cipher.doFinal(encryptedData)
+        val encryptedPayload = Base64.decode(parts[1], Base64.DEFAULT)
+        val decryptedBytes = this.cipher.doFinal(encryptedPayload)
 
         // Return the plain text
         return String(decryptedBytes)

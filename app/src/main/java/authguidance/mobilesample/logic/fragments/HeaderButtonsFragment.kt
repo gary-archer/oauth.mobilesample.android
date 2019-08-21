@@ -2,7 +2,7 @@ package authguidance.mobilesample.logic.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +14,7 @@ import authguidance.mobilesample.logic.activities.MainActivity
 /*
  * A simple fragment with the header buttons
  */
-class HeaderButtonsFragment : Fragment() {
+class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
 
     private lateinit var binding: FragmentHeaderButtonsBinding
     private lateinit var mainActivity: MainActivity
@@ -56,7 +56,7 @@ class HeaderButtonsFragment : Fragment() {
         // When refresh is clicked, handle the click in the active primary fragment
         this.binding.btnReloadData.setOnClickListener {
 
-            val fragment = this.mainActivity.navHostFragment.childFragmentManager.primaryNavigationFragment as Fragment
+            val fragment = this.mainActivity.navHostFragment.childFragmentManager.primaryNavigationFragment as androidx.fragment.app.Fragment
             if(fragment is ReloadableFragment) {
                 fragment.reloadData()
             }

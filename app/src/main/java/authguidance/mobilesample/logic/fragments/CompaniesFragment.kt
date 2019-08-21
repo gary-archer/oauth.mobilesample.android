@@ -2,7 +2,7 @@ package authguidance.mobilesample.logic.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 /*
  * The fragment to show the company list
  */
-class CompaniesFragment : Fragment(), ReloadableFragment {
+class CompaniesFragment : androidx.fragment.app.Fragment(), ReloadableFragment {
 
     private lateinit var binding: FragmentCompaniesBinding
     private lateinit var mainActivity: MainActivity

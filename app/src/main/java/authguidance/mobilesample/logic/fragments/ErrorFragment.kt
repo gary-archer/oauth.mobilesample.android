@@ -2,7 +2,7 @@ package authguidance.mobilesample.logic.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,7 +18,7 @@ import authguidance.mobilesample.plumbing.utilities.Constants
 /*
  * The fragment to show error details
  */
-class ErrorFragment : Fragment() {
+class ErrorFragment : androidx.fragment.app.Fragment() {
 
     private lateinit var binding: FragmentErrorBinding
     private lateinit var mainActivity: MainActivity

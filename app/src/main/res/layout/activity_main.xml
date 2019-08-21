@@ -8,7 +8,7 @@
                 name="activity"
                 type="authguidance.mobilesample.logic.activities.MainActivity" />
     </data>
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -24,7 +24,7 @@
                 tools:layout="@layout/fragment_header_buttons"/>
 
         <!-- A toolbar with a fragment specific title -->
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
                 app:layout_constraintTop_toBottomOf="@+id/buttonHeaderFragment"
                 app:layout_constraintLeft_toLeftOf="parent"
@@ -39,7 +39,7 @@
                     android:gravity="center"
                     style="@style/TextViewHeaderStyle"/>
 
-        </android.support.v7.widget.Toolbar>
+        </androidx.appcompat.widget.Toolbar>
 
         <!-- The navigation host fragment is shown in the remainder of the view -->
         <fragment
@@ -53,5 +53,5 @@
                 app:defaultNavHost="true"
                 app:navGraph="@navigation/nav_graph"/>
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

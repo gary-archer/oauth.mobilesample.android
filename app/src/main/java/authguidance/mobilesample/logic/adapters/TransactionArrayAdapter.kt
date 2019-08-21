@@ -1,7 +1,7 @@
 package authguidance.mobilesample.logic.adapters
 
 import android.content.Context
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +12,7 @@ import kotlinx.android.synthetic.main.transaction_list_item.view.*
 /*
  * An adapter to render transaction items
  */
-class TransactionArrayAdapter(val context: Context, val transactions: List<Transaction>) : RecyclerView.Adapter<TransactionArrayAdapter.ViewHolder>() {
+class TransactionArrayAdapter(val context: Context, val transactions: List<Transaction>) : androidx.recyclerview.widget.RecyclerView.Adapter<TransactionArrayAdapter.ViewHolder>() {
 
     /*
      * Inflate this list item
@@ -45,7 +45,7 @@ class TransactionArrayAdapter(val context: Context, val transactions: List<Trans
     /*
      * Stores and recycles views as they are scrolled off screen
      */
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
         val item = itemView
     }
 }

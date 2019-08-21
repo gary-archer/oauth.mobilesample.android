@@ -2,8 +2,8 @@ package authguidance.mobilesample.logic.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 /*
  * The fragment to show the transactions for a company
  */
-class TransactionsFragment : Fragment(), ReloadableFragment {
+class TransactionsFragment : androidx.fragment.app.Fragment(), ReloadableFragment {
 
     private lateinit var binding: FragmentTransactionsBinding
     private lateinit var mainActivity: MainActivity
@@ -91,7 +91,7 @@ class TransactionsFragment : Fragment(), ReloadableFragment {
     private fun renderData(data: CompanyTransactions) {
 
         val list = this.binding.listTransactions
-        list.layoutManager = LinearLayoutManager(this.mainActivity)
+        list.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(this.mainActivity)
         list.adapter = TransactionArrayAdapter(mainActivity, data.transactions.toList())
     }
 }

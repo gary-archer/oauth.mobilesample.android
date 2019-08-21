@@ -1,4 +1,4 @@
-0. Update to latest Android versions
+0. Update to OKHTTP3 v 4.1.0
 
 1. Encryption and keystore
 * Use Java Keystore Explorer: https://keystore-explorer.org/downloads.html

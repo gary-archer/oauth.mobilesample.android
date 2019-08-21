@@ -87,8 +87,8 @@ class PersistentTokenStorage(val context: Context, val encryptionManager: Encryp
      */
     private fun saveTokenData(data: TokenData) {
         val gson = Gson()
-        val data = gson.toJson(data)
-        this.tokenStorage.edit().putString(this.key, encryptionManager.encrypt(data)).apply()
+        val json = gson.toJson(data)
+        this.tokenStorage.edit().putString(this.key, encryptionManager.encrypt(json)).apply()
     }
 
     /*
