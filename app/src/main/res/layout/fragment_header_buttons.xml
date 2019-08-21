@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+    <data>
+    </data>
+    <TableLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:context=".logic.fragments.HeaderButtonsFragment">
+
+        <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <Button
+                    android:layout_weight=".2"
+                    android:id="@+id/btnHome"
+                    android:text="@string/home_button"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    style="@style/ButtonHeaderStyle"/>
+
+            <Button
+                    android:layout_weight=".3"
+                    android:id="@+id/btnReloadData"
+                    android:text="@string/reload_button"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    style="@style/ButtonHeaderStyle"/>
+
+            <Button
+                    android:layout_weight=".25"
+                    android:id="@+id/btnExpireAccessToken"
+                    android:text="@string/expire_access_token_button"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    style="@style/ButtonHeaderStyle"/>
+
+            <Button
+                    android:layout_weight=".25"
+                    android:id="@+id/btnExpireRefreshToken"
+                    android:text="@string/expire_refresh_token_button"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    style="@style/ButtonHeaderStyle"/>
+
+            <Button
+                    android:layout_weight=".2"
+                    android:id="@+id/btnLogout"
+                    android:text="@string/logout_button"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    style="@style/ButtonHeaderStyle"/>
+        </TableRow>
+    </TableLayout>
+</layout>

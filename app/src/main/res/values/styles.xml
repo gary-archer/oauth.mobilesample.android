@@ -1,0 +1,51 @@
+<resources>
+
+    <!-- Our main theme uses Material blue colours from here
+         https://srujanjha.wordpress.com/2015/05/26/applying-material-theme-colors-in-your-android-app -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
+        <item name="android:colorPrimary">@color/primary</item>
+        <item name="android:colorPrimaryDark">@color/primary_dark</item>
+        <item name="android:colorAccent">@color/accent</item>
+        <item name="android:textColorPrimary">@color/text_value</item>
+        <item name="android:textColor">@color/text_label</item>
+        <item name="android:navigationBarColor">@color/primary_dark</item>
+    </style>
+
+    <!-- Button style -->
+    <style name="ButtonHeaderStyle" parent="android:Widget.Button">
+        <item name="android:minHeight">0dp</item>
+        <item name="android:minWidth">0dp</item>
+        <item name="android:backgroundTint">@color/primary</item>
+    </style>
+
+    <!-- The style for label text -->
+    <style name="TextViewLabelStyle" parent="android:Widget.TextView">
+        <item name="android:textColor">@color/text_label</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:layout_gravity">left</item>
+    </style>
+
+    <!-- The style for value text -->
+    <style name="TextViewValueStyle" parent="android:Widget.TextView">
+        <item name="android:textColor">@color/text_value</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:layout_gravity">left</item>
+    </style>
+
+    <!-- The style for monetary values -->
+    <style name="TextViewMoneyStyle" parent="android:Widget.TextView">
+        <item name="android:textColor">@color/text_money</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:layout_gravity">left</item>
+    </style>
+
+    <!-- The style for header text -->
+    <style name="TextViewHeaderStyle" parent="android:Widget.TextView">
+        <item name="android:textColor">@color/text_value</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+</resources>

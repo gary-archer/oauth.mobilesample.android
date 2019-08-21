@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/nav_graph"
+            app:startDestination="@id/companiesFragment">
+
+    <fragment
+            android:id="@+id/companiesFragment"
+            android:name="authguidance.mobilesample.logic.fragments.CompaniesFragment"
+            android:label="Company List"
+            tools:layout="@layout/fragment_companies" >
+    </fragment>
+    <fragment
+            android:id="@+id/transactionsFragment"
+            android:name="authguidance.mobilesample.logic.fragments.TransactionsFragment"
+            android:label="Company Transactions"
+            tools:layout="@layout/fragment_transactions" >
+    </fragment>
+    <fragment
+            android:id="@+id/loginRequiredFragment"
+            android:name="authguidance.mobilesample.logic.fragments.LoginRequiredFragment"
+            android:label="Error Details"
+            tools:layout="@layout/fragment_login_required" >
+    </fragment>
+    <fragment
+            android:id="@+id/errorFragment"
+            android:name="authguidance.mobilesample.logic.fragments.ErrorFragment"
+            android:label="Error Details"
+            tools:layout="@layout/fragment_error" >
+    </fragment>
+</navigation>

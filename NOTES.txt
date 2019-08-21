@@ -1,0 +1,13 @@
+0. Update to latest Android versions
+
+1. Encryption and keystore
+* Use Java Keystore Explorer: https://keystore-explorer.org/downloads.html
+* Create an empty file called sample-keystore.jks in the app/keystore folder with passwords of android
+* Use Generate Key Pair / RSA 2048 and create 2 keys:
+*** androidapp / androidapp.mycompany.com
+
+2. Deep linking
+
+3. Understand crash best practice and use of Crashlytics
+
+4. Logout

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <import type="android.view.View" />
+        <variable
+                name="activity"
+                type="authguidance.mobilesample.logic.activities.MainActivity" />
+    </data>
+    <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <!-- The header area containing buttons for testing data and token operations -->
+        <fragment
+                android:id="@+id/buttonHeaderFragment"
+                android:name="authguidance.mobilesample.logic.fragments.HeaderButtonsFragment"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:layout="@layout/fragment_header_buttons"/>
+
+        <!-- A toolbar with a fragment specific title -->
+        <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                app:layout_constraintTop_toBottomOf="@+id/buttonHeaderFragment"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@color/primary">
+            <TextView
+                    android:id="@+id/fragment_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    style="@style/TextViewHeaderStyle"/>
+
+        </android.support.v7.widget.Toolbar>
+
+        <!-- The navigation host fragment is shown in the remainder of the view -->
+        <fragment
+                android:id="@+id/nav_host_fragment"
+                android:name="androidx.navigation.fragment.NavHostFragment"
+                app:layout_constraintTop_toBottomOf="@+id/toolbar"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:defaultNavHost="true"
+                app:navGraph="@navigation/nav_graph"/>
+
+    </android.support.constraint.ConstraintLayout>
+</layout>
