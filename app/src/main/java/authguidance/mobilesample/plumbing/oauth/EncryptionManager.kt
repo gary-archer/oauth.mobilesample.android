@@ -51,6 +51,7 @@ class EncryptionManager(val context: Context) {
 
     /*
      * On the first access, generate a symmetric key and store it in the key store
+     * By default this will last until Jan 1 2048
      */
     private fun generateAndStoreSymmetricKey() {
 
@@ -94,7 +95,7 @@ class EncryptionManager(val context: Context) {
         // Generate a random initialization vector
         val iv = Base64.encodeToString(cipher.iv, Base64.DEFAULT)
 
-        // Include the encrypted data and iv, along with a separatot outside the base 64 range
+        // Include the encrypted data and iv, along with a separator outside the base 64 range
         return "$iv$IV_SEPARATOR$encryptedText"
     }
 
