@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <import type="android.view.View" />
+        <variable
+                name="activity"
+                type="com.authguidance.basicmobileapp.logic.activities.MainActivity" />
+    </data>
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        <!-- The action bar area shows the app name and the logged in user -->
+        <fragment
+            android:id="@+id/actionBarFragment"
+            android:name="com.authguidance.basicmobileapp.logic.fragments.ActionBarFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_action_bar"/>
+
+        <!-- Next we show a row of buttons for testing data and token operations -->
+        <fragment
+                android:id="@+id/buttonHeaderFragment"
+                android:name="com.authguidance.basicmobileapp.logic.fragments.HeaderButtonsFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:layout="@layout/fragment_header_buttons"/>
+
+        <!-- Next we show the active fragment's page title -->
+        <androidx.appcompat.widget.Toolbar
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:background="@color/primary">
+            <TextView
+                    android:id="@+id/fragment_heading_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    style="@style/TextViewHeaderStyle"/>
+        </androidx.appcompat.widget.Toolbar>
+
+        <!-- The remainder of the view shows the active fragment occupying the whole of the navigation host fragment -->
+        <fragment
+                android:id="@+id/nav_host_fragment"
+                android:name="androidx.navigation.fragment.NavHostFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:defaultNavHost="true"
+                app:navGraph="@navigation/nav_graph"/>
+
+    </LinearLayout>
+</layout>

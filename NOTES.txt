@@ -1,0 +1,13 @@
+TODO
+----
+0. Are there problems leaving an app for 10 minutes half way through login?
+1. Handle concurrent fragment errors and use a link + popup dialog
+2. Update config to support Okta
+3. Can I improve on deep linking hacky implementation, perhaps by using Android navigation classes?
+4. Build APK and understand signature / version details being written and use of JDK
+
+LEARNING
+--------
+Other AppAuth based libraries:
+* https://github.com/okta/okta-sdk-appauth-android
+* https://github.com/okta/okta-oidc-android

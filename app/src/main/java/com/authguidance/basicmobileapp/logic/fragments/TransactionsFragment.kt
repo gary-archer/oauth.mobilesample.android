@@ -1,0 +1,128 @@
+package com.authguidance.basicmobileapp.logic.fragments
+
+import android.content.Context
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.authguidance.basicmobileapp.R
+import com.authguidance.basicmobileapp.databinding.FragmentTransactionsBinding
+import com.authguidance.basicmobileapp.logic.activities.MainActivity
+import com.authguidance.basicmobileapp.logic.adapters.TransactionArrayAdapter
+import com.authguidance.basicmobileapp.logic.entities.CompanyTransactions
+import com.authguidance.basicmobileapp.plumbing.errors.UIError
+import com.authguidance.basicmobileapp.logic.utilities.Constants
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+/*
+ * The fragment to show the transactions for a company
+ */
+class TransactionsFragment : androidx.fragment.app.Fragment(), ReloadableFragment {
+
+    private lateinit var binding: FragmentTransactionsBinding
+    private lateinit var mainActivity: MainActivity
+    private var companyId: String? = null
+
+    /*
+     * Get a reference to the main activity
+     */
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        this.mainActivity = context as MainActivity
+    }
+
+    /*
+     * Initialise the view
+     */
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
+                              savedInstanceState: Bundle?): View? {
+
+        // Get data passed in
+        this.companyId = this.arguments?.getString(Constants.ARG_COMPANY_ID, "")
+
+        // Inflate the view
+        this.binding = FragmentTransactionsBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    /*
+     * Wire up button click events to call back the activity
+     */
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        this.mainActivity.setButtonState()
+        val format = this.getString(R.string.transactions_title)
+        this.mainActivity.setFragmentTitle(String.format(format, this.companyId))
+        this.loadData()
+    }
+
+    /*
+     * Load data for the fragment
+     */
+    override fun loadData() {
+
+        CoroutineScope(Dispatchers.IO).launch {
+
+            val that = this@TransactionsFragment
+            try {
+                val httpClient = that.mainActivity.getHttpClient()
+                val url = "companies/${that.companyId}/transactions"
+                val result = httpClient.callApi("GET", url, null, CompanyTransactions::class.java)
+
+                // Switch back to the UI thread for rendering
+                withContext(Dispatchers.Main) {
+                    renderData(result)
+                }
+            }
+            catch(uiError: UIError) {
+
+                // Handle invalid input
+                if (uiError.statusCode == 404 && uiError.errorCode == "company_not_found") {
+
+                    // A deep link could provide an id such as 3, which is unauthorized
+                    withContext(Dispatchers.Main) {
+                        that.mainActivity.navController.popBackStack()
+                        that.mainActivity.onHome()
+                    }
+
+                } else if (uiError.statusCode == 400 && uiError.errorCode == "invalid_company_id") {
+
+                    // A deep link could provide an invalid id value such as 'abc'
+                    withContext(Dispatchers.Main) {
+                        that.mainActivity.navController.popBackStack()
+                        that.mainActivity.onHome()
+                    }
+
+                } else {
+
+                    // Report other errors
+                    withContext(Dispatchers.Main) {
+                        that.mainActivity.handleException(uiError)
+                    }
+                }
+            }
+            catch(ex: Exception) {
+
+                // Report other errors
+                withContext(Dispatchers.Main) {
+                    that.mainActivity.handleException(ex)
+                }
+            }
+        }
+    }
+
+    /*
+     * Render API response data on the UI thread
+     */
+    private fun renderData(data: CompanyTransactions) {
+
+        val list = this.binding.listTransactions
+        list.layoutManager = LinearLayoutManager(this.mainActivity)
+        list.adapter = TransactionArrayAdapter(mainActivity, data.transactions.toList())
+    }
+}

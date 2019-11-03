@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <head>
+        <meta name='viewport' content='width=device-width, initial-scale=1'>
+        <title>Logout Complete</title>
+
+        <script>
+            window.addEventListener("DOMContentLoaded", function() {
+                var redirectUri = "com.authguidance.basicmobilelogout://callback";
+
+                document.getElementById('redirect-link').onclick = () => {
+                    window.location.href = redirectUri;
+                };
+            });
+        </script>
+        <style>
+            #container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                font-family: sans-serif;
+                padding: 10px;
+                font-size: 20px;
+            }
+            #redirect-link {
+                margin-top: 10px;
+                padding: 16px 32px;
+                color: white;
+                background-color: #1E90FF;
+                font-size: 16px;
+            }
+            #message-text {
+                color: #1E90FF;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="container">
+            <h3 id='message-text'>Logout Complete</h3>
+            <button id="redirect-link">Return to Demo App</button>
+        </div>
+    </body>
+</html>
