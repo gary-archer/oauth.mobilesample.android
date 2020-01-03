@@ -224,10 +224,7 @@ class MainActivity : AppCompatActivity() {
      * Return an HTTP client to enable fragments to get data
      */
     fun getApiClient(): ApiClient {
-        return ApiClient(
-            this.state.configuration.app,
-            this.state.authenticator
-        )
+        return this.state.apiClient
     }
 
     /*

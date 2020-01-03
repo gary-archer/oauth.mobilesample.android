@@ -1,13 +1,17 @@
-0. Update dependencies to latest versions
+1. Button enabling and disabling and use of view manager
 
-1. Send custom headers
+2. Multiple login required errors
 
-2. Long press - and fix desktop sample 2
+3. Display session id in UI
 
-3. ErrorCodes class
+4. Long press to cause error + fix desktop sample 2
 
-4. Button enabling and disabling
+5. ErrorCodes class
 
-5. Startup naming
+6. Classes as similar as possible to SPA
 
-6. ViewManager and multiple login required errors
+7. Deep link URLs as company=2
+
+8. Aim to improve navigation code
+
+9. Stack traces same as Web UI

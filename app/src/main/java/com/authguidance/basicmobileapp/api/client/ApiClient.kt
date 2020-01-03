@@ -3,7 +3,6 @@ package com.authguidance.basicmobileapp.api.client
 import com.authguidance.basicmobileapp.api.entities.Company
 import com.authguidance.basicmobileapp.api.entities.CompanyTransactions
 import com.authguidance.basicmobileapp.api.entities.UserInfoClaims
-import com.authguidance.basicmobileapp.configuration.AppConfiguration
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorHandler
 import com.authguidance.basicmobileapp.plumbing.oauth.Authenticator
 import com.google.gson.Gson
@@ -12,6 +11,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 import java.lang.RuntimeException
+import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -19,10 +19,11 @@ import kotlin.coroutines.suspendCoroutine
 /*
  * Plumbing related to making HTTP calls
  */
-class ApiClient(configuration: AppConfiguration, authenticator: Authenticator) {
+class ApiClient(apiBaseUrl: String, authenticator: Authenticator) {
 
-    private val configuration = configuration
+    private val apiBaseUrl = apiBaseUrl
     private val authenticator = authenticator
+    private val sessionId = UUID.randomUUID().toString()
 
     /*
      * Download user info from the API so that we can get any data we need
@@ -35,33 +36,33 @@ class ApiClient(configuration: AppConfiguration, authenticator: Authenticator) {
     /*
      * Get the list of companies
      */
-    suspend fun getCompanyList(): Array<Company> {
-        val response = this.callApi("companies", "GET", null)
+    suspend fun getCompanyList(options: ApiRequestOptions? = null): Array<Company> {
+        val response = this.callApi("companies", "GET", null, options)
         return this.readResponseBody(response, Array<Company>::class.java)
     }
 
     /*
      * Get the list of transactions for a company
      */
-    suspend fun getCompanyTransactions(companyId: String): CompanyTransactions {
+    suspend fun getCompanyTransactions(companyId: String, options: ApiRequestOptions? = null): CompanyTransactions {
 
-        val response = this.callApi("companies/${companyId}/transactions", "GET", null)
+        val response = this.callApi("companies/${companyId}/transactions", "GET", null, options)
         return this.readResponseBody(response, CompanyTransactions::class.java)
     }
 
     /*
      * The entry point for calling an API in a parameterised manner
      */
-    private suspend fun callApi(path: String, method: String, data: Any?): Response {
+    private suspend fun callApi(path: String, method: String, data: Any?, options: ApiRequestOptions? = null): Response {
 
         // Get the full URL
-        val url = "${this.configuration.apiBaseUrl}/$path"
+        val url = "${this.apiBaseUrl}/$path"
 
         // First get an access token
         var accessToken = this.authenticator.getAccessToken()
 
         // Make the request
-        var response = this.callApiWithToken(method, url, data, accessToken)
+        var response = this.callApiWithToken(method, url, data, accessToken, options)
         if(response.isSuccessful) {
 
             // Handle successful responses
@@ -77,7 +78,7 @@ class ApiClient(configuration: AppConfiguration, authenticator: Authenticator) {
                 accessToken = this.authenticator.getAccessToken()
 
                 // Retry the API call
-                response = this.callApiWithToken(method, url, data, accessToken)
+                response = this.callApiWithToken(method, url, data, accessToken, options)
                 if(response.isSuccessful) {
 
                     // Handle successful responses
@@ -101,7 +102,7 @@ class ApiClient(configuration: AppConfiguration, authenticator: Authenticator) {
     /*
      * Use the okhttp library to make an async request for data
      */
-    private suspend fun callApiWithToken(method: String, url: String, data: Any?, accessToken: String): Response {
+    private suspend fun callApiWithToken(method: String, url: String, data: Any?, accessToken: String, options: ApiRequestOptions? = null): Response {
 
         // Configure the request body
         var body: RequestBody? = null
@@ -111,12 +112,13 @@ class ApiClient(configuration: AppConfiguration, authenticator: Authenticator) {
         }
 
         // Build the full request
-        val request = Request.Builder()
+        val builder = Request.Builder()
             .header("Accept", "application/json")
             .header("Authorization", "Bearer $accessToken")
             .method(method, body)
             .url(url)
-            .build()
+        this.addCustomHeaders(builder, options)
+        val request = builder.build()
 
         return suspendCoroutine { continuation ->
 
@@ -140,6 +142,23 @@ class ApiClient(configuration: AppConfiguration, authenticator: Authenticator) {
                 }
             })
         }
+    }
+
+    /*
+     * Send custom headers to the API for logging purposes
+     */
+    private fun addCustomHeaders(builder: Request.Builder, options: ApiRequestOptions? = null) {
+
+        builder.header("x-mycompany-api-client", "BasicAndroidApp")
+        builder.header("x-mycompany-session-id", this.sessionId)
+        builder.header("x-mycompany-correlation-id", UUID.randomUUID().toString())
+
+        // A special header can be sent to thr API to cause a simulated exception
+        if(options != null && options.causeError) {
+            builder.header("x-mycompany-test-exception", "SampleApi")
+        }
+
+        builder.header("x-mycompany-test-exception", "SampleApi")
     }
 
     /*

@@ -1,6 +1,7 @@
 package com.authguidance.basicmobileapp
 
 import android.content.Context
+import com.authguidance.basicmobileapp.api.client.ApiClient
 import com.authguidance.basicmobileapp.configuration.Configuration
 import com.authguidance.basicmobileapp.configuration.ConfigurationLoader
 import com.authguidance.basicmobileapp.plumbing.oauth.Authenticator
@@ -13,6 +14,7 @@ class ApplicationState(val applicationContext: Context) {
     // Global state
     lateinit var configuration: Configuration
     lateinit var authenticator: Authenticator
+    lateinit var apiClient: ApiClient
 
     // Flags
     var isLoaded = false
@@ -31,6 +33,7 @@ class ApplicationState(val applicationContext: Context) {
 
             // Create the global authenticator
             this.authenticator = Authenticator(this.configuration.oauth, this.applicationContext)
+            this.apiClient = ApiClient(this.configuration.app.apiBaseUrl, this.authenticator)
 
             // Prevent re-entrancy
             isLoaded = true

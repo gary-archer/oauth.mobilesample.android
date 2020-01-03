@@ -30,7 +30,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment(), ReloadableFragmen
     /*
      * Get a reference to the main activity
      */
-    override fun onAttach(context: Context?) {
+    override fun onAttach(context: Context) {
         super.onAttach(context)
         this.mainActivity = context as MainActivity
     }
