@@ -1,5 +1,8 @@
-package com.authguidance.basicmobileapp.plumbing.api
+package com.authguidance.basicmobileapp.api.client
 
+import com.authguidance.basicmobileapp.api.entities.Company
+import com.authguidance.basicmobileapp.api.entities.CompanyTransactions
+import com.authguidance.basicmobileapp.api.entities.UserInfoClaims
 import com.authguidance.basicmobileapp.configuration.AppConfiguration
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorHandler
 import com.authguidance.basicmobileapp.plumbing.oauth.Authenticator
@@ -16,15 +19,40 @@ import kotlin.coroutines.suspendCoroutine
 /*
  * Plumbing related to making HTTP calls
  */
-class HttpClient(configuration: AppConfiguration, authenticator: Authenticator) {
+class ApiClient(configuration: AppConfiguration, authenticator: Authenticator) {
 
     private val configuration = configuration
     private val authenticator = authenticator
 
     /*
+     * Download user info from the API so that we can get any data we need
+     */
+    suspend fun getUserInfo(): UserInfoClaims {
+        val response = this.callApi("userclaims/current", "GET",null)
+        return this.readResponseBody(response, UserInfoClaims::class.java)
+    }
+
+    /*
+     * Get the list of companies
+     */
+    suspend fun getCompanyList(): Array<Company> {
+        val response = this.callApi("companies", "GET", null)
+        return this.readResponseBody(response, Array<Company>::class.java)
+    }
+
+    /*
+     * Get the list of transactions for a company
+     */
+    suspend fun getCompanyTransactions(companyId: String): CompanyTransactions {
+
+        val response = this.callApi("companies/${companyId}/transactions", "GET", null)
+        return this.readResponseBody(response, CompanyTransactions::class.java)
+    }
+
+    /*
      * The entry point for calling an API in a parameterised manner
      */
-    suspend fun <T> callApi(method: String, path: String, data: Any?, runtimeType: Class<T>): T {
+    private suspend fun callApi(path: String, method: String, data: Any?): Response {
 
         // Get the full URL
         val url = "${this.configuration.apiBaseUrl}/$path"
@@ -37,7 +65,7 @@ class HttpClient(configuration: AppConfiguration, authenticator: Authenticator) 
         if(response.isSuccessful) {
 
             // Handle successful responses
-            return this.readResponseBody(response, runtimeType)
+            return response
         }
         else {
 
@@ -53,7 +81,7 @@ class HttpClient(configuration: AppConfiguration, authenticator: Authenticator) 
                 if(response.isSuccessful) {
 
                     // Handle successful responses
-                    return this.readResponseBody(response, runtimeType)
+                    return response
                 }
                 else {
 

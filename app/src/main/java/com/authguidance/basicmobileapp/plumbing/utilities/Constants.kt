@@ -1,4 +1,4 @@
-package com.authguidance.basicmobileapp.logic.utilities
+package com.authguidance.basicmobileapp.plumbing.utilities
 
 /*
  * Constant values
@@ -17,5 +17,4 @@ object Constants {
 
     // Error details passed when navigating to the error fragment
     const val ARG_ERROR_DATA = "ERROR_DATA"
-    const val ARG_ERROR_DEBUG = "ERROR_DEBUG"
 }

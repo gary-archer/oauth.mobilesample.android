@@ -3,8 +3,8 @@ package com.authguidance.basicmobileapp.plumbing.oauth
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import com.authguidance.basicmobileapp.logic.activities.MainActivity
-import com.authguidance.basicmobileapp.logic.utilities.Constants
+import com.authguidance.basicmobileapp.views.activities.MainActivity
+import com.authguidance.basicmobileapp.plumbing.utilities.Constants
 
 /*
  * A simple class similar to AppAuth's RedirectUriReceiverActivity, for handling responses after the logout redirect to remove the session cookie

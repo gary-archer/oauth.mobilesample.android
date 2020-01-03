@@ -1,4 +1,4 @@
-package com.authguidance.basicmobileapp.logic.fragments
+package com.authguidance.basicmobileapp.views.fragments
 
 import android.content.Context
 import android.os.Bundle
@@ -9,10 +9,10 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.databinding.FragmentCompaniesBinding
-import com.authguidance.basicmobileapp.logic.activities.MainActivity
-import com.authguidance.basicmobileapp.logic.adapters.CompanyArrayAdapter
-import com.authguidance.basicmobileapp.logic.entities.Company
-import com.authguidance.basicmobileapp.logic.utilities.Constants
+import com.authguidance.basicmobileapp.views.activities.MainActivity
+import com.authguidance.basicmobileapp.views.adapters.CompanyArrayAdapter
+import com.authguidance.basicmobileapp.api.entities.Company
+import com.authguidance.basicmobileapp.plumbing.utilities.Constants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -64,9 +64,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment(), ReloadableFragment {
         CoroutineScope(Dispatchers.IO).launch {
 
             try {
-                val httpClient = that.mainActivity.getHttpClient()
-                val result =
-                    httpClient.callApi("GET", "companies", null, Array<Company>::class.java)
+                val result = that.mainActivity.getApiClient().getCompanyList()
 
                 // Switch back to the UI thread for rendering
                 withContext(Dispatchers.Main) {

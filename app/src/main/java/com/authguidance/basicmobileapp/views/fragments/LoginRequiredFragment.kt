@@ -1,4 +1,4 @@
-package com.authguidance.basicmobileapp.logic.fragments
+package com.authguidance.basicmobileapp.views.fragments
 
 import android.content.Context
 import android.os.Bundle
@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.databinding.FragmentLoginRequiredBinding
-import com.authguidance.basicmobileapp.logic.activities.MainActivity
+import com.authguidance.basicmobileapp.views.activities.MainActivity
 
 /*
  * The fragment to indicate that a login is required

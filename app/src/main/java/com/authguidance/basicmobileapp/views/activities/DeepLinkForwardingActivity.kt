@@ -1,4 +1,4 @@
-package com.authguidance.basicmobileapp.logic.activities
+package com.authguidance.basicmobileapp.views.activities
 
 import android.app.Activity
 import android.content.Intent

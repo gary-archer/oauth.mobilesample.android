@@ -7,7 +7,7 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:context=".logic.fragments.HeaderButtonsFragment">
+            tools:context=".views.fragments.HeaderButtonsFragment">
 
         <TableRow
                 android:layout_width="match_parent"

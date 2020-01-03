@@ -1,8 +1,7 @@
-package com.authguidance.basicmobileapp.logic.utilities
+package com.authguidance.basicmobileapp.configuration
 
 import android.content.Context
 import com.authguidance.basicmobileapp.R
-import com.authguidance.basicmobileapp.configuration.Configuration
 import com.google.gson.Gson
 import okio.Buffer
 import okio.buffer

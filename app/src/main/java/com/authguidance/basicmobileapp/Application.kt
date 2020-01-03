@@ -1,7 +1,7 @@
 package com.authguidance.basicmobileapp
 
 import android.os.Looper
-import com.authguidance.basicmobileapp.logic.activities.MainActivity
+import com.authguidance.basicmobileapp.views.activities.MainActivity
 
 /*
  * Our custom application class

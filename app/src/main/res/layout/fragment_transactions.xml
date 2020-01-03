@@ -8,7 +8,7 @@
     <!-- The transactions fragment is occupied by a list of transactions -->
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/listTransactions"
-            tools:context=".logic.fragments.TransactionsFragment"
+            tools:context=".views.fragments.TransactionsFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>

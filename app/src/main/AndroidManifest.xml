@@ -19,7 +19,7 @@
         <!-- Our single activity uses single top which prevents recreating it when it is on top of the stack
              Also we prevent activity restarts when the orientation is changed -->
         <activity
-                android:name=".logic.activities.MainActivity"
+                android:name=".views.activities.MainActivity"
                 android:launchMode="singleTop"
                 android:configChanges="orientation|screenSize"
                 android:label="@string/app_name">
@@ -36,7 +36,7 @@
 
         <!-- A dedicated activity for handling deep links in a controlled manner -->
         <activity
-            android:name=".logic.activities.DeepLinkForwardingActivity"
+            android:name=".views.activities.DeepLinkForwardingActivity"
             android:launchMode="singleTask"
             android:noHistory="true">
 

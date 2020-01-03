@@ -5,5 +5,4 @@ package com.authguidance.basicmobileapp.configuration
  */
 class AppConfiguration {
     lateinit var apiBaseUrl: String
-    var debugErrorDetails: Boolean = false
 }

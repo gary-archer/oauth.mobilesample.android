@@ -6,7 +6,7 @@
         <import type="android.view.View" />
         <variable
                 name="activity"
-                type="com.authguidance.basicmobileapp.logic.activities.MainActivity" />
+                type="com.authguidance.basicmobileapp.views.activities.MainActivity" />
     </data>
     <LinearLayout
             android:layout_width="match_parent"
@@ -16,7 +16,7 @@
         <!-- The action bar area shows the app name and the logged in user -->
         <fragment
             android:id="@+id/actionBarFragment"
-            android:name="com.authguidance.basicmobileapp.logic.fragments.ActionBarFragment"
+            android:name="com.authguidance.basicmobileapp.views.fragments.ActionBarFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:layout="@layout/fragment_action_bar"/>
@@ -24,7 +24,7 @@
         <!-- Next we show a row of buttons for testing data and token operations -->
         <fragment
                 android:id="@+id/buttonHeaderFragment"
-                android:name="com.authguidance.basicmobileapp.logic.fragments.HeaderButtonsFragment"
+                android:name="com.authguidance.basicmobileapp.views.fragments.HeaderButtonsFragment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 tools:layout="@layout/fragment_header_buttons"/>

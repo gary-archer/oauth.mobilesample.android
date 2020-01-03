@@ -1,4 +1,4 @@
-package com.authguidance.basicmobileapp.logic.fragments
+package com.authguidance.basicmobileapp.views.fragments
 
 import android.content.Context
 import android.os.Bundle
@@ -6,8 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.authguidance.basicmobileapp.databinding.FragmentActionBarBinding
-import com.authguidance.basicmobileapp.logic.activities.MainActivity
-import com.authguidance.basicmobileapp.logic.entities.UserInfoClaims
+import com.authguidance.basicmobileapp.views.activities.MainActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -50,13 +49,7 @@ class ActionBarFragment : androidx.fragment.app.Fragment() {
             try {
 
                 // Load user info
-                val httpClient = that.mainActivity.getHttpClient()
-                val userInfo = httpClient.callApi(
-                    "GET",
-                    "userclaims/current",
-                    null,
-                    UserInfoClaims::class.java
-                )
+                val userInfo = that.mainActivity.getApiClient().getUserInfo()
 
                 withContext(Dispatchers.Main) {
 

@@ -1,4 +1,4 @@
-package com.authguidance.basicmobileapp.logic.activities
+package com.authguidance.basicmobileapp.views.activities
 
 import android.app.admin.DevicePolicyManager
 import android.content.Intent
@@ -11,14 +11,14 @@ import com.authguidance.basicmobileapp.Application
 import com.authguidance.basicmobileapp.ApplicationState
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.databinding.ActivityMainBinding
-import com.authguidance.basicmobileapp.logic.fragments.ActionBarFragment
-import com.authguidance.basicmobileapp.logic.fragments.HeaderButtonsFragment
-import com.authguidance.basicmobileapp.logic.fragments.ReloadableFragment
-import com.authguidance.basicmobileapp.logic.utilities.NavigationHelper
-import com.authguidance.basicmobileapp.plumbing.api.HttpClient
+import com.authguidance.basicmobileapp.views.fragments.ActionBarFragment
+import com.authguidance.basicmobileapp.views.fragments.HeaderButtonsFragment
+import com.authguidance.basicmobileapp.views.fragments.ReloadableFragment
+import com.authguidance.basicmobileapp.plumbing.utilities.NavigationHelper
+import com.authguidance.basicmobileapp.api.client.ApiClient
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorHandler
-import com.authguidance.basicmobileapp.logic.utilities.Constants
-import com.authguidance.basicmobileapp.logic.utilities.SecureDevice
+import com.authguidance.basicmobileapp.plumbing.utilities.Constants
+import com.authguidance.basicmobileapp.plumbing.utilities.SecureDevice
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -37,7 +37,6 @@ class MainActivity : AppCompatActivity() {
 
     // Application state
     private lateinit var state: ApplicationState;
-    private var showDebugErrorInfo: Boolean = false
 
     /*
      * Create the activity in a safe manner, to set up navigation and data binding
@@ -98,7 +97,6 @@ class MainActivity : AppCompatActivity() {
         try {
             // Load application state the first time the activity is created
             this.state.load()
-            this.showDebugErrorInfo = this.state.configuration.app.debugErrorDetails
         }
         catch(ex: Exception) {
 
@@ -225,8 +223,11 @@ class MainActivity : AppCompatActivity() {
     /*
      * Return an HTTP client to enable fragments to get data
      */
-    fun getHttpClient(): HttpClient {
-        return HttpClient(this.state.configuration.app, this.state.authenticator)
+    fun getApiClient(): ApiClient {
+        return ApiClient(
+            this.state.configuration.app,
+            this.state.authenticator
+        )
     }
 
     /*
@@ -376,7 +377,6 @@ class MainActivity : AppCompatActivity() {
             // Otherwise navigate to the error fragment and render error details
             val args = Bundle()
             args.putSerializable(Constants.ARG_ERROR_DATA, error as Serializable)
-            args.putSerializable(Constants.ARG_ERROR_DEBUG, this.showDebugErrorInfo)
             NavigationHelper().navigate(
                 this.navController,
                 this.navHostFragment.childFragmentManager.primaryNavigationFragment,

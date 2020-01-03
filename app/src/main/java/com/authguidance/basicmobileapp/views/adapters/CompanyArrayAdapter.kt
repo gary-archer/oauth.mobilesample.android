@@ -1,11 +1,11 @@
-package com.authguidance.basicmobileapp.logic.adapters
+package com.authguidance.basicmobileapp.views.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.authguidance.basicmobileapp.logic.entities.Company
+import com.authguidance.basicmobileapp.api.entities.Company
 import com.authguidance.basicmobileapp.R
 import kotlinx.android.synthetic.main.company_list_item.view.*
 

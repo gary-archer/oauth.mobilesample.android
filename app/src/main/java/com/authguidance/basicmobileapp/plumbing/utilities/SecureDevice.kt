@@ -1,4 +1,4 @@
-package com.authguidance.basicmobileapp.logic.utilities
+package com.authguidance.basicmobileapp.plumbing.utilities
 
 import android.app.Activity
 import android.app.AlertDialog

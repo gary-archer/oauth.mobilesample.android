@@ -1,4 +1,4 @@
-package com.authguidance.basicmobileapp.logic.fragments
+package com.authguidance.basicmobileapp.views.fragments
 
 import android.content.Context
 import android.os.Bundle
@@ -8,11 +8,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.databinding.FragmentTransactionsBinding
-import com.authguidance.basicmobileapp.logic.activities.MainActivity
-import com.authguidance.basicmobileapp.logic.adapters.TransactionArrayAdapter
-import com.authguidance.basicmobileapp.logic.entities.CompanyTransactions
+import com.authguidance.basicmobileapp.views.activities.MainActivity
+import com.authguidance.basicmobileapp.views.adapters.TransactionArrayAdapter
+import com.authguidance.basicmobileapp.api.entities.CompanyTransactions
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
-import com.authguidance.basicmobileapp.logic.utilities.Constants
+import com.authguidance.basicmobileapp.plumbing.utilities.Constants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -70,14 +70,12 @@ class TransactionsFragment : androidx.fragment.app.Fragment(), ReloadableFragmen
 
             val that = this@TransactionsFragment
             try {
-                val httpClient = that.mainActivity.getHttpClient()
-                val url = "companies/${that.companyId}/transactions"
-                val result = httpClient.callApi("GET", url, null, CompanyTransactions::class.java)
+                val result = that.mainActivity.getApiClient().getCompanyTransactions(that.companyId!!)
 
                 // Switch back to the UI thread for rendering
                 withContext(Dispatchers.Main) {
                     renderData(result)
-                }
+            }
             }
             catch(uiError: UIError) {
 

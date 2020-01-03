@@ -2,7 +2,7 @@ package com.authguidance.basicmobileapp
 
 import android.content.Context
 import com.authguidance.basicmobileapp.configuration.Configuration
-import com.authguidance.basicmobileapp.logic.utilities.ConfigurationLoader
+import com.authguidance.basicmobileapp.configuration.ConfigurationLoader
 import com.authguidance.basicmobileapp.plumbing.oauth.Authenticator
 
 /*
@@ -26,7 +26,8 @@ class ApplicationState(val applicationContext: Context) {
         if(!isLoaded) {
 
             // Load our JSON configuration
-            this.configuration = ConfigurationLoader().loadConfiguration(this.applicationContext)
+            this.configuration = ConfigurationLoader()
+                .loadConfiguration(this.applicationContext)
 
             // Create the global authenticator
             this.authenticator = Authenticator(this.configuration.oauth, this.applicationContext)

@@ -1,4 +1,4 @@
-package com.authguidance.basicmobileapp.logic.fragments
+package com.authguidance.basicmobileapp.views.fragments
 
 /*
  * An empty fragment rendered as the default

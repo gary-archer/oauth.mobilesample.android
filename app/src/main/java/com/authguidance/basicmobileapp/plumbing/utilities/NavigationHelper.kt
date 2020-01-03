@@ -1,12 +1,12 @@
-package com.authguidance.basicmobileapp.logic.utilities
+package com.authguidance.basicmobileapp.plumbing.utilities
 
 import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import com.authguidance.basicmobileapp.R
-import com.authguidance.basicmobileapp.logic.fragments.ErrorFragment
-import com.authguidance.basicmobileapp.logic.fragments.LoginRequiredFragment
+import com.authguidance.basicmobileapp.views.fragments.ErrorFragment
+import com.authguidance.basicmobileapp.views.fragments.LoginRequiredFragment
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 

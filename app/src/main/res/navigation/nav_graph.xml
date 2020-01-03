@@ -7,31 +7,31 @@
 
     <fragment
         android:id="@+id/blankFragment"
-        android:name="com.authguidance.basicmobileapp.logic.fragments.BlankFragment"
+        android:name="com.authguidance.basicmobileapp.views.fragments.BlankFragment"
         android:label="Startup"
         tools:layout="@layout/fragment_blank">
     </fragment>
     <fragment
             android:id="@+id/companiesFragment"
-            android:name="com.authguidance.basicmobileapp.logic.fragments.CompaniesFragment"
+            android:name="com.authguidance.basicmobileapp.views.fragments.CompaniesFragment"
             android:label="Company List"
             tools:layout="@layout/fragment_companies">
     </fragment>
     <fragment
             android:id="@+id/transactionsFragment"
-            android:name="com.authguidance.basicmobileapp.logic.fragments.TransactionsFragment"
+            android:name="com.authguidance.basicmobileapp.views.fragments.TransactionsFragment"
             android:label="Company Transactions"
             tools:layout="@layout/fragment_transactions">
     </fragment>
     <fragment
             android:id="@+id/loginRequiredFragment"
-            android:name="com.authguidance.basicmobileapp.logic.fragments.LoginRequiredFragment"
+            android:name="com.authguidance.basicmobileapp.views.fragments.LoginRequiredFragment"
             android:label="Error Details"
             tools:layout="@layout/fragment_login_required">
     </fragment>
     <fragment
             android:id="@+id/errorFragment"
-            android:name="com.authguidance.basicmobileapp.logic.fragments.ErrorFragment"
+            android:name="com.authguidance.basicmobileapp.views.fragments.ErrorFragment"
             android:label="Error Details"
             tools:layout="@layout/fragment_error">
     </fragment>

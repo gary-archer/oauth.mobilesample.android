@@ -1,4 +1,4 @@
-package com.authguidance.basicmobileapp.logic.fragments
+package com.authguidance.basicmobileapp.views.fragments
 
 import android.content.Context
 import android.os.Bundle
@@ -8,11 +8,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.databinding.FragmentErrorBinding
-import com.authguidance.basicmobileapp.logic.activities.MainActivity
-import com.authguidance.basicmobileapp.logic.adapters.ErrorItemArrayAdapter
+import com.authguidance.basicmobileapp.views.activities.MainActivity
+import com.authguidance.basicmobileapp.views.adapters.ErrorItemArrayAdapter
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorField
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
-import com.authguidance.basicmobileapp.logic.utilities.Constants
+import com.authguidance.basicmobileapp.plumbing.utilities.Constants
 
 /*
  * The fragment to show error details
@@ -22,7 +22,6 @@ class ErrorFragment : androidx.fragment.app.Fragment() {
     private lateinit var binding: FragmentErrorBinding
     private lateinit var mainActivity: MainActivity
     private var error: UIError? = null
-    private var debugErrorDetails: Boolean? = null
 
     /*
      * Get a reference to the main activity
@@ -40,7 +39,6 @@ class ErrorFragment : androidx.fragment.app.Fragment() {
 
         // Get data passed in
         this.error = this.arguments?.getSerializable(Constants.ARG_ERROR_DATA) as UIError
-        this.debugErrorDetails = this.arguments?.getBoolean(Constants.ARG_ERROR_DEBUG)
 
         // Inflate the view
         this.binding = FragmentErrorBinding.inflate(inflater, container, false)
@@ -132,20 +130,17 @@ class ErrorFragment : androidx.fragment.app.Fragment() {
             }
 
             // Show additional technical details when configured
-            if (this.debugErrorDetails == true) {
+            if (!error.url.isNullOrBlank()) {
+                result.add(ErrorField(this.getString(R.string.error_url), error.url))
+            }
 
-                if (!error.url.isNullOrBlank()) {
-                    result.add(ErrorField(this.getString(R.string.error_url), error.url))
-                }
-
-                if (error.stackFrames.size > 0) {
-                    result.add(
-                        ErrorField(
-                            this.getString(R.string.error_stack),
-                            error.stackFrames.joinToString("\n\n")
-                        )
+            if (error.stackFrames.size > 0) {
+                result.add(
+                    ErrorField(
+                        this.getString(R.string.error_stack),
+                        error.stackFrames.joinToString("\n\n")
                     )
-                }
+                )
             }
         }
 

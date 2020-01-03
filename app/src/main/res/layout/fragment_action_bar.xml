@@ -10,7 +10,7 @@
         android:stretchColumns="1"
         android:weightSum="2"
         android:padding="10dp"
-        tools:context=".logic.fragments.ActionBarFragment">
+        tools:context=".views.fragments.ActionBarFragment">
 
         <TableRow
             android:layout_width="match_parent"
