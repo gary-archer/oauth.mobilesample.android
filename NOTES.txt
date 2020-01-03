@@ -1,17 +1,21 @@
-1. Button enabling and disabling and use of view manager
+1. Get view manager to invoke login required
 
-2. Multiple login required errors
+2. User info updates to be same as for desktop app
 
-3. Display session id in UI
+3. Rename action bar fragment to title fragment
 
-4. Long press to cause error + fix desktop sample 2
+4. Display session id in UI
 
-5. ErrorCodes class
+5. Long press to cause error + fix desktop sample 2
 
-6. Classes as similar as possible to SPA
+6. Complete ErrorCodes class
 
-7. Deep link URLs as company=2
+7. ErrorField to ErrorLine
 
-8. Aim to improve navigation code
+8. Classes as similar as possible to SPA
 
-9. Stack traces same as Web UI
+9. Deep link URLs as company=2
+
+10. Aim to improve navigation code
+
+11. Stack traces to review in line with Web UI stack traces

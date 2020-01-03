@@ -93,16 +93,13 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
     }
 
     /*
-     * Set the button state when a fragment loads
+     * Set the button state when the main fragment loads
      */
-    fun setButtonEnabledState(enableReload: Boolean, hasTokens: Boolean) {
+    fun setButtonEnabledState(enabled: Boolean) {
 
-        // Some views are reloadable
-        this.binding.btnReloadData.isEnabled = enableReload
-
-        // Other controls depend on login state
-        this.binding.btnExpireAccessToken.isEnabled = hasTokens
-        this.binding.btnExpireRefreshToken.isEnabled = hasTokens
-        this.binding.btnLogout.isEnabled = hasTokens
+        this.binding.btnReloadData.isEnabled = enabled
+        this.binding.btnExpireAccessToken.isEnabled = enabled
+        this.binding.btnExpireRefreshToken.isEnabled = enabled
+        this.binding.btnLogout.isEnabled = enabled
     }
 }

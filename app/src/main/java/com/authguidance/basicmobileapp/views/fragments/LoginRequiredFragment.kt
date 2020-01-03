@@ -40,7 +40,6 @@ class LoginRequiredFragment : androidx.fragment.app.Fragment() {
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        this.mainActivity.setButtonState()
         this.mainActivity.setFragmentTitle(this.getString(R.string.login_required_title))
     }
 }

@@ -19,6 +19,7 @@ import com.authguidance.basicmobileapp.api.client.ApiClient
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorHandler
 import com.authguidance.basicmobileapp.plumbing.utilities.Constants
 import com.authguidance.basicmobileapp.plumbing.utilities.SecureDevice
+import com.authguidance.basicmobileapp.views.ViewManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -36,7 +37,8 @@ class MainActivity : AppCompatActivity() {
     lateinit var navHostFragment: NavHostFragment
 
     // Application state
-    private lateinit var state: ApplicationState;
+    private lateinit var state: ApplicationState
+    lateinit var viewManager: ViewManager
 
     /*
      * Create the activity in a safe manner, to set up navigation and data binding
@@ -97,6 +99,7 @@ class MainActivity : AppCompatActivity() {
         try {
             // Load application state the first time the activity is created
             this.state.load()
+            this.viewManager = ViewManager(this::onLoadStateChanged, this::onLoginRequired)
         }
         catch(ex: Exception) {
 
@@ -187,6 +190,21 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*
+     * Update session buttons when the main view starts and ends loading
+     */
+    private fun onLoadStateChanged(loaded: Boolean) {
+
+        val buttonFragment = this.supportFragmentManager.findFragmentById(R.id.buttonHeaderFragment) as HeaderButtonsFragment
+        buttonFragment.setButtonEnabledState(loaded)
+    }
+
+    /*
+     * Start a login redirect when the view manager informs us that a permanent 401 has occurred
+     */
+    private fun onLoginRequired() {
+    }
+
+    /*
      * Navigate home when requested
      */
     fun onHome() {
@@ -209,15 +227,6 @@ class MainActivity : AppCompatActivity() {
      */
     fun setFragmentTitle(title: String) {
         this.binding.fragmentHeadingText.text = title
-    }
-
-    /*
-     * The active fragment calls this upon loading
-     */
-    fun setButtonState() {
-        val buttonFragment = this.supportFragmentManager.findFragmentById(R.id.buttonHeaderFragment) as HeaderButtonsFragment
-        val activeFragment = this.navHostFragment.childFragmentManager.primaryNavigationFragment
-        buttonFragment.setButtonEnabledState(activeFragment is ReloadableFragment, this.state.authenticator.isLoggedIn())
     }
 
     /*
@@ -280,9 +289,6 @@ class MainActivity : AppCompatActivity() {
                     if(activeFragment is ReloadableFragment) {
                         activeFragment.loadData()
                     }
-
-                    // Update button state after login
-                    that.setButtonState()
                 }
             }
             catch(ex: Exception) {

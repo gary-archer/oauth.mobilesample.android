@@ -51,7 +51,6 @@ class ErrorFragment : androidx.fragment.app.Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        this.mainActivity.setButtonState()
         this.mainActivity.setFragmentTitle(this.getString(R.string.error_title))
         this.renderData()
     }

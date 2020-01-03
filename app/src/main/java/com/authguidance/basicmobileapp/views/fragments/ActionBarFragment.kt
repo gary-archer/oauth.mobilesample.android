@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /*
- * The action bar fragment shows the logged in user
+ * The title fragment shows the logged in user
  */
 class ActionBarFragment : androidx.fragment.app.Fragment() {
 
@@ -54,6 +54,7 @@ class ActionBarFragment : androidx.fragment.app.Fragment() {
                 withContext(Dispatchers.Main) {
 
                     // Render user info
+                    that.mainActivity.viewManager.onUserInfoLoaded()
                     that.binding.loggedInUser.text = "${userInfo.givenName} ${userInfo.familyName}"
                 }
             }
@@ -61,6 +62,7 @@ class ActionBarFragment : androidx.fragment.app.Fragment() {
 
                 // Report errors such as those looking up endpoints
                 withContext(Dispatchers.Main) {
+                    that.mainActivity.viewManager.onUserInfoLoaded()
                     that.mainActivity.handleException(ex)
                 }
             }

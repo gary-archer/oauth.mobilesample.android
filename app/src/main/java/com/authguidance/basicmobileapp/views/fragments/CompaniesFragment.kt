@@ -50,7 +50,6 @@ class CompaniesFragment : androidx.fragment.app.Fragment(), ReloadableFragment {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        this.mainActivity.setButtonState()
         this.mainActivity.setFragmentTitle(this.getString(R.string.company_list_title))
         this.loadData()
     }
@@ -60,6 +59,8 @@ class CompaniesFragment : androidx.fragment.app.Fragment(), ReloadableFragment {
      */
     override fun loadData() {
 
+        this.mainActivity.viewManager.onMainViewLoading()
+
         val that = this@CompaniesFragment
         CoroutineScope(Dispatchers.IO).launch {
 
@@ -68,6 +69,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment(), ReloadableFragment {
 
                 // Switch back to the UI thread for rendering
                 withContext(Dispatchers.Main) {
+                    that.mainActivity.viewManager.onMainViewLoaded()
                     that.renderData(result)
                 }
             }
@@ -75,6 +77,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment(), ReloadableFragment {
 
                 // Report errors
                 withContext(Dispatchers.Main) {
+                    that.mainActivity.viewManager.onMainViewLoadFailed()
                     that.mainActivity.handleException(ex)
                 }
             }

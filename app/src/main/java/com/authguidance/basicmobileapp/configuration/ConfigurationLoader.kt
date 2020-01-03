@@ -16,7 +16,7 @@ class ConfigurationLoader {
     /*
      * Load configuration from the resource
      */
-    fun loadConfiguration(context: Context): Configuration {
+    fun load(context: Context): Configuration {
 
         // Get the raw resource
         val stream = context.resources.openRawResource(R.raw.mobile_config)

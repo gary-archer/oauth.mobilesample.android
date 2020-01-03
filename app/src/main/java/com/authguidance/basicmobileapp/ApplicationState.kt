@@ -28,8 +28,7 @@ class ApplicationState(val applicationContext: Context) {
         if(!isLoaded) {
 
             // Load our JSON configuration
-            this.configuration = ConfigurationLoader()
-                .loadConfiguration(this.applicationContext)
+            this.configuration = ConfigurationLoader().load(this.applicationContext)
 
             // Create the global authenticator
             this.authenticator = Authenticator(this.configuration.oauth, this.applicationContext)

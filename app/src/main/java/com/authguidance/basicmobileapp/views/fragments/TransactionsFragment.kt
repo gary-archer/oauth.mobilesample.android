@@ -55,7 +55,6 @@ class TransactionsFragment : androidx.fragment.app.Fragment(), ReloadableFragmen
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        this.mainActivity.setButtonState()
         val format = this.getString(R.string.transactions_title)
         this.mainActivity.setFragmentTitle(String.format(format, this.companyId))
         this.loadData()
@@ -66,6 +65,8 @@ class TransactionsFragment : androidx.fragment.app.Fragment(), ReloadableFragmen
      */
     override fun loadData() {
 
+        this.mainActivity.viewManager.onMainViewLoading()
+
         CoroutineScope(Dispatchers.IO).launch {
 
             val that = this@TransactionsFragment
@@ -74,6 +75,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment(), ReloadableFragmen
 
                 // Switch back to the UI thread for rendering
                 withContext(Dispatchers.Main) {
+                    that.mainActivity.viewManager.onMainViewLoaded()
                     renderData(result)
             }
             }
@@ -100,6 +102,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment(), ReloadableFragmen
 
                     // Report other errors
                     withContext(Dispatchers.Main) {
+                        that.mainActivity.viewManager.onMainViewLoadFailed()
                         that.mainActivity.handleException(uiError)
                     }
                 }

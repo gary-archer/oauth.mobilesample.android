@@ -19,10 +19,11 @@ import kotlin.coroutines.suspendCoroutine
 /*
  * Plumbing related to making HTTP calls
  */
-class ApiClient(apiBaseUrl: String, authenticator: Authenticator) {
+class ApiClient(
+    private val apiBaseUrl: String,
+    private val authenticator: Authenticator) {
 
-    private val apiBaseUrl = apiBaseUrl
-    private val authenticator = authenticator
+    // Create a session id when the app starts
     private val sessionId = UUID.randomUUID().toString()
 
     /*
@@ -157,8 +158,6 @@ class ApiClient(apiBaseUrl: String, authenticator: Authenticator) {
         if(options != null && options.causeError) {
             builder.header("x-mycompany-test-exception", "SampleApi")
         }
-
-        builder.header("x-mycompany-test-exception", "SampleApi")
     }
 
     /*
