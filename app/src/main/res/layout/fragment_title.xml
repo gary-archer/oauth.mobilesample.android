@@ -26,12 +26,15 @@
                 android:layout_weight="1"
                 style="@style/TextViewHeaderStyle"/>
 
-            <!-- We show the logged in user to the right -->
-            <TextView
-                android:id="@+id/logged_in_user"
+            <!-- The title shows the user info fragment to the right -->
+            <fragment
+                android:id="@+id/userInfoFragment"
+                android:name="com.authguidance.basicmobileapp.views.fragments.UserInfoFragment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="right"
                 android:layout_weight="1"
-                style="@style/TextViewLabelStyle"/>
+                tools:layout="@layout/fragment_user_info"/>
         </TableRow>
     </TableLayout>
 </layout>

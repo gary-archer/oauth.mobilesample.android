@@ -1,9 +1,10 @@
-1. Error details fragment to check
+1. Get user info working inside title view
+   Consider avoiding storing the whole mainActivity in fragments
 
 2. Error summary fragment to get working when there is an error
-   Make it render inside companies / transactions / userinfo fragments
+   Make it render inside userinfo fragment
 
-3. Error detail as modal popup
+3. Get error details as modal popup workign inside userInfo
 
 4. Complete ErrorCodes class
 

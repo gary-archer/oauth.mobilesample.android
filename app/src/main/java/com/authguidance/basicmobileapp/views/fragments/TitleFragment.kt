@@ -5,13 +5,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.databinding.FragmentTitleBinding
-import com.authguidance.basicmobileapp.plumbing.errors.UIError
 import com.authguidance.basicmobileapp.views.activities.MainActivity
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /*
  * The title fragment shows the logged in user
@@ -43,37 +39,15 @@ class TitleFragment : androidx.fragment.app.Fragment() {
      * When logged in, call the API to get user info for display
      */
     fun loadUserInfo() {
-
-        CoroutineScope(Dispatchers.IO).launch {
-
-            val that = this@TitleFragment
-            try {
-
-                // Load user info
-                val userInfo = that.mainActivity.getApiClient().getUserInfo()
-
-                withContext(Dispatchers.Main) {
-
-                    // Render user info
-                    that.mainActivity.viewManager.onUserInfoLoaded()
-                    that.binding.loggedInUser.text = "${userInfo.givenName} ${userInfo.familyName}"
-                }
-            }
-            catch(uiError: UIError) {
-
-                // Report errors calling the API
-                withContext(Dispatchers.Main) {
-                    that.mainActivity.viewManager.onUserInfoLoadFailed(uiError)
-                    that.mainActivity.handleException(uiError)
-                }
-            }
-        }
+        val userInfoFragment = this.childFragmentManager.findFragmentById(R.id.userInfoFragment) as UserInfoFragment
+        userInfoFragment.loadUserInfo()
     }
 
     /*
      * Clear user info after logging out
      */
     fun clearUserInfo() {
-        this.binding.loggedInUser.text = ""
+        val userInfoFragment = this.childFragmentManager.findFragmentById(R.id.userInfoFragment) as UserInfoFragment
+        userInfoFragment.clearUserInfo()
     }
 }
