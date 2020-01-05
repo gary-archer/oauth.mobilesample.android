@@ -65,7 +65,12 @@ class TransactionsFragment : androidx.fragment.app.Fragment(), ReloadableFragmen
      */
     override fun loadData() {
 
+        // Inform the view manager so that the UI can be updated during load
         this.mainActivity.viewManager.onMainViewLoading()
+
+        // First clear any previous errors
+        val errorFragment = this.childFragmentManager.findFragmentById(R.id.transactionsErrorSummaryFragment) as ErrorSummaryFragment
+        errorFragment.clearError()
 
         CoroutineScope(Dispatchers.IO).launch {
 
@@ -102,8 +107,12 @@ class TransactionsFragment : androidx.fragment.app.Fragment(), ReloadableFragmen
 
                     // Report other errors
                     withContext(Dispatchers.Main) {
+
+                        // Report errors calling the API
                         that.mainActivity.viewManager.onMainViewLoadFailed(uiError)
-                        that.mainActivity.handleException(uiError)
+
+                        // Render error details
+                        errorFragment.reportError("Problem Encountered in Transactions View", uiError)
                     }
                 }
             }

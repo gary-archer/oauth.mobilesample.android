@@ -20,11 +20,11 @@ import com.authguidance.basicmobileapp.plumbing.errors.ErrorHandler
 import com.authguidance.basicmobileapp.plumbing.utilities.Constants
 import com.authguidance.basicmobileapp.plumbing.utilities.SecureDevice
 import com.authguidance.basicmobileapp.views.ViewManager
+import com.authguidance.basicmobileapp.views.fragments.ErrorSummaryFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.Serializable
 
 /*
  * Our single activity application's only activity
@@ -113,8 +113,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Ask the title fragment to load user info
-        val titleFragment =
-            this.supportFragmentManager.findFragmentById(R.id.titleFragment) as TitleFragment
+        val titleFragment = this.supportFragmentManager.findFragmentById(R.id.titleFragment) as TitleFragment
         titleFragment.loadUserInfo()
 
         // Deep link to a fragment to start the app if required, or just start the home fragment
@@ -202,6 +201,7 @@ class MainActivity : AppCompatActivity() {
      * Start a login redirect when the view manager informs us that a permanent 401 has occurred
      */
     private fun onLoginRequired() {
+        this.startLogin()
     }
 
     /*
@@ -358,12 +358,7 @@ class MainActivity : AppCompatActivity() {
         val handler = ErrorHandler()
         val error = handler.fromException(exception)
 
-        if (error.errorCode == "login_required") {
-
-            // Start a login redirect
-            this.startLogin()
-        }
-        else if (error.errorCode == "login_cancelled") {
+        if (error.errorCode == "login_cancelled") {
 
             // If the user has closed the Chrome Custom Tab without logging in, move to the Login Required view
             NavigationHelper().navigate(
@@ -373,14 +368,11 @@ class MainActivity : AppCompatActivity() {
         }
         else {
 
-            // Otherwise navigate to the error fragment and render error details
-            val args = Bundle()
-            args.putSerializable(Constants.ARG_ERROR_DATA, error as Serializable)
-            NavigationHelper().navigate(
-                this.navController,
-                this.navHostFragment.childFragmentManager.primaryNavigationFragment,
-                R.id.errorFragment,
-                args)
+            println("GJA: Application Error")
+
+            // Otherwise there is a technical error and we display summary details
+            val errorFragment = this.supportFragmentManager.findFragmentById(R.id.mainErrorSummaryFragment) as ErrorSummaryFragment
+            errorFragment.reportError("Problem Encountered in Application", error)
         }
     }
 

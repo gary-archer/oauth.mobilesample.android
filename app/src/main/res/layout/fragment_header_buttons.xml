@@ -27,7 +27,7 @@
             <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnExpireAccessToken"
                     android:text="@string/expire_access_token_button"
-                android:enabled="false"
+                    android:enabled="false"
                     style="@style/ButtonHeaderStyle"/>
 
             <com.google.android.material.button.MaterialButton

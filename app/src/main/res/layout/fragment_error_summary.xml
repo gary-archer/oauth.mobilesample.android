@@ -1,26 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools">
+
     <data>
     </data>
-
     <LinearLayout
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        tools:context=".views.fragments.ErrorSummaryFragment">>
+        tools:context=".views.fragments.ErrorSummaryFragment">
 
-        <!-- Show the page title -->
-        <androidx.appcompat.widget.Toolbar
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:background="@color/primary">
-            <TextView
-                android:id="@+id/fragment_heading_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                style="@style/TextViewHeaderStyle"/>
-        </androidx.appcompat.widget.Toolbar>
+        <!-- The error summary view is just a text control that links to a popup dialog -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TextViewErrorSummaryStyle"
+            android:id="@+id/error_summary_text" />
     </LinearLayout>
 </layout>

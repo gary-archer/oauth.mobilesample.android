@@ -1,12 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools">
+
     <data>
     </data>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context=".views.fragments.UserInfoFragment">
 
-    <!-- This simple fragment just shows the logged in user name -->
-    <TextView
-        tools:context=".views.fragments.UserInfoFragment"
-        android:id="@+id/logged_in_user"
-        style="@style/TextViewLabelStyle"/>
+        <!-- Show the logged in user name on success -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/TextViewLabelStyle"
+            android:id="@+id/logged_in_user" />
+
+        <!-- Show error summary details when there is an error getting user info -->
+        <fragment
+            android:id="@+id/userInfoErrorSummaryFragment"
+            android:name="com.authguidance.basicmobileapp.views.fragments.ErrorSummaryFragment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_error_summary"/>
+
+    </LinearLayout>
 </layout>

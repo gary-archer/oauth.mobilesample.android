@@ -60,7 +60,12 @@ class CompaniesFragment : androidx.fragment.app.Fragment(), ReloadableFragment {
      */
     override fun loadData() {
 
+        // Inform the view manager so that the UI can be updated during load
         this.mainActivity.viewManager.onMainViewLoading()
+
+        // First clear any previous errors
+        val errorFragment = this.childFragmentManager.findFragmentById(R.id.companiesErrorSummaryFragment) as ErrorSummaryFragment
+        errorFragment.clearError()
 
         val that = this@CompaniesFragment
         CoroutineScope(Dispatchers.IO).launch {
@@ -78,8 +83,12 @@ class CompaniesFragment : androidx.fragment.app.Fragment(), ReloadableFragment {
 
                 // Report errors
                 withContext(Dispatchers.Main) {
+
+                    // Report errors calling the API
                     that.mainActivity.viewManager.onMainViewLoadFailed(uiError)
-                    that.mainActivity.handleException(uiError)
+
+                    // Render error details
+                    errorFragment.reportError("Problem Encountered in Companies View", uiError)
                 }
             }
         }

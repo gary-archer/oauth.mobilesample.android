@@ -23,20 +23,28 @@
 
         <!-- Next we show a row of buttons for testing data and token operations -->
         <fragment
-                android:id="@+id/buttonHeaderFragment"
-                android:name="com.authguidance.basicmobileapp.views.fragments.HeaderButtonsFragment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:layout="@layout/fragment_header_buttons"/>
+            android:id="@+id/buttonHeaderFragment"
+            android:name="com.authguidance.basicmobileapp.views.fragments.HeaderButtonsFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_header_buttons"/>
+
+        <!-- When there is an application level error it is rendered via this fragment -->
+        <fragment
+            android:id="@+id/mainErrorSummaryFragment"
+            android:name="com.authguidance.basicmobileapp.views.fragments.ErrorSummaryFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_error_summary"/>
 
         <!-- The remainder is the main view, which gets swapped out as the user navigates -->
         <fragment
-                android:id="@+id/nav_host_fragment"
-                android:name="androidx.navigation.fragment.NavHostFragment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:defaultNavHost="true"
-                app:navGraph="@navigation/nav_graph"/>
+            android:id="@+id/nav_host_fragment"
+            android:name="androidx.navigation.fragment.NavHostFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:defaultNavHost="true"
+            app:navGraph="@navigation/nav_graph"/>
 
     </LinearLayout>
 </layout>

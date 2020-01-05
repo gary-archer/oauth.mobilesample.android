@@ -1,27 +1,25 @@
-1. Get user info working inside title view
-   Consider avoiding storing the whole mainActivity in fragments
+Currently API config causes an error due to invalid API URL
 
-2. Error summary fragment to get working when there is an error
-   Make it render inside userinfo fragment
+1. Get error details modal dialog working
 
-3. Get error details as modal popup workign inside userInfo
+2. Re-get company data in airplane mode - old view is left behind
+
+3. Errors loading config are not caught except by the unhandled exception handler
+   Reconsider application startup in comparison with SPA
+   Move code from application to MainActivity?
 
 4. Complete ErrorCodes class
+   Rename ErrorField to ErrorLine
 
-5. ErrorField to ErrorLine
+5. User info updates to be same as for desktop app
 
-6. Get view manager to invoke login required
+6. Display session id in UI
+   Long press to cause error + fix desktop sample 2
 
-7. User info updates to be same as for desktop app
+7. Review classes for similarity to SPA
+   Consider avoiding storing the whole mainActivity in fragments
 
-8. Display session id in UI
+8. Deep link URLs as company=2 and update blog
+   Aim to improve navigation code
 
-9. Long press to cause error + fix desktop sample 2
-
-10. Review classes for similarity to SPA
-
-11. Deep link URLs as company=2 and update blog
-
-12. Aim to improve navigation code
-
-13. Stack traces to review in line with Web UI stack traces
+9. Stack traces to review in line with Web UI stack traces

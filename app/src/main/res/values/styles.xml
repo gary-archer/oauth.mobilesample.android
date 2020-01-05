@@ -47,6 +47,14 @@
         <item name="android:layout_gravity">left</item>
     </style>
 
+    <!-- The style for error summary text -->
+    <style name="TextViewErrorSummaryStyle" parent="android:Widget.TextView">
+        <item name="android:textColor">@color/text_error</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
     <!-- The style for header text -->
     <style name="TextViewHeaderStyle" parent="android:Widget.TextView">
         <item name="android:textColor">@color/text_value</item>

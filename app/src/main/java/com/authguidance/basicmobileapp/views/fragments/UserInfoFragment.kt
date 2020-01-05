@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.databinding.FragmentUserInfoBinding
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
 import com.authguidance.basicmobileapp.views.activities.MainActivity
@@ -44,6 +45,11 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
      */
     fun loadUserInfo() {
 
+        // First clear any previous errors
+        val errorFragment = this.childFragmentManager.findFragmentById(R.id.userInfoErrorSummaryFragment) as ErrorSummaryFragment
+        errorFragment.clearError()
+
+        // Try to get data
         CoroutineScope(Dispatchers.IO).launch {
 
             val that = this@UserInfoFragment
@@ -61,19 +67,29 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
             }
             catch(uiError: UIError) {
 
-                // Report errors calling the API
                 withContext(Dispatchers.Main) {
+
+                    // Report errors calling the API
                     that.mainActivity.viewManager.onUserInfoLoadFailed(uiError)
-                    that.mainActivity.handleException(uiError)
+
+                    // Render error details
+                    // errorFragment.reportError("Problem Encountered", uiError)
+                    errorFragment.reportError("Problem Encountered", uiError)
                 }
             }
         }
     }
 
     /*
-     * Clear user info after logging out
+     * Clear data after logging out
      */
     fun clearUserInfo() {
+
+        // Blank out the user name
         this.binding.loggedInUser.text = ""
+
+        // Also ensure that any errors are cleared
+        val errorFragment = this.childFragmentManager.findFragmentById(R.id.userInfoErrorSummaryFragment) as ErrorSummaryFragment
+        errorFragment.clearError()
     }
 }
