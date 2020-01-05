@@ -5,11 +5,31 @@
     <data>
     </data>
 
-    <!-- The transactions fragment is occupied by a list of transactions -->
-    <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/listTransactions"
-            tools:context=".views.fragments.TransactionsFragment"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        tools:context=".views.fragments.TransactionsFragment">
+
+        <!-- Show the page title -->
+        <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+            android:layout_height="40dp"
+            android:background="@color/primary">
+            <TextView
+                android:id="@+id/fragment_heading_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                style="@style/TextViewHeaderStyle"/>
+        </androidx.appcompat.widget.Toolbar>
+
+        <!-- The transactions fragment is occupied by a list of transactions -->
+        <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/listTransactions"
+                tools:context=".views.fragments.TransactionsFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+    </LinearLayout>
 </layout>

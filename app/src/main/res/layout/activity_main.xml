@@ -13,13 +13,13 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-        <!-- The action bar area shows the app name and the logged in user -->
+        <!-- The title bar area shows the app name and the logged in user -->
         <fragment
-            android:id="@+id/actionBarFragment"
-            android:name="com.authguidance.basicmobileapp.views.fragments.ActionBarFragment"
+            android:id="@+id/titleFragment"
+            android:name="com.authguidance.basicmobileapp.views.fragments.TitleFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:layout="@layout/fragment_action_bar"/>
+            tools:layout="@layout/fragment_title"/>
 
         <!-- Next we show a row of buttons for testing data and token operations -->
         <fragment
@@ -29,20 +29,7 @@
                 android:layout_height="wrap_content"
                 tools:layout="@layout/fragment_header_buttons"/>
 
-        <!-- Next we show the active fragment's page title -->
-        <androidx.appcompat.widget.Toolbar
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:background="@color/primary">
-            <TextView
-                    android:id="@+id/fragment_heading_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    style="@style/TextViewHeaderStyle"/>
-        </androidx.appcompat.widget.Toolbar>
-
-        <!-- The remainder of the view shows the active fragment occupying the whole of the navigation host fragment -->
+        <!-- The remainder is the main view, which gets swapped out as the user navigates -->
         <fragment
                 android:id="@+id/nav_host_fragment"
                 android:name="androidx.navigation.fragment.NavHostFragment"

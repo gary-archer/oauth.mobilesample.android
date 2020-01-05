@@ -11,7 +11,7 @@ import com.authguidance.basicmobileapp.Application
 import com.authguidance.basicmobileapp.ApplicationState
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.databinding.ActivityMainBinding
-import com.authguidance.basicmobileapp.views.fragments.ActionBarFragment
+import com.authguidance.basicmobileapp.views.fragments.TitleFragment
 import com.authguidance.basicmobileapp.views.fragments.HeaderButtonsFragment
 import com.authguidance.basicmobileapp.views.fragments.ReloadableFragment
 import com.authguidance.basicmobileapp.plumbing.utilities.NavigationHelper
@@ -112,10 +112,10 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        // Ask the action bar fragment to load user info
-        val actionBarFragment =
-            this.supportFragmentManager.findFragmentById(R.id.actionBarFragment) as ActionBarFragment
-        actionBarFragment.loadUserInfo()
+        // Ask the title fragment to load user info
+        val titleFragment =
+            this.supportFragmentManager.findFragmentById(R.id.titleFragment) as TitleFragment
+        titleFragment.loadUserInfo()
 
         // Deep link to a fragment to start the app if required, or just start the home fragment
         if(NavigationHelper().isDeepLinkIntent(this.intent)) {
@@ -223,13 +223,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*
-     * Allow each main fragment to set the tirle
-     */
-    fun setFragmentTitle(title: String) {
-        this.binding.fragmentHeadingText.text = title
-    }
-
-    /*
      * Return an HTTP client to enable fragments to get data
      */
     fun getApiClient(): ApiClient {
@@ -281,8 +274,8 @@ class MainActivity : AppCompatActivity() {
                 withContext(Dispatchers.Main) {
 
                     // Load user info after logging in
-                    val actionBarFragment = that.supportFragmentManager.findFragmentById(R.id.actionBarFragment) as ActionBarFragment
-                    actionBarFragment.loadUserInfo()
+                    val titleFragment = that.supportFragmentManager.findFragmentById(R.id.titleFragment) as TitleFragment
+                    titleFragment.loadUserInfo()
 
                     // Also reload data for the active fragment
                     val activeFragment = that.navHostFragment.childFragmentManager.primaryNavigationFragment
@@ -343,8 +336,11 @@ class MainActivity : AppCompatActivity() {
         this.state.authenticator.finishLogout()
 
         // Update the UI to clear user info after logging out
-        val actionBarFragment = this.supportFragmentManager.findFragmentById(R.id.actionBarFragment) as ActionBarFragment
-        actionBarFragment.clearUserInfo()
+        val titleFragment = this.supportFragmentManager.findFragmentById(R.id.titleFragment) as TitleFragment
+        titleFragment.clearUserInfo()
+
+        // Disable session buttons after logout
+        this.onLoadStateChanged(false)
 
         // Move to the login required page
         NavigationHelper().navigate(

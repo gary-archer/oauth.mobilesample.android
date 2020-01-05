@@ -12,6 +12,7 @@ import com.authguidance.basicmobileapp.databinding.FragmentCompaniesBinding
 import com.authguidance.basicmobileapp.views.activities.MainActivity
 import com.authguidance.basicmobileapp.views.adapters.CompanyArrayAdapter
 import com.authguidance.basicmobileapp.api.entities.Company
+import com.authguidance.basicmobileapp.plumbing.errors.UIError
 import com.authguidance.basicmobileapp.plumbing.utilities.Constants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -45,12 +46,12 @@ class CompaniesFragment : androidx.fragment.app.Fragment(), ReloadableFragment {
     }
 
     /*
-     * Wire up button click events to call back the activity
+     * View initialization
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        this.mainActivity.setFragmentTitle(this.getString(R.string.company_list_title))
+        this.binding.fragmentHeadingText.text = this.getString(R.string.company_list_title)
         this.loadData()
     }
 
@@ -73,12 +74,12 @@ class CompaniesFragment : androidx.fragment.app.Fragment(), ReloadableFragment {
                     that.renderData(result)
                 }
             }
-            catch(ex: Exception) {
+            catch(uiError: UIError) {
 
                 // Report errors
                 withContext(Dispatchers.Main) {
-                    that.mainActivity.viewManager.onMainViewLoadFailed()
-                    that.mainActivity.handleException(ex)
+                    that.mainActivity.viewManager.onMainViewLoadFailed(uiError)
+                    that.mainActivity.handleException(uiError)
                 }
             }
         }

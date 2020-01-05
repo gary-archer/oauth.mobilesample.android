@@ -56,7 +56,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment(), ReloadableFragmen
         super.onViewCreated(view, savedInstanceState)
 
         val format = this.getString(R.string.transactions_title)
-        this.mainActivity.setFragmentTitle(String.format(format, this.companyId))
+        this.binding.fragmentHeadingText.text = String.format(format, this.companyId)
         this.loadData()
     }
 
@@ -77,7 +77,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment(), ReloadableFragmen
                 withContext(Dispatchers.Main) {
                     that.mainActivity.viewManager.onMainViewLoaded()
                     renderData(result)
-            }
+                }
             }
             catch(uiError: UIError) {
 
@@ -102,16 +102,9 @@ class TransactionsFragment : androidx.fragment.app.Fragment(), ReloadableFragmen
 
                     // Report other errors
                     withContext(Dispatchers.Main) {
-                        that.mainActivity.viewManager.onMainViewLoadFailed()
+                        that.mainActivity.viewManager.onMainViewLoadFailed(uiError)
                         that.mainActivity.handleException(uiError)
                     }
-                }
-            }
-            catch(ex: Exception) {
-
-                // Report other errors
-                withContext(Dispatchers.Main) {
-                    that.mainActivity.handleException(ex)
                 }
             }
         }

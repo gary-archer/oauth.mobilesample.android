@@ -5,7 +5,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.authguidance.basicmobileapp.databinding.FragmentActionBarBinding
+import com.authguidance.basicmobileapp.databinding.FragmentTitleBinding
+import com.authguidance.basicmobileapp.plumbing.errors.UIError
 import com.authguidance.basicmobileapp.views.activities.MainActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -15,9 +16,9 @@ import kotlinx.coroutines.withContext
 /*
  * The title fragment shows the logged in user
  */
-class ActionBarFragment : androidx.fragment.app.Fragment() {
+class TitleFragment : androidx.fragment.app.Fragment() {
 
-    private lateinit var binding: FragmentActionBarBinding
+    private lateinit var binding: FragmentTitleBinding
     private lateinit var mainActivity: MainActivity
 
     /*
@@ -34,7 +35,7 @@ class ActionBarFragment : androidx.fragment.app.Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
 
-        this.binding = FragmentActionBarBinding.inflate(inflater, container, false)
+        this.binding = FragmentTitleBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -45,7 +46,7 @@ class ActionBarFragment : androidx.fragment.app.Fragment() {
 
         CoroutineScope(Dispatchers.IO).launch {
 
-            val that = this@ActionBarFragment
+            val that = this@TitleFragment
             try {
 
                 // Load user info
@@ -58,12 +59,12 @@ class ActionBarFragment : androidx.fragment.app.Fragment() {
                     that.binding.loggedInUser.text = "${userInfo.givenName} ${userInfo.familyName}"
                 }
             }
-            catch(ex: Exception) {
+            catch(uiError: UIError) {
 
-                // Report errors such as those looking up endpoints
+                // Report errors calling the API
                 withContext(Dispatchers.Main) {
-                    that.mainActivity.viewManager.onUserInfoLoaded()
-                    that.mainActivity.handleException(ex)
+                    that.mainActivity.viewManager.onUserInfoLoadFailed(uiError)
+                    that.mainActivity.handleException(uiError)
                 }
             }
         }

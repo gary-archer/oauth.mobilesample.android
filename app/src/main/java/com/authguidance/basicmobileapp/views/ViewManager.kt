@@ -30,14 +30,16 @@ class ViewManager(
      */
     fun onMainViewLoaded() {
         this.mainViewLoaded = true
+        this.mainViewLoadError = null
         this.onLoadStateChanged(true)
     }
 
     /*
      * Handle the main view load failed event
      */
-    fun onMainViewLoadFailed() {
+    fun onMainViewLoadFailed(error: UIError) {
         this.mainViewLoaded = true
+        this.mainViewLoadError = error
         this.triggerLoginIfRequired();
     }
 
@@ -46,13 +48,15 @@ class ViewManager(
      */
     fun onUserInfoLoaded() {
         this.userInfoLoaded = true
+        this.userInfoLoadError = null
     }
 
     /*
      * After a failed user info load, store the error
      */
-    fun onUserInfoLoadFailed() {
+    fun onUserInfoLoadFailed(error: UIError) {
         this.userInfoLoaded = true
+        this.userInfoLoadError = error
         this.triggerLoginIfRequired();
     }
 
