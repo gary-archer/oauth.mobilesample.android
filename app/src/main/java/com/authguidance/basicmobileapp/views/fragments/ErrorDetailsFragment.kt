@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.authguidance.basicmobileapp.R
-import com.authguidance.basicmobileapp.databinding.FragmentErrorBinding
+import com.authguidance.basicmobileapp.databinding.FragmentErrorDetailsBinding
 import com.authguidance.basicmobileapp.views.activities.MainActivity
 import com.authguidance.basicmobileapp.views.adapters.ErrorItemArrayAdapter
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorField
@@ -17,9 +17,9 @@ import com.authguidance.basicmobileapp.plumbing.utilities.Constants
 /*
  * The fragment to show error details
  */
-class ErrorFragment : androidx.fragment.app.Fragment() {
+class ErrorDetailsFragment : androidx.fragment.app.Fragment() {
 
-    private lateinit var binding: FragmentErrorBinding
+    private lateinit var binding: FragmentErrorDetailsBinding
     private lateinit var mainActivity: MainActivity
     private var error: UIError? = null
 
@@ -41,7 +41,7 @@ class ErrorFragment : androidx.fragment.app.Fragment() {
         this.error = this.arguments?.getSerializable(Constants.ARG_ERROR_DATA) as UIError
 
         // Inflate the view
-        this.binding = FragmentErrorBinding.inflate(inflater, container, false)
+        this.binding = FragmentErrorDetailsBinding.inflate(inflater, container, false)
         return binding.root
     }
 

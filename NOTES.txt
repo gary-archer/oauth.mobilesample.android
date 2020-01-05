@@ -1,0 +1,26 @@
+1. Error details fragment to check
+
+2. Error summary fragment to get working when there is an error
+   Make it render inside companies / transactions / userinfo fragments
+
+3. Error detail as modal popup
+
+4. Complete ErrorCodes class
+
+5. ErrorField to ErrorLine
+
+6. Get view manager to invoke login required
+
+7. User info updates to be same as for desktop app
+
+8. Display session id in UI
+
+9. Long press to cause error + fix desktop sample 2
+
+10. Review classes for similarity to SPA
+
+11. Deep link URLs as company=2 and update blog
+
+12. Aim to improve navigation code
+
+13. Stack traces to review in line with Web UI stack traces

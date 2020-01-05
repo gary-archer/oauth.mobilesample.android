@@ -31,8 +31,8 @@
     </fragment>
     <fragment
             android:id="@+id/errorFragment"
-            android:name="com.authguidance.basicmobileapp.views.fragments.ErrorFragment"
+            android:name="com.authguidance.basicmobileapp.views.fragments.ErrorDetailsFragment"
             android:label="Error Details"
-            tools:layout="@layout/fragment_error">
+            tools:layout="@layout/fragment_error_details">
     </fragment>
 </navigation>

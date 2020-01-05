@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        tools:context=".views.fragments.ErrorFragment">>
+        tools:context=".views.fragments.ErrorDetailsFragment">>
 
         <!-- Show the page title -->
         <androidx.appcompat.widget.Toolbar
@@ -27,7 +27,7 @@
         <!-- The error fragment is occupied by a list of fields -->
         <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/listErrorItems"
-                tools:context=".views.fragments.ErrorFragment"
+                tools:context=".views.fragments.ErrorDetailsFragment"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
