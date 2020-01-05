@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+    <data>
+    </data>
+
+    <!-- This simple fragment just shows the logged in user name -->
+    <TextView
+        tools:context=".views.fragments.UserInfoFragment"
+        android:id="@+id/logged_in_user"
+        style="@style/TextViewLabelStyle"/>
+</layout>
