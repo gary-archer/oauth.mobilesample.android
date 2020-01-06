@@ -1,8 +1,6 @@
-1. Re-get company data in airplane mode - old view is left behind
-   User info updates to be same as for desktop app
+1. User info updates to be same as for desktop app
 
-2. Reconsider application startup in comparison with SPA
-   Review classes for similarity to SPA
+2. Review classes for similarity to SPA
    Consider avoiding storing the whole mainActivity in fragments
 
 3. Display session id in UI
