@@ -1,9 +1,13 @@
 package com.authguidance.basicmobileapp.views.fragments
 
+import android.app.ActionBar
+import android.opengl.Visibility
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.databinding.FragmentErrorSummaryBinding
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
@@ -35,21 +39,27 @@ class ErrorSummaryFragment : androidx.fragment.app.Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        this.binding.errorSummaryText.text = ""
         this.binding.errorSummaryText.setOnClickListener {
             this.onClick()
         }
     }
 
     /*
-     * Set the title and store the details to render in a modal dialog
+     * Set the title and store the details we will render in a modal dialog later
      */
     fun reportError(hyperlinkText: String, dialogTitle: String, error: UIError) {
 
         // Record error details unless this a login is required, which is not a real error
         if (!error.errorCode.equals(ErrorCodes.loginRequired)) {
+
+            // Set error properties
             this.binding.errorSummaryText.text = hyperlinkText
             this.dialogTitle = dialogTitle
             this.error = error
+
+            // Update visibility to show content
+            this.binding.errorSummaryText.visibility = View.VISIBLE
         }
     }
 

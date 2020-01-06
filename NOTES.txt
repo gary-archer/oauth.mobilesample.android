@@ -1,27 +1,15 @@
-0. Improve layout to avoid <layout> elements
+1. Re-get company data in airplane mode - old view is left behind
+   User info updates to be same as for desktop app
 
-1. Get error details modal dialog working
-
-2. Re-get company data in airplane mode - old view is left behind
-
-3. Errors loading config are not caught except by the unhandled exception handler
-   Reconsider application startup in comparison with SPA
-   Move code from application to MainActivity?
-
-4. Complete ErrorCodes class
-   Rename ErrorField to ErrorLine
-
-5. User info updates to be same as for desktop app
-
-6. Display session id in UI
-   Long press to cause error + fix desktop sample 2
-
-7. Review classes for similarity to SPA
+2. Reconsider application startup in comparison with SPA
+   Review classes for similarity to SPA
    Consider avoiding storing the whole mainActivity in fragments
 
-8. Deep link URLs as company=2 and update blog
+3. Display session id in UI
+   Long press to cause error + fix desktop sample 2
+
+4. Deep link URLs as company=2 and update blog
    Aim to improve navigation code
 
-9. Stack traces to review in line with Web UI stack traces
-
-10. Error titles as strings
+5. Stack traces to review in line with Web UI stack traces
+   Only show in debug mode + improve display with smaller text

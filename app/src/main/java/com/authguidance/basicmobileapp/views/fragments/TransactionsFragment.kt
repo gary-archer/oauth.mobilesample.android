@@ -113,8 +113,8 @@ class TransactionsFragment : androidx.fragment.app.Fragment(), ReloadableFragmen
 
                         // Render error details
                         errorFragment.reportError(
-                            "Problem Encountered in Transactions View",
-                            "Transactions View Error",
+                            that.getString(R.string.transactions_error_hyperlink),
+                            that.getString(R.string.transactions_error_dialogtitle),
                             uiError)
                     }
                 }

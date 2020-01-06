@@ -6,13 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.authguidance.basicmobileapp.R
-import com.authguidance.basicmobileapp.plumbing.errors.ErrorField
+import com.authguidance.basicmobileapp.plumbing.errors.ErrorLine
 import kotlinx.android.synthetic.main.error_list_item.view.*
 
 /*
  * An adapter to render transaction items
  */
-class ErrorItemArrayAdapter(val context: Context, val errorItems: List<ErrorField>) : RecyclerView.Adapter<ErrorItemArrayAdapter.ViewHolder>() {
+class ErrorItemArrayAdapter(val context: Context, val errorItems: List<ErrorLine>) : RecyclerView.Adapter<ErrorItemArrayAdapter.ViewHolder>() {
 
     /*
      * Inflate this list item
@@ -41,7 +41,7 @@ class ErrorItemArrayAdapter(val context: Context, val errorItems: List<ErrorFiel
     /*
      * Stores and recycles views as they are scrolled off screen
      */
-    inner class ViewHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val item = itemView
     }
 }

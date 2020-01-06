@@ -28,7 +28,6 @@ class ConfigurationLoader {
         val configJson = configBuffer.readString(Charset.forName("UTF-8"))
 
         // Deserialize it into objects
-        val gson = Gson()
-        return gson.fromJson(configJson, Configuration::class.java)
+        return Gson().fromJson(configJson, Configuration::class.java)
     }
 }

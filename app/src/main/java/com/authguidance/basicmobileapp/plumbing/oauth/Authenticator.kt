@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import com.authguidance.basicmobileapp.configuration.OAuthConfiguration
+import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorHandler
 import net.openid.appauth.*
 import net.openid.appauth.connectivity.DefaultConnectionBuilder
@@ -196,7 +197,7 @@ class Authenticator(val configuration: OAuthConfiguration, val applicationContex
                 }
 
                 // Translate AppAuth errors to the display format
-                throw ErrorHandler().fromAppAuthError(ex, "login_response_error")
+                throw ErrorHandler().fromAppAuthError(ex, ErrorCodes.loginResponseFailed)
             }
             authorizationResponse != null -> {
 
@@ -217,7 +218,7 @@ class Authenticator(val configuration: OAuthConfiguration, val applicationContex
             // Define a callback to handle the result of the authorization code grant
             val callback =
                 AuthorizationService.TokenResponseCallback { tokenResponse, ex ->
-                    this.handleTokenResponse(tokenResponse, ex, continuation, "authorization_code_grant")
+                    this.handleTokenResponse(tokenResponse, ex, continuation, ErrorCodes.authorizationCodeGrantFailed)
                 }
 
             // Create the authorization code grant request

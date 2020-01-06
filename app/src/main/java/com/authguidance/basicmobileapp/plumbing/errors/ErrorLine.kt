@@ -1,9 +1,9 @@
 package com.authguidance.basicmobileapp.plumbing.errors
 
 /*
- * A simple field value pair
+ * A simple field value pair to be shown on a line
  */
-data class ErrorField(
+data class ErrorLine(
     val name: String,
     val value: String?
 )

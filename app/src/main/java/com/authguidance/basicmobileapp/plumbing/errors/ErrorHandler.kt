@@ -22,8 +22,8 @@ class ErrorHandler {
 
         // Create the error
         val error = UIError(
-            "UI",
-            "general_exception",
+            "Mobile UI",
+            ErrorCodes.generalUIError,
             "A technical problem was encountered in the UI")
 
         // Add exception specific details
@@ -39,7 +39,7 @@ class ErrorHandler {
 
         return UIError(
             "Login",
-            "login_required",
+            ErrorCodes.loginRequired,
             "A login is required so the API call was aborted")
     }
 
@@ -50,7 +50,7 @@ class ErrorHandler {
 
         return UIError(
             "Login",
-            "login_cancelled",
+            ErrorCodes.loginCancelled,
             "The login request was cancelled")
     }
 
@@ -97,7 +97,7 @@ class ErrorHandler {
 
         val error = UIError(
             "Network",
-            "api_uncontactable",
+            ErrorCodes.apiNetworkError,
             "A network problem occurred when the UI called the server")
 
         // Set other details
@@ -119,7 +119,7 @@ class ErrorHandler {
 
         val error = UIError(
             "API",
-            "general_api_error",
+            ErrorCodes.apiResponseError,
             "A technical problem occurred when the UI called the server")
 
         error.statusCode = response.code

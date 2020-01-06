@@ -27,6 +27,15 @@
     <string name="error_title">Problem Encountered</string>
     <string name="logged_out_message">You are logged out - click HOME to login</string>
 
+    <string name="main_error_hyperlink">Problem Encountered in Application</string>
+    <string name="main_error_dialogtitle">Application Error</string>
+    <string name="companies_error_hyperlink">Problem Encountered in Companies View</string>
+    <string name="companies_error_dialogtitle">Companies View Error</string>
+    <string name="transactions_error_hyperlink">Problem Encountered in Transactions View</string>
+    <string name="transactions_error_dialogtitle">Transactions View Error</string>
+    <string name="userinfo_error_hyperlink">Problem Encountered</string>
+    <string name="userinfo_error_dialogtitle">User Info Error</string>
+
     <string name="error_user_message">User Message</string>
     <string name="error_area">Area</string>
     <string name="error_code">Error Code</string>

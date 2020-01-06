@@ -9,9 +9,8 @@ import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.databinding.FragmentErrorDetailsBinding
-import com.authguidance.basicmobileapp.plumbing.errors.ErrorField
+import com.authguidance.basicmobileapp.plumbing.errors.ErrorReporter
 import com.authguidance.basicmobileapp.views.activities.MainActivity
 import com.authguidance.basicmobileapp.views.adapters.ErrorItemArrayAdapter
 
@@ -85,89 +84,16 @@ class ErrorDetailsDialogFragment : DialogFragment() {
      */
     private fun renderData() {
 
-        if(this.error != null) {
+        val context = this.context
+        val error = this.error
+        if(error != null && context != null) {
 
-            val errorItems = this.getErrorItemList(this.error)
+            val lines = ErrorReporter(context).getErrorLines(error)
 
             val list = this.binding.listErrorItems
             list.layoutManager = LinearLayoutManager(this.mainActivity)
-            list.adapter = ErrorItemArrayAdapter(mainActivity, errorItems)
-            list.adapter = ErrorItemArrayAdapter(mainActivity, errorItems)
+            list.adapter = ErrorItemArrayAdapter(mainActivity, lines)
+            list.adapter = ErrorItemArrayAdapter(mainActivity, lines)
         }
-    }
-
-    /*
-     * Translate the error object into an object list to be rendered in a list view
-     */
-    private fun getErrorItemList(error: UIError?): List<ErrorField> {
-
-        val result = ArrayList<ErrorField>()
-
-        if(error != null) {
-
-            // Show production details
-            if (!error.message.isNullOrBlank()) {
-                result.add(ErrorField(this.getString(R.string.error_user_message), error.message))
-            }
-
-            if (!error.area.isNullOrBlank()) {
-                result.add(ErrorField(this.getString(R.string.error_area), error.area))
-            }
-
-            if (!error.errorCode.isNullOrBlank()) {
-                result.add(ErrorField(this.getString(R.string.error_code), error.errorCode))
-            }
-
-            if (!error.appAuthCode.isNullOrBlank()) {
-                result.add(
-                    ErrorField(
-                        this.getString(R.string.error_appauth_code),
-                        error.appAuthCode
-                    )
-                )
-            }
-
-            if (!error.utcTime.isNullOrBlank()) {
-                result.add(ErrorField(this.getString(R.string.error_utc_time), error.utcTime))
-            }
-
-            if (error.statusCode != 0) {
-                result.add(
-                    ErrorField(
-                        this.getString(R.string.error_status),
-                        error.statusCode.toString()
-                    )
-                )
-            }
-
-            if (error.instanceId != 0) {
-                result.add(
-                    ErrorField(
-                        this.getString(R.string.error_instance_id),
-                        error.instanceId.toString()
-                    )
-                )
-            }
-
-            if (!error.details.isNullOrBlank()) {
-                result.add(ErrorField(this.getString(R.string.error_details), error.details))
-            }
-
-            // Show additional technical details when configured
-            if (!error.url.isNullOrBlank()) {
-                result.add(ErrorField(this.getString(R.string.error_url), error.url))
-            }
-
-            if (error.stackFrames.size > 0) {
-                result.add(
-                    ErrorField(
-                        this.getString(R.string.error_stack),
-                        error.stackFrames.joinToString("\n\n")
-                    )
-                )
-            }
-        }
-
-        return result
     }
 }

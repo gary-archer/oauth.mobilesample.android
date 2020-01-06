@@ -16,6 +16,7 @@ import com.authguidance.basicmobileapp.views.fragments.HeaderButtonsFragment
 import com.authguidance.basicmobileapp.views.fragments.ReloadableFragment
 import com.authguidance.basicmobileapp.plumbing.utilities.NavigationHelper
 import com.authguidance.basicmobileapp.api.client.ApiClient
+import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorHandler
 import com.authguidance.basicmobileapp.plumbing.utilities.Constants
 import com.authguidance.basicmobileapp.plumbing.utilities.SecureDevice
@@ -358,7 +359,7 @@ class MainActivity : AppCompatActivity() {
         val handler = ErrorHandler()
         val error = handler.fromException(exception)
 
-        if (error.errorCode == "login_cancelled") {
+        if (error.errorCode == ErrorCodes.loginCancelled) {
 
             // If the user has closed the Chrome Custom Tab without logging in, move to the Login Required view
             NavigationHelper().navigate(
@@ -371,8 +372,8 @@ class MainActivity : AppCompatActivity() {
             // Otherwise there is a technical error and we display summary details
             val errorFragment = this.supportFragmentManager.findFragmentById(R.id.mainErrorSummaryFragment) as ErrorSummaryFragment
             errorFragment.reportError(
-                "Problem Encountered in Application",
-                "Application Error",
+                this.getString(R.string.main_error_hyperlink),
+                this.getString(R.string.main_error_dialogtitle),
                 error)
         }
     }

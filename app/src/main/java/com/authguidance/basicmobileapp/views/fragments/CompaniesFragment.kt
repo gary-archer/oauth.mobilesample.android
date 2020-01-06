@@ -89,8 +89,8 @@ class CompaniesFragment : androidx.fragment.app.Fragment(), ReloadableFragment {
 
                     // Render error details
                     errorFragment.reportError(
-                        "Problem Encountered in Companies View",
-                        "Companies View Error",
+                        that.getString(R.string.companies_error_hyperlink),
+                        that.getString(R.string.companies_error_dialogtitle),
                         uiError)
                 }
             }

@@ -74,8 +74,8 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
 
                     // Render error details
                     errorFragment.reportError(
-                        "Problem Encountered",
-                        "User Info Error",
+                        that.getString(R.string.userinfo_error_hyperlink),
+                        that.getString(R.string.userinfo_error_dialogtitle),
                         uiError)
                 }
             }

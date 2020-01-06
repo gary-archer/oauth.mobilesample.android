@@ -56,7 +56,7 @@ class CompanyArrayAdapter(
     /*
      * Stores and recycles views as they are scrolled off screen
      */
-    inner class ViewHolder(itemView: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val item = itemView
 
         fun onClick(company: Company, listener: (Company) -> Unit) = with(itemView) {
