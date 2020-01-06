@@ -1,13 +1,14 @@
-1. User info updates to be same as for desktop app
-
-2. Review classes for similarity to SPA
+0. Review classes for similarity to SPA
    Consider avoiding storing the whole mainActivity in fragments
 
-3. Display session id in UI
+1. User info updates to be same as for desktop app
+   Recover from network error should reget user info
+
+2. Display session id in UI
    Long press to cause error + fix desktop sample 2
 
-4. Deep link URLs as company=2 and update blog
+3. Deep link URLs as company=2 and update blog
    Aim to improve navigation code
 
-5. Stack traces to review in line with Web UI stack traces
+4. Stack traces to review in line with Web UI stack traces
    Only show in debug mode + improve display with smaller text
