@@ -1,27 +1,41 @@
-package com.authguidance.basicmobileapp.views.fragments
+package com.authguidance.basicmobileapp.views.dialogs
 
 import android.content.Context
 import android.os.Bundle
+import androidx.fragment.app.DialogFragment
+import com.authguidance.basicmobileapp.plumbing.errors.UIError
+import com.authguidance.basicmobileapp.plumbing.utilities.Constants
+import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.databinding.FragmentErrorDetailsBinding
+import com.authguidance.basicmobileapp.plumbing.errors.ErrorField
 import com.authguidance.basicmobileapp.views.activities.MainActivity
 import com.authguidance.basicmobileapp.views.adapters.ErrorItemArrayAdapter
-import com.authguidance.basicmobileapp.plumbing.errors.ErrorField
-import com.authguidance.basicmobileapp.plumbing.errors.UIError
-import com.authguidance.basicmobileapp.plumbing.utilities.Constants
 
 /*
- * The fragment to show error details
+ * A custom modal dialog based on the error details fragment
  */
-class ErrorDetailsFragment : androidx.fragment.app.Fragment() {
+class ErrorDetailsDialogFragment : DialogFragment() {
 
     private lateinit var binding: FragmentErrorDetailsBinding
     private lateinit var mainActivity: MainActivity
     private var error: UIError? = null
+
+    /*
+     * The factory method to create the dialog
+     */
+    companion object {
+        fun create(error: UIError): ErrorDetailsDialogFragment {
+            val dialog = ErrorDetailsDialogFragment()
+            val args = Bundle()
+            args.putSerializable(Constants.ARG_ERROR_DATA, error)
+            dialog.arguments = args
+            return dialog
+        }
+    }
 
     /*
      * Get a reference to the main activity
@@ -32,7 +46,7 @@ class ErrorDetailsFragment : androidx.fragment.app.Fragment() {
     }
 
     /*
-     * Initialise the view
+     * Inflate the view when created
      */
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -40,7 +54,7 @@ class ErrorDetailsFragment : androidx.fragment.app.Fragment() {
         // Get data passed in
         this.error = this.arguments?.getSerializable(Constants.ARG_ERROR_DATA) as UIError
 
-        // Inflate the view
+        // Inflate the layout
         this.binding = FragmentErrorDetailsBinding.inflate(inflater, container, false)
         return binding.root
     }

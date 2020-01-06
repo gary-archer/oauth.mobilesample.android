@@ -1,6 +1,5 @@
 package com.authguidance.basicmobileapp.views.fragments
 
-import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +7,7 @@ import android.view.ViewGroup
 import com.authguidance.basicmobileapp.databinding.FragmentErrorSummaryBinding
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
+import com.authguidance.basicmobileapp.views.dialogs.ErrorDetailsDialogFragment
 
 /*
  * The fragment to show an initial error indication
@@ -16,7 +16,7 @@ class ErrorSummaryFragment : androidx.fragment.app.Fragment() {
 
     private lateinit var binding: FragmentErrorSummaryBinding
     private var error: UIError? = null
-    private var detailsDialog: AlertDialog? = null
+    private var detailsDialog: ErrorDetailsDialogFragment? = null
 
     /*
      * Initialise the view
@@ -50,8 +50,6 @@ class ErrorSummaryFragment : androidx.fragment.app.Fragment() {
             this.binding.errorSummaryText.text = title
             this.error = error
         }
-
-
     }
 
     /*
@@ -69,44 +67,8 @@ class ErrorSummaryFragment : androidx.fragment.app.Fragment() {
         val error = this.error
         if(error != null) {
 
-            // http://technxt.net/how-to-create-a-custom-alert-dialog-in-android/
-            /*final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-            LayoutInflater inflater = getLayoutInflater();
-            View view = inflater.inflate(R.layout.list_layout,null);
-            TextView tv = (TextView)view.findViewById(R.id.head);
-            ImageView iv = (ImageView)view.findViewById(R.id.iv);
-            builder.setView(view);
-            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    // Dismiss the dialog here
-                    dialog.dismiss();
-                }
-            });
-            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    // Add ok operation here
-                }
-            });
-
-            builder.show();*/
-
-            println("GJA: Error Summary: ${error.errorCode}, ${error.message}")
-
-            val builder = AlertDialog.Builder(this.context)
-            //builder.setView()
-            this.detailsDialog = builder.create()
-            this.detailsDialog!!.show()
-
-            // Otherwise navigate to the error fragment and render error details
-            /*val args = Bundle()
-            args.putSerializable(Constants.ARG_ERROR_DATA, error as Serializable)
-            NavigationHelper().navigate(
-                this.navController,
-                this.navHostFragment.childFragmentManager.primaryNavigationFragment,
-                R.id.errorFragment,
-                args)*/
+            this.detailsDialog = ErrorDetailsDialogFragment.create(error)
+            this.detailsDialog!!.show(this.childFragmentManager, "errorDetails")
         }
     }
 }

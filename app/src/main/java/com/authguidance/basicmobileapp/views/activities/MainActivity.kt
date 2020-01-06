@@ -368,8 +368,6 @@ class MainActivity : AppCompatActivity() {
         }
         else {
 
-            println("GJA: Application Error")
-
             // Otherwise there is a technical error and we display summary details
             val errorFragment = this.supportFragmentManager.findFragmentById(R.id.mainErrorSummaryFragment) as ErrorSummaryFragment
             errorFragment.reportError("Problem Encountered in Application", error)
