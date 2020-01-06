@@ -1,6 +1,6 @@
 {
   "app": {
-    "apiBaseUrl":            "https://apis.authguidance-examples.com/api"
+    "apiBaseUrl":            "https://api.authguidance-examples.com/api"
   },
   "oauth": {
     "authority":             "https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_mZ3NBYpTo",

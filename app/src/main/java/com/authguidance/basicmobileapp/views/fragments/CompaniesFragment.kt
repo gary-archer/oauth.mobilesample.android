@@ -63,7 +63,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment(), ReloadableFragment {
         // Inform the view manager so that the UI can be updated during load
         this.mainActivity.viewManager.onMainViewLoading()
 
-        // First clear any previous errors
+        // First clear any previous content and errors
         val errorFragment = this.childFragmentManager.findFragmentById(R.id.companiesErrorSummaryFragment) as ErrorSummaryFragment
         errorFragment.clearError()
 
@@ -76,6 +76,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment(), ReloadableFragment {
                 // Switch back to the UI thread for rendering
                 withContext(Dispatchers.Main) {
                     that.mainActivity.viewManager.onMainViewLoaded()
+                    that.binding.listCompanies.visibility = View.VISIBLE
                     that.renderData(result)
                 }
             }
@@ -85,6 +86,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment(), ReloadableFragment {
                 withContext(Dispatchers.Main) {
 
                     // Report errors calling the API
+                    that.binding.listCompanies.visibility = View.GONE
                     that.mainActivity.viewManager.onMainViewLoadFailed(uiError)
 
                     // Render error details

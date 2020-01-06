@@ -81,6 +81,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment(), ReloadableFragmen
                 // Switch back to the UI thread for rendering
                 withContext(Dispatchers.Main) {
                     that.mainActivity.viewManager.onMainViewLoaded()
+                    that.binding.listTransactions.visibility = View.VISIBLE
                     renderData(result)
                 }
             }
@@ -109,6 +110,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment(), ReloadableFragmen
                     withContext(Dispatchers.Main) {
 
                         // Report errors calling the API
+                        that.binding.listTransactions.visibility = View.GONE
                         that.mainActivity.viewManager.onMainViewLoadFailed(uiError)
 
                         // Render error details
