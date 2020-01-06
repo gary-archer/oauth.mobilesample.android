@@ -5,7 +5,6 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import com.authguidance.basicmobileapp.R
-import com.authguidance.basicmobileapp.views.fragments.ErrorDetailsFragment
 import com.authguidance.basicmobileapp.views.fragments.LoginRequiredFragment
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -115,8 +114,7 @@ class NavigationHelper {
     private fun preNavigate(navController: NavController, activeFragment: Fragment?) {
 
         if( activeFragment == null ||
-            activeFragment is LoginRequiredFragment ||
-            activeFragment is ErrorDetailsFragment)
+            activeFragment is LoginRequiredFragment)
         {
             navController.popBackStack()
         }

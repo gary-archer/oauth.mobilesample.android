@@ -1,5 +1,7 @@
 Currently API config causes an error due to invalid API URL
 
+0. Improve layout to avoid <layout> elements
+
 1. Get error details modal dialog working
 
 2. Re-get company data in airplane mode - old view is left behind

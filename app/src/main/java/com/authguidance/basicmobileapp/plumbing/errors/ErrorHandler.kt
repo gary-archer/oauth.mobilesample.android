@@ -135,8 +135,7 @@ class ErrorHandler {
     private fun updateFromApiErrorResponse(error: UIError, response: String?) {
 
         if(response != null) {
-            val parser = JsonParser()
-            val tree = parser.parse(response)
+            val tree = JsonParser.parseString(response)
             if(tree != null) {
 
                 // Try to read expected error fields
