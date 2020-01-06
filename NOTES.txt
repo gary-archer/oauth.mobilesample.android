@@ -1,5 +1,3 @@
-Currently API config causes an error due to invalid API URL
-
 0. Improve layout to avoid <layout> elements
 
 1. Get error details modal dialog working
@@ -25,3 +23,5 @@ Currently API config causes an error due to invalid API URL
    Aim to improve navigation code
 
 9. Stack traces to review in line with Web UI stack traces
+
+10. Error titles as strings

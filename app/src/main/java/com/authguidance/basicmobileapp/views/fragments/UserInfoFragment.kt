@@ -73,8 +73,10 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
                     that.mainActivity.viewManager.onUserInfoLoadFailed(uiError)
 
                     // Render error details
-                    // errorFragment.reportError("Problem Encountered", uiError)
-                    errorFragment.reportError("Problem Encountered", uiError)
+                    errorFragment.reportError(
+                        "Problem Encountered",
+                        "User Info Error",
+                        uiError)
                 }
             }
         }

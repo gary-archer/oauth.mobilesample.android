@@ -22,15 +22,17 @@ class ErrorDetailsDialogFragment : DialogFragment() {
 
     private lateinit var binding: FragmentErrorDetailsBinding
     private lateinit var mainActivity: MainActivity
+    private var title: String? = null
     private var error: UIError? = null
 
     /*
      * The factory method to create the dialog
      */
     companion object {
-        fun create(error: UIError): ErrorDetailsDialogFragment {
+        fun create(dialogTitle: String, error: UIError): ErrorDetailsDialogFragment {
             val dialog = ErrorDetailsDialogFragment()
             val args = Bundle()
+            args.putString(Constants.ARG_ERROR_TITLE, dialogTitle)
             args.putSerializable(Constants.ARG_ERROR_DATA, error)
             dialog.arguments = args
             return dialog
@@ -52,6 +54,7 @@ class ErrorDetailsDialogFragment : DialogFragment() {
                               savedInstanceState: Bundle?): View? {
 
         // Get data passed in
+        this.title = this.arguments?.getString(Constants.ARG_ERROR_TITLE)
         this.error = this.arguments?.getSerializable(Constants.ARG_ERROR_DATA) as UIError
 
         // Inflate the layout
@@ -65,7 +68,15 @@ class ErrorDetailsDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        this.binding.fragmentHeadingText.text = this.getString(R.string.error_title)
+        // Set the title
+        this.binding.fragmentHeadingText.text = title
+
+        // Dismiss when the X icon is clicked
+        this.binding.dismiss.setOnClickListener {
+            this.dismiss()
+        }
+
+        // Render the error object
         this.renderData()
     }
 

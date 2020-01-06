@@ -112,7 +112,10 @@ class TransactionsFragment : androidx.fragment.app.Fragment(), ReloadableFragmen
                         that.mainActivity.viewManager.onMainViewLoadFailed(uiError)
 
                         // Render error details
-                        errorFragment.reportError("Problem Encountered in Transactions View", uiError)
+                        errorFragment.reportError(
+                            "Problem Encountered in Transactions View",
+                            "Transactions View Error",
+                            uiError)
                     }
                 }
             }

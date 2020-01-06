@@ -370,7 +370,10 @@ class MainActivity : AppCompatActivity() {
 
             // Otherwise there is a technical error and we display summary details
             val errorFragment = this.supportFragmentManager.findFragmentById(R.id.mainErrorSummaryFragment) as ErrorSummaryFragment
-            errorFragment.reportError("Problem Encountered in Application", error)
+            errorFragment.reportError(
+                "Problem Encountered in Application",
+                "Application Error",
+                error)
         }
     }
 

@@ -88,7 +88,10 @@ class CompaniesFragment : androidx.fragment.app.Fragment(), ReloadableFragment {
                     that.mainActivity.viewManager.onMainViewLoadFailed(uiError)
 
                     // Render error details
-                    errorFragment.reportError("Problem Encountered in Companies View", uiError)
+                    errorFragment.reportError(
+                        "Problem Encountered in Companies View",
+                        "Companies View Error",
+                        uiError)
                 }
             }
         }

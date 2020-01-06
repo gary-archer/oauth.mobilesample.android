@@ -16,7 +16,7 @@ class ErrorSummaryFragment : androidx.fragment.app.Fragment() {
 
     private lateinit var binding: FragmentErrorSummaryBinding
     private var error: UIError? = null
-    private var detailsDialog: ErrorDetailsDialogFragment? = null
+    private var dialogTitle: String = "";
 
     /*
      * Initialise the view
@@ -43,11 +43,12 @@ class ErrorSummaryFragment : androidx.fragment.app.Fragment() {
     /*
      * Set the title and store the details to render in a modal dialog
      */
-    fun reportError(title: String, error: UIError) {
+    fun reportError(hyperlinkText: String, dialogTitle: String, error: UIError) {
 
         // Record error details unless this a login is required, which is not a real error
         if (!error.errorCode.equals(ErrorCodes.loginRequired)) {
-            this.binding.errorSummaryText.text = title
+            this.binding.errorSummaryText.text = hyperlinkText
+            this.dialogTitle = dialogTitle
             this.error = error
         }
     }
@@ -67,8 +68,8 @@ class ErrorSummaryFragment : androidx.fragment.app.Fragment() {
         val error = this.error
         if(error != null) {
 
-            this.detailsDialog = ErrorDetailsDialogFragment.create(error)
-            this.detailsDialog!!.show(this.childFragmentManager, "errorDetails")
+            val dialog = ErrorDetailsDialogFragment.create(dialogTitle, error)
+            dialog.show(this.childFragmentManager, "errorDetails")
         }
     }
 }
