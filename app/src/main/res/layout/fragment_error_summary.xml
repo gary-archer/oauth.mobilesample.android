@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+    </data>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context=".views.fragments.ErrorSummaryFragment">
+
+        <!-- The error summary view is just a text control that links to a popup dialog -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            style="@style/TextViewErrorSummaryStyle"
+            android:id="@+id/error_summary_text" />
+    </LinearLayout>
+</layout>

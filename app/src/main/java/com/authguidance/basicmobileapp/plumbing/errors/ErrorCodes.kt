@@ -1,0 +1,27 @@
+package com.authguidance.basicmobileapp.plumbing.errors
+
+/*
+ * Error codes that the UI can program against
+ */
+object ErrorCodes {
+
+    // Used to indicate that the API cannot be called until the user logs in
+    const val loginRequired = "login_required"
+
+    // Used to indicate that the Chrome Custom Tab was cancelled
+    const val loginCancelled = "login_cancelled"
+
+    const val authorizationCodeGrantFailed = "authorization_code_grant"
+
+    // A technical error processing the login response containing the authorization code
+    const val loginResponseFailed = "login_response_failed"
+
+    // A general exception in the UI
+    const val generalUIError = "ui_error"
+
+    // An error making an API call to get data
+    const val apiNetworkError = "api_network_error"
+
+    // An error response fropm the API
+    const val apiResponseError = "api_response_error"
+}

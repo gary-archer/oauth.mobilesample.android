@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+    <data>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        tools:context=".views.fragments.TransactionsFragment">
+
+        <!-- Show the page title -->
+        <androidx.appcompat.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@color/primary">
+            <TextView
+                android:id="@+id/fragment_heading_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                style="@style/TextViewHeaderStyle"/>
+        </androidx.appcompat.widget.Toolbar>
+
+        <!-- Show error summary details when there is an error -->
+        <fragment
+            android:id="@+id/transactionsErrorSummaryFragment"
+            android:name="com.authguidance.basicmobileapp.views.fragments.ErrorSummaryFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_error_summary"/>
+
+        <!-- The transactions fragment is occupied by a list of transactions -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/listTransactions"
+            tools:context=".views.fragments.TransactionsFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+    </LinearLayout>
+</layout>

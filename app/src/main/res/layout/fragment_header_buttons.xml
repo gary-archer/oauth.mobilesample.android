@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+    <data>
+    </data>
+    <TableLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:context=".views.fragments.HeaderButtonsFragment">
+
+        <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnHome"
+                    android:text="@string/home_button"
+                    style="@style/ButtonHeaderStyle"/>
+
+            <com.authguidance.basicmobileapp.views.controls.TouchableButton
+                    android:id="@+id/btnReloadData"
+                    android:text="@string/reload_button"
+                    android:enabled="false"
+                    style="@style/ButtonHeaderStyle"/>
+
+            <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnExpireAccessToken"
+                    android:text="@string/expire_access_token_button"
+                    android:enabled="false"
+                    style="@style/ButtonHeaderStyle"/>
+
+            <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnExpireRefreshToken"
+                    android:text="@string/expire_refresh_token_button"
+                    android:enabled="false"
+                    style="@style/ButtonHeaderStyle"/>
+
+            <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnLogout"
+                    android:text="@string/logout_button"
+                    android:enabled="false"
+                    style="@style/ButtonHeaderStyle"/>
+        </TableRow>
+    </TableLayout>
+</layout>
