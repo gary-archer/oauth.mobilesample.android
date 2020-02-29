@@ -16,19 +16,20 @@ import com.authguidance.basicmobileapp.configuration.Configuration
 import com.authguidance.basicmobileapp.configuration.ConfigurationLoader
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorHandler
+import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
 import com.authguidance.basicmobileapp.plumbing.oauth.AuthenticatorImpl
 import com.authguidance.basicmobileapp.plumbing.utilities.Constants
 import com.authguidance.basicmobileapp.plumbing.utilities.SecureDevice
 import com.authguidance.basicmobileapp.views.ViewManager
 import com.authguidance.basicmobileapp.views.fragments.ErrorSummaryFragment
 import com.authguidance.basicmobileapp.views.fragments.HeaderButtonsFragment
-import com.authguidance.basicmobileapp.views.fragments.ReloadableFragment
 import com.authguidance.basicmobileapp.views.fragments.SessionFragment
 import com.authguidance.basicmobileapp.views.fragments.TitleFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
 
 /*
  * Our Single Activity App's activity
@@ -155,6 +156,7 @@ class MainActivity : AppCompatActivity() {
             val sessionFragment = this.supportFragmentManager.findFragmentById(R.id.sessionFragment) as SessionFragment
             sessionFragment.show()
             return true
+
         } catch (ex: Exception) {
 
             // Display the startup error details
@@ -311,11 +313,8 @@ class MainActivity : AppCompatActivity() {
                     val sessionFragment = that.supportFragmentManager.findFragmentById(R.id.sessionFragment) as SessionFragment
                     sessionFragment.show()
 
-                    // Also reload data for the active fragment
-                    val activeFragment = that.navHostFragment.childFragmentManager.primaryNavigationFragment
-                    if (activeFragment is ReloadableFragment) {
-                        activeFragment.loadData(false)
-                    }
+                    // Also reload data
+                    EventBus.getDefault().post(ReloadEvent(false))
                 }
             } catch (ex: Exception) {
 

@@ -6,7 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.authguidance.basicmobileapp.databinding.FragmentHeaderButtonsBinding
+import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
 import com.authguidance.basicmobileapp.views.activities.MainActivity
+import org.greenrobot.eventbus.EventBus
 
 /*
  * A simple fragment with the header buttons
@@ -69,14 +71,10 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
     }
 
     /*
-     * Handle reload click results from the custom control
+     * Handle reload click results from the custom control by publishing an event
      */
     private fun onReloadClicked(longClicked: Boolean) {
-
-        val fragment = this.mainActivity.navHostFragment.childFragmentManager.primaryNavigationFragment
-        if (fragment is ReloadableFragment) {
-            fragment.loadData(longClicked)
-        }
+        EventBus.getDefault().post(ReloadEvent(longClicked))
     }
 
     /*
