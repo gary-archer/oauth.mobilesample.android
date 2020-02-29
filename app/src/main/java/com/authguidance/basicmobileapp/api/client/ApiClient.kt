@@ -79,9 +79,8 @@ class ApiClient(
             // Retry once with a new token if there is a 401 error
             if (response.code == 401) {
 
-                // Get a new token
-                this.authenticator.clearAccessToken()
-                accessToken = this.authenticator.getAccessToken()
+                // Try to refresh the access token
+                accessToken = this.authenticator.refreshAccessToken()
 
                 // Retry the API call
                 response = this.callApiWithToken(method, url, data, accessToken, options)

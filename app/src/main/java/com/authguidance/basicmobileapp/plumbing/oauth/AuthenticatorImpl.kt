@@ -48,23 +48,42 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
     }
 
     /*
-     * Get the current access token or redirect the user to login
+     * Try to get an access token, which most commonly involves returning the current one
      */
     override suspend fun getAccessToken(): String {
 
         // See if there is a token in storage
-        var accessToken = this.tokenStorage.loadTokens()?.accessToken
+        val accessToken = this.tokenStorage.loadTokens()?.accessToken
         if (!accessToken.isNullOrBlank()) {
             return accessToken
         }
 
         // Try to use the refresh token to get a new access token
-        this.refreshAccessToken()
+        val newAccessToken = this.refreshAccessToken()
+        if (!newAccessToken.isNullOrBlank()) {
+            return newAccessToken
+        }
 
-        // Return the token on success
-        accessToken = this.tokenStorage.loadTokens()?.accessToken
-        if (!accessToken.isNullOrBlank()) {
-            return accessToken
+        // Otherwise abort the API call via a known exception
+        throw ErrorHandler().fromLoginRequired()
+    }
+
+    /*
+     * Try to refresh an access token
+     */
+    override suspend fun refreshAccessToken(): String {
+
+        val refreshToken = this.tokenStorage.loadTokens()?.refreshToken
+        if (!refreshToken.isNullOrBlank()) {
+
+            // Send the refresh token grant message
+            this.performRefreshTokenGrant()
+
+            // Return the token on success
+            val accessToken = this.tokenStorage.loadTokens()?.accessToken
+            if (!accessToken.isNullOrBlank()) {
+                return accessToken
+            }
         }
 
         // Otherwise abort the API call via a known exception
@@ -93,27 +112,6 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
     }
 
     /*
-     * Clear the current access token from storage when an API call fails, to force getting a new one
-     */
-    override fun clearAccessToken() {
-        this.tokenStorage.clearAccessToken()
-    }
-
-    /*
-     * Make the access token act like it is expired
-     */
-    override fun expireAccessToken() {
-        this.tokenStorage.expireAccessToken()
-    }
-
-    /*
-     * Make the refresh token act like it is expired
-     */
-    override fun expireRefreshToken() {
-        this.tokenStorage.expireRefreshToken()
-    }
-
-    /*
      * Remove local state and start the logout redirect to remove the OAuth session cookie
      */
     override fun startLogout(activity: Activity, completionCode: Int) {
@@ -131,6 +129,20 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
      */
     override fun finishLogout() {
         this.logoutManager.finishLogout()
+    }
+
+    /*
+     * For testing, make the access token act like it is expired
+     */
+    override fun expireAccessToken() {
+        this.tokenStorage.expireAccessToken()
+    }
+
+    /*
+     * For testing, make the refresh token act like it is expired
+     */
+    override fun expireRefreshToken() {
+        this.tokenStorage.expireRefreshToken()
     }
 
     /*
@@ -252,9 +264,12 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
     }
 
     /*
-     * Try to refresh the access token when it expires
+     * Do the work of refreshing an access token
      */
-    private suspend fun refreshAccessToken() {
+    private suspend fun performRefreshTokenGrant() {
+
+        // First clear the existing access token from storage
+        this.tokenStorage.clearAccessToken()
 
         // Check we have a refresh token
         val refreshToken = this.tokenStorage.loadTokens()?.refreshToken

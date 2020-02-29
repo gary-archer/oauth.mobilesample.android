@@ -8,20 +8,20 @@ import android.content.Intent
  */
 interface Authenticator {
 
+    // Query the login state
+    fun isLoggedIn(): Boolean
+
     // Try to get an access token
     suspend fun getAccessToken(): String
 
-    // Query the login state
-    fun isLoggedIn(): Boolean
+    // Try to refresh an access token
+    suspend fun refreshAccessToken(): String
 
     // Start a login redirect
     suspend fun startLogin(activity: Activity, completionCode: Int)
 
     // Complete a login
     suspend fun finishLogin(intent: Intent)
-
-    // Clear the access token after a 401
-    fun clearAccessToken()
 
     // For testing, make the access token act expired
     fun expireAccessToken()
