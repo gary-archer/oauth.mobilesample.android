@@ -3,7 +3,6 @@ package com.authguidance.basicmobileapp.plumbing.utilities
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
-import kotlin.reflect.KSuspendFunction0
 
 // Internal types
 private typealias SuccessCallback = () -> Unit
@@ -24,32 +23,35 @@ class ConcurrentActionHandler {
     /*
      * Run the supplied action once and return a continuation while in progress
      */
-    suspend fun execute(action: KSuspendFunction0<Unit>) {
+    suspend fun execute(action: suspend () -> Unit): Unit {
 
         println("GJA: refresh token for UI fragment")
 
         // Create a continuation through which to return the result
         val response: Unit = suspendCoroutine { continuation ->
 
-            val onSuccess =  {
+            val onSuccess = {
+                println("GJA: continuation success")
                 continuation.resume(Unit)
             }
 
-            val onError =  { exception: Throwable ->
+            val onError = { exception: Throwable ->
+                println("GJA: continuation error")
                 continuation.resumeWithException(exception)
             }
 
             println("GJA: adding callback")
             this.callbacks.add(Pair(onSuccess, onError))
+            println("GJA: added callback")
         }
 
         println("GJA: suspend coroutine created")
-        if(this.actionInProgress) {
+        if (this.actionInProgress) {
             println("GJA: already in progress")
         }
 
         // Only do the work for the first UI fragment that calls us
-        if(!this.actionInProgress) {
+        if (!this.actionInProgress) {
             this.actionInProgress = true
 
             println("GJA: refresh token for first UI fragment")
@@ -66,7 +68,7 @@ class ConcurrentActionHandler {
                     it.first()
                 }
 
-            } catch(ex: Throwable) {
+            } catch (ex: Throwable) {
 
                 // On success reject all continuations
                 this.callbacks.forEach{
