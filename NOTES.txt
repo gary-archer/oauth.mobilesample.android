@@ -1,6 +1,5 @@
-1. Force user info and main view to load in parallel
+1. Get callbacks working and ensure threadsafe
 
-2. Check ktlint warnings and update blog with notes on how to do linting
+2. Use Throwable rather than exception
 
-3. Use an array of callbacks as for TypeScript when refreshing a token
-   Ensure thread safe in Kotlin
+3. Check ktlint warnings and update blog with notes on how to do linting

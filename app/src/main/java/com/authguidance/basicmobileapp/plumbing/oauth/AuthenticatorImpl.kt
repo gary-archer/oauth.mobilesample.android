@@ -10,6 +10,7 @@ import com.authguidance.basicmobileapp.plumbing.errors.ErrorHandler
 import com.authguidance.basicmobileapp.plumbing.oauth.logout.CognitoLogoutManager
 import com.authguidance.basicmobileapp.plumbing.oauth.logout.LogoutManager
 import com.authguidance.basicmobileapp.plumbing.oauth.logout.OktaLogoutManager
+import com.authguidance.basicmobileapp.plumbing.utilities.ConcurrentActionHandler
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
@@ -32,19 +33,24 @@ import kotlin.coroutines.suspendCoroutine
  */
 class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationContext: Context) : Authenticator {
 
-    private var loginAuthService: AuthorizationService? = null
-    private val logoutManager: LogoutManager
     private val tokenStorage: PersistentTokenStorage
+    private val concurrencyHandler: ConcurrentActionHandler
+    private val logoutManager: LogoutManager
+    private var loginAuthService: AuthorizationService? = null
 
     /*
      * We will store encrypted tokens in shared preferences, but only if the device is secured
      */
     init {
-        // Create an object to manage logout
-        this.logoutManager = this.createLogoutManager()
+
+        // Create an object used to handle refresh token requests from multiple UI frag
+        this.concurrencyHandler = ConcurrentActionHandler()
 
         // Tokens are encrypted and persisted across app restarts
         this.tokenStorage = PersistentTokenStorage(this.applicationContext, EncryptionManager(this.applicationContext))
+
+        // Create an object to manage logout
+        this.logoutManager = this.createLogoutManager()
     }
 
     /*
@@ -76,8 +82,8 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
         val refreshToken = this.tokenStorage.loadTokens()?.refreshToken
         if (!refreshToken.isNullOrBlank()) {
 
-            // Send the refresh token grant message
-            this.performRefreshTokenGrant()
+            // Send the refresh token grant message for the first UI fragment, and synchronise the request
+            this.concurrencyHandler.execute(this::performRefreshTokenGrant)
 
             // Return the token on success
             val accessToken = this.tokenStorage.loadTokens()?.accessToken
@@ -269,6 +275,7 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
     private suspend fun performRefreshTokenGrant() {
 
         // First clear the existing access token from storage
+        println("GJA: perform refresh")
         this.tokenStorage.clearAccessToken()
 
         // Check we have a refresh token

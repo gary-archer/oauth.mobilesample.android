@@ -157,7 +157,7 @@ class MainActivity : AppCompatActivity() {
             sessionFragment.show()
             return true
 
-        } catch (ex: Exception) {
+        } catch (ex: Throwable) {
 
             // Display the startup error details
             this.handleException(ex)
@@ -277,7 +277,7 @@ class MainActivity : AppCompatActivity() {
 
                     // Start the redirect
                     that.authenticator.startLogin(that, Constants.LOGIN_REDIRECT_REQUEST_CODE)
-                } catch (ex: Exception) {
+                } catch (ex: Throwable) {
 
                     // Report errors such as those looking up endpoints
                     withContext(Dispatchers.Main) {
@@ -316,7 +316,7 @@ class MainActivity : AppCompatActivity() {
                     // Also reload data
                     EventBus.getDefault().post(ReloadEvent(false))
                 }
-            } catch (ex: Exception) {
+            } catch (ex: Throwable) {
 
                 // Report errors such as those processing the authorization code grant
                 withContext(Dispatchers.Main) {
@@ -350,7 +350,7 @@ class MainActivity : AppCompatActivity() {
             // Trigger the logout process, which will remove tokens and redirect to clear the OAuth session cookie
             this.isTopMost = false
             this.authenticator.startLogout(this, Constants.LOGOUT_REDIRECT_REQUEST_CODE)
-        } catch (ex: Exception) {
+        } catch (ex: Throwable) {
 
             // Report errors such as those looking up endpoints
             this.isTopMost = true
@@ -387,7 +387,7 @@ class MainActivity : AppCompatActivity() {
     /*
      * Receive unhandled exceptions and navigate to the error fragment
      */
-    fun handleException(exception: Exception) {
+    fun handleException(exception: Throwable) {
 
         // Get the error as a known object
         val handler = ErrorHandler()

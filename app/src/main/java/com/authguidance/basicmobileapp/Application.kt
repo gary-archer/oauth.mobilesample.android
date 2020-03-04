@@ -80,7 +80,7 @@ class Application : android.app.Application() {
         while (true) {
             try {
                 Looper.loop()
-            } catch (ex: Exception) {
+            } catch (ex: Throwable) {
                 this.handleUnhandledException(ex)
             }
         }
@@ -89,7 +89,7 @@ class Application : android.app.Application() {
     /*
      * When there is a development error, call the single activity to render errors
      */
-    private fun handleUnhandledException(ex: Exception) {
+    private fun handleUnhandledException(ex: Throwable) {
         this.mainActivity?.handleException(ex)
     }
 }
