@@ -78,8 +78,6 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
      */
     fun loadUserInfo() {
 
-        // First clear any previous content
-        this.binding.loggedInUser.text = ""
         val errorFragment = this.childFragmentManager.findFragmentById(R.id.userInfoErrorSummaryFragment) as ErrorSummaryFragment
         errorFragment.clearError()
 
@@ -92,15 +90,18 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
                 // Load user info
                 val userInfo = that.mainActivity.apiClient.getUserInfo()
 
+                // Render user info
                 withContext(Dispatchers.Main) {
-
-                    // Render user info
                     that.mainActivity.viewManager.onUserInfoLoaded()
                     that.binding.loggedInUser.text = "${userInfo.givenName} ${userInfo.familyName}"
                 }
+
             } catch (uiError: UIError) {
 
                 withContext(Dispatchers.Main) {
+
+                    // Clear any previous content
+                    that.binding.loggedInUser.text = ""
 
                     // Report errors calling the API
                     that.mainActivity.viewManager.onUserInfoLoadFailed(uiError)

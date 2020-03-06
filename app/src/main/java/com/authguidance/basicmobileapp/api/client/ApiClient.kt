@@ -30,12 +30,23 @@ class ApiClient(
 ) {
 
     // Create a session id when the app starts
+    var client: OkHttpClient
     val sessionId = UUID.randomUUID().toString()
+
+    /*
+     * Create a singleton HTTP client at application startup
+     */
+    init {
+        this.client = OkHttpClient.Builder()
+            .callTimeout(10, TimeUnit.SECONDS)
+            .build()
+    }
 
     /*
      * Download user info from the API so that we can get any data we need
      */
     suspend fun getUserInfo(): UserInfoClaims {
+
         val response = this.callApi("userclaims/current", "GET", null)
         return this.readResponseBody(response, UserInfoClaims::class.java)
     }
@@ -44,6 +55,7 @@ class ApiClient(
      * Get the list of companies
      */
     suspend fun getCompanyList(options: ApiRequestOptions? = null): Array<Company> {
+
         val response = this.callApi("companies", "GET", null, options)
         return this.readResponseBody(response, Array<Company>::class.java)
     }
@@ -126,11 +138,7 @@ class ApiClient(
 
         return suspendCoroutine { continuation ->
 
-            val client = OkHttpClient.Builder()
-                .callTimeout(10, TimeUnit.SECONDS)
-                .build()
-
-            client.newCall(request).enqueue(object : Callback {
+            this.client.newCall(request).enqueue(object : Callback {
                 override fun onResponse(call: Call, response: Response) {
 
                     // Return the data on success

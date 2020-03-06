@@ -45,20 +45,16 @@ class ConcurrentActionHandler {
 
             // Define callbacks through which to return the result
             val onSuccess = {
-                println("GJA: continuation success")
                 continuation.resume(Unit)
             }
 
             val onError = { exception: Throwable ->
-                println("GJA: continuation error")
                 continuation.resumeWithException(exception)
             }
 
             synchronized(this.lock) {
                 this.callbacks.add(Pair(onSuccess, onError))
             }
-
-            println("GJA: created callbacks")
         }
     }
 
@@ -69,7 +65,6 @@ class ConcurrentActionHandler {
 
         synchronized (this.lock) {
             this.callbacks.forEach {
-                println("GJA: success callback")
                 it.first()
             }
 
@@ -85,7 +80,6 @@ class ConcurrentActionHandler {
 
         synchronized (this.lock) {
             this.callbacks.forEach {
-                println("GJA: failure callback")
                 it.second(ex);
             }
 

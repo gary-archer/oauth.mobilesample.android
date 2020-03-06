@@ -301,7 +301,6 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
         return suspendCoroutine { continuation ->
 
             // First clear the existing access token from storage
-            println("GJA: perform refresh")
             this.tokenStorage.clearAccessToken()
 
             // Define a callback to handle the result of the refresh token grant

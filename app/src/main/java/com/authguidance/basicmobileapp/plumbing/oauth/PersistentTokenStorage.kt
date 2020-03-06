@@ -13,36 +13,45 @@ class PersistentTokenStorage(val context: Context, val encryptionManager: Encryp
     private val applicationName = "com.authguidance.basicmobileapp"
     private val key = "AUTH_STATE"
     private val tokenStorage = context.getSharedPreferences(applicationName, MODE_PRIVATE)
+    private val lock = Object()
 
     /*
      * Load tokens from storage and note that the shared preferences API stores them in memory afterwards
      */
     fun loadTokens(): TokenData? {
-        return this.loadTokenData()
+        synchronized(lock) {
+            return this.loadTokenData()
+        }
     }
 
     /*
      * Save tokens to stored preferences
      */
     fun saveTokens(data: TokenData) {
-        this.saveTokenData(data)
+        synchronized(lock) {
+            this.saveTokenData(data)
+        }
     }
 
     /*
      * Remove tokens from storage
      */
     fun removeTokens() {
-        this.tokenStorage.edit().remove(this.key).apply()
+        synchronized(lock) {
+            this.tokenStorage.edit().remove(this.key).apply()
+        }
     }
 
     /*
      * Remove just the access token from storage
      */
     fun clearAccessToken() {
-        val tokenData = loadTokenData()
-        if (tokenData != null) {
-            tokenData.accessToken = null
-            this.saveTokenData(tokenData)
+        synchronized(lock) {
+            val tokenData = loadTokenData()
+            if (tokenData != null) {
+                tokenData.accessToken = null
+                this.saveTokenData(tokenData)
+            }
         }
     }
 
@@ -50,10 +59,12 @@ class PersistentTokenStorage(val context: Context, val encryptionManager: Encryp
      * A hacky method for testing, to update token storage to make the access token act like it is expired
      */
     fun expireAccessToken() {
-        val tokenData = loadTokenData()
-        if (tokenData != null) {
-            tokenData.accessToken = "x${tokenData.accessToken}x"
-            this.saveTokenData(tokenData)
+        synchronized(lock) {
+            val tokenData = loadTokenData()
+            if (tokenData != null) {
+                tokenData.accessToken = "x${tokenData.accessToken}x"
+                this.saveTokenData(tokenData)
+            }
         }
     }
 
@@ -61,11 +72,13 @@ class PersistentTokenStorage(val context: Context, val encryptionManager: Encryp
      * A hacky method for testing, to update token storage to make the refresh token act like it is expired
      */
     fun expireRefreshToken() {
-        val tokenData = loadTokenData()
-        if (tokenData != null) {
-            tokenData.accessToken = null
-            tokenData.refreshToken = "x${tokenData.refreshToken}x"
-            this.saveTokenData(tokenData)
+        synchronized(lock) {
+            val tokenData = loadTokenData()
+            if (tokenData != null) {
+                tokenData.accessToken = null
+                tokenData.refreshToken = "x${tokenData.refreshToken}x"
+                this.saveTokenData(tokenData)
+            }
         }
     }
 
