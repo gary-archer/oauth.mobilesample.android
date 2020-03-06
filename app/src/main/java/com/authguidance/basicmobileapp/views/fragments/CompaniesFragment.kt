@@ -9,21 +9,25 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.api.client.ApiRequestOptions
+import com.authguidance.basicmobileapp.api.entities.Company
 import com.authguidance.basicmobileapp.databinding.FragmentCompaniesBinding
+import com.authguidance.basicmobileapp.plumbing.errors.UIError
+import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
+import com.authguidance.basicmobileapp.plumbing.utilities.Constants
 import com.authguidance.basicmobileapp.views.activities.MainActivity
 import com.authguidance.basicmobileapp.views.adapters.CompanyArrayAdapter
-import com.authguidance.basicmobileapp.api.entities.Company
-import com.authguidance.basicmobileapp.plumbing.errors.UIError
-import com.authguidance.basicmobileapp.plumbing.utilities.Constants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 /*
  * The fragment to show the company list
  */
-class CompaniesFragment : androidx.fragment.app.Fragment(), ReloadableFragment {
+class CompaniesFragment : androidx.fragment.app.Fragment() {
 
     private lateinit var binding: FragmentCompaniesBinding
     private lateinit var mainActivity: MainActivity
@@ -56,13 +60,32 @@ class CompaniesFragment : androidx.fragment.app.Fragment(), ReloadableFragment {
         super.onViewCreated(view, savedInstanceState)
 
         this.binding.fragmentHeadingText.text = this.getString(R.string.company_list_title)
+
+        // Subscribe to the reload event and load data
+        EventBus.getDefault().register(this)
         this.loadData(false)
+    }
+
+    /*
+     * Unsubscribe from events upon exit
+     */
+    override fun onDestroyView() {
+        super.onDestroyView()
+        EventBus.getDefault().unregister(this)
+    }
+
+    /*
+     * Receive messages
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: ReloadEvent) {
+        this.loadData(event.causeError)
     }
 
     /*
      * Load data for the fragment
      */
-    override fun loadData(causeError: Boolean) {
+    private fun loadData(causeError: Boolean) {
 
         // Inform the view manager so that the UI can be updated during load
         this.mainActivity.viewManager.onMainViewLoading()

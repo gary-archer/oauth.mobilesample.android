@@ -7,9 +7,11 @@ import android.net.Uri
 import com.authguidance.basicmobileapp.configuration.OAuthConfiguration
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorHandler
+import com.authguidance.basicmobileapp.plumbing.errors.UIError
 import com.authguidance.basicmobileapp.plumbing.oauth.logout.CognitoLogoutManager
 import com.authguidance.basicmobileapp.plumbing.oauth.logout.LogoutManager
 import com.authguidance.basicmobileapp.plumbing.oauth.logout.OktaLogoutManager
+import com.authguidance.basicmobileapp.plumbing.utilities.ConcurrentActionHandler
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
@@ -22,7 +24,6 @@ import net.openid.appauth.TokenRequest
 import net.openid.appauth.TokenResponse
 import net.openid.appauth.connectivity.DefaultConnectionBuilder
 import java.util.Locale
-import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -32,19 +33,24 @@ import kotlin.coroutines.suspendCoroutine
  */
 class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationContext: Context) : Authenticator {
 
-    private var loginAuthService: AuthorizationService? = null
-    private val logoutManager: LogoutManager
     private val tokenStorage: PersistentTokenStorage
+    private val concurrencyHandler: ConcurrentActionHandler
+    private val logoutManager: LogoutManager
+    private var loginAuthService: AuthorizationService? = null
 
     /*
      * We will store encrypted tokens in shared preferences, but only if the device is secured
      */
     init {
-        // Create an object to manage logout
-        this.logoutManager = this.createLogoutManager()
+
+        // Create an object used to handle refresh token requests from multiple UI frag
+        this.concurrencyHandler = ConcurrentActionHandler()
 
         // Tokens are encrypted and persisted across app restarts
         this.tokenStorage = PersistentTokenStorage(this.applicationContext, EncryptionManager(this.applicationContext))
+
+        // Create an object to manage logout
+        this.logoutManager = this.createLogoutManager()
     }
 
     /*
@@ -251,7 +257,13 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
             // Define a callback to handle the result of the authorization code grant
             val callback =
                 AuthorizationService.TokenResponseCallback { tokenResponse, ex ->
-                    this.handleTokenResponse(tokenResponse, ex, continuation, ErrorCodes.authorizationCodeGrantFailed)
+
+                    val result = this.handleTokenResponse(tokenResponse, ex, ErrorCodes.authorizationCodeGrantFailed)
+                    if (result.first != null) {
+                        continuation.resume(Unit)
+                    } else {
+                        continuation.resumeWithException(result.second!!)
+                    }
                 }
 
             // Create the authorization code grant request
@@ -268,13 +280,15 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
      */
     private suspend fun performRefreshTokenGrant() {
 
-        // First clear the existing access token from storage
-        this.tokenStorage.clearAccessToken()
-
         // Check we have a refresh token
         val refreshToken = this.tokenStorage.loadTokens()?.refreshToken
         if (refreshToken.isNullOrBlank()) {
             return
+        }
+
+        // If already in progress we'll return a continuation that waits on the in progress operation
+        if (!this.concurrencyHandler.start()) {
+            return concurrencyHandler.createContinuation()
         }
 
         // First get metadata
@@ -283,27 +297,45 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
         // Wrap the request in a coroutine
         return suspendCoroutine { continuation ->
 
+            // First clear the existing access token from storage
+            this.tokenStorage.clearAccessToken()
+
             // Define a callback to handle the result of the refresh token grant
             val callback =
                 AuthorizationService.TokenResponseCallback { tokenResponse, ex ->
 
+                    // If we get an invalid_grant error it means the refresh token has expired
                     if (ex != null &&
                         ex.type == AuthorizationException.TYPE_OAUTH_TOKEN_ERROR &&
-                        ex.code == AuthorizationException.TokenRequestErrors.INVALID_GRANT.code) {
+                        ex.code == AuthorizationException.TokenRequestErrors.INVALID_GRANT.code
+                    ) {
 
-                        // If we get an invalid_grant error it means the refresh token has expired
+                        // Resume the in progress operation and also continuations
                         continuation.resume(Unit)
+                        this.concurrencyHandler.resume()
                     } else {
 
                         // Handle other responses
-                        this.handleTokenResponse(tokenResponse, ex, continuation, "refresh_token")
+                        val result = this.handleTokenResponse(tokenResponse, ex, "refresh_token")
+                        if (result.first != null) {
+
+                            // Resume the in progress operation and also continuations with success
+                            continuation.resume(Unit)
+                            this.concurrencyHandler.resume()
+                        } else {
+
+                            // Resume the in progress operation and also continuations with an error
+                            continuation.resumeWithException(result.second!!)
+                            this.concurrencyHandler.resumeWithException(result.second!!)
+                        }
                     }
                 }
 
             // Create the refresh token grant request
             val tokenRequest = TokenRequest.Builder(
                 metadata,
-                this.configuration.clientId)
+                this.configuration.clientId
+            )
                 .setGrantType(GrantTypeValues.REFRESH_TOKEN)
                 .setRefreshToken(refreshToken)
                 .build()
@@ -320,16 +352,15 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
     private fun handleTokenResponse(
         tokenResponse: TokenResponse?,
         ex: AuthorizationException?,
-        continuation: Continuation<Unit>,
         operationName: String
-    ) {
+    ): Pair<Unit?, UIError?> {
 
         when {
             ex != null -> {
 
                 // Translate AppAuth errors to the display format
                 val error = ErrorHandler().fromAppAuthError(ex, operationName)
-                continuation.resumeWithException(error)
+                return Pair(null, error)
             }
             else -> {
 
@@ -365,7 +396,7 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
                 }
 
                 // Resume processing
-                continuation.resume(Unit)
+                return Pair(Unit, null)
             }
         }
     }

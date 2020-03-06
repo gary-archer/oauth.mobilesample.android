@@ -13,7 +13,7 @@ class ErrorHandler {
     /*
      * Return an error from a general UI exception
      */
-    fun fromException(ex: Exception): UIError {
+    fun fromException(ex: Throwable): UIError {
 
         // Already handled
         if (ex is UIError) {
@@ -163,7 +163,7 @@ class ErrorHandler {
     /*
      * Get the error message property's value
      */
-    private fun getErrorDescription(ex: Exception): String? {
+    private fun getErrorDescription(ex: Throwable): String? {
 
         if (ex.message != null) {
             return ex.message
