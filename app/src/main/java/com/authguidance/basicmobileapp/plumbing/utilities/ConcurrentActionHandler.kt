@@ -20,16 +20,30 @@ class ConcurrentActionHandler {
     // The collection of callbacks
     private val callbacks = ArrayList<Pair<SuccessCallback, ErrorCallback>>()
 
+    // An object to synchronise access to the collection
+    private val lock = Object()
+
     /*
-     * Run the supplied action once and return a continuation while in progress
+     * Start the concurrent action
      */
-    suspend fun execute(action: suspend () -> Unit): Unit {
+    fun start(): Boolean {
 
-        println("GJA: refresh token for UI fragment")
+        if (this.actionInProgress) {
+            return false
+        }
 
-        // Create a continuation through which to return the result
-        val response: Unit = suspendCoroutine { continuation ->
+        this.actionInProgress = true
+        return true
+    }
 
+    /*
+     * The first UI fragment does a refresh action and other UI fragments wait on a continuation
+     */
+    suspend fun createContinuation() {
+
+        return suspendCoroutine { continuation ->
+
+            // Define callbacks through which to return the result
             val onSuccess = {
                 println("GJA: continuation success")
                 continuation.resume(Unit)
@@ -40,49 +54,43 @@ class ConcurrentActionHandler {
                 continuation.resumeWithException(exception)
             }
 
-            println("GJA: adding callback")
-            this.callbacks.add(Pair(onSuccess, onError))
-            println("GJA: added callback")
-        }
-
-        println("GJA: suspend coroutine created")
-        if (this.actionInProgress) {
-            println("GJA: already in progress")
-        }
-
-        // Only do the work for the first UI fragment that calls us
-        if (!this.actionInProgress) {
-            this.actionInProgress = true
-
-            println("GJA: refresh token for first UI fragment")
-
-            try {
-
-                // Do the work
-                action()
-                println("GJA: refresh token completed")
-
-                // On success resolve all continuations
-                this.callbacks.forEach{
-                    println("GJA: success callback")
-                    it.first()
-                }
-
-            } catch (ex: Throwable) {
-
-                // On success reject all continuations
-                this.callbacks.forEach{
-                    println("GJA: failure callback")
-                    it.second(ex);
-                }
+            synchronized(this.lock) {
+                this.callbacks.add(Pair(onSuccess, onError))
             }
 
-            // Reset once complete
-            this.callbacks.clear()
-            this.actionInProgress = false;
+            println("GJA: created callbacks")
         }
+    }
 
-        // Return the continuation
-        return response;
+    /*
+     * When the first UI fragment has completed successfully, return the same result to all other fragments
+     */
+    fun resume() {
+
+        synchronized (this.lock) {
+            this.callbacks.forEach {
+                println("GJA: success callback")
+                it.first()
+            }
+
+            this.callbacks.clear()
+            this.actionInProgress = false
+        }
+    }
+
+    /*
+     * When the first UI fragment has failed, return the same error to all other fragments
+     */
+    fun resumeWithException(ex: Throwable) {
+
+        synchronized (this.lock) {
+            this.callbacks.forEach {
+                println("GJA: failure callback")
+                it.second(ex);
+            }
+
+            this.callbacks.clear()
+            this.actionInProgress = false
+        }
     }
 }

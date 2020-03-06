@@ -7,10 +7,14 @@ import android.net.Uri
 import com.authguidance.basicmobileapp.configuration.OAuthConfiguration
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorHandler
+import com.authguidance.basicmobileapp.plumbing.errors.UIError
 import com.authguidance.basicmobileapp.plumbing.oauth.logout.CognitoLogoutManager
 import com.authguidance.basicmobileapp.plumbing.oauth.logout.LogoutManager
 import com.authguidance.basicmobileapp.plumbing.oauth.logout.OktaLogoutManager
 import com.authguidance.basicmobileapp.plumbing.utilities.ConcurrentActionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
@@ -82,8 +86,8 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
         val refreshToken = this.tokenStorage.loadTokens()?.refreshToken
         if (!refreshToken.isNullOrBlank()) {
 
-            // Send the refresh token grant message for the first UI fragment, and synchronise the request
-            this.concurrencyHandler.execute(this::performRefreshTokenGrant)
+            // Send the refresh token grant message
+            this.performRefreshTokenGrant()
 
             // Return the token on success
             val accessToken = this.tokenStorage.loadTokens()?.accessToken
@@ -257,7 +261,12 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
             // Define a callback to handle the result of the authorization code grant
             val callback =
                 AuthorizationService.TokenResponseCallback { tokenResponse, ex ->
-                    this.handleTokenResponse(tokenResponse, ex, continuation, ErrorCodes.authorizationCodeGrantFailed)
+                    val result = this.handleTokenResponse(tokenResponse, ex, ErrorCodes.authorizationCodeGrantFailed)
+                    if (result.first != null) {
+                        this.concurrencyHandler.resume()
+                    } else {
+                        this.concurrencyHandler.resumeWithException(result.second!!)
+                    }
                 }
 
             // Create the authorization code grant request
@@ -274,14 +283,15 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
      */
     private suspend fun performRefreshTokenGrant() {
 
-        // First clear the existing access token from storage
-        println("GJA: perform refresh")
-        this.tokenStorage.clearAccessToken()
-
         // Check we have a refresh token
         val refreshToken = this.tokenStorage.loadTokens()?.refreshToken
         if (refreshToken.isNullOrBlank()) {
             return
+        }
+
+        // If already in progress we'll return a continuation that waits of the in progress operation
+        if (!this.concurrencyHandler.start()) {
+            return concurrencyHandler.createContinuation()
         }
 
         // First get metadata
@@ -290,27 +300,48 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
         // Wrap the request in a coroutine
         return suspendCoroutine { continuation ->
 
+            // First clear the existing access token from storage
+            println("GJA: perform refresh")
+            this.tokenStorage.clearAccessToken()
+
             // Define a callback to handle the result of the refresh token grant
             val callback =
                 AuthorizationService.TokenResponseCallback { tokenResponse, ex ->
 
+                    // If we get an invalid_grant error it means the refresh token has expired
                     if (ex != null &&
                         ex.type == AuthorizationException.TYPE_OAUTH_TOKEN_ERROR &&
-                        ex.code == AuthorizationException.TokenRequestErrors.INVALID_GRANT.code) {
+                        ex.code == AuthorizationException.TokenRequestErrors.INVALID_GRANT.code
+                    ) {
 
-                        // If we get an invalid_grant error it means the refresh token has expired
+                        // Resume the in progress operation and also continuations
                         continuation.resume(Unit)
+                        this.concurrencyHandler.resume()
+
                     } else {
 
                         // Handle other responses
-                        this.handleTokenResponse(tokenResponse, ex, continuation, "refresh_token")
+                        val result = this.handleTokenResponse(tokenResponse, ex, "refresh_token")
+                        if (result.first != null) {
+
+                            // Resume the in progress operation and also continuations with success
+                            continuation.resume(Unit)
+                            this.concurrencyHandler.resume()
+
+                        } else {
+
+                            // Resume the in progress operation and also continuations with an error
+                            continuation.resumeWithException(result.second!!)
+                            this.concurrencyHandler.resumeWithException(result.second!!)
+                        }
                     }
                 }
 
             // Create the refresh token grant request
             val tokenRequest = TokenRequest.Builder(
                 metadata,
-                this.configuration.clientId)
+                this.configuration.clientId
+            )
                 .setGrantType(GrantTypeValues.REFRESH_TOKEN)
                 .setRefreshToken(refreshToken)
                 .build()
@@ -327,16 +358,15 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
     private fun handleTokenResponse(
         tokenResponse: TokenResponse?,
         ex: AuthorizationException?,
-        continuation: Continuation<Unit>,
         operationName: String
-    ) {
+    ): Pair<Unit?, UIError?> {
 
         when {
             ex != null -> {
 
                 // Translate AppAuth errors to the display format
                 val error = ErrorHandler().fromAppAuthError(ex, operationName)
-                continuation.resumeWithException(error)
+                return Pair(null, error)
             }
             else -> {
 
@@ -372,7 +402,7 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
                 }
 
                 // Resume processing
-                continuation.resume(Unit)
+                return Pair(Unit, null)
             }
         }
     }

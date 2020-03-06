@@ -99,6 +99,8 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
 
             try {
 
+                println("GJA: COMPANY API CALL")
+
                 // Call the API and supply options
                 val options = ApiRequestOptions(causeError)
                 val result = that.mainActivity.apiClient.getCompanyList(options)
@@ -108,8 +110,12 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
                     that.mainActivity.viewManager.onMainViewLoaded()
                     that.binding.listCompanies.visibility = View.VISIBLE
                     that.renderData(result)
+
+                    println("GJA: COMPANY RENDERED")
                 }
             } catch (uiError: UIError) {
+
+                println("GJA: COMPANY ERROR")
 
                 // Report errors
                 withContext(Dispatchers.Main) {
@@ -132,6 +138,9 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
      * Render API response data on the UI thread
      */
     private fun renderData(companies: Array<Company>) {
+
+        println("GJA: RENDER COMPANY DATA")
+        println("GJA: " + companies[0].name)
 
         // Navigate to transactions for the clicked company id
         val onItemClick = { company: Company ->
