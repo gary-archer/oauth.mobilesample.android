@@ -286,7 +286,7 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
             return
         }
 
-        // If already in progress we'll return a continuation that waits of the in progress operation
+        // If already in progress we'll return a continuation that waits on the in progress operation
         if (!this.concurrencyHandler.start()) {
             return concurrencyHandler.createContinuation()
         }
