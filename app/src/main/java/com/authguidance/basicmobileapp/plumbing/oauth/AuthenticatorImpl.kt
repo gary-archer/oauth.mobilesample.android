@@ -12,9 +12,6 @@ import com.authguidance.basicmobileapp.plumbing.oauth.logout.CognitoLogoutManage
 import com.authguidance.basicmobileapp.plumbing.oauth.logout.LogoutManager
 import com.authguidance.basicmobileapp.plumbing.oauth.logout.OktaLogoutManager
 import com.authguidance.basicmobileapp.plumbing.utilities.ConcurrentActionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
@@ -27,7 +24,6 @@ import net.openid.appauth.TokenRequest
 import net.openid.appauth.TokenResponse
 import net.openid.appauth.connectivity.DefaultConnectionBuilder
 import java.util.Locale
-import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -261,11 +257,12 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
             // Define a callback to handle the result of the authorization code grant
             val callback =
                 AuthorizationService.TokenResponseCallback { tokenResponse, ex ->
+
                     val result = this.handleTokenResponse(tokenResponse, ex, ErrorCodes.authorizationCodeGrantFailed)
                     if (result.first != null) {
-                        this.concurrencyHandler.resume()
+                        continuation.resume(Unit)
                     } else {
-                        this.concurrencyHandler.resumeWithException(result.second!!)
+                        continuation.resumeWithException(result.second!!)
                     }
                 }
 
@@ -316,7 +313,6 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
                         // Resume the in progress operation and also continuations
                         continuation.resume(Unit)
                         this.concurrencyHandler.resume()
-
                     } else {
 
                         // Handle other responses
@@ -326,7 +322,6 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
                             // Resume the in progress operation and also continuations with success
                             continuation.resume(Unit)
                             this.concurrencyHandler.resume()
-
                         } else {
 
                             // Resume the in progress operation and also continuations with an error

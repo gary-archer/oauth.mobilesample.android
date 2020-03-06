@@ -156,7 +156,6 @@ class MainActivity : AppCompatActivity() {
             val sessionFragment = this.supportFragmentManager.findFragmentById(R.id.sessionFragment) as SessionFragment
             sessionFragment.show()
             return true
-
         } catch (ex: Throwable) {
 
             // Display the startup error details
@@ -305,15 +304,11 @@ class MainActivity : AppCompatActivity() {
 
                 withContext(Dispatchers.Main) {
 
-                    // Load user info after logging in
-                    val titleFragment = that.supportFragmentManager.findFragmentById(R.id.titleFragment) as TitleFragment
-                    titleFragment.loadUserInfo()
-
                     // Show the API session id
                     val sessionFragment = that.supportFragmentManager.findFragmentById(R.id.sessionFragment) as SessionFragment
                     sessionFragment.show()
 
-                    // Also reload data
+                    // Reload data when returning from login
                     EventBus.getDefault().post(ReloadEvent(false))
                 }
             } catch (ex: Throwable) {

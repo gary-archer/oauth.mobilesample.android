@@ -95,7 +95,6 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
                     that.mainActivity.viewManager.onUserInfoLoaded()
                     that.binding.loggedInUser.text = "${userInfo.givenName} ${userInfo.familyName}"
                 }
-
             } catch (uiError: UIError) {
 
                 withContext(Dispatchers.Main) {

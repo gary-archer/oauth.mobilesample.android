@@ -63,7 +63,7 @@ class ConcurrentActionHandler {
      */
     fun resume() {
 
-        synchronized (this.lock) {
+        synchronized(this.lock) {
             this.callbacks.forEach {
                 it.first()
             }
@@ -78,9 +78,9 @@ class ConcurrentActionHandler {
      */
     fun resumeWithException(ex: Throwable) {
 
-        synchronized (this.lock) {
+        synchronized(this.lock) {
             this.callbacks.forEach {
-                it.second(ex);
+                it.second(ex)
             }
 
             this.callbacks.clear()

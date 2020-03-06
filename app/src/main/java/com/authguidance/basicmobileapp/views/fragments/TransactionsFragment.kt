@@ -67,7 +67,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
         this.binding.fragmentHeadingText.text = String.format(format, this.companyId)
 
         // Subscribe to the reload event and load data
-        EventBus.getDefault().register(this);
+        EventBus.getDefault().register(this)
         this.loadData(false)
     }
 
@@ -76,7 +76,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
      */
     override fun onDestroyView() {
         super.onDestroyView()
-        EventBus.getDefault().unregister(this);
+        EventBus.getDefault().unregister(this)
     }
 
     /*
