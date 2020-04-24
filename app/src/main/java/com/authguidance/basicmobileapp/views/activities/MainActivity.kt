@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity() {
     var isTopMost: Boolean = true
 
     // Global state
+    private var isInitialised: Boolean = false
     lateinit var configuration: Configuration
     lateinit var authenticator: AuthenticatorImpl
     lateinit var apiClient: ApiClient
@@ -105,7 +106,8 @@ class MainActivity : AppCompatActivity() {
      */
     private fun startApp() {
 
-        if (this.initialiseApp()) {
+        this.initialiseApp()
+        if(this.isInitialised) {
 
             // Then navigate to the start fragment
             if (NavigationHelper().isDeepLinkIntent(this.intent)) {
@@ -131,7 +133,7 @@ class MainActivity : AppCompatActivity() {
     /*
      * Do the application initialization
      */
-    private fun initialiseApp(): Boolean {
+    private fun initialiseApp() {
 
         try {
 
@@ -156,12 +158,12 @@ class MainActivity : AppCompatActivity() {
             // Show the API session id
             val sessionFragment = this.supportFragmentManager.findFragmentById(R.id.sessionFragment) as SessionFragment
             sessionFragment.show()
-            return true
+            this.isInitialised = true
+
         } catch (ex: Throwable) {
 
             // Display the startup error details
             this.handleException(ex)
-            return false
         }
     }
 
@@ -238,20 +240,19 @@ class MainActivity : AppCompatActivity() {
      */
     fun onHome() {
 
-        // If there is an error then reinitialise the app to force all fragments to reload
-        val mainErrorFragment = this.supportFragmentManager.findFragmentById(R.id.mainErrorSummaryFragment) as ErrorSummaryFragment
-        if (mainErrorFragment.hasError() || this.viewManager.hasError()) {
-            if (!this.initialiseApp()) {
-                return
-            }
+        // If we are not initialised, then reinitialise the app to force all fragments to reload
+        if (!this.isInitialised) {
+            this.initialiseApp()
         }
 
-        // Move to the home view
-        NavigationHelper().navigate(
-            this.navController,
-            this.navHostFragment.childFragmentManager.primaryNavigationFragment,
-            R.id.companiesFragment
-        )
+        // Otherwise move to the home view
+        if (this.isInitialised) {
+            NavigationHelper().navigate(
+                this.navController,
+                this.navHostFragment.childFragmentManager.primaryNavigationFragment,
+                R.id.companiesFragment
+            )
+        }
     }
 
     /*
