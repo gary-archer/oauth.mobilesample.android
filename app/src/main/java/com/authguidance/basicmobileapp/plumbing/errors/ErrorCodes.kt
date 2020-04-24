@@ -24,4 +24,10 @@ object ErrorCodes {
 
     // An error response fropm the API
     const val apiResponseError = "api_response_error"
+
+    // Returned by the API when the user edits the browser URL and ties to access an unauthorised company
+    const val companyNotFound = "company_not_found";
+
+    // Returned by the API when the user edits the browser URL and supplies a non numeric company id
+    const val invalidCompanyId = "invalid_company_id";
 }

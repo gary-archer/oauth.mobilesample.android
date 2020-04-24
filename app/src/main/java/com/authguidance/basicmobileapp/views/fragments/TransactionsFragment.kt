@@ -12,6 +12,7 @@ import com.authguidance.basicmobileapp.databinding.FragmentTransactionsBinding
 import com.authguidance.basicmobileapp.views.activities.MainActivity
 import com.authguidance.basicmobileapp.views.adapters.TransactionArrayAdapter
 import com.authguidance.basicmobileapp.api.entities.CompanyTransactions
+import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
 import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
 import com.authguidance.basicmobileapp.plumbing.utilities.Constants
@@ -117,14 +118,14 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
             } catch (uiError: UIError) {
 
                 // Handle invalid input
-                if (uiError.statusCode == 404 && uiError.errorCode == "company_not_found") {
+                if (uiError.statusCode == 404 && uiError.errorCode == ErrorCodes.companyNotFound) {
 
                     // A deep link could provide an id such as 3, which is unauthorized
                     withContext(Dispatchers.Main) {
                         that.mainActivity.navController.popBackStack()
                         that.mainActivity.onHome()
                     }
-                } else if (uiError.statusCode == 400 && uiError.errorCode == "invalid_company_id") {
+                } else if (uiError.statusCode == 400 && uiError.errorCode == ErrorCodes.invalidCompanyId) {
 
                     // A deep link could provide an invalid id value such as 'abc'
                     withContext(Dispatchers.Main) {
