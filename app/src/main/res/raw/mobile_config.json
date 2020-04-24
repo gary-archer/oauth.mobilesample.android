@@ -10,3 +10,4 @@
     "postLogoutRedirectUri": "https://web.authguidance-examples.com/mobile/postlogout.html",
     "scope": "openid profile email"
   }
+}
