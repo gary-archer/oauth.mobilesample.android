@@ -134,6 +134,7 @@ class MainActivity : AppCompatActivity() {
     private fun initialiseApp(): Boolean {
 
         try {
+
             // Initialise error state
             val errorFragment = this.supportFragmentManager.findFragmentById(R.id.mainErrorSummaryFragment) as ErrorSummaryFragment
             errorFragment.clearError()
@@ -239,7 +240,7 @@ class MainActivity : AppCompatActivity() {
 
         // If there is an error then reinitialise the app to force all fragments to reload
         val mainErrorFragment = this.supportFragmentManager.findFragmentById(R.id.mainErrorSummaryFragment) as ErrorSummaryFragment
-        if (this.viewManager.hasError() || mainErrorFragment.hasError()) {
+        if (mainErrorFragment.hasError() || this.viewManager.hasError()) {
             if (!this.initialiseApp()) {
                 return
             }
