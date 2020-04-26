@@ -11,11 +11,11 @@ class ViewManager(
     private val onLoginRequired: () -> Unit
 ) {
 
-    // Flags
+    // Flags used to update header button state
     private var mainViewLoaded: Boolean = false
     private var userInfoLoaded: Boolean = false
 
-    // Errors when calling the API
+    // View errors when calling the API
     private var mainViewLoadError: UIError? = null
     private var userInfoLoadError: UIError? = null
 
@@ -89,8 +89,8 @@ class ViewManager(
         if (this.mainViewLoaded && this.userInfoLoaded) {
 
             // Next check if there is one or more login required errors
-            if ((mainError != null && mainError.errorCode === ErrorCodes.loginRequired) ||
-                (userError != null && userError.errorCode === ErrorCodes.loginRequired)) {
+            if ((mainError != null && mainError.errorCode.equals(ErrorCodes.loginRequired)) ||
+                (userError != null && userError.errorCode.equals(ErrorCodes.loginRequired))) {
 
                 // If so then ask the parent to trigger a login redirect
                 this.onLoginRequired()

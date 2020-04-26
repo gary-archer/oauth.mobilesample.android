@@ -107,7 +107,7 @@ class MainActivity : AppCompatActivity() {
     private fun startApp() {
 
         this.initialiseApp()
-        if(this.isInitialised) {
+        if (this.isInitialised) {
 
             // Then navigate to the start fragment
             if (NavigationHelper().isDeepLinkIntent(this.intent)) {
@@ -158,8 +158,9 @@ class MainActivity : AppCompatActivity() {
             // Show the API session id
             val sessionFragment = this.supportFragmentManager.findFragmentById(R.id.sessionFragment) as SessionFragment
             sessionFragment.show()
-            this.isInitialised = true
 
+            // Indicate initialised
+            this.isInitialised = true
         } catch (ex: Throwable) {
 
             // Display the startup error details
@@ -240,18 +241,25 @@ class MainActivity : AppCompatActivity() {
      */
     fun onHome() {
 
-        // If we are not initialised, then reinitialise the app to force all fragments to reload
+        // If we are not initialised, then support retrying by reinitialising the app
         if (!this.isInitialised) {
             this.initialiseApp()
         }
 
-        // Otherwise move to the home view
         if (this.isInitialised) {
+
+            // Move to the home view. which will cause it to get data from the API
             NavigationHelper().navigate(
                 this.navController,
                 this.navHostFragment.childFragmentManager.primaryNavigationFragment,
                 R.id.companiesFragment
             )
+
+            // If the view has an error, also force a reload of user info
+            if (this.viewManager.hasError()) {
+                val titleFragment = this.supportFragmentManager.findFragmentById(R.id.titleFragment) as TitleFragment
+                titleFragment.loadUserInfo()
+            }
         }
     }
 

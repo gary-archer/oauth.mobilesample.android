@@ -11,10 +11,11 @@ object ErrorCodes {
     // Used to indicate that the Chrome Custom Tab was cancelled
     const val loginCancelled = "login_cancelled"
 
-    const val authorizationCodeGrantFailed = "authorization_code_grant"
-
     // A technical error processing the login response containing the authorization code
     const val loginResponseFailed = "login_response_failed"
+
+    // A technical error exchanging the authorization code for tokens
+    const val authorizationCodeGrantFailed = "authorization_code_grant"
 
     // A general exception in the UI
     const val generalUIError = "ui_error"
@@ -26,8 +27,8 @@ object ErrorCodes {
     const val apiResponseError = "api_response_error"
 
     // Returned by the API when the user edits the browser URL and ties to access an unauthorised company
-    const val companyNotFound = "company_not_found";
+    const val companyNotFound = "company_not_found"
 
     // Returned by the API when the user edits the browser URL and supplies a non numeric company id
-    const val invalidCompanyId = "invalid_company_id";
+    const val invalidCompanyId = "invalid_company_id"
 }

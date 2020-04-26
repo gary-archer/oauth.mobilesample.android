@@ -64,7 +64,7 @@
     <!-- The style for the session id in small text -->
     <style name="TextViewSessionIdStyle" parent="android:Widget.TextView">
         <item name="android:textSize">14sp</item>
-        <item name="android:gravity">right</item>
+        <item name="android:gravity">center</item>
         <item name="android:layout_marginLeft">5dp</item>
         <item name="android:layout_marginRight">5dp</item>
         <item name="android:layout_marginBottom">5dp</item>

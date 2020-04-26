@@ -62,7 +62,7 @@ class ErrorHandler {
         val error = UIError(
             "OAuth",
             errorCode,
-            "An error was returned during a security operation"
+            "A problem was encountered during a login related operation"
         )
 
         if (ex.code != 0) {
