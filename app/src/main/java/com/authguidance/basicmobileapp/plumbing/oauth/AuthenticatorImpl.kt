@@ -65,13 +65,7 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
         }
 
         // Try to use the refresh token to get a new access token
-        val newAccessToken = this.refreshAccessToken()
-        if (!newAccessToken.isNullOrBlank()) {
-            return newAccessToken
-        }
-
-        // Otherwise abort the API call via a known exception
-        throw ErrorHandler().fromLoginRequired()
+        return this.refreshAccessToken()
     }
 
     /*
@@ -316,7 +310,7 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
                     } else {
 
                         // Handle other responses
-                        val result = this.handleTokenResponse(tokenResponse, ex, "refresh_token")
+                        val result = this.handleTokenResponse(tokenResponse, ex, ErrorCodes.refreshTokenGrantFailed)
                         if (result.first != null) {
 
                             // Resume the in progress operation and also continuations with success

@@ -17,6 +17,9 @@ object ErrorCodes {
     // A technical error exchanging the authorization code for tokens
     const val authorizationCodeGrantFailed = "authorization_code_grant"
 
+    // A technical error refreshing tokens
+    const val refreshTokenGrantFailed = "refresh_token_grant"
+
     // A general exception in the UI
     const val generalUIError = "ui_error"
 
