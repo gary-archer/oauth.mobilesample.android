@@ -92,12 +92,6 @@ class ViewManager(
             if ((mainError != null && mainError.errorCode.equals(ErrorCodes.loginRequired)) ||
                 (userError != null && userError.errorCode.equals(ErrorCodes.loginRequired))) {
 
-                // First reset to prevent leftover data problems later
-                this.mainViewLoaded = false
-                this.userInfoLoaded = false
-                this.mainViewLoadError = null
-                this.userInfoLoadError = null
-
                 // If so then ask the parent to trigger a login redirect
                 this.onLoginRequired()
             }

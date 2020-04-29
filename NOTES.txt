@@ -1,3 +1,0 @@
-1. Get callbacks working and ensure threadsafe
-
-2. Check ktlint warnings and update blog with notes on how to do linting
