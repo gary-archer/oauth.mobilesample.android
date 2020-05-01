@@ -19,15 +19,15 @@
         <item name="android:layout_height">match_parent</item>
         <item name="android:layout_marginLeft">2dp</item>
         <item name="android:layout_marginRight">2dp</item>
-        <item name="android:textSize">12sp</item>
+        <item name="android:minHeight">80dp</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:backgroundTint">@color/primary</item>
     </style>
 
     <!-- The style for label text -->
     <style name="TextViewLabelStyle" parent="android:Widget.TextView">
         <item name="android:textColor">@color/text_label</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">24sp</item>
         <item name="android:layout_gravity">left</item>
     </style>
 
@@ -35,7 +35,7 @@
     <style name="TextViewValueStyle" parent="android:Widget.TextView">
         <item name="android:textColor">@color/text_value</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">24sp</item>
         <item name="android:layout_gravity">left</item>
     </style>
 
@@ -43,7 +43,7 @@
     <style name="TextViewMoneyStyle" parent="android:Widget.TextView">
         <item name="android:textColor">@color/text_money</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">24sp</item>
         <item name="android:layout_gravity">left</item>
     </style>
 
@@ -51,31 +51,31 @@
     <style name="TextViewErrorSummaryStyle" parent="android:Widget.TextView">
         <item name="android:textColor">@color/text_error</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">24sp</item>
         <item name="android:layout_gravity">center</item>
     </style>
 
     <!-- The style for header text -->
     <style name="TextViewHeaderStyle" parent="android:Widget.TextView">
         <item name="android:textColor">@color/text_value</item>
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">28sp</item>
     </style>
 
     <!-- The image in the companies view -->
     <style name="ImageRowValueStyle">
         <item name="android:gravity">center_vertical</item>
-        <item name="android:layout_height">40dp</item>
+        <item name="android:layout_height">60dp</item>
     </style>
 
     <!-- The image row text in the companies view -->
     <style name="ImageRowLabelStyle" parent="TextViewHeaderStyle">
         <item name="android:gravity">center_vertical</item>
-        <item name="android:layout_height">40dp</item>
+        <item name="android:layout_height">60dp</item>
     </style>
 
     <!-- The style for the session id in small text -->
     <style name="TextViewSessionIdStyle" parent="android:Widget.TextView">
-        <item name="android:textSize">12sp</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:gravity">right</item>
         <item name="android:layout_marginLeft">5dp</item>
         <item name="android:layout_marginRight">5dp</item>

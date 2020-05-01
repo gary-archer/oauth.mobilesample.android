@@ -8,14 +8,13 @@
     <!-- Show a table of label / value pairs -->
     <TableLayout android:layout_width="match_parent"
                  android:layout_height="wrap_content"
-                 android:layout_marginTop="5dp"
+                 android:layout_marginTop="15dp"
                  android:layout_marginBottom="5dp">
 
         <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:layout_marginBottom="15dp">
+                android:layout_marginBottom="25dp">
 
             <View
                     android:layout_weight="1"
@@ -45,8 +44,7 @@
         <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:layout_marginBottom="15dp">
+                android:layout_marginBottom="25dp">
 
             <View
                     android:layout_weight="1"
@@ -76,8 +74,7 @@
         <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:layout_marginBottom="15dp">
+                android:layout_marginBottom="25dp">
 
             <View
                     android:layout_weight="1"

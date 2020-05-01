@@ -14,7 +14,7 @@
         <!-- Show the page title -->
         <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
-            android:layout_height="40dp"
+            android:layout_height="60dp"
             android:background="@color/primary">
             <TextView
                 android:id="@+id/fragment_heading_text"
@@ -30,6 +30,7 @@
             android:name="com.authguidance.basicmobileapp.views.fragments.ErrorSummaryFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
             tools:layout="@layout/fragment_error_summary"/>
 
         <!-- The companies fragment is a list of companies -->
