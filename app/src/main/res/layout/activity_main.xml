@@ -6,7 +6,7 @@
         <import type="android.view.View" />
         <variable
                 name="activity"
-                type="com.authguidance.basicmobileapp.views.activities.MainActivity" />
+                type="com.authguidance.basicmobileapp.app.MainActivity" />
     </data>
     <LinearLayout
             android:layout_width="match_parent"

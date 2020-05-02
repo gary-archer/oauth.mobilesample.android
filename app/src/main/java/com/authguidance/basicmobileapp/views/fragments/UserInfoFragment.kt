@@ -9,7 +9,7 @@ import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.databinding.FragmentUserInfoBinding
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
 import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
-import com.authguidance.basicmobileapp.views.activities.MainActivity
+import com.authguidance.basicmobileapp.app.MainActivity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -78,6 +78,10 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
      */
     fun loadUserInfo() {
 
+        // Inform the view manager so that a loading state can be rendered
+        this.mainActivity.viewManager.onViewLoading()
+
+        // Clear any existing errors
         val errorFragment = this.childFragmentManager.findFragmentById(R.id.userInfoErrorSummaryFragment) as ErrorSummaryFragment
         errorFragment.clearError()
 
@@ -92,7 +96,7 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
 
                 // Render user info
                 withContext(Dispatchers.Main) {
-                    that.mainActivity.viewManager.onUserInfoLoaded()
+                    that.mainActivity.viewManager.onViewLoaded()
                     that.binding.loggedInUser.text = "${userInfo.givenName} ${userInfo.familyName}"
                 }
             } catch (uiError: UIError) {
@@ -103,7 +107,7 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
                     that.binding.loggedInUser.text = ""
 
                     // Report errors calling the API
-                    that.mainActivity.viewManager.onUserInfoLoadFailed(uiError)
+                    that.mainActivity.viewManager.onViewLoadFailed(uiError)
 
                     // Render error details
                     errorFragment.reportError(

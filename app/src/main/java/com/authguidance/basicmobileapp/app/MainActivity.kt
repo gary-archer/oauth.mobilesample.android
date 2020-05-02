@@ -1,4 +1,4 @@
-package com.authguidance.basicmobileapp.views.activities
+package com.authguidance.basicmobileapp.app
 
 import android.app.admin.DevicePolicyManager
 import android.content.Intent
@@ -7,7 +7,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
-import com.authguidance.basicmobileapp.Application
+import com.authguidance.basicmobileapp.app.Application
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.databinding.ActivityMainBinding
 import com.authguidance.basicmobileapp.plumbing.utilities.NavigationHelper
@@ -41,15 +41,16 @@ class MainActivity : AppCompatActivity() {
     lateinit var navController: NavController
     lateinit var navHostFragment: NavHostFragment
 
-    // View settings
-    lateinit var viewManager: ViewManager
-    var isTopMost: Boolean = true
-
-    // Global state
-    private var isInitialised: Boolean = false
+    // Global objects
     lateinit var configuration: Configuration
     lateinit var authenticator: AuthenticatorImpl
     lateinit var apiClient: ApiClient
+    lateinit var viewManager: ViewManager
+
+    // State flags
+    private var isInitialised: Boolean = false
+    private var sessionButtonsEnabled: Boolean = false
+    var isTopMost: Boolean = true
 
     /*
      * Create the activity in a safe manner, to set up navigation and data binding
@@ -150,6 +151,7 @@ class MainActivity : AppCompatActivity() {
 
             // Create the view manager
             this.viewManager = ViewManager(this::onLoadStateChanged, this::onLoginRequired)
+            this.viewManager.setViewCount(2)
 
             // Ask the title fragment to load user info
             val titleFragment = this.supportFragmentManager.findFragmentById(R.id.titleFragment) as TitleFragment
@@ -221,10 +223,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*
-     * Update session buttons when the main view starts and ends loading
+     * Update session buttons during and after view load
      */
     private fun onLoadStateChanged(loaded: Boolean) {
 
+        this.sessionButtonsEnabled = loaded
         val buttonFragment = this.supportFragmentManager.findFragmentById(R.id.buttonHeaderFragment) as HeaderButtonsFragment
         buttonFragment.setButtonEnabledState(loaded)
     }
@@ -248,17 +251,16 @@ class MainActivity : AppCompatActivity() {
 
         if (this.isInitialised) {
 
-            // Move to the home view. which will cause it to get data from the API
+            // Move to the home view
             NavigationHelper().navigate(
                 this.navController,
                 this.navHostFragment.childFragmentManager.primaryNavigationFragment,
                 R.id.companiesFragment
             )
 
-            // If the view has an error, also force a reload of user info
-            if (this.viewManager.hasError()) {
-                val titleFragment = this.supportFragmentManager.findFragmentById(R.id.titleFragment) as TitleFragment
-                titleFragment.loadUserInfo()
+            // If there is an error loading data from the API then force a reload
+            if (this.authenticator.isLoggedIn() && !this.sessionButtonsEnabled) {
+                this.reloadData(false)
             }
         }
     }
@@ -332,20 +334,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*
-     * Update token storage to make the access token act like it is expired
-     */
-    fun expireAccessToken() {
-        this.authenticator.expireAccessToken()
-    }
-
-    /*
-     * Update token storage to make the refresh token act like it is expired
-     */
-    fun expireRefreshToken() {
-        this.authenticator.expireRefreshToken()
-    }
-
-    /*
      * Remove tokens and navigate to login required
      */
     fun startLogout() {
@@ -387,6 +375,28 @@ class MainActivity : AppCompatActivity() {
             this.navController,
             this.navHostFragment.childFragmentManager.primaryNavigationFragment,
             R.id.loginRequiredFragment)
+    }
+
+    /*
+     * Handle reload click results from the custom control by publishing an event to update all views
+     */
+    fun reloadData(longClicked: Boolean) {
+        this.viewManager.setViewCount(2)
+        EventBus.getDefault().post(ReloadEvent(longClicked))
+    }
+
+    /*
+     * Update token storage to make the access token act like it is expired
+     */
+    fun expireAccessToken() {
+        this.authenticator.expireAccessToken()
+    }
+
+    /*
+     * Update token storage to make the refresh token act like it is expired
+     */
+    fun expireRefreshToken() {
+        this.authenticator.expireRefreshToken()
     }
 
     /*

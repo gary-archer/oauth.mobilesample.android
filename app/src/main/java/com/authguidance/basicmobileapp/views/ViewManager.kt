@@ -10,91 +10,76 @@ class ViewManager(
     private val onLoadStateChanged: (loaded: Boolean) -> Unit,
     private val onLoginRequired: () -> Unit
 ) {
-
-    // Flags used to update header button state
-    private var mainViewLoaded: Boolean = false
-    private var userInfoLoaded: Boolean = false
-
-    // View errors when calling the API
-    private var mainViewLoadError: UIError? = null
-    private var userInfoLoadError: UIError? = null
+    // Properties
+    private var viewsToLoad: Int = 1
+    private var loadedCount: Int = 0
+    private var hasErrors: Boolean = false
+    private var loginRequired: Boolean = false
 
     /*
-     * Handle the main view loading event
+     * Allow the parent to set the number of views to load
      */
-    fun onMainViewLoading() {
+    fun setViewCount(count: Int) {
+        this.viewsToLoad = count
+    }
+
+    /*
+     * Handle the view loading event and inform the parent, which can render a loading state
+     */
+    fun onViewLoading() {
         this.onLoadStateChanged(false)
     }
 
     /*
-     * Handle the main view loaded event
+     * Handle the view loaded event and call back the parent when all loading is complete
      */
-    fun onMainViewLoaded() {
-        this.mainViewLoaded = true
-        this.mainViewLoadError = null
-        this.onLoadStateChanged(true)
+    fun onViewLoaded() {
+
+        this.loadedCount +=  1
+
+        // Once all views have loaded, inform the parent if all views loaded successfully
+        if (this.loadedCount == this.viewsToLoad) {
+
+            this.reset()
+            if (!this.hasErrors) {
+                this.onLoadStateChanged(true)
+            }
+        }
     }
 
     /*
-     * Handle the main view load failed event
+     * Handle the view load failed event
      */
-    fun onMainViewLoadFailed(error: UIError) {
-        this.mainViewLoaded = true
-        this.mainViewLoadError = error
-        this.triggerLoginIfRequired()
-    }
+    fun onViewLoadFailed(error: UIError) {
 
-    /*
-     * After a successful user info load, reset error state
-     */
-    fun onUserInfoLoaded() {
-        this.userInfoLoaded = true
-        this.userInfoLoadError = null
-    }
+        this.loadedCount +=  1
+        this.hasErrors = true
 
-    /*
-     * After a failed user info load, store the error
-     */
-    fun onUserInfoLoadFailed(error: UIError) {
-        this.userInfoLoaded = true
-        this.userInfoLoadError = error
-        this.triggerLoginIfRequired()
-    }
-
-    /*
-     * Indicate if there is an error
-     */
-    fun hasError(): Boolean {
-
-        val mainError = this.mainViewLoadError
-        val userError = this.userInfoLoadError
-
-        if ((mainError != null && mainError.errorCode != ErrorCodes.loginRequired) ||
-            (userError != null && userError.errorCode != ErrorCodes.loginRequired)) {
-            return true
+        // Record if this was a login required error
+        if (error.errorCode == ErrorCodes.loginRequired) {
+            this.loginRequired = true
         }
 
-        return false
-    }
+        // Once all views have loaded, reset state and, if required, trigger a login redirect only once
+        if (this.loadedCount == this.viewsToLoad) {
 
-    /*
-     * Wait for both the main view and user info to load, then trigger a login redirect
-     */
-    private fun triggerLoginIfRequired() {
+            val triggerLoginOnParent = this.loginRequired
+            this.reset()
 
-        val mainError = this.mainViewLoadError
-        val userError = this.userInfoLoadError
-
-        // First check both views are loaded
-        if (this.mainViewLoaded && this.userInfoLoaded) {
-
-            // Next check if there is one or more login required errors
-            if ((mainError != null && mainError.errorCode.equals(ErrorCodes.loginRequired)) ||
-                (userError != null && userError.errorCode.equals(ErrorCodes.loginRequired))) {
-
-                // If so then ask the parent to trigger a login redirect
+            if (triggerLoginOnParent) {
                 this.onLoginRequired()
             }
         }
+    }
+
+    /*
+     * Reset to the initial state once loading is complete
+     * Default to loading a single view, unless the parent informs us otherwise
+     */
+    private fun reset() {
+        this.viewsToLoad = 1
+        this.loadedCount = 0
+        this.hasErrors = false
+        this.loginRequired = false
     }
 }

@@ -1,9 +1,8 @@
-package com.authguidance.basicmobileapp.views.activities
+package com.authguidance.basicmobileapp.app
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import com.authguidance.basicmobileapp.Application
 
 /*
  * Use the technique from the below link to prevent the main activity being duplicated during deep linking

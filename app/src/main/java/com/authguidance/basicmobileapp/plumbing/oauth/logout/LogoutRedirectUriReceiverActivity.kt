@@ -3,7 +3,7 @@ package com.authguidance.basicmobileapp.plumbing.oauth.logout
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import com.authguidance.basicmobileapp.views.activities.MainActivity
+import com.authguidance.basicmobileapp.app.MainActivity
 import com.authguidance.basicmobileapp.plumbing.utilities.Constants
 
 /*

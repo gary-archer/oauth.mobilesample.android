@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.api.client.ApiRequestOptions
 import com.authguidance.basicmobileapp.databinding.FragmentTransactionsBinding
-import com.authguidance.basicmobileapp.views.activities.MainActivity
+import com.authguidance.basicmobileapp.app.MainActivity
 import com.authguidance.basicmobileapp.views.adapters.TransactionArrayAdapter
 import com.authguidance.basicmobileapp.api.entities.CompanyTransactions
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
@@ -93,8 +93,8 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
      */
     private fun loadData(causeError: Boolean) {
 
-        // Inform the view manager so that the UI can be updated during load
-        this.mainActivity.viewManager.onMainViewLoading()
+        // Inform the view manager so that a loading state can be rendered
+        this.mainActivity.viewManager.onViewLoading()
 
         // First clear any previous errors
         val errorFragment = this.childFragmentManager.findFragmentById(R.id.transactionsErrorSummaryFragment) as ErrorSummaryFragment
@@ -111,7 +111,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
 
                 // Switch back to the UI thread for rendering
                 withContext(Dispatchers.Main) {
-                    that.mainActivity.viewManager.onMainViewLoaded()
+                    that.mainActivity.viewManager.onViewLoaded()
                     that.binding.listTransactions.visibility = View.VISIBLE
                     renderData(result)
                 }
@@ -139,7 +139,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
 
                         // Report errors calling the API
                         that.binding.listTransactions.visibility = View.GONE
-                        that.mainActivity.viewManager.onMainViewLoadFailed(uiError)
+                        that.mainActivity.viewManager.onViewLoadFailed(uiError)
 
                         // Render error details
                         errorFragment.reportError(

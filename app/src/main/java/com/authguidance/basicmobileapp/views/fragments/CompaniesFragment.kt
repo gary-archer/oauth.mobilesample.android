@@ -14,7 +14,7 @@ import com.authguidance.basicmobileapp.databinding.FragmentCompaniesBinding
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
 import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
 import com.authguidance.basicmobileapp.plumbing.utilities.Constants
-import com.authguidance.basicmobileapp.views.activities.MainActivity
+import com.authguidance.basicmobileapp.app.MainActivity
 import com.authguidance.basicmobileapp.views.adapters.CompanyArrayAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -87,8 +87,8 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
      */
     private fun loadData(causeError: Boolean) {
 
-        // Inform the view manager so that the UI can be updated during load
-        this.mainActivity.viewManager.onMainViewLoading()
+        // Inform the view manager so that a loading state can be rendered
+        this.mainActivity.viewManager.onViewLoading()
 
         // First clear any previous content and errors
         val errorFragment = this.childFragmentManager.findFragmentById(R.id.companiesErrorSummaryFragment) as ErrorSummaryFragment
@@ -105,7 +105,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
 
                 // Switch back to the UI thread for rendering
                 withContext(Dispatchers.Main) {
-                    that.mainActivity.viewManager.onMainViewLoaded()
+                    that.mainActivity.viewManager.onViewLoaded()
                     that.binding.listCompanies.visibility = View.VISIBLE
                     that.renderData(result)
                 }
@@ -116,7 +116,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
 
                     // Report errors calling the API
                     that.binding.listCompanies.visibility = View.GONE
-                    that.mainActivity.viewManager.onMainViewLoadFailed(uiError)
+                    that.mainActivity.viewManager.onViewLoadFailed(uiError)
 
                     // Render error details
                     errorFragment.reportError(

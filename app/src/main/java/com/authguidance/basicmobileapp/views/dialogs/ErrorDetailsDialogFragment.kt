@@ -11,7 +11,7 @@ import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.authguidance.basicmobileapp.databinding.FragmentErrorDetailsBinding
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorReporter
-import com.authguidance.basicmobileapp.views.activities.MainActivity
+import com.authguidance.basicmobileapp.app.MainActivity
 import com.authguidance.basicmobileapp.views.adapters.ErrorItemArrayAdapter
 
 /*

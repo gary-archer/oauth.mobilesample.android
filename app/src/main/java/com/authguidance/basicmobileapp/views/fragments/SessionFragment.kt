@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.databinding.FragmentSessionBinding
-import com.authguidance.basicmobileapp.views.activities.MainActivity
+import com.authguidance.basicmobileapp.app.MainActivity
 
 /*
  * Render the UI session id used in API logs

@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
-            android:name="com.authguidance.basicmobileapp.Application"
+            android:name="com.authguidance.basicmobileapp.app.Application"
             android:allowBackup="true"
             android:label="@string/launch_icon_name"
             android:icon="@mipmap/ic_launcher"
@@ -19,7 +19,7 @@
         <!-- Our single activity uses single top which prevents recreating it when it is on top of the stack
              Also we prevent activity restarts when the orientation is changed -->
         <activity
-                android:name=".views.activities.MainActivity"
+                android:name=".app.MainActivity"
                 android:launchMode="singleTop"
                 android:configChanges="orientation|screenSize">
 
@@ -35,7 +35,7 @@
 
         <!-- A dedicated activity for handling deep links in a controlled manner -->
         <activity
-            android:name=".views.activities.DeepLinkForwardingActivity"
+            android:name=".app.DeepLinkForwardingActivity"
             android:launchMode="singleTask"
             android:noHistory="true">
 

@@ -7,7 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.authguidance.basicmobileapp.databinding.FragmentHeaderButtonsBinding
 import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
-import com.authguidance.basicmobileapp.views.activities.MainActivity
+import com.authguidance.basicmobileapp.app.MainActivity
 import org.greenrobot.eventbus.EventBus
 
 /*
@@ -50,7 +50,7 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
         }
 
         // Handle refresh data clicks specially
-        this.binding.btnReloadData.setCustomClickListener(this::onReloadClicked)
+        this.binding.btnReloadData.setCustomClickListener(this.mainActivity::reloadData)
 
         // When expire access token is clicked, call the main activity
         this.binding.btnExpireAccessToken.setOnClickListener {
@@ -68,13 +68,6 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
         }
 
         this.binding.btnReloadData.isEnabled = false
-    }
-
-    /*
-     * Handle reload click results from the custom control by publishing an event
-     */
-    private fun onReloadClicked(longClicked: Boolean) {
-        EventBus.getDefault().post(ReloadEvent(longClicked))
     }
 
     /*
