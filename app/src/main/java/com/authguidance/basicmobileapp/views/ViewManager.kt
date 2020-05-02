@@ -35,7 +35,7 @@ class ViewManager(
      */
     fun onViewLoaded() {
 
-        this.loadedCount +=  1
+        this.loadedCount += 1
 
         // Once all views have loaded, inform the parent if all views loaded successfully
         if (this.loadedCount == this.viewsToLoad) {
@@ -52,7 +52,7 @@ class ViewManager(
      */
     fun onViewLoadFailed(error: UIError) {
 
-        this.loadedCount +=  1
+        this.loadedCount += 1
         this.hasErrors = true
 
         // Record if this was a login required error
