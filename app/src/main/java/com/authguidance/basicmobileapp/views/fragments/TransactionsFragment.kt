@@ -5,8 +5,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.authguidance.basicmobileapp.R
+import com.authguidance.basicmobileapp.api.client.ApiClient
 import com.authguidance.basicmobileapp.api.client.ApiRequestOptions
 import com.authguidance.basicmobileapp.databinding.FragmentTransactionsBinding
 import com.authguidance.basicmobileapp.app.MainActivity
@@ -16,6 +18,7 @@ import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
 import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
 import com.authguidance.basicmobileapp.plumbing.utilities.Constants
+import com.authguidance.basicmobileapp.views.ViewManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,16 +32,23 @@ import org.greenrobot.eventbus.EventBus
  */
 class TransactionsFragment : androidx.fragment.app.Fragment() {
 
+    // Binding properties
     private lateinit var binding: FragmentTransactionsBinding
-    private lateinit var mainActivity: MainActivity
+
+    // Details passed from the main activity
+    private lateinit var apiClient: ApiClient
+    private lateinit var viewManager: ViewManager
     private var companyId: String = ""
 
     /*
-     * Get a reference to the main activity
+     * Get properties from the main activity
      */
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        this.mainActivity = context as MainActivity
+
+        val mainActivity = context as MainActivity
+        this.viewManager = mainActivity.viewManager
+        this.apiClient = mainActivity.getApiClient()!!
     }
 
     /*
@@ -94,7 +104,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
     private fun loadData(causeError: Boolean) {
 
         // Inform the view manager so that a loading state can be rendered
-        this.mainActivity.viewManager.onViewLoading()
+        this.viewManager.onViewLoading()
 
         // First clear any previous errors
         val errorFragment = this.childFragmentManager.findFragmentById(R.id.transactionsErrorSummaryFragment) as ErrorSummaryFragment
@@ -107,30 +117,37 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
 
                 // Call the API and supply options
                 val options = ApiRequestOptions(causeError)
-                val result = that.mainActivity.apiClient.getCompanyTransactions(that.companyId, options)
+                val result = that.apiClient.getCompanyTransactions(that.companyId, options)
 
                 // Switch back to the UI thread for rendering
                 withContext(Dispatchers.Main) {
-                    that.mainActivity.viewManager.onViewLoaded()
-                    that.binding.listTransactions.visibility = View.VISIBLE
+                    that.viewManager.onViewLoaded()
+                    //that.binding.listTransactions.visibility = View.VISIBLE
                     renderData(result)
                 }
             } catch (uiError: UIError) {
 
                 // Handle invalid input
-                if (uiError.statusCode == 404 && uiError.errorCode == ErrorCodes.companyNotFound) {
+                if (uiError.statusCode == 404 && uiError.errorCode.equals(ErrorCodes.companyNotFound)) {
 
                     // A deep link could provide an id such as 3, which is unauthorized
                     withContext(Dispatchers.Main) {
-                        that.mainActivity.navController.popBackStack()
-                        that.mainActivity.onHome()
+
+                        val args = Bundle()
+                        findNavController().navigate(R.id.companiesFragment, args)
+
+                        //that.mainActivity.navController.popBackStack()
+                        //that.mainActivity.onHome()
                     }
-                } else if (uiError.statusCode == 400 && uiError.errorCode == ErrorCodes.invalidCompanyId) {
+                } else if (uiError.statusCode == 400 && uiError.errorCode.equals(ErrorCodes.invalidCompanyId)) {
 
                     // A deep link could provide an invalid id value such as 'abc'
                     withContext(Dispatchers.Main) {
-                        that.mainActivity.navController.popBackStack()
-                        that.mainActivity.onHome()
+                        val args = Bundle()
+                        findNavController().navigate(R.id.companiesFragment, args)
+
+                        //that.mainActivity.navController.popBackStack()
+                        //that.mainActivity.onHome()
                     }
                 } else {
 
@@ -138,8 +155,8 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
                     withContext(Dispatchers.Main) {
 
                         // Report errors calling the API
-                        that.binding.listTransactions.visibility = View.GONE
-                        that.mainActivity.viewManager.onViewLoadFailed(uiError)
+                        //that.binding.listTransactions.visibility = View.GONE
+                        that.viewManager.onViewLoadFailed(uiError)
 
                         // Render error details
                         errorFragment.reportError(
@@ -159,7 +176,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
 
         // Show transactions data
         val list = this.binding.listTransactions
-        list.layoutManager = LinearLayoutManager(this.mainActivity)
-        list.adapter = TransactionArrayAdapter(mainActivity, data.transactions.toList())
+        list.layoutManager = LinearLayoutManager(this.context)
+        list.adapter = TransactionArrayAdapter(this.context!!, data.transactions.toList())
     }
 }

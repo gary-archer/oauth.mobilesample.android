@@ -8,17 +8,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.authguidance.basicmobileapp.R
+import com.authguidance.basicmobileapp.api.client.ApiClient
 import com.authguidance.basicmobileapp.databinding.ActivityMainBinding
 import com.authguidance.basicmobileapp.plumbing.utilities.NavigationHelper
-import com.authguidance.basicmobileapp.api.client.ApiClient
-import com.authguidance.basicmobileapp.configuration.Configuration
-import com.authguidance.basicmobileapp.configuration.ConfigurationLoader
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorHandler
 import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
-import com.authguidance.basicmobileapp.plumbing.oauth.AuthenticatorImpl
 import com.authguidance.basicmobileapp.plumbing.utilities.Constants
-import com.authguidance.basicmobileapp.plumbing.utilities.SecureDevice
+import com.authguidance.basicmobileapp.plumbing.utilities.DeviceSecurity
 import com.authguidance.basicmobileapp.views.ViewManager
 import com.authguidance.basicmobileapp.views.fragments.ErrorSummaryFragment
 import com.authguidance.basicmobileapp.views.fragments.HeaderButtonsFragment
@@ -40,16 +37,19 @@ class MainActivity : AppCompatActivity() {
     lateinit var navController: NavController
     lateinit var navHostFragment: NavHostFragment
 
-    // Global objects
-    lateinit var configuration: Configuration
-    lateinit var authenticator: AuthenticatorImpl
-    lateinit var apiClient: ApiClient
-    lateinit var viewManager: ViewManager
+    // Properties
+    var model: MainActivityViewModel
+    var viewManager: ViewManager
+    var isTopMost: Boolean
 
-    // State flags
-    private var isInitialised: Boolean = false
-    private var sessionButtonsEnabled: Boolean = false
-    var isTopMost: Boolean = true
+    /*
+     * Initialise properties
+     */
+    init {
+        this.model = MainActivityViewModel()
+        this.viewManager = ViewManager()
+        this.isTopMost = true
+    }
 
     /*
      * Create the activity in a safe manner, to set up navigation and data binding
@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
         this.navController = this.navHostFragment.navController
 
         // Before running the app, force the device to be secured
-        if (!SecureDevice.isSecured(this)) {
+        if (!DeviceSecurity.isDeviceSecured(this)) {
 
             // If not then force a lock screen to be set
             this.isTopMost = false
@@ -98,19 +98,26 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Invoke the dialog to prompt the user
-        SecureDevice.forceLockScreenUpdate(this, agreeCallback, declineCallback)
+        DeviceSecurity.forceLockScreenUpdate(this, agreeCallback, declineCallback)
     }
 
     /*
-     * Run the app startup and then the initial navigation
+     * Run the app startup and navigate to the start fragment
      */
     private fun startApp() {
 
         this.initialiseApp()
-        if (this.isInitialised) {
+        if (this.model.isInitialised) {
 
-            // Then navigate to the start fragment
-            if (NavigationHelper().isDeepLinkIntent(this.intent)) {
+            if (!this.model.isDeviceSecured) {
+
+                // If the device is not secured we will move to a view that prompts the user to do so
+                NavigationHelper().navigate(
+                    this.navController,
+                    this.navHostFragment.childFragmentManager.primaryNavigationFragment,
+                    R.id.blankFragment
+                )
+            } else if (NavigationHelper().isDeepLinkIntent(this.intent)) {
 
                 // If there was a deep link then follow it
                 NavigationHelper().navigateToDeepLink(
@@ -141,15 +148,11 @@ class MainActivity : AppCompatActivity() {
             val errorFragment = this.supportFragmentManager.findFragmentById(R.id.mainErrorSummaryFragment) as ErrorSummaryFragment
             errorFragment.clearError()
 
-            // Load configuration
-            this.configuration = ConfigurationLoader().load(this.applicationContext)
+            // Create the model
+            this.model.initialise(this.applicationContext)
 
-            // Create the authenticator
-            this.authenticator = AuthenticatorImpl(this.configuration.oauth, this.applicationContext)
-            this.apiClient = ApiClient(this.configuration.app.apiBaseUrl, this.authenticator)
-
-            // Create the view manager
-            this.viewManager = ViewManager(this::onLoadStateChanged, this::onLoginRequired)
+            // Initialise the view manager
+            this.viewManager.initialise(this::onLoadStateChanged, this::onLoginRequired)
             this.viewManager.setViewCount(2)
 
             // Ask the title fragment to load user info
@@ -159,14 +162,18 @@ class MainActivity : AppCompatActivity() {
             // Show the API session id
             val sessionFragment = this.supportFragmentManager.findFragmentById(R.id.sessionFragment) as SessionFragment
             sessionFragment.show()
-
-            // Indicate initialised
-            this.isInitialised = true
         } catch (ex: Throwable) {
 
             // Display the startup error details
             this.handleException(ex)
         }
+    }
+
+    /*
+     * Return the API client to child activities
+     */
+    fun getApiClient(): ApiClient? {
+        return this.model.apiClient
     }
 
     /*
@@ -178,7 +185,7 @@ class MainActivity : AppCompatActivity() {
 
         // See if this is a response from the lock screen
         if (requestCode == Constants.SET_LOCK_SCREEN_REQUEST_CODE) {
-            if (!SecureDevice.isSecured(this)) {
+            if (!DeviceSecurity.isDeviceSecured(this)) {
 
                 // Exit the app if still not secured
                 this.finishAndRemoveTask()
@@ -222,11 +229,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*
-     * Update session buttons during and after view load
+     * Update the load state and session buttons during and after view load
      */
     private fun onLoadStateChanged(loaded: Boolean) {
 
-        this.sessionButtonsEnabled = loaded
+        this.model.isDataLoaded = loaded
         val buttonFragment = this.supportFragmentManager.findFragmentById(R.id.buttonHeaderFragment) as HeaderButtonsFragment
         buttonFragment.setButtonEnabledState(loaded)
     }
@@ -244,11 +251,11 @@ class MainActivity : AppCompatActivity() {
     fun onHome() {
 
         // If we are not initialised, then support retrying by reinitialising the app
-        if (!this.isInitialised) {
+        if (!this.model.isInitialised) {
             this.initialiseApp()
         }
 
-        if (this.isInitialised) {
+        if (this.model.isInitialised) {
 
             // Move to the home view
             NavigationHelper().navigate(
@@ -258,7 +265,7 @@ class MainActivity : AppCompatActivity() {
             )
 
             // If there is an error loading data from the API then force a reload
-            if (this.authenticator.isLoggedIn() && !this.sessionButtonsEnabled) {
+            if (this.model.authenticator!!.isLoggedIn() && !this.model.isDataLoaded) {
                 this.reloadData(false)
             }
         }
@@ -286,7 +293,7 @@ class MainActivity : AppCompatActivity() {
                 try {
 
                     // Start the redirect
-                    that.authenticator.startLogin(that, Constants.LOGIN_REDIRECT_REQUEST_CODE)
+                    that.model.authenticator!!.startLogin(that, Constants.LOGIN_REDIRECT_REQUEST_CODE)
                 } catch (ex: Throwable) {
 
                     // Report errors such as those looking up endpoints
@@ -311,7 +318,7 @@ class MainActivity : AppCompatActivity() {
             val that = this@MainActivity
             try {
                 // Handle completion after login success, which will exchange the authorization code for tokens
-                that.authenticator.finishLogin(loginResponseIntent)
+                that.model.authenticator!!.finishLogin(loginResponseIntent)
 
                 withContext(Dispatchers.Main) {
 
@@ -341,7 +348,7 @@ class MainActivity : AppCompatActivity() {
 
             // Trigger the logout process, which will remove tokens and redirect to clear the OAuth session cookie
             this.isTopMost = false
-            this.authenticator.startLogout(this, Constants.LOGOUT_REDIRECT_REQUEST_CODE)
+            this.model.authenticator!!.startLogout(this, Constants.LOGOUT_REDIRECT_REQUEST_CODE)
         } catch (ex: Throwable) {
 
             // Report errors such as those looking up endpoints
@@ -356,7 +363,7 @@ class MainActivity : AppCompatActivity() {
     private fun finishLogout() {
 
         // Free resources
-        this.authenticator.finishLogout()
+        this.model.authenticator!!.finishLogout()
 
         // Update the UI to clear user info after logging out
         val titleFragment = this.supportFragmentManager.findFragmentById(R.id.titleFragment) as TitleFragment
@@ -388,14 +395,14 @@ class MainActivity : AppCompatActivity() {
      * Update token storage to make the access token act like it is expired
      */
     fun expireAccessToken() {
-        this.authenticator.expireAccessToken()
+        this.model.authenticator!!.expireAccessToken()
     }
 
     /*
      * Update token storage to make the refresh token act like it is expired
      */
     fun expireRefreshToken() {
-        this.authenticator.expireRefreshToken()
+        this.model.authenticator!!.expireRefreshToken()
     }
 
     /*
@@ -407,7 +414,7 @@ class MainActivity : AppCompatActivity() {
         val handler = ErrorHandler()
         val error = handler.fromException(exception)
 
-        if (error.errorCode == ErrorCodes.loginCancelled) {
+        if (error.errorCode.equals(ErrorCodes.loginCancelled)) {
 
             // If the user has closed the Chrome Custom Tab without logging in, move to the Login Required view
             NavigationHelper().navigate(

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.authguidance.basicmobileapp.R
+import com.authguidance.basicmobileapp.api.client.ApiClient
 import com.authguidance.basicmobileapp.api.client.ApiRequestOptions
 import com.authguidance.basicmobileapp.api.entities.Company
 import com.authguidance.basicmobileapp.databinding.FragmentCompaniesBinding
@@ -15,6 +16,7 @@ import com.authguidance.basicmobileapp.plumbing.errors.UIError
 import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
 import com.authguidance.basicmobileapp.plumbing.utilities.Constants
 import com.authguidance.basicmobileapp.app.MainActivity
+import com.authguidance.basicmobileapp.views.ViewManager
 import com.authguidance.basicmobileapp.views.adapters.CompanyArrayAdapter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -29,15 +31,22 @@ import org.greenrobot.eventbus.ThreadMode
  */
 class CompaniesFragment : androidx.fragment.app.Fragment() {
 
+    // Binding properties
     private lateinit var binding: FragmentCompaniesBinding
-    private lateinit var mainActivity: MainActivity
+
+    // Details passed from the main activity
+    private lateinit var apiClient: ApiClient
+    private lateinit var viewManager: ViewManager
 
     /*
-     * Get a reference to the main activity
+     * Get properties from the main activity
      */
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        this.mainActivity = context as MainActivity
+
+        val mainActivity = context as MainActivity
+        this.viewManager = mainActivity.viewManager
+        this.apiClient = mainActivity.getApiClient()!!
     }
 
     /*
@@ -88,7 +97,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
     private fun loadData(causeError: Boolean) {
 
         // Inform the view manager so that a loading state can be rendered
-        this.mainActivity.viewManager.onViewLoading()
+        this.viewManager.onViewLoading()
 
         // First clear any previous content and errors
         val errorFragment = this.childFragmentManager.findFragmentById(R.id.companiesErrorSummaryFragment) as ErrorSummaryFragment
@@ -98,15 +107,15 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
         CoroutineScope(Dispatchers.IO).launch {
 
             try {
-
                 // Call the API and supply options
                 val options = ApiRequestOptions(causeError)
-                val result = that.mainActivity.apiClient.getCompanyList(options)
+                val result = that.apiClient.getCompanyList(options)
 
                 // Switch back to the UI thread for rendering
                 withContext(Dispatchers.Main) {
-                    that.mainActivity.viewManager.onViewLoaded()
-                    that.binding.listCompanies.visibility = View.VISIBLE
+
+                    that.viewManager.onViewLoaded()
+                    //that.binding.listCompanies.visibility = View.VISIBLE
                     that.renderData(result)
                 }
             } catch (uiError: UIError) {
@@ -115,8 +124,8 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
                 withContext(Dispatchers.Main) {
 
                     // Report errors calling the API
-                    that.binding.listCompanies.visibility = View.GONE
-                    that.mainActivity.viewManager.onViewLoadFailed(uiError)
+                    //that.binding.listCompanies.visibility = View.GONE
+                    that.viewManager.onViewLoadFailed(uiError)
 
                     // Render error details
                     errorFragment.reportError(
@@ -133,6 +142,8 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
      */
     private fun renderData(companies: Array<Company>) {
 
+        println("GJA: Render data for ${companies.size} companies")
+
         // Navigate to transactions for the clicked company id
         val onItemClick = { company: Company ->
             val args = Bundle()
@@ -142,7 +153,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
 
         // Bind the data
         val list = this.binding.listCompanies
-        list.layoutManager = LinearLayoutManager(this.mainActivity)
-        list.adapter = CompanyArrayAdapter(mainActivity, companies.toList(), onItemClick)
+        list.layoutManager = LinearLayoutManager(this.context)
+        list.adapter = CompanyArrayAdapter(this.context!!, companies.toList(), onItemClick)
     }
 }

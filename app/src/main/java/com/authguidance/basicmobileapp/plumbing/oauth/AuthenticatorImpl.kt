@@ -224,7 +224,7 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
 
                 // Handle the case where the user closes the Chrome Custom Tab rather than logging in
                 if (ex.type == AuthorizationException.TYPE_GENERAL_ERROR &&
-                    ex.code == AuthorizationException.GeneralErrors.USER_CANCELED_AUTH_FLOW.code) {
+                    ex.code.equals(AuthorizationException.GeneralErrors.USER_CANCELED_AUTH_FLOW.code)) {
 
                     throw ErrorHandler().fromLoginCancelled()
                 }
@@ -301,7 +301,7 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
                     // If we get an invalid_grant error it means the refresh token has expired
                     if (ex != null &&
                         ex.type == AuthorizationException.TYPE_OAUTH_TOKEN_ERROR &&
-                        ex.code == AuthorizationException.TokenRequestErrors.INVALID_GRANT.code
+                        ex.code.equals(AuthorizationException.TokenRequestErrors.INVALID_GRANT.code)
                     ) {
 
                         // Resume the in progress operation and also continuations

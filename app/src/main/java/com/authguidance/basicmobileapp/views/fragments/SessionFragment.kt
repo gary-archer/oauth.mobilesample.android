@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.authguidance.basicmobileapp.R
+import com.authguidance.basicmobileapp.api.client.ApiClient
 import com.authguidance.basicmobileapp.databinding.FragmentSessionBinding
 import com.authguidance.basicmobileapp.app.MainActivity
 
@@ -14,15 +15,20 @@ import com.authguidance.basicmobileapp.app.MainActivity
  */
 class SessionFragment : androidx.fragment.app.Fragment() {
 
+    // Binding properties
     private lateinit var binding: FragmentSessionBinding
-    private lateinit var mainActivity: MainActivity
+
+    // Details passed from the main activity
+    private var apiClient: ApiClient? = null
 
     /*
      * Get a reference to the main activity
      */
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        this.mainActivity = context as MainActivity
+
+        val mainActivity = context as MainActivity
+        this.apiClient = mainActivity.getApiClient()
     }
 
     /*
@@ -43,7 +49,7 @@ class SessionFragment : androidx.fragment.app.Fragment() {
      */
     fun show() {
         val label = this.getString(R.string.api_session_id)
-        val value = this.mainActivity.apiClient.sessionId
+        val value = this.apiClient!!.sessionId
         this.binding.apiSessionId.text = "$label: $value"
         this.binding.apiSessionId.visibility = View.VISIBLE
     }

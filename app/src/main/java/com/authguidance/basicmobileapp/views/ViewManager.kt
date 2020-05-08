@@ -6,20 +6,34 @@ import com.authguidance.basicmobileapp.plumbing.errors.UIError
 /*
  * A helper class to coordinate multiple views
  */
-class ViewManager(
-    private val onLoadStateChanged: (loaded: Boolean) -> Unit,
-    private val onLoginRequired: () -> Unit
-) {
+class ViewManager() {
+
     // Properties
     private var viewsToLoad: Int = 1
     private var loadedCount: Int = 0
     private var hasErrors: Boolean = false
     private var loginRequired: Boolean = false
 
+    // Callbacks to the main activity
+    private lateinit var onLoadStateChanged: (Boolean) -> Unit
+    private lateinit var onLoginRequired: () -> Unit
+
+    /*
+     * Initialise after creation
+     */
+    fun initialise(
+        onLoadStateChanged: (loaded: Boolean) -> Unit,
+        onLoginRequired: () -> Unit
+    ) {
+        this.onLoadStateChanged = onLoadStateChanged
+        this.onLoginRequired = onLoginRequired
+    }
+
     /*
      * Allow the parent to set the number of views to load
      */
     fun setViewCount(count: Int) {
+        this.reset()
         this.viewsToLoad = count
     }
 
@@ -40,10 +54,11 @@ class ViewManager(
         // Once all views have loaded, inform the parent if all views loaded successfully
         if (this.loadedCount == this.viewsToLoad) {
 
-            this.reset()
             if (!this.hasErrors) {
                 this.onLoadStateChanged(true)
             }
+
+            this.reset()
         }
     }
 
@@ -56,7 +71,7 @@ class ViewManager(
         this.hasErrors = true
 
         // Record if this was a login required error
-        if (error.errorCode == ErrorCodes.loginRequired) {
+        if (error.errorCode.equals(ErrorCodes.loginRequired)) {
             this.loginRequired = true
         }
 
