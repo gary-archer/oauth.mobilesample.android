@@ -9,7 +9,7 @@ import kotlin.collections.ArrayList
 /*
  * A helper class to format error fields for display
  */
-class ErrorReporter(private val context: Context) {
+class ErrorFormatter(private val context: Context) {
 
     /*
      * Return a collection of error lines

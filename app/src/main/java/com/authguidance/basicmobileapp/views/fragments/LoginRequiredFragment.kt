@@ -25,11 +25,4 @@ class LoginRequiredFragment : androidx.fragment.app.Fragment() {
         this.binding = FragmentLoginRequiredBinding.inflate(inflater, container, false)
         return binding.root
     }
-
-    /*
-     * Update state after creation
-     */
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-    }
 }

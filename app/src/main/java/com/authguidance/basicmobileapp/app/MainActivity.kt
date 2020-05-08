@@ -41,7 +41,7 @@ class MainActivity : AppCompatActivity() {
     var isTopMost: Boolean
 
     /*
-     * Initialise properties
+     * Instance creation logic
      */
     init {
 
@@ -269,6 +269,8 @@ class MainActivity : AppCompatActivity() {
                 withContext(Dispatchers.Main) {
                     that.handleException(ex)
                 }
+            } finally {
+                that.isTopMost = false
             }
         }
     }
@@ -299,6 +301,7 @@ class MainActivity : AppCompatActivity() {
         // Update state
         this.model.authenticator!!.finishLogout()
         this.model.isDataLoaded = false
+        this.isTopMost = false
 
         // Move to the login required page
         NavigationHelper().navigate(

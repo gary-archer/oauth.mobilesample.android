@@ -9,7 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.authguidance.basicmobileapp.databinding.FragmentErrorDetailsBinding
-import com.authguidance.basicmobileapp.plumbing.errors.ErrorReporter
+import com.authguidance.basicmobileapp.plumbing.errors.ErrorFormatter
 import com.authguidance.basicmobileapp.views.adapters.ErrorItemArrayAdapter
 
 /*
@@ -82,7 +82,7 @@ class ErrorDetailsDialogFragment : DialogFragment() {
         if (error != null && context != null) {
 
             // Get error lines as a collection
-            val lines = ErrorReporter(context).getErrorLines(error)
+            val lines = ErrorFormatter(context).getErrorLines(error)
 
             // Render them via an adapter
             val list = this.binding.listErrorItems
