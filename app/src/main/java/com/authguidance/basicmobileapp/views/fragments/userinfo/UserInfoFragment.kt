@@ -1,18 +1,18 @@
-package com.authguidance.basicmobileapp.views.fragments
+package com.authguidance.basicmobileapp.views.fragments.userinfo
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.authguidance.basicmobileapp.R
-import com.authguidance.basicmobileapp.api.client.ApiClient
 import com.authguidance.basicmobileapp.api.client.ApiRequestOptions
 import com.authguidance.basicmobileapp.databinding.FragmentUserInfoBinding
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
 import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
 import com.authguidance.basicmobileapp.app.MainActivity
-import com.authguidance.basicmobileapp.views.ViewManager
+import com.authguidance.basicmobileapp.plumbing.events.InitialLoadEvent
+import com.authguidance.basicmobileapp.plumbing.events.UnloadEvent
+import com.authguidance.basicmobileapp.views.fragments.ErrorSummaryFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,27 +22,11 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
 /*
- * The user info fragment shows the logged in user
+ * The user info fragment renders logged in user details
  */
 class UserInfoFragment : androidx.fragment.app.Fragment() {
 
-    // Binding properties
     private lateinit var binding: FragmentUserInfoBinding
-
-    // Details passed from the main activity
-    private lateinit var apiClientAccessor: () -> ApiClient?
-    private lateinit var viewManager: ViewManager
-
-    /*
-     * Get properties from the main activity
-     */
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-
-        val mainActivity = context as MainActivity
-        this.viewManager = mainActivity.viewManager
-        this.apiClientAccessor = mainActivity::getApiClient
-    }
 
     /*
      * Initialise the view
@@ -54,6 +38,11 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
     ): View? {
 
         this.binding = FragmentUserInfoBinding.inflate(inflater, container, false)
+
+        // Create the model from the parent activity's data
+        val mainActivity = this.context as MainActivity
+        this.binding.model = UserInfoViewModel(mainActivity::getApiClient, mainActivity.viewManager)
+
         return binding.root
     }
 
@@ -63,7 +52,7 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Subscribe to the reload event
+        // Subscribe to events
         EventBus.getDefault().register(this)
     }
 
@@ -76,7 +65,15 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
     }
 
     /*
-     * Receive messages
+     * Handle initial load events
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: InitialLoadEvent) {
+        this.loadData(false)
+    }
+
+    /*
+     * Handle reload events
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: ReloadEvent) {
@@ -84,23 +81,11 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
     }
 
     /*
-     * Handle external calls to load data
+     * Handle logout events by clearing our data
      */
-    fun loadUserInfo() {
-        this.loadData(false)
-    }
-
-    /*
-     * Clear data after logging out
-     */
-    fun clearUserInfo() {
-
-        // Blank out the user name
-        this.binding.loggedInUser.text = ""
-
-        // Also ensure that any errors are cleared
-        val errorFragment = this.childFragmentManager.findFragmentById(R.id.userInfoErrorSummaryFragment) as ErrorSummaryFragment
-        errorFragment.clearError()
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: UnloadEvent) {
+        this.clearData()
     }
 
     /*
@@ -108,44 +93,43 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
      */
     private fun loadData(causeError: Boolean) {
 
-        val apiClient = this.apiClientAccessor()
+        // Get the model
+        val model = this.binding.model!!
+
+        // Do not try to load API data if the app is not initialised yet
+        val apiClient = model.apiClientAccessor()
         if (apiClient == null) {
-            this.viewManager.onViewLoaded()
+            model.viewManager.onViewLoaded()
             return
         }
 
         // Inform the view manager so that a loading state can be rendered
-        this.viewManager.onViewLoading()
+        model.viewManager.onViewLoading()
 
-        // Clear any existing errors
+        // Initialise for this request
         val errorFragment = this.childFragmentManager.findFragmentById(R.id.userInfoErrorSummaryFragment) as ErrorSummaryFragment
         errorFragment.clearError()
+        val options = ApiRequestOptions(causeError)
 
         // Try to get data
         CoroutineScope(Dispatchers.IO).launch {
 
             val that = this@UserInfoFragment
             try {
-                // Clear any previous content
-                that.binding.loggedInUser.text = ""
+                // Call the API
+                val userClaims = apiClient.getUserInfo(options)
 
-                // Load user info
-                val options = ApiRequestOptions(causeError)
-                val userInfo = apiClient.getUserInfo(options)
-
-                // Render user info
+                // Update the model and render results on the main thread
                 withContext(Dispatchers.Main) {
-                    that.viewManager.onViewLoaded()
-                    that.binding.loggedInUser.text = "${userInfo.givenName} ${userInfo.familyName}"
+                    model.viewManager.onViewLoaded()
+                    model.setClaims(userClaims)
                 }
             } catch (uiError: UIError) {
 
+                // Process errors on the main thread
+                model.setClaims(null)
                 withContext(Dispatchers.Main) {
-
-                    // Report errors calling the API
-                    that.viewManager.onViewLoadFailed(uiError)
-
-                    // Render error details
+                    model.viewManager.onViewLoadFailed(uiError)
                     errorFragment.reportError(
                         that.getString(R.string.userinfo_error_hyperlink),
                         that.getString(R.string.userinfo_error_dialogtitle),
@@ -153,5 +137,18 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
                 }
             }
         }
+    }
+
+    /*
+     * Clear data after logging out
+     */
+    fun clearData() {
+
+        // Clear the model
+        this.binding.model!!.setClaims(null)
+
+        // Also ensure that any errors are cleared
+        val errorFragment = this.childFragmentManager.findFragmentById(R.id.userInfoErrorSummaryFragment) as ErrorSummaryFragment
+        errorFragment.clearError()
     }
 }

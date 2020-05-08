@@ -3,19 +3,23 @@
         xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <!-- Makes model a property of this type on the fragment's binding object -->
+        <variable name="model"
+            type="com.authguidance.basicmobileapp.views.fragments.userinfo.UserInfoViewModel" />
     </data>
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context=".views.fragments.UserInfoFragment">
+        tools:context=".views.fragments.userinfo.UserInfoFragment">
 
         <!-- Show the logged in user name on success -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/TextViewLabelStyle"
-            android:id="@+id/logged_in_user" />
+            android:id="@+id/logged_in_user"
+            android:text="@{model.getLoggedInUser()}"/>
 
         <!-- Show error summary details when there is an error getting user info -->
         <fragment

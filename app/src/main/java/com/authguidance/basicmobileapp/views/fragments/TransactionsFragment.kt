@@ -61,7 +61,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
     ): View? {
 
         // Get data passed in
-        this.companyId = this.arguments?.getString(Constants.ARG_COMPANY_ID, "") ?: ""
+        this.companyId = this.arguments?.getString(Constants.ARG_COMPANY_ID, "") ?: "0"
 
         // Inflate the view
         this.binding = FragmentTransactionsBinding.inflate(inflater, container, false)
@@ -103,7 +103,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
      */
     private fun loadData(causeError: Boolean) {
 
-        // Do not load if the app is not initialised yet
+        // Do not try to load API data if the app is not initialised yet
         val apiClient = this.apiClientAccessor()
         if (apiClient == null) {
             this.viewManager.onViewLoaded()
@@ -113,45 +113,41 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
         // Inform the view manager so that a loading state can be rendered
         this.viewManager.onViewLoading()
 
-        // First clear any previous errors
+        // Initialise for this request
         val errorFragment = this.childFragmentManager.findFragmentById(R.id.transactionsErrorSummaryFragment) as ErrorSummaryFragment
         errorFragment.clearError()
+        val options = ApiRequestOptions(causeError)
 
         CoroutineScope(Dispatchers.IO).launch {
 
             val that = this@TransactionsFragment
             try {
 
-                // Call the API and supply options
-                val options = ApiRequestOptions(causeError)
+                // Call the API
                 val result = apiClient.getCompanyTransactions(that.companyId, options)
 
                 // Switch back to the UI thread for rendering
                 withContext(Dispatchers.Main) {
                     that.viewManager.onViewLoaded()
-                    renderData(result)
+                    that.renderData(result)
                 }
             } catch (uiError: UIError) {
 
-                // Handle the error
+                // Process errors on the main thread
                 val isExpected = that.handleApiError(uiError)
                 if (isExpected) {
 
+                    // Handle expected errors by navigating back to the home view
                     withContext(Dispatchers.Main) {
-
-                        // Navigate back to the home view
+                        that.viewManager.onViewLoaded()
                         val args = Bundle()
                         findNavController().navigate(R.id.companiesFragment, args)
                     }
                 } else {
 
-                    // Report other errors
+                    // Report other errors on the main thread
                     withContext(Dispatchers.Main) {
-
-                        // Report errors calling the API
                         that.viewManager.onViewLoadFailed(uiError)
-
-                        // Render error details
                         errorFragment.reportError(
                             that.getString(R.string.transactions_error_hyperlink),
                             that.getString(R.string.transactions_error_dialogtitle),
@@ -183,11 +179,10 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
     }
 
     /*
-     * Render API response data on the UI thread
+     * Render API response data
      */
     private fun renderData(data: CompanyTransactions) {
 
-        // Show transactions data
         val list = this.binding.listTransactions
         list.layoutManager = LinearLayoutManager(this.context)
         list.adapter = TransactionArrayAdapter(this.context!!, data.transactions.toList())

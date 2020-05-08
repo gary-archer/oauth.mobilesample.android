@@ -9,6 +9,12 @@ import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.api.client.ApiClient
 import com.authguidance.basicmobileapp.databinding.FragmentSessionBinding
 import com.authguidance.basicmobileapp.app.MainActivity
+import com.authguidance.basicmobileapp.plumbing.events.InitialLoadEvent
+import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
+import com.authguidance.basicmobileapp.plumbing.events.UnloadEvent
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 /*
  * Render the UI session id used in API logs
@@ -45,9 +51,51 @@ class SessionFragment : androidx.fragment.app.Fragment() {
     }
 
     /*
+     * View initialization
+     */
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        // Subscribe to events
+        EventBus.getDefault().register(this)
+    }
+
+    /*
+     * Unsubscribe from events upon exit
+     */
+    override fun onDestroyView() {
+        super.onDestroyView()
+        EventBus.getDefault().unregister(this)
+    }
+
+    /*
+     * Handle initial load events by showing the session id
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: InitialLoadEvent) {
+        this.renderData()
+    }
+
+    /*
+     * Handle reload events by showing the session id
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: ReloadEvent) {
+        this.renderData()
+    }
+
+    /*
+     * Handle logout events by clearing the session id
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: UnloadEvent) {
+        this.clearData()
+    }
+
+    /*
      * Show the content
      */
-    fun show() {
+    private fun renderData() {
 
         // Show nothing if the app has not initialised yet
         val apiClient = this.apiClientAccessor()
@@ -65,7 +113,7 @@ class SessionFragment : androidx.fragment.app.Fragment() {
     /*
      * Clear the content when logged out
      */
-    fun clear() {
+    private fun clearData() {
         this.binding.apiSessionId.text = ""
         this.binding.apiSessionId.visibility = View.GONE
     }

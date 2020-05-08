@@ -1,18 +1,17 @@
 PRIORITY
 --------
-1. Add a device not secured fragment and reduce code in main activity
-   Get rid of blank fragment and make companies the default
-   Ensure that deep links do not run views they should not
+1. Use view model classes with a view folder layout similar to React
+   Can I bind to methods how I'd like, and have fields that are watched?
+   Use view model classes for iOS once complete, if code has been improved
 
-2. Can I force redraws within fragments via binding and state fields that are watched?
-   I need a better understanding of Jetpack data binding
+2. Finish device not secured fragment and use a lighter green
+   Ensure that deep links do not run views they should not
+   In device secured both user and session details should be hidden
 
 3. Remove instances of finding fragments / activities and calling methods on them
    Only reference to parent is in onAttach
    ErrorSummary should find parent fragment --> if not found then use activity
    Getting a fragment and asking it to re-render might be OK
-
-4. Reload is broken
 
 MINOR
 -----
@@ -28,5 +27,12 @@ MINOR
    Set windowRef to null in onDisappear
 
 3. Deep link when Safari View Controller active for iOS to ignore
+   Add isTopMost logic
 
 4. iOS device check to also check biometrics only
+
+5. Android blank out Okta logoutEndpoint from config and use end session endpoint from metadata
+
+6. Use a strings source file in iOS
+
+7. Android to use consistent ids with lower case and underscores

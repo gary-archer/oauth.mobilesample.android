@@ -3,13 +3,16 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools">
     <data>
+        <!-- Makes model a property of this type on the fragment's binding object -->
+        <variable name="model"
+                  type="com.authguidance.basicmobileapp.views.fragments.companies.CompaniesViewModel" />
     </data>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        tools:context=".views.fragments.CompaniesFragment">
+        tools:context=".views.fragments.companies.CompaniesFragment">
 
         <!-- Show the page title -->
         <androidx.appcompat.widget.Toolbar
@@ -21,6 +24,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                android:text="@string/company_list_title"
                 style="@style/TextViewHeaderStyle"/>
         </androidx.appcompat.widget.Toolbar>
 
@@ -36,7 +40,7 @@
         <!-- The companies fragment is a list of companies -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/listCompanies"
-            tools:context=".views.fragments.CompaniesFragment"
+            tools:context=".views.fragments.companies.CompaniesFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"/>

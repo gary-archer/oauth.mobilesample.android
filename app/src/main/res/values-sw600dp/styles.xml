@@ -12,7 +12,7 @@
         <item name="android:navigationBarColor">@color/primary_dark</item>
     </style>
 
-    <!-- Button style -->
+    <!-- Button style for the header buttons -->
     <style name="ButtonHeaderStyle" parent="android:Widget.Button">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_weight">1</item>
@@ -22,6 +22,18 @@
         <item name="android:minHeight">80dp</item>
         <item name="android:textSize">18sp</item>
         <item name="android:backgroundTint">@color/primary</item>
+    </style>
+
+    <!-- Button style for the Open System Settings button -->
+    <style name="ButtonSecureDeviceStyle" parent="android:Widget.Button">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_marginLeft">2dp</item>
+        <item name="android:layout_marginRight">2dp</item>
+        <item name="android:minHeight">80dp</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:backgroundTint">@color/text_highlight</item>
     </style>
 
     <!-- The style for label text -->
@@ -41,7 +53,7 @@
 
     <!-- The style for money value text -->
     <style name="TextViewMoneyStyle" parent="android:Widget.TextView">
-        <item name="android:textColor">@color/text_money</item>
+        <item name="android:textColor">@color/text_highlight</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">24sp</item>
         <item name="android:layout_gravity">left</item>
