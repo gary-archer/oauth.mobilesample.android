@@ -113,9 +113,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
 
                 // Switch back to the UI thread for rendering
                 withContext(Dispatchers.Main) {
-
                     that.viewManager.onViewLoaded()
-                    //that.binding.listCompanies.visibility = View.VISIBLE
                     that.renderData(result)
                 }
             } catch (uiError: UIError) {
@@ -124,7 +122,6 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
                 withContext(Dispatchers.Main) {
 
                     // Report errors calling the API
-                    //that.binding.listCompanies.visibility = View.GONE
                     that.viewManager.onViewLoadFailed(uiError)
 
                     // Render error details

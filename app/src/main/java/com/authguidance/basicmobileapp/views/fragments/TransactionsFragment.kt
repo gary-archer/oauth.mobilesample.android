@@ -122,7 +122,6 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
                 // Switch back to the UI thread for rendering
                 withContext(Dispatchers.Main) {
                     that.viewManager.onViewLoaded()
-                    //that.binding.listTransactions.visibility = View.VISIBLE
                     renderData(result)
                 }
             } catch (uiError: UIError) {
@@ -136,8 +135,10 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
                         val args = Bundle()
                         findNavController().navigate(R.id.companiesFragment, args)
 
-                        //that.mainActivity.navController.popBackStack()
-                        //that.mainActivity.onHome()
+                        /*
+                        that.mainActivity.navController.popBackStack()
+                        that.mainActivity.onHome()
+                        */
                     }
                 } else if (uiError.statusCode == 400 && uiError.errorCode.equals(ErrorCodes.invalidCompanyId)) {
 
@@ -146,8 +147,10 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
                         val args = Bundle()
                         findNavController().navigate(R.id.companiesFragment, args)
 
-                        //that.mainActivity.navController.popBackStack()
-                        //that.mainActivity.onHome()
+                        /*
+                        that.mainActivity.navController.popBackStack()
+                        that.mainActivity.onHome()
+                        */
                     }
                 } else {
 
@@ -155,7 +158,6 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
                     withContext(Dispatchers.Main) {
 
                         // Report errors calling the API
-                        //that.binding.listTransactions.visibility = View.GONE
                         that.viewManager.onViewLoadFailed(uiError)
 
                         // Render error details
