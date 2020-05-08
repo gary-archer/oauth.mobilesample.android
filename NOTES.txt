@@ -22,3 +22,11 @@ MINOR
 
     that.mainActivity.navController.popBackStack()
     that.mainActivity.onHome()
+
+2. References to global objects in fragments
+   Understand implications for all tech stacks
+   Set windowRef to null in onDisappear
+
+3. Deep link when Safari View Controller active for iOS to ignore
+
+4. iOS device check to also check biometrics only
