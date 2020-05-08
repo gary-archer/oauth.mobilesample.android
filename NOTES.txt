@@ -1,0 +1,24 @@
+PRIORITY
+--------
+1. Add a device not secured fragment and reduce code in main activity
+   Get rid of blank fragment and make companies the default
+   Ensure that deep links do not run views they should not
+
+2. Can I force redraws within fragments via binding and state fields that are watched?
+   I need a better understanding of Jetpack data binding
+
+3. Remove instances of finding fragments / activities and calling methods on them
+   Only reference to parent is in onAttach
+   ErrorSummary should find parent fragment --> if not found then use activity
+   Getting a fragment and asking it to re-render might be OK
+
+4. Reload is broken
+
+MINOR
+-----
+1. Test back navigation after a deep link to transactions
+   Navigate back to the home view after a company id of 3 / abc used to use this
+   However, API errors show in back navigation so remove this type of code since it adds complexity
+
+    that.mainActivity.navController.popBackStack()
+    that.mainActivity.onHome()

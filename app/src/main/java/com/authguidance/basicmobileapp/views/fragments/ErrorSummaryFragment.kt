@@ -62,13 +62,6 @@ class ErrorSummaryFragment : androidx.fragment.app.Fragment() {
     }
 
     /*
-     * Allow the parent to ask whether there is an error
-     */
-    fun hasError(): Boolean {
-        return this.error != null
-    }
-
-    /*
      * Clear error details when required
      */
     fun clearError() {

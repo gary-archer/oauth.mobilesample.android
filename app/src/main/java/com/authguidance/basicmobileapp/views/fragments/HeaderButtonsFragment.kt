@@ -13,15 +13,29 @@ import com.authguidance.basicmobileapp.app.MainActivity
  */
 class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
 
+    // Binding properties
     private lateinit var binding: FragmentHeaderButtonsBinding
-    private lateinit var mainActivity: MainActivity
+
+    // Callbacks to the parent
+    private lateinit var onHome: () -> Unit
+    private lateinit var onReload: (Boolean) -> Unit
+    private lateinit var onExpireAccessToken: () -> Unit
+    private lateinit var onExpireRefreshToken: () -> Unit
+    private lateinit var onLogout: () -> Unit
 
     /*
-     * Get a reference to the main activity
+     * Get properties from the main activity
      */
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        this.mainActivity = context as MainActivity
+
+        // Get callbacks
+        val mainActivity = context as MainActivity
+        this.onHome = mainActivity::onHome
+        this.onReload = mainActivity::onReloadData
+        this.onExpireAccessToken = mainActivity::onExpireAccessToken
+        this.onExpireRefreshToken = mainActivity::onExpireRefreshToken
+        this.onLogout = mainActivity::onStartLogout
     }
 
     /*
@@ -44,28 +58,27 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         this.binding.btnHome.setOnClickListener {
-            this.mainActivity.onHome()
+            this.onHome()
         }
 
-        // Handle refresh data clicks specially
-        this.binding.btnReloadData.setCustomClickListener(this.mainActivity::reloadData)
+        // Reload clicks use special handling that supports long clicks
+        this.binding.btnReloadData.setCustomClickListener(this.onReload)
+        this.binding.btnReloadData.isEnabled = false
 
         // When expire access token is clicked, call the main activity
         this.binding.btnExpireAccessToken.setOnClickListener {
-            this.mainActivity.expireAccessToken()
+            this.onExpireAccessToken()
         }
 
         // When expire refresh token is clicked, call the main activity
         this.binding.btnExpireRefreshToken.setOnClickListener {
-            this.mainActivity.expireRefreshToken()
+            this.onExpireRefreshToken()
         }
 
         // When logout is clicked, call the main activity
         this.binding.btnLogout.setOnClickListener {
-            this.mainActivity.startLogout()
+            this.onLogout()
         }
-
-        this.binding.btnReloadData.isEnabled = false
     }
 
     /*

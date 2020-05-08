@@ -35,7 +35,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
     private lateinit var binding: FragmentCompaniesBinding
 
     // Details passed from the main activity
-    private lateinit var apiClient: ApiClient
+    private lateinit var apiClientAccessor: () -> ApiClient?
     private lateinit var viewManager: ViewManager
 
     /*
@@ -46,7 +46,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
 
         val mainActivity = context as MainActivity
         this.viewManager = mainActivity.viewManager
-        this.apiClient = mainActivity.getApiClient()!!
+        this.apiClientAccessor = mainActivity::getApiClient
     }
 
     /*
@@ -96,6 +96,13 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
      */
     private fun loadData(causeError: Boolean) {
 
+        // Do not load if the app is not initialised yet
+        val apiClient = this.apiClientAccessor()
+        if (apiClient == null) {
+            this.viewManager.onViewLoaded()
+            return
+        }
+
         // Inform the view manager so that a loading state can be rendered
         this.viewManager.onViewLoading()
 
@@ -109,7 +116,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
             try {
                 // Call the API and supply options
                 val options = ApiRequestOptions(causeError)
-                val result = that.apiClient.getCompanyList(options)
+                val result = apiClient.getCompanyList(options)
 
                 // Switch back to the UI thread for rendering
                 withContext(Dispatchers.Main) {
@@ -138,8 +145,6 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
      * Render API response data on the UI thread
      */
     private fun renderData(companies: Array<Company>) {
-
-        println("GJA: Render data for ${companies.size} companies")
 
         // Navigate to transactions for the clicked company id
         val onItemClick = { company: Company ->

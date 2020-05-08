@@ -36,7 +36,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
     private lateinit var binding: FragmentTransactionsBinding
 
     // Details passed from the main activity
-    private lateinit var apiClient: ApiClient
+    private lateinit var apiClientAccessor: () -> ApiClient?
     private lateinit var viewManager: ViewManager
     private var companyId: String = ""
 
@@ -48,7 +48,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
 
         val mainActivity = context as MainActivity
         this.viewManager = mainActivity.viewManager
-        this.apiClient = mainActivity.getApiClient()!!
+        this.apiClientAccessor = mainActivity::getApiClient
     }
 
     /*
@@ -103,6 +103,13 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
      */
     private fun loadData(causeError: Boolean) {
 
+        // Do not load if the app is not initialised yet
+        val apiClient = this.apiClientAccessor()
+        if (apiClient == null) {
+            this.viewManager.onViewLoaded()
+            return
+        }
+
         // Inform the view manager so that a loading state can be rendered
         this.viewManager.onViewLoading()
 
@@ -117,7 +124,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
 
                 // Call the API and supply options
                 val options = ApiRequestOptions(causeError)
-                val result = that.apiClient.getCompanyTransactions(that.companyId, options)
+                val result = apiClient.getCompanyTransactions(that.companyId, options)
 
                 // Switch back to the UI thread for rendering
                 withContext(Dispatchers.Main) {
@@ -126,31 +133,15 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
                 }
             } catch (uiError: UIError) {
 
-                // Handle invalid input
-                if (uiError.statusCode == 404 && uiError.errorCode.equals(ErrorCodes.companyNotFound)) {
+                // Handle the error
+                val isExpected = that.handleApiError(uiError)
+                if (isExpected) {
 
-                    // A deep link could provide an id such as 3, which is unauthorized
                     withContext(Dispatchers.Main) {
 
+                        // Navigate back to the home view
                         val args = Bundle()
                         findNavController().navigate(R.id.companiesFragment, args)
-
-                        /*
-                        that.mainActivity.navController.popBackStack()
-                        that.mainActivity.onHome()
-                        */
-                    }
-                } else if (uiError.statusCode == 400 && uiError.errorCode.equals(ErrorCodes.invalidCompanyId)) {
-
-                    // A deep link could provide an invalid id value such as 'abc'
-                    withContext(Dispatchers.Main) {
-                        val args = Bundle()
-                        findNavController().navigate(R.id.companiesFragment, args)
-
-                        /*
-                        that.mainActivity.navController.popBackStack()
-                        that.mainActivity.onHome()
-                        */
                     }
                 } else {
 
@@ -169,6 +160,26 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
                 }
             }
         }
+    }
+
+    /*
+     * Handle 'business errors' received from the API
+     */
+    private fun handleApiError(error: UIError): Boolean {
+
+        var isExpected = false
+
+        if (error.statusCode == 404 && error.errorCode.equals(ErrorCodes.companyNotFound)) {
+
+            // A deep link could provide an id such as 3, which is unauthorized
+            isExpected = true
+        } else if (error.statusCode == 400 && error.errorCode.equals(ErrorCodes.invalidCompanyId)) {
+
+            // A deep link could provide an invalid id value such as 'abc'
+            isExpected = true
+        }
+
+        return isExpected
     }
 
     /*

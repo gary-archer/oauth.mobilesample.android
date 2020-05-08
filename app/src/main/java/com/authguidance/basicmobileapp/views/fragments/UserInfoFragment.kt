@@ -30,18 +30,18 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
     private lateinit var binding: FragmentUserInfoBinding
 
     // Details passed from the main activity
-    private var apiClient: ApiClient? = null
+    private lateinit var apiClientAccessor: () -> ApiClient?
     private lateinit var viewManager: ViewManager
 
     /*
-     * Get a reference to the main activity
+     * Get properties from the main activity
      */
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
         val mainActivity = context as MainActivity
         this.viewManager = mainActivity.viewManager
-        this.apiClient = mainActivity.getApiClient()
+        this.apiClientAccessor = mainActivity::getApiClient
     }
 
     /*
@@ -108,6 +108,12 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
      */
     private fun loadData(causeError: Boolean) {
 
+        val apiClient = this.apiClientAccessor()
+        if (apiClient == null) {
+            this.viewManager.onViewLoaded()
+            return
+        }
+
         // Inform the view manager so that a loading state can be rendered
         this.viewManager.onViewLoading()
 
@@ -125,7 +131,7 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
 
                 // Load user info
                 val options = ApiRequestOptions(causeError)
-                val userInfo = that.apiClient!!.getUserInfo(options)
+                val userInfo = apiClient.getUserInfo(options)
 
                 // Render user info
                 withContext(Dispatchers.Main) {

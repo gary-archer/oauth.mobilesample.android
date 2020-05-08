@@ -1,6 +1,5 @@
 package com.authguidance.basicmobileapp.views.dialogs
 
-import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
@@ -11,7 +10,6 @@ import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.authguidance.basicmobileapp.databinding.FragmentErrorDetailsBinding
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorReporter
-import com.authguidance.basicmobileapp.app.MainActivity
 import com.authguidance.basicmobileapp.views.adapters.ErrorItemArrayAdapter
 
 /*
@@ -20,7 +18,6 @@ import com.authguidance.basicmobileapp.views.adapters.ErrorItemArrayAdapter
 class ErrorDetailsDialogFragment : DialogFragment() {
 
     private lateinit var binding: FragmentErrorDetailsBinding
-    private lateinit var mainActivity: MainActivity
     private var title: String? = null
     private var error: UIError? = null
 
@@ -28,6 +25,7 @@ class ErrorDetailsDialogFragment : DialogFragment() {
      * The factory method to create the dialog
      */
     companion object {
+
         fun create(dialogTitle: String, error: UIError): ErrorDetailsDialogFragment {
             val dialog = ErrorDetailsDialogFragment()
             val args = Bundle()
@@ -36,14 +34,6 @@ class ErrorDetailsDialogFragment : DialogFragment() {
             dialog.arguments = args
             return dialog
         }
-    }
-
-    /*
-     * Get a reference to the main activity
-     */
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        this.mainActivity = context as MainActivity
     }
 
     /*
@@ -91,12 +81,14 @@ class ErrorDetailsDialogFragment : DialogFragment() {
         val error = this.error
         if (error != null && context != null) {
 
+            // Get error lines as a collection
             val lines = ErrorReporter(context).getErrorLines(error)
 
+            // Render them via an adapter
             val list = this.binding.listErrorItems
-            list.layoutManager = LinearLayoutManager(this.mainActivity)
-            list.adapter = ErrorItemArrayAdapter(mainActivity, lines)
-            list.adapter = ErrorItemArrayAdapter(mainActivity, lines)
+            list.layoutManager = LinearLayoutManager(this.context)
+            list.adapter = ErrorItemArrayAdapter(this.context!!, lines)
+            list.adapter = ErrorItemArrayAdapter(this.context!!, lines)
         }
     }
 }

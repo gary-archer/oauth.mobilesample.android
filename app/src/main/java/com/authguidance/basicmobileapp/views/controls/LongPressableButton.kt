@@ -6,9 +6,9 @@ import android.view.MotionEvent
 import com.google.android.material.button.MaterialButton
 
 /*
- * Override the material button to support custom touch handling
+ * Override the material button to support long press handling
  */
-class TouchableButton : MaterialButton {
+class LongPressableButton : MaterialButton {
 
     private var longPressStartTime: Long? = null
     private val longPressMilliseconds = 2000

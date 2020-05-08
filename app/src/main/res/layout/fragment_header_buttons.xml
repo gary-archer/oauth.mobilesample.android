@@ -18,7 +18,7 @@
                     android:text="@string/home_button"
                     style="@style/ButtonHeaderStyle"/>
 
-            <com.authguidance.basicmobileapp.views.controls.TouchableButton
+            <com.authguidance.basicmobileapp.views.controls.LongPressableButton
                     android:id="@+id/btnReloadData"
                     android:text="@string/reload_button"
                     android:enabled="false"

@@ -266,7 +266,7 @@ class MainActivity : AppCompatActivity() {
 
             // If there is an error loading data from the API then force a reload
             if (this.model.authenticator!!.isLoggedIn() && !this.model.isDataLoaded) {
-                this.reloadData(false)
+                this.onReloadData(false)
             }
         }
     }
@@ -342,7 +342,7 @@ class MainActivity : AppCompatActivity() {
     /*
      * Remove tokens and navigate to login required
      */
-    fun startLogout() {
+    fun onStartLogout() {
 
         try {
 
@@ -384,24 +384,25 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*
-     * Handle reload click results from the custom control by publishing an event to update all views
+     * Publish an event to update all active views
      */
-    fun reloadData(longClicked: Boolean) {
+    fun onReloadData(causeError: Boolean) {
+
         this.viewManager.setViewCount(2)
-        EventBus.getDefault().post(ReloadEvent(longClicked))
+        EventBus.getDefault().post(ReloadEvent(causeError))
     }
 
     /*
      * Update token storage to make the access token act like it is expired
      */
-    fun expireAccessToken() {
+    fun onExpireAccessToken() {
         this.model.authenticator!!.expireAccessToken()
     }
 
     /*
      * Update token storage to make the refresh token act like it is expired
      */
-    fun expireRefreshToken() {
+    fun onExpireRefreshToken() {
         this.model.authenticator!!.expireRefreshToken()
     }
 

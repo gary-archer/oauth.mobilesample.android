@@ -19,16 +19,16 @@ class SessionFragment : androidx.fragment.app.Fragment() {
     private lateinit var binding: FragmentSessionBinding
 
     // Details passed from the main activity
-    private var apiClient: ApiClient? = null
+    private lateinit var apiClientAccessor: () -> ApiClient?
 
     /*
-     * Get a reference to the main activity
+     * Get properties from the main activity
      */
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
         val mainActivity = context as MainActivity
-        this.apiClient = mainActivity.getApiClient()
+        this.apiClientAccessor = mainActivity::getApiClient
     }
 
     /*
@@ -48,8 +48,16 @@ class SessionFragment : androidx.fragment.app.Fragment() {
      * Show the content
      */
     fun show() {
+
+        // Show nothing if the app has not initialised yet
+        val apiClient = this.apiClientAccessor()
+        if (apiClient == null) {
+            return
+        }
+
+        // Otherwise render the API client's session id
         val label = this.getString(R.string.api_session_id)
-        val value = this.apiClient!!.sessionId
+        val value = apiClient.sessionId
         this.binding.apiSessionId.text = "$label: $value"
         this.binding.apiSessionId.visibility = View.VISIBLE
     }
