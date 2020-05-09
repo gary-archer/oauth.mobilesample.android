@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         this.app().setMainActivity(this)
 
-        // Create our view model, and state needed for child fragments to create theirs
+        // Create our view model, and supply state needed for child fragments to create theirs
         val model = MainActivityViewModel(this::onLoadStateChanged, this::onLoginRequired)
         this.createChildViewModelState(model)
 
@@ -159,14 +159,14 @@ class MainActivity : AppCompatActivity() {
         if (requestCode == Constants.LOGIN_REDIRECT_REQUEST_CODE) {
             if (data != null) {
                 model.isTopMost = true
-                this.finishLogin(data)
+                this.onFinishLogin(data)
             }
         }
 
         // Handle logout responses and reset state
         else if (requestCode == Constants.LOGOUT_REDIRECT_REQUEST_CODE) {
             model.isTopMost = true
-            this.finishLogout()
+            this.onFinishLogout()
         }
     }
 
@@ -261,7 +261,7 @@ class MainActivity : AppCompatActivity() {
     /*
      * After the post login page executes, we receive the login response here
      */
-    private fun finishLogin(loginResponseIntent: Intent) {
+    private fun onFinishLogin(loginResponseIntent: Intent) {
 
         // Handle completion after login completion, which could be a success or failure response
         val model = this.binding.model!!
@@ -312,7 +312,7 @@ class MainActivity : AppCompatActivity() {
     /*
      * Free resources when we receive the logout response
      */
-    private fun finishLogout() {
+    private fun onFinishLogout() {
 
         // Finish processing
         val model = this.binding.model!!
@@ -403,7 +403,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*
-     * An object that can be called by child fragments
+     * Supply limited parent state to child fragments
      */
     fun getChildViewModelState(): ChildViewModelState {
         return this.childViewModelState

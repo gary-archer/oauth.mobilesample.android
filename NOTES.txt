@@ -14,16 +14,14 @@ VIEW CHANGES
 
 6. Add exceptionFromMessage and use it to check OAuth responses for null
 
-7. Make loginRequired do the login work?
-
-8. TESTING
+7. TESTING
    Activity recreation to test
    Test topmost and ensure that deep links do not run views they should not
    Test orientation changes / deep links / logins + logouts
    Also test on tablet sized emulator
    Back navigation - including with errors - and keep code simple
 
-9. Merge to master
+8. Merge to master
 
 IOS
 ---
