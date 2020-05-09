@@ -1,4 +1,4 @@
-package com.authguidance.basicmobileapp.views.dialogs
+package com.authguidance.basicmobileapp.views.errors
 
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
@@ -10,7 +10,6 @@ import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.authguidance.basicmobileapp.databinding.FragmentErrorDetailsBinding
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorFormatter
-import com.authguidance.basicmobileapp.views.adapters.ErrorItemArrayAdapter
 
 /*
  * A custom modal dialog based on the error details fragment
@@ -27,7 +26,8 @@ class ErrorDetailsDialogFragment : DialogFragment() {
     companion object {
 
         fun create(dialogTitle: String, error: UIError): ErrorDetailsDialogFragment {
-            val dialog = ErrorDetailsDialogFragment()
+            val dialog =
+                ErrorDetailsDialogFragment()
             val args = Bundle()
             args.putString(Constants.ARG_ERROR_TITLE, dialogTitle)
             args.putSerializable(Constants.ARG_ERROR_DATA, error)
@@ -87,8 +87,16 @@ class ErrorDetailsDialogFragment : DialogFragment() {
             // Render them via an adapter
             val list = this.binding.listErrorItems
             list.layoutManager = LinearLayoutManager(this.context)
-            list.adapter = ErrorItemArrayAdapter(this.context!!, lines)
-            list.adapter = ErrorItemArrayAdapter(this.context!!, lines)
+            list.adapter =
+                ErrorItemArrayAdapter(
+                    this.context!!,
+                    lines
+                )
+            list.adapter =
+                ErrorItemArrayAdapter(
+                    this.context!!,
+                    lines
+                )
         }
     }
 }

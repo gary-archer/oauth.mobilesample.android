@@ -6,7 +6,7 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context=".views.fragments.SessionFragment"
+        tools:context=".views.headings.SessionFragment"
         android:padding="10dp">
 
         <!-- Show the API session id -->

@@ -6,7 +6,7 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import com.authguidance.basicmobileapp.R
-import com.authguidance.basicmobileapp.views.fragments.LoginRequiredFragment
+import com.authguidance.basicmobileapp.views.security.LoginRequiredFragment
 import java.util.Locale
 import java.util.regex.Pattern
 

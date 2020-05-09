@@ -1,4 +1,4 @@
-package com.authguidance.basicmobileapp.views.controls
+package com.authguidance.basicmobileapp.views.utilities
 
 import android.content.Context
 import android.util.AttributeSet

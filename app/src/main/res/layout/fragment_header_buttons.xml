@@ -7,7 +7,7 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:context=".views.fragments.HeaderButtonsFragment">
+            tools:context=".views.headings.HeaderButtonsFragment">
 
         <TableRow
                 android:layout_width="match_parent"
@@ -18,7 +18,7 @@
                     android:text="@string/home_button"
                     style="@style/ButtonHeaderStyle"/>
 
-            <com.authguidance.basicmobileapp.views.controls.LongPressableButton
+            <com.authguidance.basicmobileapp.views.utilities.LongPressableButton
                     android:id="@+id/btnReloadData"
                     android:text="@string/reload_button"
                     android:enabled="false"

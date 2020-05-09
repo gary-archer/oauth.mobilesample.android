@@ -7,25 +7,25 @@
 
     <fragment
             android:id="@+id/companiesFragment"
-            android:name="com.authguidance.basicmobileapp.views.fragments.companies.CompaniesFragment"
+            android:name="com.authguidance.basicmobileapp.views.companies.CompaniesFragment"
             android:label="Company List"
             tools:layout="@layout/fragment_companies">
     </fragment>
     <fragment
             android:id="@+id/transactionsFragment"
-            android:name="com.authguidance.basicmobileapp.views.fragments.TransactionsFragment"
+            android:name="com.authguidance.basicmobileapp.views.transactions.TransactionsFragment"
             android:label="Company Transactions"
             tools:layout="@layout/fragment_transactions">
     </fragment>
     <fragment
         android:id="@+id/deviceNotSecuredFragment"
-        android:name="com.authguidance.basicmobileapp.views.fragments.DeviceNotSecuredFragment"
+        android:name="com.authguidance.basicmobileapp.views.security.DeviceNotSecuredFragment"
         android:label="Startup"
         tools:layout="@layout/fragment_device_not_secured">
     </fragment>
     <fragment
             android:id="@+id/loginRequiredFragment"
-            android:name="com.authguidance.basicmobileapp.views.fragments.LoginRequiredFragment"
+            android:name="com.authguidance.basicmobileapp.views.security.LoginRequiredFragment"
             android:label="Error Details"
             tools:layout="@layout/fragment_login_required">
     </fragment>

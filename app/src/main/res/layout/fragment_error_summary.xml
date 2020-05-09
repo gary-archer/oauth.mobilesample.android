@@ -8,7 +8,7 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:context=".views.fragments.ErrorSummaryFragment">
+        tools:context=".views.errors.ErrorSummaryFragment">
 
         <!-- The error summary view is just a text control that links to a popup dialog -->
         <TextView

@@ -1,4 +1,4 @@
-package com.authguidance.basicmobileapp.views.fragments
+package com.authguidance.basicmobileapp.views.security
 
 import android.app.admin.DevicePolicyManager
 import android.content.Context

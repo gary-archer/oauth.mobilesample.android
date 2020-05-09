@@ -1,4 +1,4 @@
-package com.authguidance.basicmobileapp.views.fragments
+package com.authguidance.basicmobileapp.views.headings
 
 import android.content.Context
 import android.os.Bundle

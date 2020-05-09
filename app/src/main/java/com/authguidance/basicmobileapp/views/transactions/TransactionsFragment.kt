@@ -1,6 +1,5 @@
-package com.authguidance.basicmobileapp.views.fragments
+package com.authguidance.basicmobileapp.views.transactions
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,17 +7,15 @@ import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.authguidance.basicmobileapp.R
-import com.authguidance.basicmobileapp.api.client.ApiClient
 import com.authguidance.basicmobileapp.api.client.ApiRequestOptions
 import com.authguidance.basicmobileapp.databinding.FragmentTransactionsBinding
 import com.authguidance.basicmobileapp.app.MainActivity
-import com.authguidance.basicmobileapp.views.adapters.TransactionArrayAdapter
 import com.authguidance.basicmobileapp.api.entities.CompanyTransactions
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
 import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
 import com.authguidance.basicmobileapp.plumbing.utilities.Constants
-import com.authguidance.basicmobileapp.views.ViewManager
+import com.authguidance.basicmobileapp.views.errors.ErrorSummaryFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -35,22 +32,6 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
     // Binding properties
     private lateinit var binding: FragmentTransactionsBinding
 
-    // Details passed from the main activity
-    private lateinit var apiClientAccessor: () -> ApiClient?
-    private lateinit var viewManager: ViewManager
-    private var companyId: String = ""
-
-    /*
-     * Get properties from the main activity
-     */
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-
-        val mainActivity = context as MainActivity
-        this.viewManager = mainActivity.viewManager
-        this.apiClientAccessor = mainActivity::getApiClient
-    }
-
     /*
      * Initialise the view
      */
@@ -60,11 +41,20 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        // Get data passed in
-        this.companyId = this.arguments?.getString(Constants.ARG_COMPANY_ID, "") ?: "0"
-
         // Inflate the view
         this.binding = FragmentTransactionsBinding.inflate(inflater, container, false)
+
+        // Get data passed in
+        val companyId = this.arguments?.getString(Constants.ARG_COMPANY_ID, "") ?: "0"
+
+        // Create and add the model
+        val mainActivity = this.context as MainActivity
+        this.binding.model = TransactionsViewModel(
+            mainActivity::getApiClient,
+            mainActivity.viewManager,
+            companyId,
+            this.getString(R.string.transactions_title))
+
         return binding.root
     }
 
@@ -74,10 +64,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val format = this.getString(R.string.transactions_title)
-        this.binding.fragmentHeadingText.text = String.format(format, this.companyId)
-
-        // Subscribe to the reload event and load data
+        // Subscribe to the reload event and do the initial load of data
         EventBus.getDefault().register(this)
         this.loadData(false)
     }
@@ -103,15 +90,18 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
      */
     private fun loadData(causeError: Boolean) {
 
+        // Get the model
+        val model = this.binding.model!!
+
         // Do not try to load API data if the app is not initialised yet
-        val apiClient = this.apiClientAccessor()
+        val apiClient = model.apiClientAccessor()
         if (apiClient == null) {
-            this.viewManager.onViewLoaded()
+            model.viewManager.onViewLoaded()
             return
         }
 
         // Inform the view manager so that a loading state can be rendered
-        this.viewManager.onViewLoading()
+        model.viewManager.onViewLoading()
 
         // Initialise for this request
         val errorFragment = this.childFragmentManager.findFragmentById(R.id.transactionsErrorSummaryFragment) as ErrorSummaryFragment
@@ -124,11 +114,11 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
             try {
 
                 // Call the API
-                val result = apiClient.getCompanyTransactions(that.companyId, options)
+                val result = apiClient.getCompanyTransactions(model.companyId, options)
 
                 // Switch back to the UI thread for rendering
                 withContext(Dispatchers.Main) {
-                    that.viewManager.onViewLoaded()
+                    model.viewManager.onViewLoaded()
                     that.renderData(result)
                 }
             } catch (uiError: UIError) {
@@ -139,7 +129,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
 
                     // Handle expected errors by navigating back to the home view
                     withContext(Dispatchers.Main) {
-                        that.viewManager.onViewLoaded()
+                        model.viewManager.onViewLoaded()
                         val args = Bundle()
                         findNavController().navigate(R.id.companiesFragment, args)
                     }
@@ -147,7 +137,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
 
                     // Report other errors on the main thread
                     withContext(Dispatchers.Main) {
-                        that.viewManager.onViewLoadFailed(uiError)
+                        model.viewManager.onViewLoadFailed(uiError)
                         errorFragment.reportError(
                             that.getString(R.string.transactions_error_hyperlink),
                             that.getString(R.string.transactions_error_dialogtitle),
@@ -185,6 +175,10 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
 
         val list = this.binding.listTransactions
         list.layoutManager = LinearLayoutManager(this.context)
-        list.adapter = TransactionArrayAdapter(this.context!!, data.transactions.toList())
+        list.adapter =
+            TransactionArrayAdapter(
+                this.context!!,
+                data.transactions.toList()
+            )
     }
 }

@@ -1,4 +1,4 @@
-package com.authguidance.basicmobileapp.views
+package com.authguidance.basicmobileapp.views.utilities
 
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authguidance.basicmobileapp.plumbing.errors.UIError

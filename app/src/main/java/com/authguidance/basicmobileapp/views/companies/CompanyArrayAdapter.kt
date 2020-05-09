@@ -1,4 +1,4 @@
-package com.authguidance.basicmobileapp.views.adapters
+package com.authguidance.basicmobileapp.views.companies
 
 import android.content.Context
 import android.view.LayoutInflater

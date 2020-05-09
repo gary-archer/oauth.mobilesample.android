@@ -1,21 +1,18 @@
-package com.authguidance.basicmobileapp.views.fragments.companies
+package com.authguidance.basicmobileapp.views.userinfo
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.api.client.ApiRequestOptions
-import com.authguidance.basicmobileapp.api.entities.Company
-import com.authguidance.basicmobileapp.databinding.FragmentCompaniesBinding
+import com.authguidance.basicmobileapp.databinding.FragmentUserInfoBinding
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
 import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
-import com.authguidance.basicmobileapp.plumbing.utilities.Constants
 import com.authguidance.basicmobileapp.app.MainActivity
-import com.authguidance.basicmobileapp.views.adapters.CompanyArrayAdapter
-import com.authguidance.basicmobileapp.views.fragments.ErrorSummaryFragment
+import com.authguidance.basicmobileapp.plumbing.events.InitialLoadEvent
+import com.authguidance.basicmobileapp.plumbing.events.UnloadEvent
+import com.authguidance.basicmobileapp.views.errors.ErrorSummaryFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,11 +22,11 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
 /*
- * The fragment to show the company list
+ * The user info fragment renders logged in user details
  */
-class CompaniesFragment : androidx.fragment.app.Fragment() {
+class UserInfoFragment : androidx.fragment.app.Fragment() {
 
-    private lateinit var binding: FragmentCompaniesBinding
+    private lateinit var binding: FragmentUserInfoBinding
 
     /*
      * Initialise the view
@@ -40,13 +37,14 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        this.binding = FragmentCompaniesBinding.inflate(inflater, container, false)
+        // Inflate the view
+        this.binding = FragmentUserInfoBinding.inflate(inflater, container, false)
 
-        // Create the model from the parent activity's data
+        // Create and add the model
         val mainActivity = this.context as MainActivity
-        this.binding.model = CompaniesViewModel(mainActivity::getApiClient, mainActivity.viewManager)
+        this.binding.model = UserInfoViewModel(mainActivity::getApiClient, mainActivity.viewManager)
 
-        return this.binding.root
+        return binding.root
     }
 
     /*
@@ -55,9 +53,8 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Subscribe to the reload event and load data
+        // Subscribe to events
         EventBus.getDefault().register(this)
-        this.loadData(false)
     }
 
     /*
@@ -69,7 +66,15 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
     }
 
     /*
-     * Receive messages
+     * Handle initial load events
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: InitialLoadEvent) {
+        this.loadData(false)
+    }
+
+    /*
+     * Handle reload events
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: ReloadEvent) {
@@ -77,7 +82,15 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
     }
 
     /*
-     * Load data for the fragment
+     * Handle logout events by clearing our data
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: UnloadEvent) {
+        this.clearData()
+    }
+
+    /*
+     * When logged in, call the API to get user info for display
      */
     private fun loadData(causeError: Boolean) {
 
@@ -95,30 +108,32 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
         model.viewManager.onViewLoading()
 
         // Initialise for this request
-        val errorFragment = this.childFragmentManager.findFragmentById(R.id.companiesErrorSummaryFragment) as ErrorSummaryFragment
+        val errorFragment = this.childFragmentManager.findFragmentById(R.id.userInfoErrorSummaryFragment) as ErrorSummaryFragment
         errorFragment.clearError()
         val options = ApiRequestOptions(causeError)
 
-        val that = this@CompaniesFragment
+        // Try to get data
         CoroutineScope(Dispatchers.IO).launch {
 
+            val that = this@UserInfoFragment
             try {
                 // Call the API
-                val result = apiClient.getCompanyList(options)
+                val userClaims = apiClient.getUserInfo(options)
 
-                // Render results on the main thread
+                // Update the model and render results on the main thread
                 withContext(Dispatchers.Main) {
                     model.viewManager.onViewLoaded()
-                    that.renderData(result)
+                    model.setClaims(userClaims)
                 }
             } catch (uiError: UIError) {
 
                 // Process errors on the main thread
+                model.setClaims(null)
                 withContext(Dispatchers.Main) {
                     model.viewManager.onViewLoadFailed(uiError)
                     errorFragment.reportError(
-                        that.getString(R.string.companies_error_hyperlink),
-                        that.getString(R.string.companies_error_dialogtitle),
+                        that.getString(R.string.userinfo_error_hyperlink),
+                        that.getString(R.string.userinfo_error_dialogtitle),
                         uiError)
                 }
             }
@@ -126,20 +141,15 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
     }
 
     /*
-     * Render API response data
+     * Clear data after logging out
      */
-    private fun renderData(companies: Array<Company>) {
+    fun clearData() {
 
-        // When a company is clicked we will navigate to transactions for the clicked company id
-        val onItemClick = { company: Company ->
-            val args = Bundle()
-            args.putString(Constants.ARG_COMPANY_ID, company.id.toString())
-            findNavController().navigate(R.id.transactionsFragment, args)
-        }
+        // Clear the model
+        this.binding.model!!.setClaims(null)
 
-        // Bind the data
-        val list = this.binding.listCompanies
-        list.layoutManager = LinearLayoutManager(this.context)
-        list.adapter = CompanyArrayAdapter(this.context!!, companies.toList(), onItemClick)
+        // Also ensure that any errors are cleared
+        val errorFragment = this.childFragmentManager.findFragmentById(R.id.userInfoErrorSummaryFragment) as ErrorSummaryFragment
+        errorFragment.clearError()
     }
 }

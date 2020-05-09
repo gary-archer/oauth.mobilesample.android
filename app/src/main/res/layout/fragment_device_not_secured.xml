@@ -7,7 +7,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="10dp"
-        tools:context=".views.fragments.DeviceNotSecuredFragment">
+        tools:context=".views.security.DeviceNotSecuredFragment">
 
         <!-- Show the user message -->
         <TextView

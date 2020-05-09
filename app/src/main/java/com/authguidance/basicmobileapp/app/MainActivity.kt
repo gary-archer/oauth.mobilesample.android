@@ -16,9 +16,9 @@ import com.authguidance.basicmobileapp.plumbing.events.InitialLoadEvent
 import com.authguidance.basicmobileapp.plumbing.events.UnloadEvent
 import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
 import com.authguidance.basicmobileapp.plumbing.utilities.Constants
-import com.authguidance.basicmobileapp.views.ViewManager
-import com.authguidance.basicmobileapp.views.fragments.ErrorSummaryFragment
-import com.authguidance.basicmobileapp.views.fragments.HeaderButtonsFragment
+import com.authguidance.basicmobileapp.views.utilities.ViewManager
+import com.authguidance.basicmobileapp.views.errors.ErrorSummaryFragment
+import com.authguidance.basicmobileapp.views.headings.HeaderButtonsFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -50,7 +50,11 @@ class MainActivity : AppCompatActivity() {
         this.isTopMost = true
 
         // Initialise the view manager
-        this.viewManager = ViewManager(this::onLoadStateChanged, this::onLoginRequired)
+        this.viewManager =
+            ViewManager(
+                this::onLoadStateChanged,
+                this::onLoginRequired
+            )
         this.viewManager.setViewCount(2)
     }
 

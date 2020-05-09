@@ -1,4 +1,4 @@
-package com.authguidance.basicmobileapp.views.fragments
+package com.authguidance.basicmobileapp.views.security
 
 import android.os.Bundle
 import android.view.LayoutInflater

@@ -1,7 +1,7 @@
-package com.authguidance.basicmobileapp.views.fragments.companies
+package com.authguidance.basicmobileapp.views.companies
 
 import com.authguidance.basicmobileapp.api.client.ApiClient
-import com.authguidance.basicmobileapp.views.ViewManager
+import com.authguidance.basicmobileapp.views.utilities.ViewManager
 
 /*
  * A simple view model class for the companies view

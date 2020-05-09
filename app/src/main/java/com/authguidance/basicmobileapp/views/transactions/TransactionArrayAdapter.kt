@@ -1,4 +1,4 @@
-package com.authguidance.basicmobileapp.views.adapters
+package com.authguidance.basicmobileapp.views.transactions
 
 import android.content.Context
 import androidx.recyclerview.widget.RecyclerView

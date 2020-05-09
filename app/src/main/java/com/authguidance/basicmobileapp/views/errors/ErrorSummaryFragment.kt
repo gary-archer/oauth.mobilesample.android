@@ -1,4 +1,4 @@
-package com.authguidance.basicmobileapp.views.fragments
+package com.authguidance.basicmobileapp.views.errors
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import com.authguidance.basicmobileapp.databinding.FragmentErrorSummaryBinding
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
-import com.authguidance.basicmobileapp.views.dialogs.ErrorDetailsDialogFragment
 
 /*
  * The fragment to show an initial error indication
