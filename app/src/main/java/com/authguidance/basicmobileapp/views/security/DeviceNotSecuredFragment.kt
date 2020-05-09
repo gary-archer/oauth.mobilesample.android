@@ -46,7 +46,6 @@ class DeviceNotSecuredFragment : androidx.fragment.app.Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         this.binding.btnOpenDeviceSettings.setOnClickListener {
-            println("ON CLICKED")
         }
     }
 

@@ -31,8 +31,6 @@ class SessionFragment : androidx.fragment.app.Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        println("GJA: session create")
-
         // Inflate the view
         this.binding = FragmentSessionBinding.inflate(inflater, container, false)
 

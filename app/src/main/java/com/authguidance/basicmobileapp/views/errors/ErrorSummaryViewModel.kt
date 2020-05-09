@@ -34,7 +34,6 @@ class ErrorSummaryViewModel(val onShowDetails: (dialogTitle: String, error: UIEr
      * Set error fields
      */
     fun setErrorDetails(hyperlinkText: String, dialogTitle: String, error: UIError) {
-        println("GJA setErrorDetails")
         this.hyperlinkText = hyperlinkText
         this.dialogTitle = dialogTitle
         this.error = error
