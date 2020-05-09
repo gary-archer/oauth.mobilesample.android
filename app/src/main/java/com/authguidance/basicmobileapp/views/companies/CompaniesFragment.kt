@@ -43,8 +43,8 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
         this.binding = FragmentCompaniesBinding.inflate(inflater, container, false)
 
         // Create and add the model
-        val mainActivity = this.context as MainActivity
-        this.binding.model = CompaniesViewModel(mainActivity::getApiClient, mainActivity.viewManager)
+        val activityState = (this.context as MainActivity).getChildViewModelState()
+        this.binding.model = CompaniesViewModel(activityState.apiClientAccessor, activityState.viewManager)
 
         return this.binding.root
     }

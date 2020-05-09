@@ -41,11 +41,12 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
         this.binding = FragmentUserInfoBinding.inflate(inflater, container, false)
 
         // Create and add the model
-        val mainActivity = this.context as MainActivity
+        val activityState = (this.context as MainActivity).getChildViewModelState()
         this.binding.model = UserInfoViewModel(
-            mainActivity::getApiClient,
-            mainActivity.viewManager,
-            mainActivity::shouldLoadUserInfo)
+            activityState.apiClientAccessor,
+            activityState.viewManager,
+            activityState.shouldLoadUserInfoAccessor
+        )
 
         return binding.root
     }

@@ -7,7 +7,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.authguidance.basicmobileapp.R
-import com.authguidance.basicmobileapp.api.client.ApiClient
 import com.authguidance.basicmobileapp.databinding.ActivityMainBinding
 import com.authguidance.basicmobileapp.plumbing.utilities.NavigationHelper
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
@@ -16,7 +15,6 @@ import com.authguidance.basicmobileapp.plumbing.events.InitialLoadEvent
 import com.authguidance.basicmobileapp.plumbing.events.UnloadEvent
 import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
 import com.authguidance.basicmobileapp.plumbing.utilities.Constants
-import com.authguidance.basicmobileapp.views.utilities.ViewManager
 import com.authguidance.basicmobileapp.views.errors.ErrorSummaryFragment
 import com.authguidance.basicmobileapp.views.headings.HeaderButtonsFragment
 import kotlinx.coroutines.CoroutineScope
@@ -30,50 +28,66 @@ import org.greenrobot.eventbus.EventBus
  */
 class MainActivity : AppCompatActivity() {
 
-    // Navigation related fields
     private lateinit var binding: ActivityMainBinding
-    lateinit var navController: NavController
-    lateinit var navHostFragment: NavHostFragment
-
-    // Properties
-    private var model: MainActivityViewModel
-    var viewManager: ViewManager
-    var isTopMost: Boolean
+    private lateinit var navController: NavController
+    private lateinit var navHostFragment: NavHostFragment
+    private lateinit var childViewModelState: ChildViewModelState
 
     /*
-     * Instance creation logic
-     */
-    init {
-
-        // Create the model, which we'll initialise later
-        this.model = MainActivityViewModel()
-        this.isTopMost = true
-
-        // Initialise the view manager
-        this.viewManager =
-            ViewManager(
-                this::onLoadStateChanged,
-                this::onLoginRequired
-            )
-        this.viewManager.setViewCount(2)
-    }
-
-    /*
-     * Create the activity in a safe manner, to set up navigation and data binding
+     * Set up of the Single Activity App's main activity
      */
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
+        this.app().setMainActivity(this)
 
-        // Set up navigation and data binding
+        // Create our view model, and state needed for child fragments to create theirs
+        val model = MainActivityViewModel(this::onLoadStateChanged, this::onLoginRequired)
+        this.createChildViewModelState(model)
+
+        // Inflate the view, which will trigger child fragments to run
         this.binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        this.navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        this.binding.model = model
+
+        // Initialise the navigation system
+        this.navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         this.navController = this.navHostFragment.navController
 
-        // Try to initialise the application
-        this.app().setMainActivity(this)
+        // Finally, do the main application load
         this.initialiseApp()
+    }
+
+    /*
+     * Create an object used to push main activity data to child fragments
+     * The goal is a coding model similar to how child views bind to parent properties in React or SwiftUI
+     */
+    private fun createChildViewModelState(model: MainActivityViewModel) {
+
+        val state = ChildViewModelState(model::apiClient, model.viewManager)
+
+        // Properties passed to the header buttons fragment
+        state.isDataLoadedAccessor = model::isDataLoaded
+        state.onHome = this::onHome
+        state.onReload = this::onReloadData
+        state.onExpireAccessToken = this::onExpireAccessToken
+        state.onExpireRefreshToken = this::onExpireRefreshToken
+        state.onLogout = this::onStartLogout
+
+        // Properties passed to the user info fragment
+        state.shouldLoadUserInfoAccessor = {
+                    model.isInitialised &&
+                    model.isDeviceSecured &&
+                    !this.isInLoginRequired()
+        }
+
+        // Properties passed to the session fragment
+        state.shouldShowSessionIdAccessor = {
+                    model.isInitialised &&
+                    model.isDeviceSecured &&
+                    model.authenticator!!.isLoggedIn()
+        }
+
+        this.childViewModelState = state
     }
 
     /*
@@ -82,14 +96,14 @@ class MainActivity : AppCompatActivity() {
     private fun initialiseApp() {
 
         try {
-            // Initialise the model
-            this.model.initialise(this.applicationContext)
+            // Do the main view model initialisation
+            this.binding.model!!.initialise(this.applicationContext)
 
-            // Send an initial load event to views that run at startup
+            // Load the main navigation view
+            this.navigateStart()
+
+            // Send an initial load event to other views
             EventBus.getDefault().post(InitialLoadEvent())
-
-            // Do the initial navigate operation to populate the main view
-            this.runInitialNavigation()
         } catch (ex: Throwable) {
 
             // Display the startup error details
@@ -98,11 +112,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*
-     * Run the app startup and navigate to the start fragment
+     * Navigate to the start fragment, which is usually the companies view
      */
-    private fun runInitialNavigation() {
+    private fun navigateStart() {
 
-        if (!this.model.isDeviceSecured) {
+        val model = this.binding.model!!
+        if (!model.isDeviceSecured) {
 
             // If the device is not secured we will move to a view that prompts the user to do so
             NavigationHelper().navigate(
@@ -135,18 +150,19 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
         super.onActivityResult(requestCode, resultCode, data)
+        val model = this.binding.model!!
 
         // Handle login responses and reset state
         if (requestCode == Constants.LOGIN_REDIRECT_REQUEST_CODE) {
             if (data != null) {
-                this.isTopMost = true
+                model.isTopMost = true
                 this.finishLogin(data)
             }
         }
 
         // Handle logout responses and reset state
         else if (requestCode == Constants.LOGOUT_REDIRECT_REQUEST_CODE) {
-            this.isTopMost = true
+            model.isTopMost = true
             this.finishLogout()
         }
     }
@@ -173,7 +189,8 @@ class MainActivity : AppCompatActivity() {
     private fun onLoadStateChanged(loaded: Boolean) {
 
         // Update our state
-        this.model.isDataLoaded = loaded
+        val model = this.binding.model!!
+        model.isDataLoaded = loaded
 
         // Ask the header buttons fragment to update
         val buttonFragment = this.supportFragmentManager.findFragmentById(R.id.buttonHeaderFragment) as HeaderButtonsFragment
@@ -190,28 +207,25 @@ class MainActivity : AppCompatActivity() {
     /*
      * Handle home navigation
      */
-    fun onHome() {
+    private fun onHome() {
 
         // If we are not initialised, then support retrying by reinitialising the app
-        if (!this.model.isInitialised) {
+        val model = this.binding.model!!
+        if (!model.isInitialised) {
             this.initialiseApp()
+            return
         }
 
-        if (this.model.isInitialised) {
+        // Move to the home view
+        NavigationHelper().navigate(
+            this.navController,
+            this.navHostFragment.childFragmentManager.primaryNavigationFragment,
+            R.id.companiesFragment
+        )
 
-            this.isInLoginRequired()
-
-            // Move to the home view
-            NavigationHelper().navigate(
-                this.navController,
-                this.navHostFragment.childFragmentManager.primaryNavigationFragment,
-                R.id.companiesFragment
-            )
-
-            // If there is an error loading data from the API then force a reload
-            if (this.model.authenticator!!.isLoggedIn() && !this.model.isDataLoaded) {
-                this.onReloadData(false)
-            }
+        // If there is an error loading data from the API then force a reload
+        if (model.authenticator!!.isLoggedIn() && !model.isDataLoaded) {
+            this.onReloadData(false)
         }
     }
 
@@ -220,19 +234,21 @@ class MainActivity : AppCompatActivity() {
      */
     private fun startLogin() {
 
-        this.isTopMost = false
+        val model = this.binding.model!!
+        model.isTopMost = false
+
         CoroutineScope(Dispatchers.IO).launch {
 
             val that = this@MainActivity
             try {
 
                 // Start the redirect
-                that.model.authenticator!!.startLogin(that, Constants.LOGIN_REDIRECT_REQUEST_CODE)
+                model.authenticator!!.startLogin(that, Constants.LOGIN_REDIRECT_REQUEST_CODE)
             } catch (ex: Throwable) {
 
                 // Report errors such as those looking up endpoints
                 withContext(Dispatchers.Main) {
-                    that.isTopMost = true
+                    model.isTopMost = true
                     that.handleException(ex)
                 }
             }
@@ -245,13 +261,14 @@ class MainActivity : AppCompatActivity() {
     private fun finishLogin(loginResponseIntent: Intent) {
 
         // Handle completion after login completion, which could be a success or failure response
+        val model = this.binding.model!!
         CoroutineScope(Dispatchers.IO).launch {
 
             // Switch to a background thread
             val that = this@MainActivity
             try {
                 // Handle completion after login success, which will exchange the authorization code for tokens
-                that.model.authenticator!!.finishLogin(loginResponseIntent)
+                model.authenticator!!.finishLogin(loginResponseIntent)
 
                 withContext(Dispatchers.Main) {
 
@@ -265,7 +282,7 @@ class MainActivity : AppCompatActivity() {
                     that.handleException(ex)
                 }
             } finally {
-                that.isTopMost = false
+                model.isTopMost = false
             }
         }
     }
@@ -273,17 +290,18 @@ class MainActivity : AppCompatActivity() {
     /*
      * Remove tokens and navigate to login required
      */
-    fun onStartLogout() {
+    private fun onStartLogout() {
 
+        val model = this.binding.model!!
         try {
 
             // Trigger the logout process, which will remove tokens and redirect to clear the OAuth session cookie
-            this.isTopMost = false
-            this.model.authenticator!!.startLogout(this, Constants.LOGOUT_REDIRECT_REQUEST_CODE)
+            model.isTopMost = false
+            model.authenticator!!.startLogout(this, Constants.LOGOUT_REDIRECT_REQUEST_CODE)
         } catch (ex: Throwable) {
 
             // Report errors such as those looking up endpoints
-            this.isTopMost = true
+            model.isTopMost = true
             this.handleException(ex)
         }
     }
@@ -294,11 +312,12 @@ class MainActivity : AppCompatActivity() {
     private fun finishLogout() {
 
         // Finish processing
-        this.model.authenticator!!.finishLogout()
+        val model = this.binding.model!!
+        model.authenticator!!.finishLogout()
 
         // Update state
         this.onLoadStateChanged(false)
-        this.isTopMost = false
+        model.isTopMost = false
 
         // Move to the login required page
         NavigationHelper().navigate(
@@ -313,30 +332,43 @@ class MainActivity : AppCompatActivity() {
     /*
      * Publish an event to update all active views
      */
-    fun onReloadData(causeError: Boolean) {
+    private fun onReloadData(causeError: Boolean) {
 
-        this.viewManager.setViewCount(2)
+        val model = this.binding.model!!
+        model.viewManager.setViewCount(2)
         EventBus.getDefault().post(ReloadEvent(causeError))
+    }
+
+    /*
+     * Indicate whether in the login required view
+     */
+    private fun isInLoginRequired(): Boolean {
+
+        val currentFragmentId =
+            NavHostFragment.findNavController(this.navHostFragment).currentDestination?.id
+        return currentFragmentId == R.id.loginRequiredFragment
     }
 
     /*
      * Update token storage to make the access token act like it is expired
      */
-    fun onExpireAccessToken() {
-        this.model.authenticator!!.expireAccessToken()
+    private fun onExpireAccessToken() {
+        val model = this.binding.model!!
+        model.authenticator!!.expireAccessToken()
     }
 
     /*
      * Update token storage to make the refresh token act like it is expired
      */
-    fun onExpireRefreshToken() {
-        this.model.authenticator!!.expireRefreshToken()
+    private fun onExpireRefreshToken() {
+        val model = this.binding.model!!
+        model.authenticator!!.expireRefreshToken()
     }
 
     /*
      * Receive unhandled exceptions and navigate to the error fragment
      */
-    fun handleException(exception: Throwable) {
+    private fun handleException(exception: Throwable) {
 
         // Get the error as a known object
         val handler = ErrorHandler()
@@ -363,8 +395,23 @@ class MainActivity : AppCompatActivity() {
     /*
      * Access the application in a typed manner
      */
-    fun app(): Application {
+    private fun app(): Application {
         return this.application as Application
+    }
+
+    /*
+     * An object that can be called by child fragments
+     */
+    fun getChildViewModelState(): ChildViewModelState {
+        return this.childViewModelState
+    }
+
+    /*
+     * Deep linking is disabled unless our activity is top most
+     */
+    fun isTopMostActivity(): Boolean {
+        val model = this.binding.model!!
+        return model.isTopMost
     }
 
     /*
@@ -373,42 +420,5 @@ class MainActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
         this.app().setMainActivity(null)
-    }
-
-    /*
-     * An accessor used by child fragments that call APIs
-     */
-    fun getApiClient(): ApiClient? {
-        return this.model.apiClient
-    }
-
-    /*
-     * Inform header buttons whether to set their state to enabled or disabled
-     */
-    fun isDataLoaded(): Boolean {
-        return this.model.isDataLoaded
-    }
-
-    /*
-     * Inform the session fragment whether to show its session id
-     */
-    fun shouldShowSessionId(): Boolean {
-        return this.model.isInitialised && this.model.isDeviceSecured && this.model.authenticator!!.isLoggedIn()
-    }
-
-    /*
-     * Inform the user info view whether to load user info from the API for the logged in user
-     */
-    fun shouldLoadUserInfo(): Boolean {
-        return this.model.isInitialised && this.model.isDeviceSecured && !this.isInLoginRequired()
-    }
-
-    /*
-     * Indicate whether in the login required view
-     */
-    fun isInLoginRequired(): Boolean {
-
-        val currentFragmentId = NavHostFragment.findNavController(this.navHostFragment).currentDestination?.id
-        return currentFragmentId == R.id.loginRequiredFragment
     }
 }

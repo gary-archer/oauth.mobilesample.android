@@ -27,14 +27,14 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
         this.binding = FragmentHeaderButtonsBinding.inflate(inflater, container, false)
 
         // Create the view model
-        val mainActivity = context as MainActivity
+        val activityState = (this.context as MainActivity).getChildViewModelState()
         this.binding.model = HeaderButtonsViewModel(
-            mainActivity::isDataLoaded,
-            mainActivity::onHome,
-            mainActivity::onReloadData,
-            mainActivity::onExpireAccessToken,
-            mainActivity::onExpireRefreshToken,
-            mainActivity::onStartLogout
+            activityState.isDataLoadedAccessor,
+            activityState.onHome,
+            activityState.onReload,
+            activityState.onExpireAccessToken,
+            activityState.onExpireRefreshToken,
+            activityState.onLogout
         )
 
         return this.binding.root

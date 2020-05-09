@@ -48,10 +48,10 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
         val companyId = this.arguments?.getString(Constants.ARG_COMPANY_ID, "") ?: "0"
 
         // Create and add the model
-        val mainActivity = this.context as MainActivity
+        val activityState = (this.context as MainActivity).getChildViewModelState()
         this.binding.model = TransactionsViewModel(
-            mainActivity::getApiClient,
-            mainActivity.viewManager,
+            activityState.apiClientAccessor,
+            activityState.viewManager,
             companyId,
             this.getString(R.string.transactions_title))
 

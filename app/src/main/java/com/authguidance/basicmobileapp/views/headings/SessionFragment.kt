@@ -31,14 +31,16 @@ class SessionFragment : androidx.fragment.app.Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+        println("GJA: session create")
+
         // Inflate the view
         this.binding = FragmentSessionBinding.inflate(inflater, container, false)
 
         // Create and add the model
-        val mainActivity = this.context as MainActivity
+        val activityState = (this.context as MainActivity).getChildViewModelState()
         this.binding.model = SessionViewModel(
-            mainActivity::getApiClient,
-            mainActivity::shouldShowSessionId,
+            activityState.apiClientAccessor,
+            activityState.shouldShowSessionIdAccessor,
             this.getString(R.string.api_session_id))
 
         return this.binding.root
