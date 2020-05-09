@@ -20,7 +20,7 @@
 
         <!-- Show the green button -->
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnOpenDeviceSettings"
+            android:id="@+id/btn_open_device_settings"
             android:text="@string/open_device_settings"
             android:layout_gravity="center"
             style="@style/ButtonSecureDeviceStyle"/>

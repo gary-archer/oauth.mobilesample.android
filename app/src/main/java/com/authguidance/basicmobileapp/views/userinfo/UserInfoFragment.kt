@@ -109,7 +109,7 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
         model.viewManager.onViewLoading()
 
         // Initialise for this request
-        val errorFragment = this.childFragmentManager.findFragmentById(R.id.userInfoErrorSummaryFragment) as ErrorSummaryFragment
+        val errorFragment = this.childFragmentManager.findFragmentById(R.id.userinfo_error_summary_fragment) as ErrorSummaryFragment
         errorFragment.clearError()
         val options = ApiRequestOptions(causeError)
 
@@ -151,7 +151,7 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
         this.binding.model!!.setClaims(null)
 
         // Also ensure that any errors are cleared
-        val errorFragment = this.childFragmentManager.findFragmentById(R.id.userInfoErrorSummaryFragment) as ErrorSummaryFragment
+        val errorFragment = this.childFragmentManager.findFragmentById(R.id.userinfo_error_summary_fragment) as ErrorSummaryFragment
         errorFragment.clearError()
     }
 }

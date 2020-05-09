@@ -14,7 +14,7 @@
 
         <!-- The title bar area shows the app name and the logged in user -->
         <fragment
-            android:id="@+id/titleFragment"
+            android:id="@+id/title_fragment"
             android:name="com.authguidance.basicmobileapp.views.headings.TitleFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -22,7 +22,7 @@
 
         <!-- Next we show a row of buttons for testing data and token operations -->
         <fragment
-            android:id="@+id/buttonHeaderFragment"
+            android:id="@+id/header_buttons_fragment"
             android:name="com.authguidance.basicmobileapp.views.headings.HeaderButtonsFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -30,7 +30,7 @@
 
         <!-- When there is an application level error it is rendered via this fragment -->
         <fragment
-            android:id="@+id/mainErrorSummaryFragment"
+            android:id="@+id/main_error_summary_fragment"
             android:name="com.authguidance.basicmobileapp.views.errors.ErrorSummaryFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -38,7 +38,7 @@
 
         <!-- Show the API session id -->
         <fragment
-            android:id="@+id/sessionFragment"
+            android:id="@+id/session_fragment"
             android:name="com.authguidance.basicmobileapp.views.headings.SessionFragment"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -104,7 +104,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
         model.viewManager.onViewLoading()
 
         // Initialise for this request
-        val errorFragment = this.childFragmentManager.findFragmentById(R.id.transactionsErrorSummaryFragment) as ErrorSummaryFragment
+        val errorFragment = this.childFragmentManager.findFragmentById(R.id.transactions_error_summary_fragment) as ErrorSummaryFragment
         errorFragment.clearError()
         val options = ApiRequestOptions(causeError)
 
@@ -131,7 +131,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
                     withContext(Dispatchers.Main) {
                         model.viewManager.onViewLoaded()
                         val args = Bundle()
-                        findNavController().navigate(R.id.companiesFragment, args)
+                        findNavController().navigate(R.id.companies_fragment, args)
                     }
                 } else {
 

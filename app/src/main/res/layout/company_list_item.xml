@@ -20,7 +20,7 @@
                     android:layout_height="wrap_content"/>
 
             <ImageView
-                    android:id="@+id/companyImageId"
+                    android:id="@+id/company_image_id"
                     android:layout_weight="3"
                     android:layout_width="0dp"
                     android:layout_gravity="left"
@@ -30,7 +30,7 @@
                 />
 
             <TextView
-                    android:id="@+id/companyName"
+                    android:id="@+id/company_name"
                     android:layout_weight="2"
                     android:layout_width="0dp"
                     android:layout_gravity="left"
@@ -62,7 +62,7 @@
                     style="@style/TextViewLabelStyle"/>
 
             <TextView
-                    android:id="@+id/targetUsd"
+                    android:id="@+id/target_usd"
                     android:layout_weight="2"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -92,7 +92,7 @@
                     style="@style/TextViewLabelStyle"/>
 
             <TextView
-                    android:id="@+id/investmentUsd"
+                    android:id="@+id/investment_usd"
                     android:layout_weight="2"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -122,7 +122,7 @@
                     style="@style/TextViewLabelStyle"/>
 
             <TextView
-                    android:id="@+id/noInvestors"
+                    android:id="@+id/no_investors"
                     android:layout_weight="2"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

@@ -95,7 +95,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
         model.viewManager.onViewLoading()
 
         // Initialise for this request
-        val errorFragment = this.childFragmentManager.findFragmentById(R.id.companiesErrorSummaryFragment) as ErrorSummaryFragment
+        val errorFragment = this.childFragmentManager.findFragmentById(R.id.companies_error_summary_fragment) as ErrorSummaryFragment
         errorFragment.clearError()
         val options = ApiRequestOptions(causeError)
 
@@ -134,7 +134,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
         val onItemClick = { company: Company ->
             val args = Bundle()
             args.putString(Constants.ARG_COMPANY_ID, company.id.toString())
-            findNavController().navigate(R.id.transactionsFragment, args)
+            findNavController().navigate(R.id.transactions_fragment, args)
         }
 
         // Bind the data

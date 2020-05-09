@@ -42,13 +42,13 @@ class CompanyArrayAdapter(
 
         // First set the image and text
         val id = this.context.resources.getIdentifier("company_${currentCompany.id}", "drawable", context.packageName)
-        holder.item.companyImageId.setImageResource(id)
-        holder.item.companyName.text = currentCompany.name
+        holder.item.company_image_id.setImageResource(id)
+        holder.item.company_name.text = currentCompany.name
 
         // Next we show a list of labels and values
-        holder.item.targetUsd.text = String.format("%,d", currentCompany.targetUsd)
-        holder.item.investmentUsd.text = String.format("%,d", currentCompany.investmentUsd)
-        holder.item.noInvestors.text = String.format("%d", currentCompany.noInvestors)
+        holder.item.target_usd.text = String.format("%,d", currentCompany.targetUsd)
+        holder.item.investment_usd.text = String.format("%,d", currentCompany.investmentUsd)
+        holder.item.no_investors.text = String.format("%d", currentCompany.noInvestors)
 
         // Handle the click event
         holder.onClick(currentCompany, this.listener)

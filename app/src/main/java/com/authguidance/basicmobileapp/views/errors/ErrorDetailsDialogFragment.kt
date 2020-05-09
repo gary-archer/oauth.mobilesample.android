@@ -17,17 +17,14 @@ import com.authguidance.basicmobileapp.plumbing.errors.ErrorFormatter
 class ErrorDetailsDialogFragment : DialogFragment() {
 
     private lateinit var binding: FragmentErrorDetailsBinding
-    private var title: String? = null
-    private var error: UIError? = null
 
     /*
-     * The factory method to create the dialog
+     * A factory method to create the dialog
      */
     companion object {
 
         fun create(dialogTitle: String, error: UIError): ErrorDetailsDialogFragment {
-            val dialog =
-                ErrorDetailsDialogFragment()
+            val dialog = ErrorDetailsDialogFragment()
             val args = Bundle()
             args.putString(Constants.ARG_ERROR_TITLE, dialogTitle)
             args.putSerializable(Constants.ARG_ERROR_DATA, error)
@@ -45,30 +42,23 @@ class ErrorDetailsDialogFragment : DialogFragment() {
         savedInstanceState: Bundle?
     ): View? {
 
-        // Get data passed in
-        this.title = this.arguments?.getString(Constants.ARG_ERROR_TITLE)
-        this.error = this.arguments?.getSerializable(Constants.ARG_ERROR_DATA) as UIError
-
         // Inflate the layout
         this.binding = FragmentErrorDetailsBinding.inflate(inflater, container, false)
+
+        // Create the view model from data passed in
+        val title = this.arguments?.getString(Constants.ARG_ERROR_TITLE)
+        val error = this.arguments?.getSerializable(Constants.ARG_ERROR_DATA) as UIError
+        this.binding.model = ErrorDetailsViewModel(title!!, error, this::dismiss)
+
         return binding.root
     }
 
     /*
-     * Initialise the error view from data
+     * Render data after the view is created
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
         super.onViewCreated(view, savedInstanceState)
-
-        // Set the title
-        this.binding.fragmentHeadingText.text = title
-
-        // Dismiss when the X icon is clicked
-        this.binding.dismiss.setOnClickListener {
-            this.dismiss()
-        }
-
-        // Render the error object
         this.renderData()
     }
 
@@ -77,21 +67,16 @@ class ErrorDetailsDialogFragment : DialogFragment() {
      */
     private fun renderData() {
 
-        val context = this.context
-        val error = this.error
-        if (error != null && context != null) {
+        // Get error lines as a collection
+        val lines = ErrorFormatter(this.requireContext()).getErrorLines(this.binding.model!!.error)
 
-            // Get error lines as a collection
-            val lines = ErrorFormatter(context).getErrorLines(error)
-
-            // Render them via an adapter
-            val list = this.binding.listErrorItems
-            list.layoutManager = LinearLayoutManager(this.context)
-            list.adapter =
-                ErrorItemArrayAdapter(
-                    this.requireContext(),
-                    lines
-                )
-        }
+        // Render them via an adapter
+        val list = this.binding.listErrorItems
+        list.layoutManager = LinearLayoutManager(this.context)
+        list.adapter =
+            ErrorItemArrayAdapter(
+                this.requireContext(),
+                lines
+            )
     }
 }

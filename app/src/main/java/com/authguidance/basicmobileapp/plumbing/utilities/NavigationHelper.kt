@@ -80,7 +80,7 @@ class NavigationHelper {
         if (urlData.host?.toLowerCase(Locale.ROOT).equals("authguidance-examples.com")) {
 
             // The default action is to move to the company list
-            id = R.id.companiesFragment
+            id = R.id.companies_fragment
 
             // Check for a hash fragment
             val hash = urlData.fragment
@@ -90,7 +90,7 @@ class NavigationHelper {
                 val companyId = this.getDeepLinkedCompanyId(hash)
                 if (companyId != null) {
 
-                    id = R.id.transactionsFragment
+                    id = R.id.transactions_fragment
                     args = Bundle()
                     args.putString(Constants.ARG_COMPANY_ID, companyId)
                 }

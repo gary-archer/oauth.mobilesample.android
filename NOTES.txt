@@ -1,24 +1,21 @@
 VIEW CHANGES
 ------------
-0. Error details dialog view model
-
 1. Finish device not secured fragment and use a lighter green
    Test topmost and ensure that deep links do not run views they should not
 
-2. TESTING
+2. Blank out Okta logoutEndpoint from config and use end session endpoint from metadata
+   Reduce logout code
+   Ignore logout errors as for other samples
+   Add exceptionFromMessage and use it to check responses for null
+   Do loginRequired the same as for
+
+3. TESTING
    Activity recreation to test
    Test orientation changes / deep links / logins + logouts
    Also test on tablet sized emulator
    Back navigation - including with errors - and keep code simple
 
-3. Use consistent ids in layout files, with lower case and underscores
-
-4. Blank out Okta logoutEndpoint from config and use end session endpoint from metadata
-   Reduce logout code
-   Ignore logout errors as for other samples
-   Add exceptionFromMessage and use it to check responses for null
-
-5. Consider more with view models - as long as code complexity does not get worse:
+4. Consider more with view models - as long as code complexity does not increase:
    * Recycler view items
    * Store error view model in parent view model?
 

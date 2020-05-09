@@ -34,9 +34,9 @@ class TransactionArrayAdapter(val context: Context, val transactions: List<Trans
      */
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentTransaction = this.transactions[position]
-        holder.item.transactionId.text = currentTransaction.id
-        holder.item.investorId.text = currentTransaction.investorId
-        holder.item.amountUsd.text = String.format("%,d", currentTransaction.amountUsd)
+        holder.item.transaction_id.text = currentTransaction.id
+        holder.item.investor_id.text = currentTransaction.investorId
+        holder.item.amount_usd.text = String.format("%,d", currentTransaction.amountUsd)
     }
 
     /*

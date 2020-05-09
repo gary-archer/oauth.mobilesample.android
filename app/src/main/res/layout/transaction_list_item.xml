@@ -29,7 +29,7 @@
                     style="@style/TextViewLabelStyle"/>
 
             <TextView
-                    android:id="@+id/transactionId"
+                    android:id="@+id/transaction_id"
                     android:layout_weight="2"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -59,7 +59,7 @@
                     style="@style/TextViewLabelStyle"/>
 
             <TextView
-                    android:id="@+id/investorId"
+                    android:id="@+id/investor_id"
                     android:layout_weight="2"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -89,7 +89,7 @@
                     style="@style/TextViewLabelStyle"/>
 
             <TextView
-                    android:id="@+id/amountUsd"
+                    android:id="@+id/amount_usd"
                     android:layout_weight="2"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

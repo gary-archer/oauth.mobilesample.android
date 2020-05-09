@@ -27,7 +27,7 @@
 
             <!-- The title shows the user info fragment to the right -->
             <fragment
-                android:id="@+id/userInfoFragment"
+                android:id="@+id/user_info_fragment"
                 android:name="com.authguidance.basicmobileapp.views.userinfo.UserInfoFragment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

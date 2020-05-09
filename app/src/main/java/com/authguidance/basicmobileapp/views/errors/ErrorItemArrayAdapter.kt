@@ -34,12 +34,12 @@ class ErrorItemArrayAdapter(val context: Context, val errorItems: List<ErrorLine
      */
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentField = this.errorItems[position]
-        holder.item.errorField.text = currentField.name
-        holder.item.errorValue.text = currentField.value
+        holder.item.error_field.text = currentField.name
+        holder.item.error_value.text = currentField.value
 
         // Colour the instance id red so that it stands out
         if (currentField.name.equals(context.getString(R.string.error_instance_id))) {
-            holder.item.errorValue.setTextColor(context.getColor(R.color.text_error))
+            holder.item.error_value.setTextColor(context.getColor(R.color.text_error))
         }
     }
 

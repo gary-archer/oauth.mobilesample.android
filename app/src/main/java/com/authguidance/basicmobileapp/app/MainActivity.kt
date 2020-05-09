@@ -126,7 +126,7 @@ class MainActivity : AppCompatActivity() {
             NavigationHelper().navigate(
                 this.navController,
                 this.navHostFragment.childFragmentManager.primaryNavigationFragment,
-                R.id.deviceNotSecuredFragment
+                R.id.device_not_secured_fragment
             )
         } else if (NavigationHelper().isDeepLinkIntent(this.intent)) {
 
@@ -142,7 +142,7 @@ class MainActivity : AppCompatActivity() {
             NavigationHelper().navigate(
                 this.navController,
                 this.navHostFragment.childFragmentManager.primaryNavigationFragment,
-                R.id.companiesFragment
+                R.id.companies_fragment
             )
         }
     }
@@ -196,7 +196,7 @@ class MainActivity : AppCompatActivity() {
         model.isDataLoaded = loaded
 
         // Ask the header buttons fragment to update
-        val buttonFragment = this.supportFragmentManager.findFragmentById(R.id.buttonHeaderFragment) as HeaderButtonsFragment
+        val buttonFragment = this.supportFragmentManager.findFragmentById(R.id.header_buttons_fragment) as HeaderButtonsFragment
         buttonFragment.update()
     }
 
@@ -223,7 +223,7 @@ class MainActivity : AppCompatActivity() {
         NavigationHelper().navigate(
             this.navController,
             this.navHostFragment.childFragmentManager.primaryNavigationFragment,
-            R.id.companiesFragment
+            R.id.companies_fragment
         )
 
         // If there is an error loading data from the API then force a reload
@@ -326,7 +326,7 @@ class MainActivity : AppCompatActivity() {
         NavigationHelper().navigate(
             this.navController,
             this.navHostFragment.childFragmentManager.primaryNavigationFragment,
-            R.id.loginRequiredFragment)
+            R.id.login_required_fragment)
 
         // Send an event to fragments
         EventBus.getDefault().post(UnloadEvent())
@@ -349,7 +349,7 @@ class MainActivity : AppCompatActivity() {
 
         val currentFragmentId =
             NavHostFragment.findNavController(this.navHostFragment).currentDestination?.id
-        return currentFragmentId == R.id.loginRequiredFragment
+        return currentFragmentId == R.id.login_required_fragment
     }
 
     /*
@@ -383,11 +383,11 @@ class MainActivity : AppCompatActivity() {
             NavigationHelper().navigate(
                 this.navController,
                 this.navHostFragment.childFragmentManager.primaryNavigationFragment,
-                R.id.loginRequiredFragment)
+                R.id.login_required_fragment)
         } else {
 
             // Otherwise there is a technical error and we display summary details
-            val errorFragment = this.supportFragmentManager.findFragmentById(R.id.mainErrorSummaryFragment) as ErrorSummaryFragment
+            val errorFragment = this.supportFragmentManager.findFragmentById(R.id.main_error_summary_fragment) as ErrorSummaryFragment
             errorFragment.reportError(
                 this.getString(R.string.main_error_hyperlink),
                 this.getString(R.string.main_error_dialogtitle),
