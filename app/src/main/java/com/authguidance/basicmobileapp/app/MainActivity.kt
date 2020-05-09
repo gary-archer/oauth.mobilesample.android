@@ -199,6 +199,8 @@ class MainActivity : AppCompatActivity() {
 
         if (this.model.isInitialised) {
 
+            this.isInLoginRequired()
+
             // Move to the home view
             NavigationHelper().navigate(
                 this.navController,
@@ -318,13 +320,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*
-     * Indicate whether in the login required view
-     */
-    fun isInLoginRequired(): Boolean {
-        return false
-    }
-
-    /*
      * Update token storage to make the access token act like it is expired
      */
     fun onExpireAccessToken() {
@@ -406,5 +401,14 @@ class MainActivity : AppCompatActivity() {
      */
     fun shouldLoadUserInfo(): Boolean {
         return this.model.isInitialised && this.model.isDeviceSecured && !this.isInLoginRequired()
+    }
+
+    /*
+     * Indicate whether in the login required view
+     */
+    fun isInLoginRequired(): Boolean {
+
+        val currentFragmentId = NavHostFragment.findNavController(this.navHostFragment).currentDestination?.id
+        return currentFragmentId == R.id.loginRequiredFragment
     }
 }
