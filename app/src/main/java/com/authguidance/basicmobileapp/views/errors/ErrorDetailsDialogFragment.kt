@@ -37,7 +37,7 @@ class ErrorDetailsDialogFragment : DialogFragment() {
     }
 
     /*
-     * Inflate the view when created
+     * Initialise the view
      */
     override fun onCreateView(
         inflater: LayoutInflater,

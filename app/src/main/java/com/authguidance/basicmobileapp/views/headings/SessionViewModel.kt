@@ -8,6 +8,7 @@ import com.authguidance.basicmobileapp.api.client.ApiClient
  */
 class SessionViewModel(
     private val apiClientAccessor: () -> ApiClient?,
+    private val shouldShowAccessor: () -> Boolean,
     private val label: String
 ) : BaseObservable() {
 
@@ -19,7 +20,7 @@ class SessionViewModel(
      */
     fun getSessionId(): String {
 
-        if (this.sessionId == null) {
+        if (this.sessionId == null || !shouldShowAccessor()) {
             return ""
         }
 
@@ -30,7 +31,12 @@ class SessionViewModel(
      * Return false if space should be hidden via Visibility.GONE
      */
     fun isSessionIdVisible(): Boolean {
-        return this.sessionId != null
+
+        if (this.sessionId == null || !shouldShowAccessor()) {
+            return false
+        }
+
+        return true
     }
 
     /*
@@ -38,14 +44,8 @@ class SessionViewModel(
      */
     fun updateData() {
 
-        // Show nothing if the app has not initialised yet
         val apiClient = this.apiClientAccessor()
-        if (apiClient == null) {
-            return
-        }
-
-        // Otherwise set the API client's session id
-        this.setSessionId(apiClient.sessionId)
+        this.setSessionId(apiClient?.sessionId)
     }
 
     /*

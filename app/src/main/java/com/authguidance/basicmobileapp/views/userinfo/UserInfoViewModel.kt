@@ -10,7 +10,8 @@ import com.authguidance.basicmobileapp.views.utilities.ViewManager
  */
 class UserInfoViewModel(
     val apiClientAccessor: () -> ApiClient?,
-    val viewManager: ViewManager
+    val viewManager: ViewManager,
+    val shouldLoadAccessor: () -> Boolean
 ) : BaseObservable() {
 
     // The data once received

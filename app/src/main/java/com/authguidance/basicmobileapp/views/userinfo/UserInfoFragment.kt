@@ -42,7 +42,10 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
 
         // Create and add the model
         val mainActivity = this.context as MainActivity
-        this.binding.model = UserInfoViewModel(mainActivity::getApiClient, mainActivity.viewManager)
+        this.binding.model = UserInfoViewModel(
+            mainActivity::getApiClient,
+            mainActivity.viewManager,
+            mainActivity::shouldLoadUserInfo)
 
         return binding.root
     }
@@ -94,12 +97,9 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
      */
     private fun loadData(causeError: Boolean) {
 
-        // Get the model
+        // Only load if conditions are valid
         val model = this.binding.model!!
-
-        // Do not try to load API data if the app is not initialised yet
-        val apiClient = model.apiClientAccessor()
-        if (apiClient == null) {
+        if (!model.shouldLoadAccessor()) {
             model.viewManager.onViewLoaded()
             return
         }
@@ -118,6 +118,7 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
             val that = this@UserInfoFragment
             try {
                 // Call the API
+                val apiClient = model.apiClientAccessor()!!
                 val userClaims = apiClient.getUserInfo(options)
 
                 // Update the model and render results on the main thread

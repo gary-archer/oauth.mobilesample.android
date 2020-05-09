@@ -27,7 +27,7 @@ class DeviceNotSecuredFragment : androidx.fragment.app.Fragment() {
     }
 
     /*
-     * Inflate the layout
+     * Initialise the view
      */
     override fun onCreateView(
         inflater: LayoutInflater,

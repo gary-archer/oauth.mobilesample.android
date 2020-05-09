@@ -23,7 +23,7 @@ class SessionFragment : androidx.fragment.app.Fragment() {
     private lateinit var binding: FragmentSessionBinding
 
     /*
-     * Inflate the layout
+     * Initialise the view
      */
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,6 +38,7 @@ class SessionFragment : androidx.fragment.app.Fragment() {
         val mainActivity = this.context as MainActivity
         this.binding.model = SessionViewModel(
             mainActivity::getApiClient,
+            mainActivity::shouldShowSessionId,
             this.getString(R.string.api_session_id))
 
         return this.binding.root

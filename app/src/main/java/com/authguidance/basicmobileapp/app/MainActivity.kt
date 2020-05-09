@@ -130,13 +130,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*
-     * Return the API client to child fragments
-     */
-    fun getApiClient(): ApiClient? {
-        return this.model.apiClient
-    }
-
-    /*
      * Handle the result from other activities, such as AppAuth or lock screen activities
      */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -179,9 +172,12 @@ class MainActivity : AppCompatActivity() {
      */
     private fun onLoadStateChanged(loaded: Boolean) {
 
+        // Update our state
         this.model.isDataLoaded = loaded
+
+        // Ask the header buttons fragment to update
         val buttonFragment = this.supportFragmentManager.findFragmentById(R.id.buttonHeaderFragment) as HeaderButtonsFragment
-        buttonFragment.setButtonEnabledState(loaded)
+        buttonFragment.update()
     }
 
     /*
@@ -215,13 +211,6 @@ class MainActivity : AppCompatActivity() {
                 this.onReloadData(false)
             }
         }
-    }
-
-    /*
-     * Access the application in a typed manner
-     */
-    fun app(): Application {
-        return this.application as Application
     }
 
     /*
@@ -302,9 +291,11 @@ class MainActivity : AppCompatActivity() {
      */
     private fun finishLogout() {
 
-        // Update state
+        // Finish processing
         this.model.authenticator!!.finishLogout()
-        this.model.isDataLoaded = false
+
+        // Update state
+        this.onLoadStateChanged(false)
         this.isTopMost = false
 
         // Move to the login required page
@@ -324,6 +315,13 @@ class MainActivity : AppCompatActivity() {
 
         this.viewManager.setViewCount(2)
         EventBus.getDefault().post(ReloadEvent(causeError))
+    }
+
+    /*
+     * Indicate whether in the login required view
+     */
+    fun isInLoginRequired(): Boolean {
+        return false
     }
 
     /*
@@ -368,10 +366,45 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*
+     * Access the application in a typed manner
+     */
+    fun app(): Application {
+        return this.application as Application
+    }
+
+    /*
      * Clean up resources when destroyed, which occurs after the screen orientation is changed
      */
     override fun onDestroy() {
         super.onDestroy()
         this.app().setMainActivity(null)
+    }
+
+    /*
+     * An accessor used by child fragments that call APIs
+     */
+    fun getApiClient(): ApiClient? {
+        return this.model.apiClient
+    }
+
+    /*
+     * Inform header buttons whether to set their state to enabled or disabled
+     */
+    fun isDataLoaded(): Boolean {
+        return this.model.isDataLoaded
+    }
+
+    /*
+     * Inform the session fragment whether to show its session id
+     */
+    fun shouldShowSessionId(): Boolean {
+        return this.model.isInitialised && this.model.isDeviceSecured && this.model.authenticator!!.isLoggedIn()
+    }
+
+    /*
+     * Inform the user info view whether to load user info from the API for the logged in user
+     */
+    fun shouldLoadUserInfo(): Boolean {
+        return this.model.isInitialised && this.model.isDeviceSecured && !this.isInLoginRequired()
     }
 }
