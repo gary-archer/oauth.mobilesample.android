@@ -8,7 +8,7 @@ import com.authguidance.basicmobileapp.plumbing.oauth.AuthenticatorImpl
 import com.authguidance.basicmobileapp.plumbing.utilities.DeviceSecurity
 
 /*
- * A primitive view model class to manage global objects and state
+ * A primitive view model class to contain global objects and state
  */
 class MainActivityViewModel {
 

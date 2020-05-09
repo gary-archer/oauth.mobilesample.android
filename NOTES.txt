@@ -1,24 +1,34 @@
-PRIORITY
---------
-1. Create further view model classes with a view folder layout similar to React
-   Include error details dialog
-   Debug activity / fragment recreation after orientation changes / deep links / logins + logouts
+VIEW CHANGES
+------------
+1. Update HeaderButtonsView to use a view model
+   Test and fix current problem where all buttons are enabled after logout
 
-2. Finish device not secured fragment and use a lighter green
+2. Can I get the parent from ErrorSummaryView for both current fragment and main activity?
+   Can I use a child ErrorViewModel in classes that use ErrorSummaryView?
+
+3. Move API calls to model, with some callbacks for UI updates
+   Store error view model in parent view model
+
+4. Error details dialog
+
+5. Activity recreation to test
+   Test orientation changes / deep links / logins + logouts
+
+5. Finish device not secured fragment and use a lighter green
    Test topmost and ensure that deep links do not run views they should not
 
-3. References to global objects in fragments
+6. Use consistent ids in layout files, with lower case and underscores
+
+7. References to global objects in fragments
    Google to understand issues for React / Swift / Kotlin
    Store optional references and set to null on exit
 
-4. Blank out Okta logoutEndpoint from config and use end session endpoint from metadata
+8. Blank out Okta logoutEndpoint from config and use end session endpoint from metadata
    Reduce logout code
    Ignore logout errors as for other samples
    Add exceptionFromMessage and use it to check responses for null
 
-5. Use consistent ids in layout files, with lower case and underscores
-
-6. Test back navigation - including with errors - and keep code simple
+9. Test back navigation - including with errors - and keep code simple
 
 IOS
 ---

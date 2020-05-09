@@ -142,7 +142,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
         list.layoutManager = LinearLayoutManager(this.context)
         list.adapter =
             CompanyArrayAdapter(
-                this.context!!,
+                this.requireContext(),
                 companies.toList(),
                 onItemClick
             )

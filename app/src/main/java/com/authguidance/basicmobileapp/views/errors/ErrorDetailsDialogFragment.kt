@@ -89,12 +89,7 @@ class ErrorDetailsDialogFragment : DialogFragment() {
             list.layoutManager = LinearLayoutManager(this.context)
             list.adapter =
                 ErrorItemArrayAdapter(
-                    this.context!!,
-                    lines
-                )
-            list.adapter =
-                ErrorItemArrayAdapter(
-                    this.context!!,
+                    this.requireContext(),
                     lines
                 )
         }

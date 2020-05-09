@@ -177,7 +177,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
         list.layoutManager = LinearLayoutManager(this.context)
         list.adapter =
             TransactionArrayAdapter(
-                this.context!!,
+                this.requireContext(),
                 data.transactions.toList()
             )
     }
