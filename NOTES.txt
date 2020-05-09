@@ -1,34 +1,26 @@
 VIEW CHANGES
 ------------
-1. Update HeaderButtonsView to use a view model
-   Test and fix current problem where all buttons are enabled after logout
+0. Error details dialog view model
 
-2. Can I get the parent from ErrorSummaryView for both current fragment and main activity?
-   Can I use a child ErrorViewModel in classes that use ErrorSummaryView?
-
-3. Move API calls to model, with some callbacks for UI updates
-   Store error view model in parent view model
-
-4. Error details dialog
-
-5. Activity recreation to test
-   Test orientation changes / deep links / logins + logouts
-
-5. Finish device not secured fragment and use a lighter green
+1. Finish device not secured fragment and use a lighter green
    Test topmost and ensure that deep links do not run views they should not
 
-6. Use consistent ids in layout files, with lower case and underscores
+2. TESTING
+   Activity recreation to test
+   Test orientation changes / deep links / logins + logouts
+   Also test on tablet sized emulator
+   Back navigation - including with errors - and keep code simple
 
-7. References to global objects in fragments
-   Google to understand issues for React / Swift / Kotlin
-   Store optional references and set to null on exit
+3. Use consistent ids in layout files, with lower case and underscores
 
-8. Blank out Okta logoutEndpoint from config and use end session endpoint from metadata
+4. Blank out Okta logoutEndpoint from config and use end session endpoint from metadata
    Reduce logout code
    Ignore logout errors as for other samples
    Add exceptionFromMessage and use it to check responses for null
 
-9. Test back navigation - including with errors - and keep code simple
+5. Consider more with view models - as long as code complexity does not get worse:
+   * Recycler view items
+   * Store error view model in parent view model?
 
 IOS
 ---
@@ -37,6 +29,6 @@ IOS
 2. Deep link when Safari View Controller active for iOS to ignore
    Add isTopMost logic
 
-3. Use view model classes?
+3. Consider use of view model classes if Android has been improved
 
 4. Use a strings source file in iOS

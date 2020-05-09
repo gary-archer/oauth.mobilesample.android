@@ -14,8 +14,6 @@ import com.authguidance.basicmobileapp.plumbing.errors.UIError
 class ErrorSummaryFragment : androidx.fragment.app.Fragment() {
 
     private lateinit var binding: FragmentErrorSummaryBinding
-    private var error: UIError? = null
-    private var dialogTitle: String = ""
 
     /*
      * Initialise the view
@@ -26,20 +24,12 @@ class ErrorSummaryFragment : androidx.fragment.app.Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+        // Inflate the binding
         this.binding = FragmentErrorSummaryBinding.inflate(inflater, container, false)
+
+        // Create the view model with default settings
+        this.binding.model = ErrorSummaryViewModel(this::showDetailsDialog)
         return binding.root
-    }
-
-    /*
-     * Wire up click events
-     */
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        this.binding.errorSummaryText.text = ""
-        this.binding.errorSummaryText.setOnClickListener {
-            this.onClick()
-        }
     }
 
     /*
@@ -49,14 +39,7 @@ class ErrorSummaryFragment : androidx.fragment.app.Fragment() {
 
         // Record error details unless this a login is required, which is not a real error
         if (!error.errorCode.equals(ErrorCodes.loginRequired)) {
-
-            // Set error properties
-            this.binding.errorSummaryText.text = hyperlinkText
-            this.dialogTitle = dialogTitle
-            this.error = error
-
-            // Update visibility to show content
-            this.binding.errorSummaryText.visibility = View.VISIBLE
+            this.binding.model?.setErrorDetails(hyperlinkText, dialogTitle, error)
         }
     }
 
@@ -64,21 +47,15 @@ class ErrorSummaryFragment : androidx.fragment.app.Fragment() {
      * Clear error details when required
      */
     fun clearError() {
-        this.error = null
-        this.binding.errorSummaryText.text = ""
-        this.binding.errorSummaryText.visibility = View.GONE
+        this.binding.model?.clearErrorDetails()
     }
 
     /*
      * Invoke a modal error details dialog when the red error summary text is clicked
      */
-    private fun onClick() {
+    private fun showDetailsDialog(dialogTitle: String, error: UIError) {
 
-        val error = this.error
-        if (error != null) {
-
-            val dialog = ErrorDetailsDialogFragment.create(dialogTitle, error)
-            dialog.show(this.childFragmentManager, "errorDetails")
-        }
+        val dialog = ErrorDetailsDialogFragment.create(dialogTitle, error)
+        dialog.show(this.childFragmentManager, "Error Details")
     }
 }

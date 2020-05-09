@@ -28,10 +28,13 @@ import org.greenrobot.eventbus.EventBus
  */
 class MainActivity : AppCompatActivity() {
 
+    // Model related properties
     private lateinit var binding: ActivityMainBinding
+    private lateinit var childViewModelState: ChildViewModelState
+
+    // Navigation properties
     private lateinit var navController: NavController
     private lateinit var navHostFragment: NavHostFragment
-    private lateinit var childViewModelState: ChildViewModelState
 
     /*
      * Set up of the Single Activity App's main activity
