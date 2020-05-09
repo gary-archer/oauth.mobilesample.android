@@ -2,28 +2,44 @@ package com.authguidance.basicmobileapp.views.companies
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.authguidance.basicmobileapp.api.entities.Company
-import com.authguidance.basicmobileapp.R
-import kotlinx.android.synthetic.main.company_list_item.view.*
+import com.authguidance.basicmobileapp.databinding.CompanyListItemBinding
 
 /*
  * An adapter to render company items in a custom manner
+ * https://medium.com/@sanjeevy133/an-idiots-guide-to-android-recyclerview-and-databinding-4ebf8db0daff
  */
 class CompanyArrayAdapter(
     val context: Context,
-    val companies: List<Company>,
-    val listener: (Company) -> Unit
-) : RecyclerView.Adapter<CompanyArrayAdapter.ViewHolder>() {
+    val companies: List<CompanyItemViewModel>,
+    val onClickListener: (CompanyItemViewModel) -> Unit
+) : RecyclerView.Adapter<CompanyItemViewHolder>() {
 
     /*
      * Inflate this list item
      */
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CompanyItemViewHolder {
+
         val inflater = LayoutInflater.from(this.context)
-        return ViewHolder(inflater.inflate(R.layout.company_list_item, parent, false))
+        val itemBinding = CompanyListItemBinding.inflate(inflater, parent, false)
+        return CompanyItemViewHolder(itemBinding)
+    }
+
+    /*
+     * Binds this item to the view
+     */
+    override fun onBindViewHolder(holder: CompanyItemViewHolder, position: Int) {
+
+        val currentCompanyViewModel = this.companies[position]
+        holder.bind(currentCompanyViewModel)
+
+        // Load and set the image programmatically
+        val id = this.context.resources.getIdentifier("company_${currentCompanyViewModel.company.id}", "drawable", context.packageName)
+        holder.layoutBinding.companyImageId.setImageResource(id)
+
+        // Handle the click event
+        holder.onClick(currentCompanyViewModel, this.onClickListener)
     }
 
     /*
@@ -31,37 +47,5 @@ class CompanyArrayAdapter(
      */
     override fun getItemCount(): Int {
         return this.companies.size
-    }
-
-    /*
-     * Binds an item to a view
-     */
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
-        val currentCompany = this.companies[position]
-
-        // First set the image and text
-        val id = this.context.resources.getIdentifier("company_${currentCompany.id}", "drawable", context.packageName)
-        holder.item.company_image_id.setImageResource(id)
-        holder.item.company_name.text = currentCompany.name
-
-        // Next we show a list of labels and values
-        holder.item.target_usd.text = String.format("%,d", currentCompany.targetUsd)
-        holder.item.investment_usd.text = String.format("%,d", currentCompany.investmentUsd)
-        holder.item.no_investors.text = String.format("%d", currentCompany.noInvestors)
-
-        // Handle the click event
-        holder.onClick(currentCompany, this.listener)
-    }
-
-    /*
-     * Stores and recycles views as they are scrolled off screen
-     */
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val item = itemView
-
-        fun onClick(company: Company, listener: (Company) -> Unit) = with(itemView) {
-            setOnClickListener { listener(company) }
-        }
     }
 }

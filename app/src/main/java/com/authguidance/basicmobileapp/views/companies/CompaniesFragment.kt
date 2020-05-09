@@ -130,10 +130,13 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
      */
     private fun renderData(companies: Array<Company>) {
 
+        // Get view model items from the raw data
+        val viewModelItems = companies.map { CompanyItemViewModel(it) }
+
         // When a company is clicked we will navigate to transactions for the clicked company id
-        val onItemClick = { company: Company ->
+        val onItemClick = { viewModelItem: CompanyItemViewModel ->
             val args = Bundle()
-            args.putString(Constants.ARG_COMPANY_ID, company.id.toString())
+            args.putString(Constants.ARG_COMPANY_ID, viewModelItem.company.id.toString())
             findNavController().navigate(R.id.transactions_fragment, args)
         }
 
@@ -143,7 +146,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
         list.adapter =
             CompanyArrayAdapter(
                 this.requireContext(),
-                companies.toList(),
+                viewModelItems.toList(),
                 onItemClick
             )
     }

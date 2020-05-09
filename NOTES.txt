@@ -1,31 +1,35 @@
 VIEW CHANGES
 ------------
-1. Finish device not secured fragment and use a lighter green
-   Test topmost and ensure that deep links do not run views they should not
+0. Spend first 30 minutes on work diagrams
 
-2. Blank out Okta logoutEndpoint from config and use end session endpoint from metadata
-   Reduce logout code
-   Ignore logout errors as for other samples
-   Add exceptionFromMessage and use it to check responses for null
-   Do loginRequired the same as for
+1. Recycler view binding to finish, for transactions and error details
 
-3. TESTING
+2. Finish device not secured fragment and use a lighter green
+
+3. Blank out Okta logoutEndpoint from config and use end session endpoint from metadata
+
+4. Reduce logout code via a better base / interface
+
+5. Logout behaviour as for other samples, with ignored errors and early token removal
+
+6. Add exceptionFromMessage and use it to check OAuth responses for null
+
+7. Make loginRequired do the login work?
+
+8. TESTING
    Activity recreation to test
+   Test topmost and ensure that deep links do not run views they should not
    Test orientation changes / deep links / logins + logouts
    Also test on tablet sized emulator
    Back navigation - including with errors - and keep code simple
 
-4. Consider more with view models - as long as code complexity does not increase:
-   * Recycler view items
-   * Store error view model in parent view model?
+9. Merge to master
 
 IOS
 ---
 1. iOS device check to also check biometrics only
 
-2. Deep link when Safari View Controller active for iOS to ignore
-   Add isTopMost logic
+2. Use a strings source file in iOS for UI elements
 
-3. Consider use of view model classes if Android has been improved
-
-4. Use a strings source file in iOS
+3. Deep link when Safari View Controller active for iOS to ignore
+   Add isTopMost logic and possibly an application class
