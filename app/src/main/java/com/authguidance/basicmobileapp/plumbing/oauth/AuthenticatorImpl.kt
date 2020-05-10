@@ -118,7 +118,7 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
         this.tokenStorage.removeTokens()
 
         // Do the logout redirect to remove the Authorization Server session cookie
-        this.performLogoutRedirect(tokens?.idToken, activity, completionCode)
+        this.performLogoutRedirect(idToken, activity, completionCode)
     }
 
     /*
@@ -312,9 +312,6 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
 
         // Wrap the request in a coroutine
         return suspendCoroutine { continuation ->
-
-            // First clear the existing access token from storage
-            this.tokenStorage.clearAccessToken()
 
             // Define a callback to handle the result of the refresh token grant
             val callback =

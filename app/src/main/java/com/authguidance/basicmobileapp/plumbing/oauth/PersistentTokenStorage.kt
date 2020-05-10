@@ -10,9 +10,10 @@ import com.google.gson.Gson
  */
 class PersistentTokenStorage(val context: Context, val encryptionManager: EncryptionManager) {
 
+    private var tokenData: TokenData? = null
     private val applicationName = "com.authguidance.basicmobileapp"
     private val key = "AUTH_STATE"
-    private val tokenStorage = context.getSharedPreferences(applicationName, MODE_PRIVATE)
+    private val sharedPrefs = context.getSharedPreferences(applicationName, MODE_PRIVATE)
     private val lock = Object()
 
     /*
@@ -21,17 +22,19 @@ class PersistentTokenStorage(val context: Context, val encryptionManager: Encryp
     fun loadTokens(): TokenData? {
 
         synchronized(lock) {
-            return this.loadTokenData()
+            this.loadTokenData()
+            return this.tokenData
         }
     }
 
     /*
      * Save tokens to stored preferences
      */
-    fun saveTokens(data: TokenData) {
+    fun saveTokens(newTokenData: TokenData) {
 
         synchronized(lock) {
-            this.saveTokenData(data)
+            this.tokenData = newTokenData
+            this.saveTokenData()
         }
     }
 
@@ -41,21 +44,8 @@ class PersistentTokenStorage(val context: Context, val encryptionManager: Encryp
     fun removeTokens() {
 
         synchronized(lock) {
-            this.tokenStorage.edit().remove(this.key).apply()
-        }
-    }
-
-    /*
-     * Remove just the access token from storage
-     */
-    fun clearAccessToken() {
-
-        synchronized(lock) {
-            val tokenData = loadTokenData()
-            if (tokenData != null) {
-                tokenData.accessToken = null
-                this.saveTokenData(tokenData)
-            }
+            this.tokenData = null
+            this.sharedPrefs.edit().remove(this.key).apply()
         }
     }
 
@@ -65,10 +55,9 @@ class PersistentTokenStorage(val context: Context, val encryptionManager: Encryp
     fun expireAccessToken() {
 
         synchronized(lock) {
-            val tokenData = loadTokenData()
-            if (tokenData != null) {
-                tokenData.accessToken = "x${tokenData.accessToken}x"
-                this.saveTokenData(tokenData)
+            if (this.tokenData != null) {
+                this.tokenData!!.accessToken = "x${this.tokenData!!.accessToken}x"
+                this.saveTokenData()
             }
         }
     }
@@ -79,11 +68,10 @@ class PersistentTokenStorage(val context: Context, val encryptionManager: Encryp
     fun expireRefreshToken() {
 
         synchronized(lock) {
-            val tokenData = loadTokenData()
-            if (tokenData != null) {
-                tokenData.accessToken = null
-                tokenData.refreshToken = "x${tokenData.refreshToken}x"
-                this.saveTokenData(tokenData)
+            if (this.tokenData != null) {
+                this.tokenData!!.accessToken = null
+                this.tokenData!!.refreshToken = "x${this.tokenData!!.refreshToken}x"
+                this.saveTokenData()
             }
         }
     }
@@ -91,23 +79,27 @@ class PersistentTokenStorage(val context: Context, val encryptionManager: Encryp
     /*
      * Encrypt tokens and save to stored preferences
      */
-    private fun saveTokenData(data: TokenData) {
+    private fun saveTokenData() {
         val gson = Gson()
-        val json = gson.toJson(data)
-        this.tokenStorage.edit().putString(this.key, encryptionManager.encrypt(json)).apply()
+        val json = gson.toJson(this.tokenData!!)
+        this.sharedPrefs.edit().putString(this.key, encryptionManager.encrypt(json)).apply()
     }
 
     /*
      * Load token data from storage and decrypt
      */
-    private fun loadTokenData(): TokenData? {
+    private fun loadTokenData() {
 
-        val data = this.tokenStorage.getString(this.key, "")
+        if (this.tokenData != null) {
+            return
+        }
+
+        val data = this.sharedPrefs.getString(this.key, "")
         if (data.isNullOrBlank()) {
-            return null
+            return
         }
 
         val gson = Gson()
-        return gson.fromJson(encryptionManager.decrypt(data), TokenData::class.java)
+        this.tokenData = gson.fromJson(encryptionManager.decrypt(data), TokenData::class.java)
     }
 }

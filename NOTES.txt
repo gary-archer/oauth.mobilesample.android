@@ -2,11 +2,9 @@ VIEW CHANGES
 ------------
 0. Spend first 30 minutes on work diagrams
 
-1. Store tokens in memory object since currently decrypt code runs often
+1. Statics as for device security with a companion object
 
-2. Statics as for device security with a companion object
-
-6. TESTING
+2. TESTING
    Activity recreation to test
    Test topmost and ensure that deep links do not run views they should not
    Test orientation changes / deep links / logins + logouts
@@ -14,7 +12,7 @@ VIEW CHANGES
    Back navigation - including with errors - and keep code simple
    Concurrent action code to inspect further
 
-7. Merge to master and backup repos to disk
+3. Merge to master and backup repos to disk
 
 IOS
 ---
@@ -22,8 +20,7 @@ IOS
 
 2. Error code updates for login / logout / token
 
-3. Use a strings source file in iOS for UI elements?
+3. Deep link when not top most to ignore
 
-4. Deep link when Safari View Controller active for iOS to ignore
+4. Use a strings source file in iOS for UI elements?
 
-5. Add and test isTopMost logic
