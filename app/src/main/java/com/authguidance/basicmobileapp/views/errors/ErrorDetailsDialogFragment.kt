@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.databinding.FragmentErrorDetailsBinding
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorFormatter
 
@@ -70,13 +71,24 @@ class ErrorDetailsDialogFragment : DialogFragment() {
         // Get error lines as a collection
         val lines = ErrorFormatter(this.requireContext()).getErrorLines(this.binding.model!!.error)
 
+        // Get values for colour binding
+        val instanceIdFieldName = this.context?.getString(R.string.error_instance_id)
+        val blackText = this.requireContext().getColor(R.color.text_value)
+        val redText = this.requireContext().getColor(R.color.text_error)
+
+        // Get view model items from the above data
+        val viewModelItems = lines.map {
+            ErrorListItemViewModel(
+                it,
+                if (it.name.equals(instanceIdFieldName)) redText else blackText) }
+
         // Render them via an adapter
         val list = this.binding.listErrorItems
         list.layoutManager = LinearLayoutManager(this.context)
         list.adapter =
             ErrorItemArrayAdapter(
                 this.requireContext(),
-                lines
+                viewModelItems
             )
     }
 }

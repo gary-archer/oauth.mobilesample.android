@@ -4,9 +4,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.authguidance.basicmobileapp.databinding.CompanyListItemBinding
 
 /*
- * A custom view holder class for company items in a recycler view
+ * A custom view holder class for company rows in a recycler view
  */
-class CompanyItemViewHolder(val layoutBinding: CompanyListItemBinding) : RecyclerView.ViewHolder(layoutBinding.root) {
+class CompanyItemViewHolder(
+    val layoutBinding: CompanyListItemBinding
+) : RecyclerView.ViewHolder(layoutBinding.root) {
 
     /*
      * Bind a data item to a layout row

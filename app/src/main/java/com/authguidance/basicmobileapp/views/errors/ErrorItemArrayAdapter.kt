@@ -2,51 +2,41 @@ package com.authguidance.basicmobileapp.views.errors
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.authguidance.basicmobileapp.R
-import com.authguidance.basicmobileapp.plumbing.errors.ErrorLine
-import kotlinx.android.synthetic.main.error_list_item.view.*
+import com.authguidance.basicmobileapp.databinding.ErrorListItemBinding
 
 /*
- * An adapter to render transaction items
+ * An adapter to render error items
  */
-class ErrorItemArrayAdapter(val context: Context, val errorItems: List<ErrorLine>) : RecyclerView.Adapter<ErrorItemArrayAdapter.ViewHolder>() {
+class ErrorItemArrayAdapter(
+    val context: Context,
+    val errorLines: List<ErrorListItemViewModel>
+) : RecyclerView.Adapter<ErrorListItemViewHolder>() {
 
     /*
      * Inflate this list item
      */
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ErrorListItemViewHolder {
+
         val inflater = LayoutInflater.from(this.context)
-        return ViewHolder(inflater.inflate(R.layout.error_list_item, parent, false))
+        val itemBinding = ErrorListItemBinding.inflate(inflater, parent, false)
+        return ErrorListItemViewHolder(itemBinding)
+    }
+
+    /*
+     * Binds an item to a view
+     */
+    override fun onBindViewHolder(holder: ErrorListItemViewHolder, position: Int) {
+
+        val currentErrorLine = this.errorLines[position]
+        holder.bind(currentErrorLine)
     }
 
     /*
      * Return the total size
      */
     override fun getItemCount(): Int {
-        return this.errorItems.size
-    }
-
-    /*
-     * Binds an item to a view
-     */
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val currentField = this.errorItems[position]
-        holder.item.error_field.text = currentField.name
-        holder.item.error_value.text = currentField.value
-
-        // Colour the instance id red so that it stands out
-        if (currentField.name.equals(context.getString(R.string.error_instance_id))) {
-            holder.item.error_value.setTextColor(context.getColor(R.color.text_error))
-        }
-    }
-
-    /*
-     * Stores and recycles views as they are scrolled off screen
-     */
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val item = itemView
+        return this.errorLines.size
     }
 }

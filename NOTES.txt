@@ -2,26 +2,24 @@ VIEW CHANGES
 ------------
 0. Spend first 30 minutes on work diagrams
 
-1. Recycler view binding to finish, for transactions and error details
+1. Finish device not secured fragment and use a lighter green
 
-2. Finish device not secured fragment and use a lighter green
+2. Blank out Okta logoutEndpoint from config and use end session endpoint from metadata
 
-3. Blank out Okta logoutEndpoint from config and use end session endpoint from metadata
+3. Reduce logout code via a better base / interface
 
-4. Reduce logout code via a better base / interface
+4. Logout behaviour as for other samples, with ignored errors and early token removal
 
-5. Logout behaviour as for other samples, with ignored errors and early token removal
+5. Add exceptionFromMessage and use it to check OAuth responses for null
 
-6. Add exceptionFromMessage and use it to check OAuth responses for null
-
-7. TESTING
+6. TESTING
    Activity recreation to test
    Test topmost and ensure that deep links do not run views they should not
    Test orientation changes / deep links / logins + logouts
    Also test on tablet sized emulator
    Back navigation - including with errors - and keep code simple
 
-8. Merge to master
+7. Merge to master
 
 IOS
 ---

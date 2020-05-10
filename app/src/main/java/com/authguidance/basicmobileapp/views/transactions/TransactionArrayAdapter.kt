@@ -3,23 +3,34 @@ package com.authguidance.basicmobileapp.views.transactions
 import android.content.Context
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import com.authguidance.basicmobileapp.R
-import com.authguidance.basicmobileapp.api.entities.Transaction
-import kotlinx.android.synthetic.main.transaction_list_item.view.*
+import com.authguidance.basicmobileapp.databinding.TransactionListItemBinding
 
 /*
  * An adapter to render transaction items
  */
-class TransactionArrayAdapter(val context: Context, val transactions: List<Transaction>) : RecyclerView.Adapter<TransactionArrayAdapter.ViewHolder>() {
+class TransactionArrayAdapter(
+    val context: Context,
+    val transactions: List<TransactionItemViewModel>
+) : RecyclerView.Adapter<TransactionItemViewHolder>() {
 
     /*
      * Inflate this list item
      */
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TransactionItemViewHolder {
+
         val inflater = LayoutInflater.from(this.context)
-        return ViewHolder(inflater.inflate(R.layout.transaction_list_item, parent, false))
+        val itemBinding = TransactionListItemBinding.inflate(inflater, parent, false)
+        return TransactionItemViewHolder(itemBinding)
+    }
+
+    /*
+     * Binds an item to a view
+     */
+    override fun onBindViewHolder(holder: TransactionItemViewHolder, position: Int) {
+
+        val currentTransactionViewModel = this.transactions[position]
+        holder.bind(currentTransactionViewModel)
     }
 
     /*
@@ -27,22 +38,5 @@ class TransactionArrayAdapter(val context: Context, val transactions: List<Trans
      */
     override fun getItemCount(): Int {
         return this.transactions.size
-    }
-
-    /*
-     * Binds an item to a view
-     */
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val currentTransaction = this.transactions[position]
-        holder.item.transaction_id.text = currentTransaction.id
-        holder.item.investor_id.text = currentTransaction.investorId
-        holder.item.amount_usd.text = String.format("%,d", currentTransaction.amountUsd)
-    }
-
-    /*
-     * Stores and recycles views as they are scrolled off screen
-     */
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val item = itemView
     }
 }

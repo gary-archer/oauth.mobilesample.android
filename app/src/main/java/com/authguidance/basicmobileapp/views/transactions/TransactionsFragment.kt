@@ -173,12 +173,15 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
      */
     private fun renderData(data: CompanyTransactions) {
 
+        // Get view model items from the raw data
+        val viewModelItems = data.transactions.map { TransactionItemViewModel(it) }
+
         val list = this.binding.listTransactions
         list.layoutManager = LinearLayoutManager(this.context)
         list.adapter =
             TransactionArrayAdapter(
                 this.requireContext(),
-                data.transactions.toList()
+                viewModelItems.toList()
             )
     }
 }
