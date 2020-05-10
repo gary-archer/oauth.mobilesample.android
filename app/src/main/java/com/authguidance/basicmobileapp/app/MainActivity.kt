@@ -4,19 +4,19 @@ import android.content.Intent
 import androidx.databinding.DataBindingUtil
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.databinding.ActivityMainBinding
-import com.authguidance.basicmobileapp.plumbing.utilities.NavigationHelper
+import com.authguidance.basicmobileapp.views.utilities.NavigationHelper
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorHandler
 import com.authguidance.basicmobileapp.plumbing.events.InitialLoadEvent
 import com.authguidance.basicmobileapp.plumbing.events.UnloadEvent
 import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
-import com.authguidance.basicmobileapp.plumbing.utilities.Constants
+import com.authguidance.basicmobileapp.views.utilities.Constants
 import com.authguidance.basicmobileapp.views.errors.ErrorSummaryFragment
 import com.authguidance.basicmobileapp.views.headings.HeaderButtonsFragment
+import com.authguidance.basicmobileapp.views.utilities.DeviceSecurity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,13 +28,12 @@ import org.greenrobot.eventbus.EventBus
  */
 class MainActivity : AppCompatActivity() {
 
-    // Model related properties
+    // Model related
     private lateinit var binding: ActivityMainBinding
     private lateinit var childViewModelState: ChildViewModelState
 
     // Navigation properties
-    private lateinit var navController: NavController
-    private lateinit var navHostFragment: NavHostFragment
+    private lateinit var navigationHelper: NavigationHelper
 
     /*
      * Set up of the Single Activity App's main activity
@@ -53,8 +52,8 @@ class MainActivity : AppCompatActivity() {
         this.binding.model = model
 
         // Initialise the navigation system
-        this.navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        this.navController = this.navHostFragment.navController
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        this.navigationHelper = NavigationHelper(navHostFragment)
 
         // Finally, do the main application load
         this.initialiseApp()
@@ -80,7 +79,7 @@ class MainActivity : AppCompatActivity() {
         state.shouldLoadUserInfoAccessor = {
                     model.isInitialised &&
                     model.isDeviceSecured &&
-                    !this.isInLoginRequired()
+                    !this.navigationHelper.isInLoginRequired()
         }
 
         // Properties passed to the session fragment
@@ -107,6 +106,7 @@ class MainActivity : AppCompatActivity() {
 
             // Send an initial load event to other views
             EventBus.getDefault().post(InitialLoadEvent())
+
         } catch (ex: Throwable) {
 
             // Display the startup error details
@@ -120,30 +120,21 @@ class MainActivity : AppCompatActivity() {
     private fun navigateStart() {
 
         val model = this.binding.model!!
+
         if (!model.isDeviceSecured) {
 
             // If the device is not secured we will move to a view that prompts the user to do so
-            NavigationHelper().navigate(
-                this.navController,
-                this.navHostFragment.childFragmentManager.primaryNavigationFragment,
-                R.id.device_not_secured_fragment
-            )
-        } else if (NavigationHelper().isDeepLinkIntent(this.intent)) {
+            this.navigationHelper.navigateTo(R.id.device_not_secured_fragment)
+
+        } else if (this.navigationHelper.isDeepLinkIntent(this.intent)) {
 
             // If there was a deep link then follow it
-            NavigationHelper().navigateToDeepLink(
-                this.intent,
-                this.navController,
-                this.navHostFragment.childFragmentManager.primaryNavigationFragment
-            )
+            this.navigationHelper.navigateToDeepLink(this.intent)
+
         } else {
 
             // Otherwise move home
-            NavigationHelper().navigate(
-                this.navController,
-                this.navHostFragment.childFragmentManager.primaryNavigationFragment,
-                R.id.companies_fragment
-            )
+            this.navigationHelper.navigateTo(R.id.companies_fragment)
         }
     }
 
@@ -158,6 +149,7 @@ class MainActivity : AppCompatActivity() {
         // Handle login responses and reset state
         if (requestCode == Constants.LOGIN_REDIRECT_REQUEST_CODE) {
             if (data != null) {
+
                 model.isTopMost = true
                 this.onFinishLogin(data)
             }
@@ -165,8 +157,17 @@ class MainActivity : AppCompatActivity() {
 
         // Handle logout responses and reset state
         else if (requestCode == Constants.LOGOUT_REDIRECT_REQUEST_CODE) {
+
             model.isTopMost = true
             this.onFinishLogout()
+        }
+
+        // Handle returning from the lock screen
+        else if (requestCode == Constants.SET_LOCK_SCREEN_REQUEST_CODE) {
+
+            model.isDeviceSecured = DeviceSecurity.isDeviceSecured(this)
+            model.isTopMost = true
+            this.navigateStart()
         }
     }
 
@@ -177,12 +178,8 @@ class MainActivity : AppCompatActivity() {
 
         super.onNewIntent(receivedIntent)
 
-        if (NavigationHelper().isDeepLinkIntent(receivedIntent)) {
-            NavigationHelper().navigateToDeepLink(
-                receivedIntent,
-                this.navController,
-                this.navHostFragment.childFragmentManager.primaryNavigationFragment
-            )
+        if (this.navigationHelper.isDeepLinkIntent(receivedIntent)) {
+            this.navigationHelper.navigateToDeepLink(receivedIntent)
         }
     }
 
@@ -219,12 +216,10 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        // Move to the home view
-        NavigationHelper().navigate(
-            this.navController,
-            this.navHostFragment.childFragmentManager.primaryNavigationFragment,
-            R.id.companies_fragment
-        )
+        // Move to the home view if allowed
+        if (model.isDeviceSecured) {
+            this.navigationHelper.navigateTo(R.id.companies_fragment)
+        }
 
         // If there is an error loading data from the API then force a reload
         if (model.authenticator!!.isLoggedIn() && !model.isDataLoaded) {
@@ -247,6 +242,7 @@ class MainActivity : AppCompatActivity() {
 
                 // Start the redirect
                 model.authenticator!!.startLogin(that, Constants.LOGIN_REDIRECT_REQUEST_CODE)
+
             } catch (ex: Throwable) {
 
                 // Report errors such as those looking up endpoints
@@ -278,13 +274,17 @@ class MainActivity : AppCompatActivity() {
                     // Reload data after logging in
                     that.onReloadData(false)
                 }
+
             } catch (ex: Throwable) {
 
                 // Report errors such as those processing the authorization code grant
                 withContext(Dispatchers.Main) {
                     that.handleException(ex)
                 }
+
             } finally {
+
+                // Allow deep links again, once the activity is topmost
                 model.isTopMost = false
             }
         }
@@ -301,6 +301,7 @@ class MainActivity : AppCompatActivity() {
             // Trigger the logout process, which will remove tokens and redirect to clear the OAuth session cookie
             model.isTopMost = false
             model.authenticator!!.startLogout(this, Constants.LOGOUT_REDIRECT_REQUEST_CODE)
+
         } catch (ex: Throwable) {
 
             // Report errors such as those looking up endpoints
@@ -323,10 +324,7 @@ class MainActivity : AppCompatActivity() {
         model.isTopMost = false
 
         // Move to the login required page
-        NavigationHelper().navigate(
-            this.navController,
-            this.navHostFragment.childFragmentManager.primaryNavigationFragment,
-            R.id.login_required_fragment)
+        this.navigationHelper.navigateTo(R.id.login_required_fragment)
 
         // Send an event to fragments
         EventBus.getDefault().post(UnloadEvent())
@@ -340,16 +338,6 @@ class MainActivity : AppCompatActivity() {
         val model = this.binding.model!!
         model.viewManager.setViewCount(2)
         EventBus.getDefault().post(ReloadEvent(causeError))
-    }
-
-    /*
-     * Indicate whether in the login required view
-     */
-    private fun isInLoginRequired(): Boolean {
-
-        val currentFragmentId =
-            NavHostFragment.findNavController(this.navHostFragment).currentDestination?.id
-        return currentFragmentId == R.id.login_required_fragment
     }
 
     /*
@@ -380,10 +368,8 @@ class MainActivity : AppCompatActivity() {
         if (error.errorCode.equals(ErrorCodes.loginCancelled)) {
 
             // If the user has closed the Chrome Custom Tab without logging in, move to the Login Required view
-            NavigationHelper().navigate(
-                this.navController,
-                this.navHostFragment.childFragmentManager.primaryNavigationFragment,
-                R.id.login_required_fragment)
+            this.navigationHelper.navigateTo(R.id.login_required_fragment)
+
         } else {
 
             // Otherwise there is a technical error and we display summary details

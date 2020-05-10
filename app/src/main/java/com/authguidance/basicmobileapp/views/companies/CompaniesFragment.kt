@@ -12,7 +12,7 @@ import com.authguidance.basicmobileapp.api.entities.Company
 import com.authguidance.basicmobileapp.databinding.FragmentCompaniesBinding
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
 import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
-import com.authguidance.basicmobileapp.plumbing.utilities.Constants
+import com.authguidance.basicmobileapp.views.utilities.Constants
 import com.authguidance.basicmobileapp.app.MainActivity
 import com.authguidance.basicmobileapp.views.errors.ErrorSummaryFragment
 import kotlinx.coroutines.CoroutineScope
@@ -111,6 +111,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
                     model.viewManager.onViewLoaded()
                     that.renderData(result)
                 }
+
             } catch (uiError: UIError) {
 
                 // Process errors on the main thread

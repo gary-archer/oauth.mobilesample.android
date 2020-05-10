@@ -57,11 +57,6 @@ android {
     }
 }
 
-// This allows us to use BR as a prefix
-kapt {
-    generateStubs = true
-}
-
 // Dependency versions
 ext {
     nav_version = "2.2.2"

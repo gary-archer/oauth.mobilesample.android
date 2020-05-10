@@ -19,6 +19,7 @@ class PersistentTokenStorage(val context: Context, val encryptionManager: Encryp
      * Load tokens from storage and note that the shared preferences API stores them in memory afterwards
      */
     fun loadTokens(): TokenData? {
+
         synchronized(lock) {
             return this.loadTokenData()
         }
@@ -28,6 +29,7 @@ class PersistentTokenStorage(val context: Context, val encryptionManager: Encryp
      * Save tokens to stored preferences
      */
     fun saveTokens(data: TokenData) {
+
         synchronized(lock) {
             this.saveTokenData(data)
         }
@@ -37,6 +39,7 @@ class PersistentTokenStorage(val context: Context, val encryptionManager: Encryp
      * Remove tokens from storage
      */
     fun removeTokens() {
+
         synchronized(lock) {
             this.tokenStorage.edit().remove(this.key).apply()
         }
@@ -46,6 +49,7 @@ class PersistentTokenStorage(val context: Context, val encryptionManager: Encryp
      * Remove just the access token from storage
      */
     fun clearAccessToken() {
+
         synchronized(lock) {
             val tokenData = loadTokenData()
             if (tokenData != null) {
@@ -59,6 +63,7 @@ class PersistentTokenStorage(val context: Context, val encryptionManager: Encryp
      * A hacky method for testing, to update token storage to make the access token act like it is expired
      */
     fun expireAccessToken() {
+
         synchronized(lock) {
             val tokenData = loadTokenData()
             if (tokenData != null) {
@@ -72,6 +77,7 @@ class PersistentTokenStorage(val context: Context, val encryptionManager: Encryp
      * A hacky method for testing, to update token storage to make the refresh token act like it is expired
      */
     fun expireRefreshToken() {
+
         synchronized(lock) {
             val tokenData = loadTokenData()
             if (tokenData != null) {

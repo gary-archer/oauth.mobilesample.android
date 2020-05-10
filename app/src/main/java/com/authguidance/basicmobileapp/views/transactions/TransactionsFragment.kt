@@ -14,7 +14,7 @@ import com.authguidance.basicmobileapp.api.entities.CompanyTransactions
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
 import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
-import com.authguidance.basicmobileapp.plumbing.utilities.Constants
+import com.authguidance.basicmobileapp.views.utilities.Constants
 import com.authguidance.basicmobileapp.views.errors.ErrorSummaryFragment
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -112,7 +112,6 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
 
             val that = this@TransactionsFragment
             try {
-
                 // Call the API
                 val result = apiClient.getCompanyTransactions(model.companyId, options)
 
@@ -121,6 +120,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
                     model.viewManager.onViewLoaded()
                     that.renderData(result)
                 }
+
             } catch (uiError: UIError) {
 
                 // Process errors on the main thread
@@ -133,6 +133,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
                         val args = Bundle()
                         findNavController().navigate(R.id.companies_fragment, args)
                     }
+
                 } else {
 
                     // Report other errors on the main thread

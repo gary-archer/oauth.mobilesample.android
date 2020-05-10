@@ -307,6 +307,7 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
                         // Resume the in progress operation and also continuations
                         continuation.resume(Unit)
                         this.concurrencyHandler.resume()
+
                     } else {
 
                         // Handle other responses

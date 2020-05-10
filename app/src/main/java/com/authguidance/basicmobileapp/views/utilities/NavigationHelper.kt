@@ -1,10 +1,10 @@
-package com.authguidance.basicmobileapp.plumbing.utilities
+package com.authguidance.basicmobileapp.views.utilities
 
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.views.security.LoginRequiredFragment
 import java.util.Locale
@@ -13,14 +13,16 @@ import java.util.regex.Pattern
 /*
  * A helper class for dealing with navigation and deep linking, including the back stack
  */
-class NavigationHelper {
+class NavigationHelper(val navHostFragment: NavHostFragment) {
 
     /*
      * A utility method to navigate and manage the back stack
      */
-    fun navigate(navController: NavController, activeFragment: Fragment?, fragmentId: Int, args: Bundle? = null) {
-        this.preNavigate(navController, activeFragment)
-        navController.navigate(fragmentId, args)
+    fun navigateTo(fragmentId: Int, args: Bundle? = null) {
+
+        val activeFragment = this.navHostFragment.childFragmentManager.primaryNavigationFragment
+        this.preNavigate(activeFragment)
+        this.navHostFragment.navController.navigate(fragmentId, args)
     }
 
     /*
@@ -33,12 +35,13 @@ class NavigationHelper {
     /*
      * Given a deep linking intent, navigate to it and return true on success
      */
-    fun navigateToDeepLink(intent: Intent?, navController: NavController, activeFragment: Fragment?): Boolean {
+    fun navigateToDeepLink(intent: Intent?): Boolean {
 
         if (intent != null) {
             val url = this.getDeepLinkUrl(intent)
             if (url != null) {
-                if (this.doNavigate(url, navController, activeFragment)) {
+                val activeFragment = this.navHostFragment.childFragmentManager.primaryNavigationFragment
+                if (this.deepLinkDoNavigate(url, activeFragment)) {
                     return true
                 }
             }
@@ -67,10 +70,19 @@ class NavigationHelper {
     }
 
     /*
+     * Some operations are disabled in this view
+     */
+    fun isInLoginRequired(): Boolean {
+
+        val currentFragmentId = NavHostFragment.findNavController(this.navHostFragment).currentDestination?.id
+        return currentFragmentId == R.id.login_required_fragment
+    }
+
+    /*
      * Navigate to a deep linking URL such as 'https://authguidance-examples.com#company=2'
      * Our example is simplistic since we only have a couple of screens
      */
-    private fun doNavigate(url: String, navController: NavController, activeFragment: Fragment?): Boolean {
+    private fun deepLinkDoNavigate(url: String, activeFragment: Fragment?): Boolean {
 
         var id: Int? = null
         var args: Bundle? = null
@@ -99,8 +111,8 @@ class NavigationHelper {
 
         // Navigate if required
         if (id != null) {
-            this.preNavigate(navController, activeFragment)
-            navController.navigate(id, args)
+            this.preNavigate(activeFragment)
+            this.navHostFragment.navController.navigate(id, args)
             return true
         }
 
@@ -126,10 +138,10 @@ class NavigationHelper {
      * When navigating from the below pages, remove them from the back stack first
      * Note that the active fragment is null at application startup, when the blank fragment has not been rendered yet
      */
-    private fun preNavigate(navController: NavController, activeFragment: Fragment?) {
+    private fun preNavigate(activeFragment: Fragment?) {
 
         if (activeFragment == null || activeFragment is LoginRequiredFragment) {
-            navController.popBackStack()
+            this.navHostFragment.navController.popBackStack()
         }
     }
 }

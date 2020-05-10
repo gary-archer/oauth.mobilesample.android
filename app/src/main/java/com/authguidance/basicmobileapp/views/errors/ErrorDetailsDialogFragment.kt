@@ -3,7 +3,7 @@ package com.authguidance.basicmobileapp.views.errors
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
-import com.authguidance.basicmobileapp.plumbing.utilities.Constants
+import com.authguidance.basicmobileapp.views.utilities.Constants
 import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.view.View

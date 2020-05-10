@@ -26,11 +26,10 @@
 
     <!-- Button style for the Open System Settings button -->
     <style name="ButtonSecureDeviceStyle" parent="android:Widget.Button">
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_weight">1</item>
+        <item name="android:layout_width">400dp</item>
         <item name="android:layout_height">match_parent</item>
-        <item name="android:layout_marginLeft">2dp</item>
-        <item name="android:layout_marginRight">2dp</item>
+        <item name="android:layout_marginLeft">20dp</item>
+        <item name="android:layout_marginRight">20dp</item>
         <item name="android:minHeight">80dp</item>
         <item name="android:textSize">24sp</item>
         <item name="android:backgroundTint">@color/text_pale_green</item>

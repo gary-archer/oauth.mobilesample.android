@@ -5,7 +5,7 @@ import com.authguidance.basicmobileapp.api.client.ApiClient
 import com.authguidance.basicmobileapp.configuration.Configuration
 import com.authguidance.basicmobileapp.configuration.ConfigurationLoader
 import com.authguidance.basicmobileapp.plumbing.oauth.AuthenticatorImpl
-import com.authguidance.basicmobileapp.plumbing.utilities.DeviceSecurity
+import com.authguidance.basicmobileapp.views.utilities.DeviceSecurity
 import com.authguidance.basicmobileapp.views.utilities.ViewManager
 
 /*
@@ -47,7 +47,7 @@ class MainActivityViewModel(
 
         // Reset state flags
         this.isInitialised = false
-        this.isDeviceSecured = false // DeviceSecurity.isDeviceSecured(context)
+        this.isDeviceSecured = DeviceSecurity.isDeviceSecured(context)
         this.isDataLoaded = false
         this.isTopMost = true
 
