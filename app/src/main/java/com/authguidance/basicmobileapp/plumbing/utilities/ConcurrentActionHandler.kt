@@ -1,5 +1,6 @@
 package com.authguidance.basicmobileapp.plumbing.utilities
 
+import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -10,6 +11,8 @@ private typealias ErrorCallback = (ex: Throwable) -> Unit
 
 /*
  * Used when multiple UI fragments attempt an action that needs to be synchronised
+ * We have to write the copde a little differently to our React / SwiftUI samples to avoid this compiler error:
+ *   'Suspension functions can only be called within coroutine body'
  */
 class ConcurrentActionHandler {
 
@@ -17,33 +20,35 @@ class ConcurrentActionHandler {
     @Volatile
     private var actionInProgress = false
 
-    // The collection of callbacks
-    private val callbacks = ArrayList<Pair<SuccessCallback, ErrorCallback>>()
+    // A concurrent collection of callbacks
+    private val callbacks = CopyOnWriteArrayList(
+        ArrayList<Pair<SuccessCallback, ErrorCallback>>().toList())
 
-    // An object to synchronise access to the collection
+    // A lock object for multiple statements
     private val lock = Object()
 
     /*
-     * Start the concurrent action
+     * Start the concurrent action once only
      */
     fun start(): Boolean {
 
-        if (this.actionInProgress) {
-            return false
+        synchronized (this.lock) {
+            if (!this.actionInProgress) {
+                this.actionInProgress = true
+                return true
+            }
         }
 
-        this.actionInProgress = true
-        return true
+        return false
     }
 
     /*
      * The first UI fragment does a refresh action and other UI fragments wait on a continuation
      */
-    suspend fun createContinuation() {
+    suspend fun addContinuation() {
 
         return suspendCoroutine { continuation ->
 
-            // Define callbacks through which to return the result
             val onSuccess = {
                 continuation.resume(Unit)
             }
@@ -52,9 +57,7 @@ class ConcurrentActionHandler {
                 continuation.resumeWithException(exception)
             }
 
-            synchronized(this.lock) {
-                this.callbacks.add(Pair(onSuccess, onError))
-            }
+            this.callbacks.add(Pair(onSuccess, onError))
         }
     }
 
@@ -63,7 +66,7 @@ class ConcurrentActionHandler {
      */
     fun resume() {
 
-        synchronized(this.lock) {
+        synchronized (this.lock) {
             this.callbacks.forEach {
                 it.first()
             }
@@ -78,7 +81,7 @@ class ConcurrentActionHandler {
      */
     fun resumeWithException(ex: Throwable) {
 
-        synchronized(this.lock) {
+        synchronized (this.lock) {
             this.callbacks.forEach {
                 it.second(ex)
             }

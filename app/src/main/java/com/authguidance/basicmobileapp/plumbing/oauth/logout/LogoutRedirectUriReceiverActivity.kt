@@ -4,7 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import com.authguidance.basicmobileapp.app.MainActivity
-import com.authguidance.basicmobileapp.plumbing.utilities.Constants
+import com.authguidance.basicmobileapp.views.utilities.Constants
 
 /*
  * A simple class similar to AppAuth's RedirectUriReceiverActivity, for handling responses after the logout redirect to remove the session cookie

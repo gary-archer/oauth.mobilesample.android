@@ -9,8 +9,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        tools:context=".views.fragments.LoginRequiredFragment"
-        android:padding="20dp">
+        tools:context=".views.security.LoginRequiredFragment"
+        android:padding="10dp">
 
         <TextView
             android:layout_width="match_parent"

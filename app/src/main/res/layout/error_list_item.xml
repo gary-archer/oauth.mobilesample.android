@@ -1,35 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:orientation="vertical"
-              android:padding="15dp">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <!-- Makes model a property of this type on the fragment's binding object -->
+        <variable name="model" type="com.authguidance.basicmobileapp.views.errors.ErrorListItemViewModel" />
+    </data>
 
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="vertical"
+                  android:padding="15dp">
 
-        <TextView
-                android:id="@+id/errorField"
-                android:layout_weight="1"
-                android:layout_width="0dp"
+        <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                style="@style/TextViewLabelStyle"/>
+                android:orientation="horizontal">
 
-        <TextView
-                android:id="@+id/errorValue"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                style="@style/TextViewValueStyle"/>
+            <TextView
+                    android:id="@+id/error_field"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@{model.line.name}"
+                    style="@style/TextViewLabelStyle"/>
+
+            <TextView
+                    android:id="@+id/error_value"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@{model.line.value}"
+                    android:textColor="@{model.valueTextColor}"
+                    style="@style/TextViewValueStyle"/>
+        </LinearLayout>
+
+        <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/divider"
+                android:layout_marginTop="10dp"/>
+
     </LinearLayout>
-
-    <View
-            android:id="@+id/divider"
-            android:layout_width="match_parent"
-            android:layout_height="1px"
-            android:background="@color/divider"
-            android:layout_marginTop="10dp"/>
-
-</LinearLayout>
+</layout>

@@ -7,10 +7,9 @@ import android.net.Uri
 import com.authguidance.basicmobileapp.configuration.OAuthConfiguration
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorHandler
-import com.authguidance.basicmobileapp.plumbing.errors.UIError
-import com.authguidance.basicmobileapp.plumbing.oauth.logout.CognitoLogoutManager
-import com.authguidance.basicmobileapp.plumbing.oauth.logout.LogoutManager
-import com.authguidance.basicmobileapp.plumbing.oauth.logout.OktaLogoutManager
+import com.authguidance.basicmobileapp.plumbing.oauth.logout.CognitoLogoutUrlBuilder
+import com.authguidance.basicmobileapp.plumbing.oauth.logout.LogoutUrlBuilder
+import com.authguidance.basicmobileapp.plumbing.oauth.logout.OktaLogoutUrlBuilder
 import com.authguidance.basicmobileapp.plumbing.utilities.ConcurrentActionHandler
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
@@ -35,8 +34,8 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
 
     private val tokenStorage: PersistentTokenStorage
     private val concurrencyHandler: ConcurrentActionHandler
-    private val logoutManager: LogoutManager
     private var loginAuthService: AuthorizationService? = null
+    private var logoutAuthService: AuthorizationService? = null
 
     /*
      * We will store encrypted tokens in shared preferences, but only if the device is secured
@@ -48,9 +47,6 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
 
         // Tokens are encrypted and persisted across app restarts
         this.tokenStorage = PersistentTokenStorage(this.applicationContext, EncryptionManager(this.applicationContext))
-
-        // Create an object to manage logout
-        this.logoutManager = this.createLogoutManager()
     }
 
     /*
@@ -76,8 +72,16 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
         val refreshToken = this.tokenStorage.loadTokens()?.refreshToken
         if (!refreshToken.isNullOrBlank()) {
 
-            // Send the refresh token grant message
-            this.performRefreshTokenGrant()
+            // Manage concurrency when there are multiple UI fragments calling APIs and getting a 401
+            if (this.concurrencyHandler.start()) {
+
+                // Do the work for the first caller only
+                this.performRefreshTokenGrant()
+            } else {
+
+                // If already in progress we'll add a continuation that waits on the in progress operation
+                this.concurrencyHandler.addContinuation()
+            }
 
             // Return the token on success
             val accessToken = this.tokenStorage.loadTokens()?.accessToken
@@ -114,21 +118,27 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
     /*
      * Remove local state and start the logout redirect to remove the OAuth session cookie
      */
-    override fun startLogout(activity: Activity, completionCode: Int) {
+    override suspend fun startLogout(activity: Activity, completionCode: Int) {
 
-        // First remove locally stored tokens
-        val idToken = this.tokenStorage.loadTokens()?.idToken
+        // First force removal of tokens from storage
+        val tokens = this.tokenStorage.loadTokens()
+        val idToken = tokens?.idToken
         this.tokenStorage.removeTokens()
 
-        // Next do the logout on the system browser
-        this.logoutManager.startLogout(activity, idToken, completionCode)
+        // Do the logout redirect to remove the Authorization Server session cookie
+        this.performLogoutRedirect(idToken, activity, completionCode)
     }
 
     /*
-     * Free resources after a successful logout
+     * Free resources after a logout
+     * https://github.com/openid/AppAuth-Android/issues/91
      */
     override fun finishLogout() {
-        this.logoutManager.finishLogout()
+
+        if (this.logoutAuthService != null) {
+            this.logoutAuthService?.customTabManager?.dispose()
+            this.logoutAuthService = null
+        }
     }
 
     /*
@@ -164,10 +174,10 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
                         // Report errors
                         ex != null -> continuation.resumeWithException(ex)
 
-                        // Report null results
+                        // Sanity check
                         serviceConfiguration == null -> {
-                            val empty = RuntimeException("Metadata request returned an empty response")
-                            continuation.resumeWithException(empty)
+                            val error = RuntimeException("Metadata request returned an empty response")
+                            continuation.resumeWithException(error)
                         }
 
                         // Return metadata on success
@@ -185,24 +195,31 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
      */
     private suspend fun performLoginRedirect(activity: Activity, completionCode: Int) {
 
-        val authService = AuthorizationService(activity)
-        this.loginAuthService = authService
+        try {
 
-        // First get metadata
-        val metadata = this.getMetadata()
+            val authService = AuthorizationService(activity)
+            this.loginAuthService = authService
 
-        // Create the AppAuth request object and use the standard mobile value of 'response_type=code'
-        val request = AuthorizationRequest.Builder(
-            metadata,
-            this.configuration.clientId,
-            ResponseTypeValues.CODE,
-            Uri.parse(this.configuration.redirectUri))
+            // First get metadata
+            val metadata = this.getMetadata()
+
+            // Create the AppAuth request object and use the standard mobile value of 'response_type=code'
+            val request = AuthorizationRequest.Builder(
+                metadata,
+                this.configuration.clientId,
+                ResponseTypeValues.CODE,
+                Uri.parse(this.configuration.redirectUri)
+            )
                 .setScope(this.configuration.scope)
                 .build()
 
-        // Do the AppAuth redirect
-        val authIntent = authService.getAuthorizationRequestIntent(request)
-        activity.startActivityForResult(authIntent, completionCode)
+            // Do the AppAuth redirect
+            val authIntent = authService.getAuthorizationRequestIntent(request)
+            activity.startActivityForResult(authIntent, completionCode)
+
+        } catch(ex: Throwable) {
+            throw ErrorHandler().fromLoginRequestError(ex, ErrorCodes.loginRequestFailed)
+        }
     }
 
     /*
@@ -224,13 +241,13 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
 
                 // Handle the case where the user closes the Chrome Custom Tab rather than logging in
                 if (ex.type == AuthorizationException.TYPE_GENERAL_ERROR &&
-                    ex.code == AuthorizationException.GeneralErrors.USER_CANCELED_AUTH_FLOW.code) {
+                    ex.code.equals(AuthorizationException.GeneralErrors.USER_CANCELED_AUTH_FLOW.code)) {
 
                     throw ErrorHandler().fromLoginCancelled()
                 }
 
                 // Translate AppAuth errors to the display format
-                throw ErrorHandler().fromAppAuthError(ex, ErrorCodes.loginResponseFailed)
+                throw ErrorHandler().fromLoginResponseError(ex, ErrorCodes.loginResponseFailed)
             }
             authorizationResponse != null -> {
 
@@ -252,11 +269,24 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
             val callback =
                 AuthorizationService.TokenResponseCallback { tokenResponse, ex ->
 
-                    val result = this.handleTokenResponse(tokenResponse, ex, ErrorCodes.authorizationCodeGrantFailed)
-                    if (result.first != null) {
-                        continuation.resume(Unit)
-                    } else {
-                        continuation.resumeWithException(result.second!!)
+                    when {
+                        // Translate AppAuth errors to the display format
+                        ex != null -> {
+                            val error = ErrorHandler().fromTokenError(ex, ErrorCodes.authorizationCodeGrantFailed)
+                            continuation.resumeWithException(error)
+                        }
+
+                        // Sanity check
+                        tokenResponse == null -> {
+                            val empty = RuntimeException("Authorization code grant returned an empty response")
+                            continuation.resumeWithException(empty)
+                        }
+
+                        // Process the response by saving tokens to secure storage
+                        else -> {
+                            this.saveTokens(tokenResponse)
+                            continuation.resume(Unit)
+                        }
                     }
                 }
 
@@ -280,47 +310,51 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
             return
         }
 
-        // If already in progress we'll return a continuation that waits on the in progress operation
-        if (!this.concurrencyHandler.start()) {
-            return concurrencyHandler.createContinuation()
-        }
-
         // First get metadata
         val metadata = getMetadata()
 
         // Wrap the request in a coroutine
         return suspendCoroutine { continuation ->
 
-            // First clear the existing access token from storage
-            this.tokenStorage.clearAccessToken()
-
             // Define a callback to handle the result of the refresh token grant
             val callback =
                 AuthorizationService.TokenResponseCallback { tokenResponse, ex ->
 
-                    // If we get an invalid_grant error it means the refresh token has expired
-                    if (ex != null &&
-                        ex.type == AuthorizationException.TYPE_OAUTH_TOKEN_ERROR &&
-                        ex.code == AuthorizationException.TokenRequestErrors.INVALID_GRANT.code
-                    ) {
+                    when {
+                        // Translate AppAuth errors to the display format
+                        ex != null -> {
 
-                        // Resume the in progress operation and also continuations
-                        continuation.resume(Unit)
-                        this.concurrencyHandler.resume()
-                    } else {
+                            // If we get an invalid_grant error it means the refresh token has expired
+                            if (ex.type == AuthorizationException.TYPE_OAUTH_TOKEN_ERROR &&
+                                ex.code.equals(AuthorizationException.TokenRequestErrors.INVALID_GRANT.code)
+                            ) {
+                                // Remove tokens and indicate success, since this is an expected error
+                                // The caller will throw a login required error to redirect the user to login again
+                                this.tokenStorage.removeTokens()
+                                continuation.resume(Unit)
+                                this.concurrencyHandler.resume()
 
-                        // Handle other responses
-                        val result = this.handleTokenResponse(tokenResponse, ex, ErrorCodes.refreshTokenGrantFailed)
-                        if (result.first != null) {
+                            } else {
 
-                            // Resume the in progress operation and also continuations with success
+                                // Process real errors
+                                val error = ErrorHandler().fromTokenError(ex, ErrorCodes.tokenRenewalError)
+                                continuation.resumeWithException(error)
+                                this.concurrencyHandler.resumeWithException(error)
+                            }
+                        }
+
+                        // Sanity check
+                        tokenResponse == null -> {
+                            val error = RuntimeException("Refresh token grant returned an empty response")
+                            continuation.resumeWithException(error)
+                            this.concurrencyHandler.resumeWithException(error)
+                        }
+
+                        // Process the response by saving tokens to secure storage
+                        else -> {
+                            this.saveTokens(tokenResponse)
                             continuation.resume(Unit)
                             this.concurrencyHandler.resume()
-                        } else {
-
-                            // Resume the in progress operation and also continuations with an error
-                            continuation.resumeWithException(result.second!!)
-                            this.concurrencyHandler.resumeWithException(result.second!!)
                         }
                     }
                 }
@@ -341,69 +375,80 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
     }
 
     /*
-     * Common handling of token responses, for authorization code grant and refresh token messages
+     * Perform a logout redirect in an equivalent manner to how AppAuth libraries perform the login redirect
      */
-    private fun handleTokenResponse(
-        tokenResponse: TokenResponse?,
-        ex: AuthorizationException?,
-        operationName: String
-    ): Pair<Unit?, UIError?> {
+    private suspend fun performLogoutRedirect(idToken: String?, activity: Activity, completionCode: Int) {
 
-        when {
-            ex != null -> {
+        try {
+            // Fail if there is no id token
+            if (idToken == null) {
 
-                // Translate AppAuth errors to the display format
-                val error = ErrorHandler().fromAppAuthError(ex, operationName)
-                return Pair(null, error)
+                val message = "Logout is not possible because tokens have already been removed"
+                throw RuntimeException(message)
             }
-            else -> {
 
-                // Update our data
-                if (tokenResponse != null) {
+            // First get metadata
+            val metadata = getMetadata()
 
-                    // Create token data from the response
-                    val tokenData = TokenData()
-                    tokenData.accessToken = tokenResponse.accessToken
-                    tokenData.refreshToken = tokenResponse.refreshToken
-                    tokenData.idToken = tokenResponse.idToken
+            // Create an object to manage logout and use it to form the end session request
+            val logoutUrlBuilder = this.createLogoutUrlBuilder()
+            val logoutUrl = logoutUrlBuilder.getEndSessionRequestUrl(metadata, idToken)
 
-                    // The response may have blank values for these tokens
-                    if (tokenData.refreshToken.isNullOrBlank() || tokenData.idToken.isNullOrBlank()) {
+            // Create and start a logout intent on a Chrome Custom tab
+            val authService = AuthorizationService(activity)
+            val customTabsIntent = authService.customTabManager.createTabBuilder().build()
+            val logoutIntent = customTabsIntent.intent
+            logoutIntent.setPackage(authService.browserDescriptor.packageName)
+            logoutIntent.data = Uri.parse(logoutUrl)
+            activity.startActivityForResult(logoutIntent, completionCode)
 
-                        // See if there is any old data
-                        val oldTokenData = this.tokenStorage.loadTokens()
-                        if (oldTokenData != null) {
-
-                            // Maintain the existing refresh token unless we received a new 'rolling' refresh token
-                            if (tokenData.refreshToken.isNullOrBlank()) {
-                                tokenData.refreshToken = oldTokenData.refreshToken
-                            }
-
-                            // Maintain the existing id token if required, which may be needed for logout
-                            if (tokenData.idToken.isNullOrBlank()) {
-                                tokenData.idToken = oldTokenData.idToken
-                            }
-                        }
-                    }
-
-                    this.tokenStorage.saveTokens(tokenData)
-                }
-
-                // Resume processing
-                return Pair(Unit, null)
-            }
+        } catch(ex: Throwable) {
+            throw ErrorHandler().fromLogoutRequestError(ex)
         }
     }
 
     /*
-     * Return the logout manager depending on which of our 2 providers we are using, which have different implementations
+     * Common handling of token responses, for authorization code grant and refresh token messages
      */
-    private fun createLogoutManager(): LogoutManager {
+    private fun saveTokens(tokenResponse: TokenResponse) {
+
+        // Create token data from the response
+        val tokenData = TokenData()
+        tokenData.accessToken = tokenResponse.accessToken
+        tokenData.refreshToken = tokenResponse.refreshToken
+        tokenData.idToken = tokenResponse.idToken
+
+        // The response may have blank values for these tokens
+        if (tokenData.refreshToken.isNullOrBlank() || tokenData.idToken.isNullOrBlank()) {
+
+            // See if there is any existing token data
+            val oldTokenData = this.tokenStorage.loadTokens()
+            if (oldTokenData != null) {
+
+                // Maintain the existing refresh token unless we received a new 'rolling' refresh token
+                if (tokenData.refreshToken.isNullOrBlank()) {
+                    tokenData.refreshToken = oldTokenData.refreshToken
+                }
+
+                // Maintain the existing id token if required, which may be needed for logout
+                if (tokenData.idToken.isNullOrBlank()) {
+                    tokenData.idToken = oldTokenData.idToken
+                }
+            }
+        }
+
+        this.tokenStorage.saveTokens(tokenData)
+    }
+
+    /*
+     * Return a builder object depending on which of our 2 providers we are using, which have different implementations
+     */
+    private fun createLogoutUrlBuilder(): LogoutUrlBuilder {
 
         if (this.configuration.authority.toLowerCase(Locale.ROOT).contains("cognito")) {
-            return CognitoLogoutManager(this.configuration)
+            return CognitoLogoutUrlBuilder(this.configuration)
         } else {
-            return OktaLogoutManager(this.configuration)
+            return OktaLogoutUrlBuilder(this.configuration)
         }
     }
 }

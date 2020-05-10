@@ -45,9 +45,9 @@ class ApiClient(
     /*
      * Download user info from the API so that we can get any data we need
      */
-    suspend fun getUserInfo(): UserInfoClaims {
+    suspend fun getUserInfo(options: ApiRequestOptions? = null): UserInfoClaims {
 
-        val response = this.callApi("userclaims/current", "GET", null)
+        val response = this.callApi("userclaims/current", "GET", null, options)
         return this.readResponseBody(response, UserInfoClaims::class.java)
     }
 
