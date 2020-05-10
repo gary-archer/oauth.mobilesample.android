@@ -24,7 +24,7 @@ object ErrorCodes {
     const val tokenRenewalError = "token_renewal_error"
 
     // An error starting a logout request, such as contacting the metadata endpoint
-    const val logoutRequestFailed = "logout_response_failed"
+    const val logoutRequestFailed = "logout_request_failed"
 
     // A general exception in the UI
     const val generalUIError = "ui_error"

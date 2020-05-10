@@ -322,7 +322,9 @@ class MainActivity : AppCompatActivity() {
 
                     // On error, only output logout errors to the console rather than impacting the end user
                     val uiError = ErrorHandler().fromException(ex)
-                    ErrorConsoleReporter.output(uiError, that)
+                    if (!uiError.errorCode.equals(ErrorCodes.loginCancelled)) {
+                        ErrorConsoleReporter.output(uiError, that)
+                    }
 
                     // Move to the login required view and update UI state
                     that.onFinishLogout()
