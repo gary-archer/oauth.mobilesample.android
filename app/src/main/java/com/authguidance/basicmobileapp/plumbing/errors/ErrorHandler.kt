@@ -43,11 +43,11 @@ class ErrorHandler {
     /*
      * Return an error to indicate that the Chrome custom tab window was closed
      */
-    fun fromLoginCancelled(): UIError {
+    fun fromRedirectCancelled(): UIError {
 
         return UIError(
-            "Login",
-            ErrorCodes.loginCancelled,
+            "Redirect",
+            ErrorCodes.redirectCancelled,
             "The login request was cancelled")
     }
 
@@ -55,6 +55,11 @@ class ErrorHandler {
      * Handle errors triggering login requests
      */
     fun fromLoginRequestError(ex: Throwable, errorCode: String): UIError {
+
+        // Already handled
+        if (ex is UIError) {
+            return ex
+        }
 
         val error = UIError(
             "Login",
@@ -76,6 +81,11 @@ class ErrorHandler {
      */
     fun fromLoginResponseError(ex: Throwable, errorCode: String): UIError {
 
+        // Already handled
+        if (ex is UIError) {
+            return ex
+        }
+
         val error = UIError(
             "Login",
             errorCode,
@@ -96,6 +106,11 @@ class ErrorHandler {
      */
     fun fromLogoutRequestError(ex: Throwable): UIError {
 
+        // Already handled
+        if (ex is UIError) {
+            return ex
+        }
+
         val error = UIError(
             "Logout",
             ErrorCodes.logoutRequestFailed,
@@ -109,6 +124,11 @@ class ErrorHandler {
      * Handle errors from the token endpoint
      */
     fun fromTokenError(ex: Throwable, errorCode: String): UIError {
+
+        // Already handled
+        if (ex is UIError) {
+            return ex
+        }
 
         val error = UIError(
             "Token",

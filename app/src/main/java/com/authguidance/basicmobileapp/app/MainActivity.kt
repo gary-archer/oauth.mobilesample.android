@@ -279,9 +279,8 @@ class MainActivity : AppCompatActivity() {
                 // Handle completion after login success, which will exchange the authorization code for tokens
                 model.authenticator!!.finishLogin(loginResponseIntent)
 
+                // Reload data after logging in
                 withContext(Dispatchers.Main) {
-
-                    // Reload data after logging in
                     that.onReloadData(false)
                 }
 
@@ -322,7 +321,7 @@ class MainActivity : AppCompatActivity() {
 
                     // On error, only output logout errors to the console rather than impacting the end user
                     val uiError = ErrorHandler().fromException(ex)
-                    if (!uiError.errorCode.equals(ErrorCodes.loginCancelled)) {
+                    if (!uiError.errorCode.equals(ErrorCodes.redirectCancelled)) {
                         ErrorConsoleReporter.output(uiError, that)
                     }
 
@@ -388,7 +387,7 @@ class MainActivity : AppCompatActivity() {
         val handler = ErrorHandler()
         val error = handler.fromException(exception)
 
-        if (error.errorCode.equals(ErrorCodes.loginCancelled)) {
+        if (error.errorCode.equals(ErrorCodes.redirectCancelled)) {
 
             // If the user has closed the Chrome Custom Tab without logging in, move to the Login Required view
             this.navigationHelper.navigateTo(R.id.login_required_fragment)

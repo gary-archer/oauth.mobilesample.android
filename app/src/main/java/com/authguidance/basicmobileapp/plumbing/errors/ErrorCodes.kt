@@ -9,7 +9,7 @@ object ErrorCodes {
     const val loginRequired = "login_required"
 
     // Used to indicate that the Chrome Custom Tab was cancelled
-    const val loginCancelled = "login_cancelled"
+    const val redirectCancelled = "redirect_cancelled"
 
     // A technical error starting a login request, such as contacting the metadata endpoint
     const val loginRequestFailed = "login_request_failed"

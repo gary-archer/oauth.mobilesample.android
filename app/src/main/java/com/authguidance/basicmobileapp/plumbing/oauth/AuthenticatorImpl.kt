@@ -243,7 +243,7 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
                 if (ex.type == AuthorizationException.TYPE_GENERAL_ERROR &&
                     ex.code.equals(AuthorizationException.GeneralErrors.USER_CANCELED_AUTH_FLOW.code)) {
 
-                    throw ErrorHandler().fromLoginCancelled()
+                    throw ErrorHandler().fromRedirectCancelled()
                 }
 
                 // Translate AppAuth errors to the display format
