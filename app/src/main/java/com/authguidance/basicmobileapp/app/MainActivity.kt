@@ -1,5 +1,6 @@
 package com.authguidance.basicmobileapp.app
 
+import android.app.admin.DevicePolicyManager
 import android.content.Intent
 import androidx.databinding.DataBindingUtil
 import android.os.Bundle
@@ -54,7 +55,7 @@ class MainActivity : AppCompatActivity() {
 
         // Initialise the navigation system
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        this.navigationHelper = NavigationHelper(navHostFragment)
+        this.navigationHelper = NavigationHelper(navHostFragment, {model.isDeviceSecured})
 
         // Finally, do the main application load
         this.initialiseApp()
@@ -149,9 +150,9 @@ class MainActivity : AppCompatActivity() {
 
         // Handle login responses and reset state
         if (requestCode == Constants.LOGIN_REDIRECT_REQUEST_CODE) {
-            if (data != null) {
 
-                model.isTopMost = true
+            model.isTopMost = true
+            if (data != null) {
                 this.onFinishLogin(data)
             }
         }
@@ -166,8 +167,8 @@ class MainActivity : AppCompatActivity() {
         // Handle returning from the lock screen
         else if (requestCode == Constants.SET_LOCK_SCREEN_REQUEST_CODE) {
 
-            model.isDeviceSecured = DeviceSecurity.isDeviceSecured(this)
             model.isTopMost = true
+            model.isDeviceSecured = DeviceSecurity.isDeviceSecured(this)
             this.navigateStart()
         }
     }
@@ -182,6 +183,16 @@ class MainActivity : AppCompatActivity() {
         if (this.navigationHelper.isDeepLinkIntent(receivedIntent)) {
             this.navigationHelper.navigateToDeepLink(receivedIntent)
         }
+    }
+
+    /*
+     * Called from the device not secured fragment to prompt the user to set a PIN or password
+     */
+    fun openLockScreenSettings() {
+
+        val intent = Intent(DevicePolicyManager.ACTION_SET_NEW_PASSWORD)
+        this.startActivityForResult(intent, Constants.SET_LOCK_SCREEN_REQUEST_CODE)
+        this.binding.model!!.isTopMost = false
     }
 
     /*
@@ -286,7 +297,7 @@ class MainActivity : AppCompatActivity() {
             } finally {
 
                 // Allow deep links again, once the activity is topmost
-                model.isTopMost = false
+                model.isTopMost = true
             }
         }
     }
@@ -313,7 +324,7 @@ class MainActivity : AppCompatActivity() {
 
                     // On error, only output logout errors to the console rather than impacting the end user
                     val uiError = ErrorHandler().fromException(ex)
-                    ErrorConsoleReporter().output(uiError, that)
+                    ErrorConsoleReporter.output(uiError, that)
 
                     // Move to the login required view and update UI state
                     that.onFinishLogout()
@@ -333,7 +344,7 @@ class MainActivity : AppCompatActivity() {
 
         // Update state
         this.onLoadStateChanged(false)
-        model.isTopMost = false
+        model.isTopMost = true
 
         // Move to the login required page
         this.navigationHelper.navigateTo(R.id.login_required_fragment)

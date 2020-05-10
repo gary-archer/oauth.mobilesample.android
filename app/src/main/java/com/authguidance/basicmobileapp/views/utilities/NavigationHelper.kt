@@ -13,7 +13,10 @@ import java.util.regex.Pattern
 /*
  * A helper class for dealing with navigation and deep linking, including the back stack
  */
-class NavigationHelper(val navHostFragment: NavHostFragment) {
+class NavigationHelper(
+    val navHostFragment: NavHostFragment,
+    val isDeviceSecuredAccessor: () -> Boolean
+) {
 
     /*
      * A utility method to navigate and manage the back stack
@@ -21,8 +24,9 @@ class NavigationHelper(val navHostFragment: NavHostFragment) {
     fun navigateTo(fragmentId: Int, args: Bundle? = null) {
 
         val activeFragment = this.navHostFragment.childFragmentManager.primaryNavigationFragment
-        this.preNavigate(activeFragment)
-        this.navHostFragment.navController.navigate(fragmentId, args)
+        if (this.preNavigate(activeFragment, fragmentId)) {
+            this.navHostFragment.navController.navigate(fragmentId, args)
+        }
     }
 
     /*
@@ -84,7 +88,7 @@ class NavigationHelper(val navHostFragment: NavHostFragment) {
      */
     private fun deepLinkDoNavigate(url: String, activeFragment: Fragment?): Boolean {
 
-        var id: Int? = null
+        var newFragmentId: Int? = null
         var args: Bundle? = null
 
         // Check for our deep linking URL
@@ -92,7 +96,7 @@ class NavigationHelper(val navHostFragment: NavHostFragment) {
         if (urlData.host?.toLowerCase(Locale.ROOT).equals("authguidance-examples.com")) {
 
             // The default action is to move to the company list
-            id = R.id.companies_fragment
+            newFragmentId = R.id.companies_fragment
 
             // Check for a hash fragment
             val hash = urlData.fragment
@@ -102,7 +106,7 @@ class NavigationHelper(val navHostFragment: NavHostFragment) {
                 val companyId = this.getDeepLinkedCompanyId(hash)
                 if (companyId != null) {
 
-                    id = R.id.transactions_fragment
+                    newFragmentId = R.id.transactions_fragment
                     args = Bundle()
                     args.putString(Constants.ARG_COMPANY_ID, companyId)
                 }
@@ -110,9 +114,10 @@ class NavigationHelper(val navHostFragment: NavHostFragment) {
         }
 
         // Navigate if required
-        if (id != null) {
-            this.preNavigate(activeFragment)
-            this.navHostFragment.navController.navigate(id, args)
+        if (newFragmentId != null) {
+            if (this.preNavigate(activeFragment, newFragmentId)) {
+                this.navHostFragment.navController.navigate(newFragmentId, args)
+            }
             return true
         }
 
@@ -135,13 +140,21 @@ class NavigationHelper(val navHostFragment: NavHostFragment) {
     }
 
     /*
-     * When navigating from the below pages, remove them from the back stack first
-     * Note that the active fragment is null at application startup, when the blank fragment has not been rendered yet
+     * Return true to allow navigation to proceed
      */
-    private fun preNavigate(activeFragment: Fragment?) {
+    private fun preNavigate(activeFragment: Fragment?, newFragmentId: Int): Boolean {
 
+        // When the device is not secured, only allow navigation to the Device Not Secured view
+        if (!this.isDeviceSecuredAccessor() && newFragmentId != R.id.device_not_secured_fragment) {
+            return false
+        }
+
+        // When navigating from the below pages, remove them from the back stack first
+        // Note that the active fragment is null at application startup
         if (activeFragment == null || activeFragment is LoginRequiredFragment) {
             this.navHostFragment.navController.popBackStack()
         }
+
+        return true
     }
 }

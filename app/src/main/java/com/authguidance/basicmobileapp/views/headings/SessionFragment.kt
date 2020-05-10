@@ -67,6 +67,7 @@ class SessionFragment : androidx.fragment.app.Fragment() {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: InitialLoadEvent) {
+        event.used()
         this.binding.model?.updateData()
     }
 
@@ -75,6 +76,7 @@ class SessionFragment : androidx.fragment.app.Fragment() {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: ReloadEvent) {
+        event.used()
         this.binding.model?.updateData()
     }
 
@@ -83,6 +85,7 @@ class SessionFragment : androidx.fragment.app.Fragment() {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: UnloadEvent) {
+        event.used()
         this.binding.model?.clearData()
     }
 }

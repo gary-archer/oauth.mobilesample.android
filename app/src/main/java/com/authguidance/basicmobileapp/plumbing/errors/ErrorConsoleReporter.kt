@@ -5,7 +5,7 @@ import android.content.Context
 /*
  * A helper class to output error details to the console and avoid end users
  */
-class ErrorConsoleReporter {
+object ErrorConsoleReporter {
 
     /*
      * Output names and values
