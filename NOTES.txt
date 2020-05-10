@@ -19,7 +19,7 @@ VIEW CHANGES
    Also test on tablet sized emulator
    Back navigation - including with errors - and keep code simple
 
-7. Merge to master
+7. Merge to master and backup repos to disk
 
 IOS
 ---

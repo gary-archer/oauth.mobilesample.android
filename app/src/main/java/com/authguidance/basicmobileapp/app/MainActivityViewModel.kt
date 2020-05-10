@@ -47,7 +47,7 @@ class MainActivityViewModel(
 
         // Reset state flags
         this.isInitialised = false
-        this.isDeviceSecured = DeviceSecurity.isDeviceSecured(context)
+        this.isDeviceSecured = false // DeviceSecurity.isDeviceSecured(context)
         this.isDataLoaded = false
         this.isTopMost = true
 

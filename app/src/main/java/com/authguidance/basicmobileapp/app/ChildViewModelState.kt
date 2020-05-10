@@ -5,7 +5,7 @@ import com.authguidance.basicmobileapp.views.utilities.ViewManager
 
 /*
  * The goal of this class is a coding model similar to how React or SwiftUI initialise children
- * The main activity pushes fields to this class and child fraghments
+ * The main activity pushes fields to this class which child fragments can access
  */
 class ChildViewModelState(
     val apiClientAccessor: () -> ApiClient?,

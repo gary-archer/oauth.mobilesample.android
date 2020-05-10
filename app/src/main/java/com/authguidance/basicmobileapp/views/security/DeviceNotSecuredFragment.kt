@@ -71,14 +71,14 @@ class DeviceNotSecuredFragment : androidx.fragment.app.Fragment() {
         }
 
         // Invoke the dialog to prompt the user
-        DeviceSecurity.forceLockScreenUpdate(this.context!!, agreeCallback, declineCallback)
+        DeviceSecurity.forceLockScreenUpdate(this.requireContext(), agreeCallback, declineCallback)
     }
 
     private fun onMainActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
         // See if this is a response from the lock screen
         if (requestCode == Constants.SET_LOCK_SCREEN_REQUEST_CODE) {
-            if (DeviceSecurity.isDeviceSecured(this.context!!)) {
+            if (DeviceSecurity.isDeviceSecured(this.requireContext())) {
 
                 // Call back the parent to navigate and reset isTopMost to true
             }

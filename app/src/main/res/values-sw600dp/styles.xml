@@ -33,7 +33,7 @@
         <item name="android:layout_marginRight">2dp</item>
         <item name="android:minHeight">80dp</item>
         <item name="android:textSize">24sp</item>
-        <item name="android:backgroundTint">@color/text_highlight</item>
+        <item name="android:backgroundTint">@color/text_pale_green</item>
     </style>
 
     <!-- The style for label text -->
@@ -53,7 +53,7 @@
 
     <!-- The style for money value text -->
     <style name="TextViewMoneyStyle" parent="android:Widget.TextView">
-        <item name="android:textColor">@color/text_highlight</item>
+        <item name="android:textColor">@color/text_green</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">24sp</item>
         <item name="android:layout_gravity">left</item>
