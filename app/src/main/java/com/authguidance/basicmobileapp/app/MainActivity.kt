@@ -426,7 +426,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*
-     * Clean up resources when destroyed, which occurs after the screen orientation is changed
+     * Clean up resources when destroyed
      */
     override fun onDestroy() {
         super.onDestroy()
