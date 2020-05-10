@@ -228,10 +228,8 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        // Move to the home view if allowed
-        if (model.isDeviceSecured) {
-            this.navigationHelper.navigateTo(R.id.companies_fragment)
-        }
+        // Move to the home view
+        this.navigationHelper.navigateTo(R.id.companies_fragment)
 
         // If there is an error loading data from the API then force a reload
         if (model.authenticator!!.isLoggedIn() && !model.isDataLoaded) {

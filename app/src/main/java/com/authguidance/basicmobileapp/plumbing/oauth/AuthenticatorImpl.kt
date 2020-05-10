@@ -72,8 +72,16 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
         val refreshToken = this.tokenStorage.loadTokens()?.refreshToken
         if (!refreshToken.isNullOrBlank()) {
 
-            // Send the refresh token grant message
-            this.performRefreshTokenGrant()
+            // Manage concurrency when there are multiple UI fragments calling APIs and getting a 401
+            if (this.concurrencyHandler.start()) {
+
+                // Do the work for the first caller only
+                this.performRefreshTokenGrant()
+            } else {
+
+                // If already in progress we'll add a continuation that waits on the in progress operation
+                this.concurrencyHandler.addContinuation()
+            }
 
             // Return the token on success
             val accessToken = this.tokenStorage.loadTokens()?.accessToken
@@ -302,11 +310,6 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
             return
         }
 
-        // If already in progress we'll return a continuation that waits on the in progress operation
-        if (!this.concurrencyHandler.start()) {
-            return concurrencyHandler.createContinuation()
-        }
-
         // First get metadata
         val metadata = getMetadata()
 
@@ -342,8 +345,9 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
 
                         // Sanity check
                         tokenResponse == null -> {
-                            val empty = RuntimeException("Refresh token grant returned an empty response")
-                            continuation.resumeWithException(empty)
+                            val error = RuntimeException("Refresh token grant returned an empty response")
+                            continuation.resumeWithException(error)
+                            this.concurrencyHandler.resumeWithException(error)
                         }
 
                         // Process the response by saving tokens to secure storage
@@ -399,7 +403,7 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
             activity.startActivityForResult(logoutIntent, completionCode)
 
         } catch(ex: Throwable) {
-            throw ErrorHandler().fromLogoutRequestError(ex, ErrorCodes.logoutRequestFailed)
+            throw ErrorHandler().fromLogoutRequestError(ex)
         }
     }
 

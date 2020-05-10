@@ -20,7 +20,5 @@ object DeviceSecurity {
         } else {
             return keyguardManager.isKeyguardSecure
         }
-
-        return false
     }
 }

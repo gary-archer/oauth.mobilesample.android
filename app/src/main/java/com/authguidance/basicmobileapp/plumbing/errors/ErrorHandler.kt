@@ -94,7 +94,7 @@ class ErrorHandler {
     /*
      * Return an error to indicate that the Chrome custom tab window was closed
      */
-    fun fromLogoutRequestError(ex: Throwable, errorCode: String): UIError {
+    fun fromLogoutRequestError(ex: Throwable): UIError {
 
         val error = UIError(
             "Logout",
@@ -108,7 +108,7 @@ class ErrorHandler {
     /*
      * Handle errors from the token endpoint
      */
-    fun fromTokenError(ex: AuthorizationException, errorCode: String): UIError {
+    fun fromTokenError(ex: Throwable, errorCode: String): UIError {
 
         val error = UIError(
             "Token",
@@ -116,7 +116,12 @@ class ErrorHandler {
             "A technical problem occurred during token processing"
         )
 
-        this.updateFromAppAuthException(ex, error)
+        if (ex is AuthorizationException) {
+            this.updateFromAppAuthException(ex, error)
+        } else {
+            this.updateFromException(ex, error)
+        }
+
         return error
     }
 
