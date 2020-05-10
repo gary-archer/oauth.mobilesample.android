@@ -136,8 +136,9 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
 
                 } else {
 
-                    // Report other errors on the main thread
                     withContext(Dispatchers.Main) {
+
+                        // Report other errors on the main thread
                         model.viewManager.onViewLoadFailed(uiError)
                         errorFragment.reportError(
                             that.getString(R.string.transactions_error_hyperlink),
@@ -177,12 +178,9 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
         // Get view model items from the raw data
         val viewModelItems = data.transactions.map { TransactionItemViewModel(it) }
 
+        // Render them via an adapter
         val list = this.binding.listTransactions
         list.layoutManager = LinearLayoutManager(this.context)
-        list.adapter =
-            TransactionArrayAdapter(
-                this.requireContext(),
-                viewModelItems.toList()
-            )
+        list.adapter = TransactionArrayAdapter(this.requireContext(), viewModelItems.toList())
     }
 }

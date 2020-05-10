@@ -30,7 +30,7 @@ interface Authenticator {
     fun expireRefreshToken()
 
     // Start a logout redirect
-    fun startLogout(activity: Activity, completionCode: Int)
+    suspend fun startLogout(activity: Activity, completionCode: Int)
 
     // Complete a logout
     fun finishLogout()

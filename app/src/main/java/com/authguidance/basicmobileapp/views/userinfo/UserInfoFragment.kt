@@ -129,9 +129,10 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
                 }
             } catch (uiError: UIError) {
 
-                // Process errors on the main thread
                 model.setClaims(null)
                 withContext(Dispatchers.Main) {
+
+                    // Process errors on the main thread
                     model.viewManager.onViewLoadFailed(uiError)
                     errorFragment.reportError(
                         that.getString(R.string.userinfo_error_hyperlink),

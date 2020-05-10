@@ -9,6 +9,7 @@ import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.databinding.ActivityMainBinding
 import com.authguidance.basicmobileapp.views.utilities.NavigationHelper
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
+import com.authguidance.basicmobileapp.plumbing.errors.ErrorConsoleReporter
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorHandler
 import com.authguidance.basicmobileapp.plumbing.events.InitialLoadEvent
 import com.authguidance.basicmobileapp.plumbing.events.UnloadEvent
@@ -277,7 +278,7 @@ class MainActivity : AppCompatActivity() {
 
             } catch (ex: Throwable) {
 
-                // Report errors such as those processing the authorization code grant
+                // Report errors on the main thread
                 withContext(Dispatchers.Main) {
                     that.handleException(ex)
                 }
@@ -296,26 +297,37 @@ class MainActivity : AppCompatActivity() {
     private fun onStartLogout() {
 
         val model = this.binding.model!!
-        try {
+        model.isTopMost = false
 
-            // Trigger the logout process, which will remove tokens and redirect to clear the OAuth session cookie
-            model.isTopMost = false
-            model.authenticator!!.startLogout(this, Constants.LOGOUT_REDIRECT_REQUEST_CODE)
+        CoroutineScope(Dispatchers.IO).launch {
 
-        } catch (ex: Throwable) {
+            val that = this@MainActivity
+            try {
 
-            // Report errors such as those looking up endpoints
-            model.isTopMost = true
-            this.handleException(ex)
+                // Trigger the logout process, which will remove tokens and redirect to clear the OAuth session cookie
+                model.authenticator!!.startLogout(that, Constants.LOGOUT_REDIRECT_REQUEST_CODE)
+
+            } catch (ex: Throwable) {
+
+                withContext(Dispatchers.Main) {
+
+                    // On error, only output logout errors to the console rather than impacting the end user
+                    val uiError = ErrorHandler().fromException(ex)
+                    ErrorConsoleReporter().output(uiError, that)
+
+                    // Move to the login required view and update UI state
+                    that.onFinishLogout()
+                }
+            }
         }
     }
 
     /*
-     * Free resources when we receive the logout response
+     * Free resources and update the UI when we receive the logout response
      */
     private fun onFinishLogout() {
 
-        // Finish processing
+        // Free logout resources
         val model = this.binding.model!!
         model.authenticator!!.finishLogout()
 
@@ -326,7 +338,7 @@ class MainActivity : AppCompatActivity() {
         // Move to the login required page
         this.navigationHelper.navigateTo(R.id.login_required_fragment)
 
-        // Send an event to fragments
+        // Send an event to fragments that should no longer be visible
         EventBus.getDefault().post(UnloadEvent())
     }
 

@@ -114,8 +114,9 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
 
             } catch (uiError: UIError) {
 
-                // Process errors on the main thread
                 withContext(Dispatchers.Main) {
+
+                    // Process errors on the main thread
                     model.viewManager.onViewLoadFailed(uiError)
                     errorFragment.reportError(
                         that.getString(R.string.companies_error_hyperlink),
@@ -136,6 +137,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
 
         // When a company is clicked we will navigate to transactions for the clicked company id
         val onItemClick = { viewModelItem: CompanyItemViewModel ->
+
             val args = Bundle()
             args.putString(Constants.ARG_COMPANY_ID, viewModelItem.company.id.toString())
             findNavController().navigate(R.id.transactions_fragment, args)
@@ -144,11 +146,6 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
         // Bind the data
         val list = this.binding.listCompanies
         list.layoutManager = LinearLayoutManager(this.context)
-        list.adapter =
-            CompanyArrayAdapter(
-                this.requireContext(),
-                viewModelItems.toList(),
-                onItemClick
-            )
+        list.adapter = CompanyArrayAdapter(this.requireContext(), viewModelItems.toList(), onItemClick)
     }
 }

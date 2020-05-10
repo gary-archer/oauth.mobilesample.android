@@ -85,10 +85,6 @@ class ErrorDetailsDialogFragment : DialogFragment() {
         // Render them via an adapter
         val list = this.binding.listErrorItems
         list.layoutManager = LinearLayoutManager(this.context)
-        list.adapter =
-            ErrorItemArrayAdapter(
-                this.requireContext(),
-                viewModelItems
-            )
+        list.adapter = ErrorItemArrayAdapter(this.requireContext(), viewModelItems)
     }
 }

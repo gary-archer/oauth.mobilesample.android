@@ -2,15 +2,9 @@ VIEW CHANGES
 ------------
 0. Spend first 30 minutes on work diagrams
 
-1. Blank out Okta logoutEndpoint from config and use end session endpoint from metadata
+1. Store tokens in memory object since currently decrypt code runs often
 
-2. Reduce logout code via a better base / interface
-
-3. Logout behaviour as for other samples, with ignored errors and early token removal
-
-4. Add exceptionFromMessage and use it to check OAuth responses for null
-
-5. Statics as for device security with a companion object
+2. Statics as for device security with a companion object
 
 6. TESTING
    Activity recreation to test
@@ -18,6 +12,7 @@ VIEW CHANGES
    Test orientation changes / deep links / logins + logouts
    Also test on tablet sized emulator
    Back navigation - including with errors - and keep code simple
+   Concurrent action code to inspect further
 
 7. Merge to master and backup repos to disk
 
@@ -25,7 +20,10 @@ IOS
 ---
 1. iOS device check to also check biometrics only
 
-2. Use a strings source file in iOS for UI elements
+2. Error code updates for login / logout / token
 
-3. Deep link when Safari View Controller active for iOS to ignore
-   Add isTopMost logic and possibly an application class
+3. Use a strings source file in iOS for UI elements?
+
+4. Deep link when Safari View Controller active for iOS to ignore
+
+5. Add and test isTopMost logic

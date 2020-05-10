@@ -20,15 +20,12 @@ class ErrorHandler {
             return ex
         }
 
-        // Create the error
         val error = UIError(
             "Mobile UI",
             ErrorCodes.generalUIError,
             "A technical problem was encountered in the UI")
 
-        // Add exception specific details
-        error.details = this.getErrorDescription(ex)
-        error.stackTrace = ex.stackTrace
+        this.updateFromException(ex, error)
         return error
     }
 
@@ -55,38 +52,71 @@ class ErrorHandler {
     }
 
     /*
-     * Collect error details from the App Auth exception
+     * Handle errors triggering login requests
      */
-    fun fromAppAuthError(ex: AuthorizationException, errorCode: String): UIError {
+    fun fromLoginRequestError(ex: Throwable, errorCode: String): UIError {
 
         val error = UIError(
-            "OAuth",
+            "Login",
             errorCode,
-            "A problem was encountered during a login related operation"
+            "A technical problem occurred during login processing"
         )
 
-        if (ex.code != 0) {
-
-            val appAuthErrorType = when {
-                ex.type == 1 -> {
-                    "AUTHORIZATION"
-                }
-                ex.type == 2 -> {
-                    "TOKEN"
-                }
-                else -> {
-                    "GENERAL"
-                }
-            }
-
-            error.appAuthCode = "$appAuthErrorType / ${ex.code}"
+        if (ex is AuthorizationException) {
+            this.updateFromAppAuthException(ex, error)
+        } else {
+            this.updateFromException(ex, error)
         }
 
-        if (ex.message != null) {
-            error.details = ex.message
+        return error
+    }
+
+    /*
+     * Handle errors processing login responses
+     */
+    fun fromLoginResponseError(ex: Throwable, errorCode: String): UIError {
+
+        val error = UIError(
+            "Login",
+            errorCode,
+            "A technical problem occurred during login processing"
+        )
+
+        if (ex is AuthorizationException) {
+            this.updateFromAppAuthException(ex, error)
+        } else {
+            this.updateFromException(ex, error)
         }
 
-        error.stackTrace = ex.stackTrace
+        return error
+    }
+
+    /*
+     * Return an error to indicate that the Chrome custom tab window was closed
+     */
+    fun fromLogoutRequestError(ex: Throwable, errorCode: String): UIError {
+
+        val error = UIError(
+            "Logout",
+            ErrorCodes.logoutRequestFailed,
+            "A technical problem occurred during logout processing")
+
+        this.updateFromException(ex, error)
+        return error
+    }
+
+    /*
+     * Handle errors from the token endpoint
+     */
+    fun fromTokenError(ex: AuthorizationException, errorCode: String): UIError {
+
+        val error = UIError(
+            "Token",
+            errorCode,
+            "A technical problem occurred during token processing"
+        )
+
+        this.updateFromAppAuthException(ex, error)
         return error
     }
 
@@ -127,6 +157,40 @@ class ErrorHandler {
 
         this.updateFromApiErrorResponse(error, response.body?.string())
         return error
+    }
+
+    /*
+     * Get details from the underlying exception
+     */
+    private fun updateFromException(ex: Throwable, error: UIError) {
+
+        error.details = this.getErrorDescription(ex)
+        error.stackTrace = ex.stackTrace
+    }
+
+    /*
+     * Add AppAuth details to our standard error object
+     */
+    private fun updateFromAppAuthException(ex: AuthorizationException, error: UIError) {
+
+        if (ex.code != 0) {
+
+            val appAuthErrorType = when {
+                ex.type == 1 -> {
+                    "AUTHORIZATION"
+                }
+                ex.type == 2 -> {
+                    "TOKEN"
+                }
+                else -> {
+                    "GENERAL"
+                }
+            }
+
+            error.appAuthCode = "$appAuthErrorType / ${ex.code}"
+        }
+
+        this.updateFromException(ex, error)
     }
 
     /*
