@@ -2,6 +2,8 @@ VIEW CHANGES
 ------------
 0. Spend first 30 minutes on work diagrams
 
+0. Debug 401 problem via Charles
+
 1. Statics as for device security with a companion object
 
 2. TESTING

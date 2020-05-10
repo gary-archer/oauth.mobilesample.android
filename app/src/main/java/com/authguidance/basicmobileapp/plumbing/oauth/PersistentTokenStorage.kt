@@ -22,6 +22,10 @@ class PersistentTokenStorage(val context: Context, val encryptionManager: Encryp
     fun loadTokens(): TokenData? {
 
         synchronized(lock) {
+            if (this.tokenData != null) {
+                return this.tokenData
+            }
+
             this.loadTokenData()
             return this.tokenData
         }

@@ -325,10 +325,12 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
                             if (ex.type == AuthorizationException.TYPE_OAUTH_TOKEN_ERROR &&
                                 ex.code.equals(AuthorizationException.TokenRequestErrors.INVALID_GRANT.code)
                             ) {
-
-                                // Indicate success since this is not a real error
+                                // Remove tokens and indicate success, since this is an expected error
+                                // The caller will throw a login required error to redirect the user to login again
+                                this.tokenStorage.removeTokens()
                                 continuation.resume(Unit)
                                 this.concurrencyHandler.resume()
+
                             } else {
 
                                 // Process real errors
