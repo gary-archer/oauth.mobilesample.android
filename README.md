@@ -19,7 +19,6 @@
 
 * The [AppAuth-Android Library](https://github.com/openid/AppAuth-Android) is used to implement the Authorization Code Flow (PKCE)
 * AWS Cognito is used as a Cloud Authorization Server
-* The iOS device keychain is used to securely store tokens on the device after login
 * The Android Key Store is used to store encrypted tokens on the device after login
 * AWS API Gateway is used to host our sample OAuth 2.0 Secured API
 * AWS Cloudfront is used to host mobile deep linking asset files
