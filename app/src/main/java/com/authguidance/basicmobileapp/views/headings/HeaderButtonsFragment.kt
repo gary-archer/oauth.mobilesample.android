@@ -4,8 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.authguidance.basicmobileapp.databinding.FragmentHeaderButtonsBinding
 import com.authguidance.basicmobileapp.app.MainActivity
+import com.authguidance.basicmobileapp.databinding.FragmentHeaderButtonsBinding
 
 /*
  * A simple fragment with the header buttons

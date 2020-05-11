@@ -32,7 +32,7 @@ class ConcurrentActionHandler {
      */
     fun start(): Boolean {
 
-        synchronized (this.lock) {
+        synchronized(this.lock) {
             if (!this.actionInProgress) {
                 this.actionInProgress = true
                 return true
@@ -66,7 +66,7 @@ class ConcurrentActionHandler {
      */
     fun resume() {
 
-        synchronized (this.lock) {
+        synchronized(this.lock) {
             this.callbacks.forEach {
                 it.first()
             }
@@ -81,7 +81,7 @@ class ConcurrentActionHandler {
      */
     fun resumeWithException(ex: Throwable) {
 
-        synchronized (this.lock) {
+        synchronized(this.lock) {
             this.callbacks.forEach {
                 it.second(ex)
             }

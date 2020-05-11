@@ -8,22 +8,20 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.api.client.ApiRequestOptions
-import com.authguidance.basicmobileapp.databinding.FragmentTransactionsBinding
 import com.authguidance.basicmobileapp.app.MainActivity
-import com.authguidance.basicmobileapp.api.entities.CompanyTransactions
-import com.authguidance.basicmobileapp.api.entities.Transaction
+import com.authguidance.basicmobileapp.databinding.FragmentTransactionsBinding
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
 import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
-import com.authguidance.basicmobileapp.views.utilities.Constants
 import com.authguidance.basicmobileapp.views.errors.ErrorSummaryFragment
+import com.authguidance.basicmobileapp.views.utilities.Constants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
-import org.greenrobot.eventbus.EventBus
 
 /*
  * The fragment to show the transactions for a company

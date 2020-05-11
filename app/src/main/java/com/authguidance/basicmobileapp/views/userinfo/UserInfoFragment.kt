@@ -6,11 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.api.client.ApiRequestOptions
+import com.authguidance.basicmobileapp.app.MainActivity
 import com.authguidance.basicmobileapp.databinding.FragmentUserInfoBinding
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
-import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
-import com.authguidance.basicmobileapp.app.MainActivity
 import com.authguidance.basicmobileapp.plumbing.events.InitialLoadEvent
+import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
 import com.authguidance.basicmobileapp.plumbing.events.UnloadEvent
 import com.authguidance.basicmobileapp.views.errors.ErrorSummaryFragment
 import kotlinx.coroutines.CoroutineScope

@@ -3,10 +3,10 @@ package com.authguidance.basicmobileapp.configuration
 import android.content.Context
 import com.authguidance.basicmobileapp.R
 import com.google.gson.Gson
+import java.nio.charset.Charset
 import okio.Buffer
 import okio.buffer
 import okio.source
-import java.nio.charset.Charset
 
 /*
  * A helper class to load the application configuration

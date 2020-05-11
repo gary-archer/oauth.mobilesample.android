@@ -1,8 +1,8 @@
 package com.authguidance.basicmobileapp.plumbing.oauth.logout
 
 import com.authguidance.basicmobileapp.configuration.OAuthConfiguration
-import net.openid.appauth.AuthorizationServiceConfiguration
 import java.net.URLEncoder
+import net.openid.appauth.AuthorizationServiceConfiguration
 
 /*
  * An Okta implementation of logout handling

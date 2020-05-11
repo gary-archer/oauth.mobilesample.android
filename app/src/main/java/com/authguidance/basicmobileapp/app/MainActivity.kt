@@ -2,23 +2,23 @@ package com.authguidance.basicmobileapp.app
 
 import android.app.admin.DevicePolicyManager
 import android.content.Intent
-import androidx.databinding.DataBindingUtil
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.NavHostFragment
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.databinding.ActivityMainBinding
-import com.authguidance.basicmobileapp.views.utilities.NavigationHelper
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorConsoleReporter
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorHandler
 import com.authguidance.basicmobileapp.plumbing.events.InitialLoadEvent
-import com.authguidance.basicmobileapp.plumbing.events.UnloadEvent
 import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
-import com.authguidance.basicmobileapp.views.utilities.Constants
+import com.authguidance.basicmobileapp.plumbing.events.UnloadEvent
 import com.authguidance.basicmobileapp.views.errors.ErrorSummaryFragment
 import com.authguidance.basicmobileapp.views.headings.HeaderButtonsFragment
+import com.authguidance.basicmobileapp.views.utilities.Constants
 import com.authguidance.basicmobileapp.views.utilities.DeviceSecurity
+import com.authguidance.basicmobileapp.views.utilities.NavigationHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
 
         // Initialise the navigation system
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        this.navigationHelper = NavigationHelper(navHostFragment, {model.isDeviceSecured})
+        this.navigationHelper = NavigationHelper(navHostFragment) { model.isDeviceSecured }
 
         // Finally, do the main application load
         this.initialiseApp()

@@ -1,9 +1,9 @@
 package com.authguidance.basicmobileapp.views.transactions
 
 import android.content.Context
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import com.authguidance.basicmobileapp.databinding.TransactionListItemBinding
 
 /*

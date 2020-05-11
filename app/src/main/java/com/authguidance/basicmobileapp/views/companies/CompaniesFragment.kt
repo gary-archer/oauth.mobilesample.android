@@ -8,13 +8,12 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.api.client.ApiRequestOptions
-import com.authguidance.basicmobileapp.api.entities.Company
+import com.authguidance.basicmobileapp.app.MainActivity
 import com.authguidance.basicmobileapp.databinding.FragmentCompaniesBinding
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
 import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
-import com.authguidance.basicmobileapp.views.utilities.Constants
-import com.authguidance.basicmobileapp.app.MainActivity
 import com.authguidance.basicmobileapp.views.errors.ErrorSummaryFragment
+import com.authguidance.basicmobileapp.views.utilities.Constants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

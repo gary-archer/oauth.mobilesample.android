@@ -1,16 +1,16 @@
 package com.authguidance.basicmobileapp.views.errors
 
 import android.os.Bundle
-import androidx.fragment.app.DialogFragment
-import com.authguidance.basicmobileapp.plumbing.errors.UIError
-import com.authguidance.basicmobileapp.views.utilities.Constants
-import android.view.ViewGroup
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import androidx.fragment.app.DialogFragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.databinding.FragmentErrorDetailsBinding
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorFormatter
+import com.authguidance.basicmobileapp.plumbing.errors.UIError
+import com.authguidance.basicmobileapp.views.utilities.Constants
 
 /*
  * A custom modal dialog based on the error details fragment

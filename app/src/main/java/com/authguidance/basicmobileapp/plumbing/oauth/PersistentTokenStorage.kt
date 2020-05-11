@@ -21,7 +21,7 @@ class PersistentTokenStorage(val context: Context, val encryptionManager: Encryp
      */
     fun loadTokens(): TokenData? {
 
-        synchronized (lock) {
+        synchronized(lock) {
             if (this.tokenData != null) {
                 return this.tokenData
             }
@@ -36,7 +36,7 @@ class PersistentTokenStorage(val context: Context, val encryptionManager: Encryp
      */
     fun saveTokens(newTokenData: TokenData) {
 
-        synchronized (lock) {
+        synchronized(lock) {
             this.tokenData = newTokenData
             this.saveTokenData()
         }
@@ -47,7 +47,7 @@ class PersistentTokenStorage(val context: Context, val encryptionManager: Encryp
      */
     fun removeTokens() {
 
-        synchronized (lock) {
+        synchronized(lock) {
             this.tokenData = null
             this.sharedPrefs.edit().remove(this.key).apply()
         }
@@ -58,7 +58,7 @@ class PersistentTokenStorage(val context: Context, val encryptionManager: Encryp
      */
     fun expireAccessToken() {
 
-        synchronized (lock) {
+        synchronized(lock) {
             if (this.tokenData != null) {
                 this.tokenData!!.accessToken = "x${this.tokenData!!.accessToken}x"
                 this.saveTokenData()
@@ -71,7 +71,7 @@ class PersistentTokenStorage(val context: Context, val encryptionManager: Encryp
      */
     fun expireRefreshToken() {
 
-        synchronized (lock) {
+        synchronized(lock) {
             if (this.tokenData != null) {
                 this.tokenData!!.accessToken = null
                 this.tokenData!!.refreshToken = "x${this.tokenData!!.refreshToken}x"

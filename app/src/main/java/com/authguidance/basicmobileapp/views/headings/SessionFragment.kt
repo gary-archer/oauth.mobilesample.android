@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.authguidance.basicmobileapp.R
-import com.authguidance.basicmobileapp.databinding.FragmentSessionBinding
 import com.authguidance.basicmobileapp.app.MainActivity
+import com.authguidance.basicmobileapp.databinding.FragmentSessionBinding
 import com.authguidance.basicmobileapp.plumbing.events.InitialLoadEvent
 import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
 import com.authguidance.basicmobileapp.plumbing.events.UnloadEvent

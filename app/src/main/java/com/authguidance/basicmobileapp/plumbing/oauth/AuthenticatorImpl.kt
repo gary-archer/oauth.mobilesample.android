@@ -11,6 +11,10 @@ import com.authguidance.basicmobileapp.plumbing.oauth.logout.CognitoLogoutUrlBui
 import com.authguidance.basicmobileapp.plumbing.oauth.logout.LogoutUrlBuilder
 import com.authguidance.basicmobileapp.plumbing.oauth.logout.OktaLogoutUrlBuilder
 import com.authguidance.basicmobileapp.plumbing.utilities.ConcurrentActionHandler
+import java.util.Locale
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationResponse
@@ -22,10 +26,6 @@ import net.openid.appauth.ResponseTypeValues
 import net.openid.appauth.TokenRequest
 import net.openid.appauth.TokenResponse
 import net.openid.appauth.connectivity.DefaultConnectionBuilder
-import java.util.Locale
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.coroutines.suspendCoroutine
 
 /*
  * The authenticator class manages integration with the AppAuth libraries
@@ -217,7 +217,7 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
             val authIntent = authService.getAuthorizationRequestIntent(request)
             activity.startActivityForResult(authIntent, completionCode)
 
-        } catch(ex: Throwable) {
+        } catch (ex: Throwable) {
             throw ErrorHandler().fromLoginRequestError(ex, ErrorCodes.loginRequestFailed)
         }
     }
@@ -402,7 +402,7 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
             logoutIntent.data = Uri.parse(logoutUrl)
             activity.startActivityForResult(logoutIntent, completionCode)
 
-        } catch(ex: Throwable) {
+        } catch (ex: Throwable) {
             throw ErrorHandler().fromLogoutRequestError(ex)
         }
     }

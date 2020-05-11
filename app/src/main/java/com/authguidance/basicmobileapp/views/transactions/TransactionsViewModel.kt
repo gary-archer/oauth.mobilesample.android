@@ -1,7 +1,6 @@
 package com.authguidance.basicmobileapp.views.transactions
 
 import com.authguidance.basicmobileapp.api.client.ApiClient
-import com.authguidance.basicmobileapp.api.entities.CompanyTransactions
 import com.authguidance.basicmobileapp.api.entities.Transaction
 import com.authguidance.basicmobileapp.views.utilities.ViewManager
 

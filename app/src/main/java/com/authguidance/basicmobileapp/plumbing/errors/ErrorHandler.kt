@@ -1,9 +1,9 @@
 package com.authguidance.basicmobileapp.plumbing.errors
 
-import okhttp3.Response
-import java.io.IOException
 import com.google.gson.JsonParser
+import java.io.IOException
 import net.openid.appauth.AuthorizationException
+import okhttp3.Response
 
 /*
  * A class to manage error translation
