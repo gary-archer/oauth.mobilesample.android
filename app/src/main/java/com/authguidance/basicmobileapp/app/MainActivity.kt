@@ -245,7 +245,8 @@ class MainActivity : AppCompatActivity() {
         val model = this.binding.model!!
         model.isTopMost = false
 
-        CoroutineScope(Dispatchers.IO).launch {
+        // Run on the UI thread since we present UI elements
+        CoroutineScope(Dispatchers.Main).launch {
 
             val that = this@MainActivity
             try {
@@ -256,10 +257,8 @@ class MainActivity : AppCompatActivity() {
             } catch (ex: Throwable) {
 
                 // Report errors such as those looking up endpoints
-                withContext(Dispatchers.Main) {
-                    model.isTopMost = true
-                    that.handleException(ex)
-                }
+                model.isTopMost = true
+                that.handleException(ex)
             }
         }
     }
@@ -269,11 +268,11 @@ class MainActivity : AppCompatActivity() {
      */
     private fun onFinishLogin(loginResponseIntent: Intent) {
 
-        // Handle completion after login completion, which could be a success or failure response
         val model = this.binding.model!!
+
+        // Switch to a background thread to perform the code exchange
         CoroutineScope(Dispatchers.IO).launch {
 
-            // Switch to a background thread
             val that = this@MainActivity
             try {
                 // Handle completion after login success, which will exchange the authorization code for tokens
@@ -307,7 +306,8 @@ class MainActivity : AppCompatActivity() {
         val model = this.binding.model!!
         model.isTopMost = false
 
-        CoroutineScope(Dispatchers.IO).launch {
+        // Run on the UI thread since we present UI elements
+        CoroutineScope(Dispatchers.Main).launch {
 
             val that = this@MainActivity
             try {
@@ -317,17 +317,14 @@ class MainActivity : AppCompatActivity() {
 
             } catch (ex: Throwable) {
 
-                withContext(Dispatchers.Main) {
-
-                    // On error, only output logout errors to the console rather than impacting the end user
-                    val uiError = ErrorHandler().fromException(ex)
-                    if (!uiError.errorCode.equals(ErrorCodes.redirectCancelled)) {
-                        ErrorConsoleReporter.output(uiError, that)
-                    }
-
-                    // Move to the login required view and update UI state
-                    that.onFinishLogout()
+                // On error, only output logout errors to the console rather than impacting the end user
+                val uiError = ErrorHandler().fromException(ex)
+                if (!uiError.errorCode.equals(ErrorCodes.redirectCancelled)) {
+                    ErrorConsoleReporter.output(uiError, that)
                 }
+
+                // Move to the login required view and update UI state
+                that.onFinishLogout()
             }
         }
     }

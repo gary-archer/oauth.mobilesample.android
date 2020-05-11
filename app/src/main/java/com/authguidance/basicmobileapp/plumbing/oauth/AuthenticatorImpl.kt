@@ -32,6 +32,7 @@ import net.openid.appauth.connectivity.DefaultConnectionBuilder
  */
 class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationContext: Context) : Authenticator {
 
+    private var metadata: AuthorizationServiceConfiguration? = null
     private val tokenStorage: PersistentTokenStorage
     private val concurrencyHandler: ConcurrentActionHandler
     private var loginAuthService: AuthorizationService? = null
@@ -158,7 +159,12 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
     /*
      * Get metadata and convert the callback to a suspendable function
      */
-    private suspend fun getMetadata(): AuthorizationServiceConfiguration {
+    private suspend fun getMetadata() {
+
+        // Return if already loaded
+        if (this.metadata != null) {
+            return
+        }
 
         // Form the metadata URL
         val metadataAddress = "${this.configuration.authority}/.well-known/openid-configuration"
@@ -180,8 +186,11 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
                             continuation.resumeWithException(error)
                         }
 
-                        // Return metadata on success
-                        else -> continuation.resumeWith(Result.success(serviceConfiguration))
+                        // Save metadata on success
+                        else -> {
+                            this.metadata = serviceConfiguration
+                            continuation.resume(Unit)
+                        }
                     }
                 }
 
@@ -200,12 +209,12 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
             val authService = AuthorizationService(activity)
             this.loginAuthService = authService
 
-            // First get metadata
-            val metadata = this.getMetadata()
+            // First get metadata if required
+            this.getMetadata()
 
             // Create the AppAuth request object and use the standard mobile value of 'response_type=code'
             val request = AuthorizationRequest.Builder(
-                metadata,
+                this.metadata!!,
                 this.configuration.clientId,
                 ResponseTypeValues.CODE,
                 Uri.parse(this.configuration.redirectUri)
@@ -310,8 +319,8 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
             return
         }
 
-        // First get metadata
-        val metadata = getMetadata()
+        // Get metadata if required
+        this.getMetadata()
 
         // Wrap the request in a coroutine
         return suspendCoroutine { continuation ->
@@ -361,7 +370,7 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
 
             // Create the refresh token grant request
             val tokenRequest = TokenRequest.Builder(
-                metadata,
+                this.metadata!!,
                 this.configuration.clientId
             )
                 .setGrantType(GrantTypeValues.REFRESH_TOKEN)
@@ -388,11 +397,11 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
             }
 
             // First get metadata
-            val metadata = getMetadata()
+            getMetadata()
 
             // Create an object to manage logout and use it to form the end session request
             val logoutUrlBuilder = this.createLogoutUrlBuilder()
-            val logoutUrl = logoutUrlBuilder.getEndSessionRequestUrl(metadata, idToken)
+            val logoutUrl = logoutUrlBuilder.getEndSessionRequestUrl(this.metadata!!, idToken)
 
             // Create and start a logout intent on a Chrome Custom tab
             val authService = AuthorizationService(activity)
