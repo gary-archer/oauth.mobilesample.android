@@ -1,6 +1,8 @@
 package com.authguidance.basicmobileapp.views.transactions
 
 import com.authguidance.basicmobileapp.api.client.ApiClient
+import com.authguidance.basicmobileapp.api.entities.CompanyTransactions
+import com.authguidance.basicmobileapp.api.entities.Transaction
 import com.authguidance.basicmobileapp.views.utilities.ViewManager
 
 /*
@@ -12,6 +14,8 @@ class TransactionsViewModel(
     val companyId: String,
     val titleFormat: String
 ) {
+    // Data once retrieved
+    var transactions: List<Transaction> = ArrayList()
 
     /*
      * Markup calls this method to get the title including the company id

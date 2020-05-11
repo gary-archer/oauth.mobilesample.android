@@ -11,6 +11,7 @@ import com.authguidance.basicmobileapp.api.client.ApiRequestOptions
 import com.authguidance.basicmobileapp.databinding.FragmentTransactionsBinding
 import com.authguidance.basicmobileapp.app.MainActivity
 import com.authguidance.basicmobileapp.api.entities.CompanyTransactions
+import com.authguidance.basicmobileapp.api.entities.Transaction
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
 import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
@@ -113,12 +114,13 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
             val that = this@TransactionsFragment
             try {
                 // Call the API
-                val result = apiClient.getCompanyTransactions(model.companyId, options)
+                val data = apiClient.getCompanyTransactions(model.companyId, options)
+                model.transactions = data.transactions.toList()
 
                 // Switch back to the UI thread for rendering
                 withContext(Dispatchers.Main) {
                     model.viewManager.onViewLoaded()
-                    that.renderData(result)
+                    that.renderData()
                 }
 
             } catch (uiError: UIError) {
@@ -144,6 +146,10 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
                             that.getString(R.string.transactions_error_hyperlink),
                             that.getString(R.string.transactions_error_dialogtitle),
                             uiError)
+
+                        // Render empty data
+                        model.transactions = ArrayList()
+                        that.renderData()
                     }
                 }
             }
@@ -173,10 +179,11 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
     /*
      * Render API response data
      */
-    private fun renderData(data: CompanyTransactions) {
+    private fun renderData() {
 
         // Get view model items from the raw data
-        val viewModelItems = data.transactions.map { TransactionItemViewModel(it) }
+        val model = this.binding.model!!
+        val viewModelItems = model.transactions.map { TransactionItemViewModel(it) }
 
         // Render them via an adapter
         val list = this.binding.listTransactions

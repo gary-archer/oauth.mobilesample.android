@@ -104,12 +104,12 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
 
             try {
                 // Call the API
-                val result = apiClient.getCompanyList(options)
+                model.companies = apiClient.getCompanyList(options).toList()
 
                 // Render results on the main thread
                 withContext(Dispatchers.Main) {
                     model.viewManager.onViewLoaded()
-                    that.renderData(result)
+                    that.renderData()
                 }
 
             } catch (uiError: UIError) {
@@ -122,6 +122,10 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
                         that.getString(R.string.companies_error_hyperlink),
                         that.getString(R.string.companies_error_dialogtitle),
                         uiError)
+
+                    // Clear any existing data
+                    model.companies = ArrayList()
+                    that.renderData()
                 }
             }
         }
@@ -130,10 +134,11 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
     /*
      * Render API response data
      */
-    private fun renderData(companies: Array<Company>) {
+    private fun renderData() {
 
         // Get view model items from the raw data
-        val viewModelItems = companies.map { CompanyItemViewModel(it) }
+        val model = this.binding.model!!
+        val viewModelItems = model.companies.map { CompanyItemViewModel(it) }
 
         // When a company is clicked we will navigate to transactions for the clicked company id
         val onItemClick = { viewModelItem: CompanyItemViewModel ->

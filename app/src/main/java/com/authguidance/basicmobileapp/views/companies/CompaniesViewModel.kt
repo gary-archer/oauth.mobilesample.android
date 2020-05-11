@@ -1,6 +1,7 @@
 package com.authguidance.basicmobileapp.views.companies
 
 import com.authguidance.basicmobileapp.api.client.ApiClient
+import com.authguidance.basicmobileapp.api.entities.Company
 import com.authguidance.basicmobileapp.views.utilities.ViewManager
 
 /*
@@ -9,4 +10,8 @@ import com.authguidance.basicmobileapp.views.utilities.ViewManager
 class CompaniesViewModel(
     val apiClientAccessor: () -> ApiClient?,
     val viewManager: ViewManager
-)
+) {
+
+    // Data once retrieved
+    var companies: List<Company> = ArrayList()
+}
