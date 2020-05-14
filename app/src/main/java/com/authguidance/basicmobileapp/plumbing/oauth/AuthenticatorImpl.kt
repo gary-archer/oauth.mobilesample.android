@@ -212,6 +212,8 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
             // First get metadata if required
             this.getMetadata()
 
+            println("GJA: ${this.getLoginRedirectUri()}")
+
             // Create the AppAuth request object and use the standard mobile value of 'response_type=code'
             val request = AuthorizationRequest.Builder(
                 this.metadata!!,
@@ -457,7 +459,7 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
      * https://web.authguidance-examples.com/mobile-oauth/postlogin.html
      */
     private fun getLoginRedirectUri(): String {
-        return "https:${this.configuration.webDomain}${this.configuration.loginRedirectPath}"
+        return "https://${this.configuration.webDomain}${this.configuration.loginRedirectPath}"
     }
 
     /*

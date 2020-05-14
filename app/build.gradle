@@ -18,7 +18,7 @@ android {
 
         // The scheme value used by AppAuth's RedirectUriReceiverActivity class to receive login responses
         manifestPlaceholders = [
-                'appAuthRedirectScheme': 'com.authguidance.basicmobileapp'
+                'appAuthRedirectScheme': 'https'
         ]
     }
 
