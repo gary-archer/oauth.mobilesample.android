@@ -3,11 +3,15 @@
     "apiBaseUrl":            "https://api.mycompany.com/api"
   },
   "oauth": {
-    "authority":             "https://dev-843469.oktapreview.com/oauth2/default",
-    "clientId":              "0oangdi29uheQ83wQ0h7",
-    "redirectUri":           "https://web.mycompany.com/mobile/postlogin.html",
-    "logoutEndpoint":        "v1/logout",
-    "postLogoutRedirectUri": "https://web.mycompany.com/mobile/postlogout.html",
-    "scope":                 "openid profile email offline_access"
+    "authority":              "https://dev-843469.oktapreview.com/oauth2/default",
+    "clientId":               "0oare6xbk7sdET0Vl0h7",
+    "webDomain":              "web.mycompany.com",
+    "loginRedirectPath":      "/mobile-oauth/postlogin.html",
+    "postLogoutRedirectPath": "/mobile-oauth/postlogout.html",
+    "deepLinkDomain":         "authguidance-examples.com",
+    "loginActivatePath":      "/oauth/callback",
+    "postLogoutActivatePath": "/oauth/logoutcallback",
+    "logoutEndpoint":         "",
+    "scope":                  "openid profile email offline_access"
   }
 }

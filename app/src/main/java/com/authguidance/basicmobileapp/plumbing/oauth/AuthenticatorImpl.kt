@@ -217,7 +217,7 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
                 this.metadata!!,
                 this.configuration.clientId,
                 ResponseTypeValues.CODE,
-                Uri.parse(this.configuration.redirectUri)
+                Uri.parse(this.getLoginRedirectUri())
             )
                 .setScope(this.configuration.scope)
                 .build()
@@ -401,7 +401,10 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
 
             // Create an object to manage logout and use it to form the end session request
             val logoutUrlBuilder = this.createLogoutUrlBuilder()
-            val logoutUrl = logoutUrlBuilder.getEndSessionRequestUrl(this.metadata!!, idToken)
+            val logoutUrl = logoutUrlBuilder.getEndSessionRequestUrl(
+                this.metadata!!,
+                this.getPostLogoutRedirectUri(),
+                idToken)
 
             // Create and start a logout intent on a Chrome Custom tab
             val authService = AuthorizationService(activity)
@@ -447,6 +450,22 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
         }
 
         this.tokenStorage.saveTokens(tokenData)
+    }
+
+    /*
+     * Return the URL to the interstitial page used for login redirects
+     * https://web.authguidance-examples.com/mobile-oauth/postlogin.html
+     */
+    private fun getLoginRedirectUri(): String {
+        return "https:${this.configuration.webDomain}${this.configuration.loginRedirectPath}"
+    }
+
+    /*
+     * Return the URL to the interstitial page used for logout redirects
+     * https://web.authguidance-examples.com/mobile-oauth/postlogout.html
+     */
+    private fun getPostLogoutRedirectUri(): String {
+        return "https://${this.configuration.webDomain}${this.configuration.postLogoutRedirectPath}"
     }
 
     /*

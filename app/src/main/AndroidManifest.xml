@@ -33,7 +33,34 @@
             <nav-graph android:value="@navigation/nav_graph" />
         </activity>
 
-        <!-- A dedicated activity for handling deep links in a controlled manner -->
+        <!-- Override the AppAuth activity to use our claimed HTTPS scheme for login responses -->
+        <activity android:name="net.openid.appauth.RedirectUriReceiverActivity">
+
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data
+                    android:scheme="https"
+                    android:host="authguidance-examples"
+                    android:path="/oauth/callback" />
+            </intent-filter>
+        </activity>
+
+        <!-- Our custom receiver activity for logout responses, since AppAuth does not yet support logout -->
+        <activity android:name=".plumbing.oauth.logout.LogoutRedirectUriReceiverActivity">
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data
+                    android:scheme="https"
+                    android:host="authguidance-examples"
+                    android:path="/oauth/logoutcallback" />
+            </intent-filter>
+        </activity>
+
+        <!-- A dedicated activity for handling other deep links in a controlled manner -->
         <activity
             android:name=".app.DeepLinkForwardingActivity"
             android:launchMode="singleTask"
@@ -43,18 +70,9 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="https" android:host="authguidance-examples.com"/>
-            </intent-filter>
-        </activity>
-
-        <!-- A custom receiver activity for logout responses, since AppAuth does not yet support logout -->
-        <activity android:name=".plumbing.oauth.logout.LogoutRedirectUriReceiverActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
                 <data
-                    android:scheme="com.authguidance.basicmobilelogout" />
+                    android:scheme="https"
+                    android:host="authguidance-examples.com" />
             </intent-filter>
         </activity>
     </application>

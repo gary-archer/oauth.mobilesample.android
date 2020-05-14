@@ -12,10 +12,14 @@ class OktaLogoutUrlBuilder(val configuration: OAuthConfiguration) : LogoutUrlBui
     /*
      * Build the Cognito logout URL, which uses standard parameters
      */
-    override fun getEndSessionRequestUrl(metadata: AuthorizationServiceConfiguration, idTokenHint: String): String {
+    override fun getEndSessionRequestUrl(
+        metadata: AuthorizationServiceConfiguration,
+        postLogoutRedirectUri: String,
+        idTokenHint: String
+    ): String {
 
         val endSessionUrl = "${this.configuration.authority}/${this.configuration.logoutEndpoint}"
-        val postLogoutRedirectUri = URLEncoder.encode(this.configuration.postLogoutRedirectUri, "UTF-8")
+        val postLogoutRedirectUri = URLEncoder.encode(postLogoutRedirectUri, "UTF-8")
         val encodedIdToken = URLEncoder.encode(idTokenHint, "UTF-8")
         return "$endSessionUrl?post_logout_redirect_uri=$postLogoutRedirectUri&id_token_hint=$encodedIdToken"
     }
