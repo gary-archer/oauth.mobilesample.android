@@ -212,8 +212,6 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
             // First get metadata if required
             this.getMetadata()
 
-            println("GJA: ${this.getLoginRedirectUri()}")
-
             // Create the AppAuth request object and use the standard mobile value of 'response_type=code'
             val request = AuthorizationRequest.Builder(
                 this.metadata!!,
