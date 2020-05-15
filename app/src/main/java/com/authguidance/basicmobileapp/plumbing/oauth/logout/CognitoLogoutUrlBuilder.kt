@@ -13,9 +13,13 @@ class CognitoLogoutUrlBuilder(val configuration: OAuthConfiguration) : LogoutUrl
      * Build the Cognito logout URL
      * https://docs.aws.amazon.com/cognito/latest/developerguide/logout-endpoint.html
      */
-    override fun getEndSessionRequestUrl(metadata: AuthorizationServiceConfiguration, idTokenHint: String): String {
+    override fun getEndSessionRequestUrl(
+        metadata: AuthorizationServiceConfiguration,
+        postLogoutRedirectUri: String,
+        idTokenHint: String
+    ): String {
 
-        val logoutReturnUrl = URLEncoder.encode(this.configuration.postLogoutRedirectUri, "UTF-8")
+        val logoutReturnUrl = URLEncoder.encode(postLogoutRedirectUri, "UTF-8")
         val clientId = URLEncoder.encode(this.configuration.clientId, "UTF-8")
         return "${this.configuration.logoutEndpoint}?client_id=$clientId&logout_uri=$logoutReturnUrl"
     }

@@ -8,5 +8,9 @@ import net.openid.appauth.AuthorizationServiceConfiguration
 interface LogoutUrlBuilder {
 
     // Form the full logout request URL with query string parameters
-    fun getEndSessionRequestUrl(metadata: AuthorizationServiceConfiguration, idTokenHint: String): String
+    fun getEndSessionRequestUrl(
+        metadata: AuthorizationServiceConfiguration,
+        postLogoutRedirectUri: String,
+        idTokenHint: String
+    ): String
 }

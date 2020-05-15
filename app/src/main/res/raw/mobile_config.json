@@ -3,11 +3,15 @@
     "apiBaseUrl": "https://api.authguidance-examples.com/api"
   },
   "oauth": {
-    "authority": "https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_mZ3NBYpTo",
-    "clientId": "3tajc2adp5t39pj4c9gudbiook",
-    "redirectUri": "https://web.authguidance-examples.com/mobile/postlogin.html",
-    "logoutEndpoint": "https://login.authguidance-examples.com/logout",
-    "postLogoutRedirectUri": "https://web.authguidance-examples.com/mobile/postlogout.html",
-    "scope": "openid profile email"
+    "authority":              "https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_mZ3NBYpTo",
+    "clientId":               "33e7b58s51oof5lbj77qa0qhbe",
+    "webDomain":              "web.authguidance-examples.com",
+    "loginRedirectPath":      "/mobile-oauth/postlogin.html",
+    "postLogoutRedirectPath": "/mobile-oauth/postlogout.html",
+    "deepLinkDomain":         "authguidance-examples.com",
+    "loginActivatePath":      "/oauth/callback",
+    "postLogoutActivatePath": "/oauth/logoutcallback",
+    "logoutEndpoint":         "https://login.authguidance-examples.com/logout",
+    "scope":                  "openid profile email"
   }
 }
