@@ -72,7 +72,8 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
                     android:scheme="https"
-                    android:host="authguidance-examples.com" />
+                    android:host="authguidance-examples.com"
+                    android:path="/" />
             </intent-filter>
         </activity>
     </application>
