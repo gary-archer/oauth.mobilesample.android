@@ -107,7 +107,7 @@ class MainActivity : AppCompatActivity() {
             // Do the main view model initialisation
             this.binding.model!!.initialise(this.applicationContext)
 
-            // Load the main navigation view
+            // Load the main view
             this.navigateStart()
 
             // Send an initial load event to other views
@@ -116,7 +116,7 @@ class MainActivity : AppCompatActivity() {
         } catch (ex: Throwable) {
 
             // Display the startup error details
-            this.handleException(ex)
+            this.handleError(ex)
         }
     }
 
@@ -232,6 +232,10 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
+        // Clear any existing errors
+        val errorFragment = this.supportFragmentManager.findFragmentById(R.id.main_error_summary_fragment) as ErrorSummaryFragment
+        errorFragment.clearError()
+
         // Move to the home view
         this.navigationHelper.navigateTo(R.id.companies_fragment)
 
@@ -262,7 +266,7 @@ class MainActivity : AppCompatActivity() {
 
                 // Report errors such as those looking up endpoints
                 model.isTopMost = true
-                that.handleException(ex)
+                that.handleError(ex)
             }
         }
     }
@@ -291,7 +295,7 @@ class MainActivity : AppCompatActivity() {
 
                 // Report errors on the main thread
                 withContext(Dispatchers.Main) {
-                    that.handleException(ex)
+                    that.handleError(ex)
                 }
 
             } finally {
@@ -382,7 +386,7 @@ class MainActivity : AppCompatActivity() {
     /*
      * Receive unhandled exceptions and navigate to the error fragment
      */
-    private fun handleException(exception: Throwable) {
+    private fun handleError(exception: Throwable) {
 
         // Get the error as a known object
         val handler = ErrorHandler()
