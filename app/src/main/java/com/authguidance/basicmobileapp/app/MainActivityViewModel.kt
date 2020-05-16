@@ -9,7 +9,7 @@ import com.authguidance.basicmobileapp.views.utilities.DeviceSecurity
 import com.authguidance.basicmobileapp.views.utilities.ViewManager
 
 /*
- * A view model class to contain global objects and state
+ * The view model class for the main activity
  */
 class MainActivityViewModel(
     val onLoadStateChanged: (loaded: Boolean) -> Unit,

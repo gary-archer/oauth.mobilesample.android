@@ -3,6 +3,7 @@ package com.authguidance.basicmobileapp.app
 import android.app.admin.DevicePolicyManager
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.NavHostFragment
@@ -30,9 +31,8 @@ import org.greenrobot.eventbus.EventBus
  */
 class MainActivity : AppCompatActivity() {
 
-    // Model related
+    // The binding contains our view model
     private lateinit var binding: ActivityMainBinding
-    private lateinit var childViewModelState: ChildViewModelState
 
     // Navigation properties
     private lateinit var navigationHelper: NavigationHelper
@@ -45,9 +45,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         this.app().setMainActivity(this)
 
-        // Create our view model, and supply state needed for child fragments to create theirs
+        // Create our view model
         val model = MainActivityViewModel(this::onLoadStateChanged, this::onLoginRequired)
-        this.createChildViewModelState(model)
+
+        // Populate the shared view model used by child fragments
+        this.createSharedViewModel(model)
 
         // Inflate the view, which will trigger child fragments to run
         this.binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -62,36 +64,38 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*
-     * Create an object used to push main activity data to child fragments
-     * The goal is a coding model similar to how child views bind to parent properties in React or SwiftUI
+     * Create or update a view model with data needed by child fragments
      */
-    private fun createChildViewModelState(model: MainActivityViewModel) {
+    private fun createSharedViewModel(model: MainActivityViewModel) {
 
-        val state = ChildViewModelState(model::apiClient, model.viewManager)
+        // Get the model from the Android system, which will be created the first time
+        val sharedViewModel: MainActivitySharedViewModel by viewModels()
+
+        // Properties related to fragment data access
+        sharedViewModel.apiClientAccessor = model::apiClient
+        sharedViewModel.viewManager = model.viewManager
 
         // Properties passed to the header buttons fragment
-        state.isDataLoadedAccessor = model::isDataLoaded
-        state.onHome = this::onHome
-        state.onReload = this::onReloadData
-        state.onExpireAccessToken = this::onExpireAccessToken
-        state.onExpireRefreshToken = this::onExpireRefreshToken
-        state.onLogout = this::onStartLogout
+        sharedViewModel.isDataLoadedAccessor = model::isDataLoaded
+        sharedViewModel.onHome = this::onHome
+        sharedViewModel.onReload = this::onReloadData
+        sharedViewModel.onExpireAccessToken = this::onExpireAccessToken
+        sharedViewModel.onExpireRefreshToken = this::onExpireRefreshToken
+        sharedViewModel.onLogout = this::onStartLogout
 
         // Properties passed to the user info fragment
-        state.shouldLoadUserInfoAccessor = {
+        sharedViewModel.shouldLoadUserInfoAccessor = {
                     model.isInitialised &&
                     model.isDeviceSecured &&
                     !this.navigationHelper.isInLoginRequired()
         }
 
         // Properties passed to the session fragment
-        state.shouldShowSessionIdAccessor = {
+        sharedViewModel.shouldShowSessionIdAccessor = {
                     model.isInitialised &&
                     model.isDeviceSecured &&
                     model.authenticator!!.isLoggedIn()
         }
-
-        this.childViewModelState = state
     }
 
     /*
@@ -405,13 +409,6 @@ class MainActivity : AppCompatActivity() {
      */
     private fun app(): Application {
         return this.application as Application
-    }
-
-    /*
-     * Supply limited parent state to child fragments
-     */
-    fun getChildViewModelState(): ChildViewModelState {
-        return this.childViewModelState
     }
 
     /*

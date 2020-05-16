@@ -4,7 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.authguidance.basicmobileapp.app.MainActivity
+import androidx.fragment.app.activityViewModels
+import com.authguidance.basicmobileapp.app.MainActivitySharedViewModel
 import com.authguidance.basicmobileapp.databinding.FragmentHeaderButtonsBinding
 
 /*
@@ -26,15 +27,17 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
         // Inflate the layout
         this.binding = FragmentHeaderButtonsBinding.inflate(inflater, container, false)
 
-        // Create the view model
-        val activityState = (this.context as MainActivity).getChildViewModelState()
+        // Get details that the main activity supplies to child views
+        val sharedViewModel: MainActivitySharedViewModel by activityViewModels()
+
+        // Create this fragment's view model
         this.binding.model = HeaderButtonsViewModel(
-            activityState.isDataLoadedAccessor,
-            activityState.onHome,
-            activityState.onReload,
-            activityState.onExpireAccessToken,
-            activityState.onExpireRefreshToken,
-            activityState.onLogout
+            sharedViewModel.isDataLoadedAccessor,
+            sharedViewModel.onHome,
+            sharedViewModel.onReload,
+            sharedViewModel.onExpireAccessToken,
+            sharedViewModel.onExpireRefreshToken,
+            sharedViewModel.onLogout
         )
 
         return this.binding.root

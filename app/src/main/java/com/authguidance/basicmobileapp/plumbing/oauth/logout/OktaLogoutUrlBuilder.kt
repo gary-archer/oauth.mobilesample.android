@@ -19,8 +19,8 @@ class OktaLogoutUrlBuilder(val configuration: OAuthConfiguration) : LogoutUrlBui
     ): String {
 
         val endSessionUrl = "${this.configuration.authority}/${this.configuration.logoutEndpoint}"
-        val postLogoutRedirectUri = URLEncoder.encode(postLogoutRedirectUri, "UTF-8")
+        val redirectUri = URLEncoder.encode(postLogoutRedirectUri, "UTF-8")
         val encodedIdToken = URLEncoder.encode(idTokenHint, "UTF-8")
-        return "$endSessionUrl?post_logout_redirect_uri=$postLogoutRedirectUri&id_token_hint=$encodedIdToken"
+        return "$endSessionUrl?post_logout_redirect_uri=$redirectUri&id_token_hint=$encodedIdToken"
     }
 }

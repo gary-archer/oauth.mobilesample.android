@@ -4,9 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.api.client.ApiRequestOptions
-import com.authguidance.basicmobileapp.app.MainActivity
+import com.authguidance.basicmobileapp.app.MainActivitySharedViewModel
 import com.authguidance.basicmobileapp.databinding.FragmentUserInfoBinding
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
 import com.authguidance.basicmobileapp.plumbing.events.InitialLoadEvent
@@ -40,12 +41,14 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
         // Inflate the view
         this.binding = FragmentUserInfoBinding.inflate(inflater, container, false)
 
-        // Create and add the model
-        val activityState = (this.context as MainActivity).getChildViewModelState()
+        // Get details that the main activity supplies to child views
+        val sharedViewModel: MainActivitySharedViewModel by activityViewModels()
+
+        // Create our own view model
         this.binding.model = UserInfoViewModel(
-            activityState.apiClientAccessor,
-            activityState.viewManager,
-            activityState.shouldLoadUserInfoAccessor
+            sharedViewModel.apiClientAccessor,
+            sharedViewModel.viewManager,
+            sharedViewModel.shouldLoadUserInfoAccessor
         )
 
         return binding.root

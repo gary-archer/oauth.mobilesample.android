@@ -4,11 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.api.client.ApiRequestOptions
-import com.authguidance.basicmobileapp.app.MainActivity
+import com.authguidance.basicmobileapp.app.MainActivitySharedViewModel
 import com.authguidance.basicmobileapp.databinding.FragmentTransactionsBinding
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
@@ -46,11 +47,13 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
         // Get data passed in
         val companyId = this.arguments?.getString(Constants.ARG_COMPANY_ID, "") ?: "0"
 
-        // Create and add the model
-        val activityState = (this.context as MainActivity).getChildViewModelState()
+        // Get details that the main activity supplies to child views
+        val sharedViewModel: MainActivitySharedViewModel by activityViewModels()
+
+        // Create our own view model
         this.binding.model = TransactionsViewModel(
-            activityState.apiClientAccessor,
-            activityState.viewManager,
+            sharedViewModel.apiClientAccessor,
+            sharedViewModel.viewManager,
             companyId,
             this.getString(R.string.transactions_title))
 

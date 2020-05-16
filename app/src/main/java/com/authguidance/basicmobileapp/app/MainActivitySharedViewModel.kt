@@ -1,16 +1,18 @@
 package com.authguidance.basicmobileapp.app
 
+import androidx.lifecycle.ViewModel
 import com.authguidance.basicmobileapp.api.client.ApiClient
 import com.authguidance.basicmobileapp.views.utilities.ViewManager
 
 /*
- * The goal of this class is a coding model similar to how React or SwiftUI initialise children
- * The main activity pushes fields to this class which child fragments can access
+ * Details from the main activity that are shared with child fragments
  */
-class ChildViewModelState(
-    val apiClientAccessor: () -> ApiClient?,
-    val viewManager: ViewManager
-) {
+class MainActivitySharedViewModel : ViewModel() {
+
+    // Properties used by fragments that do data access
+    lateinit var apiClientAccessor: () -> ApiClient?
+    lateinit var viewManager: ViewManager
+
     // Header buttons are enabled when this evaluates to true
     lateinit var isDataLoadedAccessor: () -> Boolean
 

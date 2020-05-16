@@ -4,8 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import com.authguidance.basicmobileapp.R
-import com.authguidance.basicmobileapp.app.MainActivity
+import com.authguidance.basicmobileapp.app.MainActivitySharedViewModel
 import com.authguidance.basicmobileapp.databinding.FragmentSessionBinding
 import com.authguidance.basicmobileapp.plumbing.events.InitialLoadEvent
 import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
@@ -34,11 +35,13 @@ class SessionFragment : androidx.fragment.app.Fragment() {
         // Inflate the view
         this.binding = FragmentSessionBinding.inflate(inflater, container, false)
 
-        // Create and add the model
-        val activityState = (this.context as MainActivity).getChildViewModelState()
+        // Get details that the main activity supplies to child views
+        val sharedViewModel: MainActivitySharedViewModel by activityViewModels()
+
+        // Create our own view model
         this.binding.model = SessionViewModel(
-            activityState.apiClientAccessor,
-            activityState.shouldShowSessionIdAccessor,
+            sharedViewModel.apiClientAccessor,
+            sharedViewModel.shouldShowSessionIdAccessor,
             this.getString(R.string.api_session_id))
 
         return this.binding.root
