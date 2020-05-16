@@ -4,14 +4,14 @@
   },
   "oauth": {
     "authority":              "https://dev-843469.oktapreview.com/oauth2/default",
-    "clientId":               "0oare6xbk7sdET0Vl0h7",
+    "clientId":               "0oangdi29uheQ83wQ0h7",
     "webDomain":              "web.mycompany.com",
-    "loginRedirectPath":      "/mobile/postlogin.html",
-    "postLogoutRedirectPath": "/mobile/postlogout.html",
+    "loginRedirectPath":      "/android/postlogin.html",
+    "postLogoutRedirectPath": "/android/postlogout.html",
     "deepLinkDomain":         "authguidance-examples.com",
     "loginActivatePath":      "/oauth/callback",
     "postLogoutActivatePath": "/oauth/logoutcallback",
-    "logoutEndpoint":         "",
+    "logoutEndpoint":         "v1/logout",
     "scope":                  "openid profile email offline_access"
   }
 }
