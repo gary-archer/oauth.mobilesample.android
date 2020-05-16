@@ -1,14 +1,14 @@
 package com.authguidance.basicmobileapp.app
 
-import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 
 /*
  * Use the technique from the below link to prevent the main activity being duplicated during deep linking
  * https://labs.comcast.com/deep-linking-through-a-multiple-activity-stack-on-android
  */
-class DeepLinkForwardingActivity : Activity() {
+class DeepLinkForwardingActivity : AppCompatActivity() {
 
     /*
      * Application startup deep links

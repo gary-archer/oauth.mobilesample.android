@@ -325,7 +325,7 @@ class MainActivity : AppCompatActivity() {
     /*
      * Deep linking is disabled unless our activity is top most
      */
-    fun isTopMostActivity(): Boolean {
+    fun isTopMost(): Boolean {
         return this.binding.model!!.isTopMost
     }
 

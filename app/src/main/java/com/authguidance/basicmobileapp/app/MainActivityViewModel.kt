@@ -101,7 +101,8 @@ class MainActivityViewModel(
     fun finishLogin(
         responseIntent: Intent?,
         onSuccess: () -> Unit,
-        onError: (Throwable) -> Unit) {
+        onError: (Throwable) -> Unit
+    ) {
 
         if (responseIntent == null) {
             this.isTopMost = true

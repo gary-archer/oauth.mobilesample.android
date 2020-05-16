@@ -24,6 +24,6 @@ class Application : android.app.Application() {
             return true
         }
 
-        return this.mainActivity?.isTopMostActivity() ?: false
+        return this.mainActivity?.isTopMost() ?: false
     }
 }
