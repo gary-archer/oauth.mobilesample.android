@@ -9,7 +9,7 @@ import com.authguidance.basicmobileapp.plumbing.errors.UIError
 class ErrorSummaryViewModel(val onShowDetails: (dialogTitle: String, error: UIError) -> Unit) : BaseObservable() {
 
     // Properties
-    private var hyperlinkText: String? = null
+    var hyperlinkText: String? = null
     private var dialogTitle: String? = null
     private var error: UIError? = null
 
