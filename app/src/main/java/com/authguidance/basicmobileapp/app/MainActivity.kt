@@ -20,10 +20,6 @@ import com.authguidance.basicmobileapp.views.headings.HeaderButtonsFragment
 import com.authguidance.basicmobileapp.views.utilities.Constants
 import com.authguidance.basicmobileapp.views.utilities.DeviceSecurity
 import com.authguidance.basicmobileapp.views.utilities.NavigationHelper
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 
 /*
@@ -79,8 +75,8 @@ class MainActivity : AppCompatActivity() {
         sharedViewModel.isDataLoadedAccessor = model::isDataLoaded
         sharedViewModel.onHome = this::onHome
         sharedViewModel.onReload = this::onReloadData
-        sharedViewModel.onExpireAccessToken = this::onExpireAccessToken
-        sharedViewModel.onExpireRefreshToken = this::onExpireRefreshToken
+        sharedViewModel.onExpireAccessToken = model::onExpireAccessToken
+        sharedViewModel.onExpireRefreshToken = model::onExpireRefreshToken
         sharedViewModel.onLogout = this::onStartLogout
 
         // Properties passed to the user info fragment
@@ -105,7 +101,7 @@ class MainActivity : AppCompatActivity() {
 
         try {
             // Do the main view model initialisation
-            this.binding.model!!.initialise(this.applicationContext)
+            this.binding.model?.initialise(this.applicationContext)
 
             // Load the main view
             this.navigateStart()
@@ -125,9 +121,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun navigateStart() {
 
-        val model = this.binding.model!!
-
-        if (!model.isDeviceSecured) {
+        if (!this.binding.model!!.isDeviceSecured) {
 
             // If the device is not secured we will move to a view that prompts the user to do so
             this.navigationHelper.navigateTo(R.id.device_not_secured_fragment)
@@ -150,29 +144,22 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
 
         super.onActivityResult(requestCode, resultCode, data)
-        val model = this.binding.model!!
 
-        // Handle login responses and reset state
+        // Handle login responses
         if (requestCode == Constants.LOGIN_REDIRECT_REQUEST_CODE) {
-
-            model.isTopMost = true
-            if (data != null) {
-                this.onFinishLogin(data)
-            }
+            this.onFinishLogin(data)
         }
 
         // Handle logout responses and reset state
         else if (requestCode == Constants.LOGOUT_REDIRECT_REQUEST_CODE) {
-
-            model.isTopMost = true
             this.onFinishLogout()
         }
 
         // Handle returning from the lock screen
         else if (requestCode == Constants.SET_LOCK_SCREEN_REQUEST_CODE) {
 
-            model.isTopMost = true
-            model.isDeviceSecured = DeviceSecurity.isDeviceSecured(this)
+            this.binding.model?.isTopMost = true
+            this.binding.model?.isDeviceSecured = DeviceSecurity.isDeviceSecured(this)
             this.navigateStart()
         }
     }
@@ -196,7 +183,7 @@ class MainActivity : AppCompatActivity() {
 
         val intent = Intent(DevicePolicyManager.ACTION_SET_NEW_PASSWORD)
         this.startActivityForResult(intent, Constants.SET_LOCK_SCREEN_REQUEST_CODE)
-        this.binding.model!!.isTopMost = false
+        this.binding.model?.isTopMost = false
     }
 
     /*
@@ -205,8 +192,7 @@ class MainActivity : AppCompatActivity() {
     private fun onLoadStateChanged(loaded: Boolean) {
 
         // Update our state
-        val model = this.binding.model!!
-        model.isDataLoaded = loaded
+        this.binding.model?.isDataLoaded = loaded
 
         // Ask the header buttons fragment to update
         val buttonFragment = this.supportFragmentManager.findFragmentById(R.id.header_buttons_fragment) as HeaderButtonsFragment
@@ -217,7 +203,57 @@ class MainActivity : AppCompatActivity() {
      * Start a login redirect when the view manager informs us that a permanent 401 has occurred
      */
     private fun onLoginRequired() {
-        this.startLogin()
+        this.binding.model?.startLogin(this, this::handleError)
+    }
+
+    /*
+     * Finish a login when we receive the response intent
+     */
+    private fun onFinishLogin(responseIntent: Intent?) {
+
+        // Reload data after login
+        val onSuccess = {
+            this.onReloadData(false)
+        }
+
+        this.binding.model?.finishLogin(responseIntent, onSuccess, this::handleError)
+    }
+
+    /*
+     * Remove tokens and redirect to remove the authorization server session cookie
+     */
+    private fun onStartLogout() {
+
+        val onError = { ex: Throwable ->
+
+            // On error, only output logout errors to the console rather than impacting the end user
+            val uiError = ErrorHandler().fromException(ex)
+            if (!uiError.errorCode.equals(ErrorCodes.redirectCancelled)) {
+                ErrorConsoleReporter.output(uiError, this)
+            }
+
+            // Move to the login required view
+            this.onFinishLogout()
+        }
+
+        // Ask the model to do the work
+        this.binding.model?.startLogout(this, onError)
+    }
+
+    /*
+     * Perform post logout actions
+     */
+    private fun onFinishLogout() {
+
+        // Update state and free resources
+        this.binding.model?.finishLogout()
+        this.onLoadStateChanged(false)
+
+        // Move to the login required page
+        this.navigationHelper.navigateTo(R.id.login_required_fragment)
+
+        // Send an event to fragments that should no longer be visible
+        EventBus.getDefault().post(UnloadEvent())
     }
 
     /*
@@ -246,141 +282,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*
-     * Start the login redirect
-     */
-    private fun startLogin() {
-
-        val model = this.binding.model!!
-        model.isTopMost = false
-
-        // Run on the UI thread since we present UI elements
-        CoroutineScope(Dispatchers.Main).launch {
-
-            val that = this@MainActivity
-            try {
-
-                // Start the redirect
-                model.authenticator!!.startLogin(that, Constants.LOGIN_REDIRECT_REQUEST_CODE)
-
-            } catch (ex: Throwable) {
-
-                // Report errors such as those looking up endpoints
-                model.isTopMost = true
-                that.handleError(ex)
-            }
-        }
-    }
-
-    /*
-     * After the post login page executes, we receive the login response here
-     */
-    private fun onFinishLogin(loginResponseIntent: Intent) {
-
-        val model = this.binding.model!!
-
-        // Switch to a background thread to perform the code exchange
-        CoroutineScope(Dispatchers.IO).launch {
-
-            val that = this@MainActivity
-            try {
-                // Handle completion after login success, which will exchange the authorization code for tokens
-                model.authenticator!!.finishLogin(loginResponseIntent)
-
-                // Reload data after logging in
-                withContext(Dispatchers.Main) {
-                    that.onReloadData(false)
-                }
-
-            } catch (ex: Throwable) {
-
-                // Report errors on the main thread
-                withContext(Dispatchers.Main) {
-                    that.handleError(ex)
-                }
-
-            } finally {
-
-                // Allow deep links again, once the activity is topmost
-                model.isTopMost = true
-            }
-        }
-    }
-
-    /*
-     * Remove tokens and navigate to login required
-     */
-    private fun onStartLogout() {
-
-        val model = this.binding.model!!
-        model.isTopMost = false
-
-        // Run on the UI thread since we present UI elements
-        CoroutineScope(Dispatchers.Main).launch {
-
-            val that = this@MainActivity
-            try {
-
-                // Trigger the logout process, which will remove tokens and redirect to clear the OAuth session cookie
-                model.authenticator!!.startLogout(that, Constants.LOGOUT_REDIRECT_REQUEST_CODE)
-
-            } catch (ex: Throwable) {
-
-                // On error, only output logout errors to the console rather than impacting the end user
-                val uiError = ErrorHandler().fromException(ex)
-                if (!uiError.errorCode.equals(ErrorCodes.redirectCancelled)) {
-                    ErrorConsoleReporter.output(uiError, that)
-                }
-
-                // Move to the login required view and update UI state
-                that.onFinishLogout()
-            }
-        }
-    }
-
-    /*
-     * Free resources and update the UI when we receive the logout response
-     */
-    private fun onFinishLogout() {
-
-        // Free logout resources
-        val model = this.binding.model!!
-        model.authenticator!!.finishLogout()
-
-        // Update state
-        this.onLoadStateChanged(false)
-        model.isTopMost = true
-
-        // Move to the login required page
-        this.navigationHelper.navigateTo(R.id.login_required_fragment)
-
-        // Send an event to fragments that should no longer be visible
-        EventBus.getDefault().post(UnloadEvent())
-    }
-
-    /*
      * Publish an event to update all active views
      */
     private fun onReloadData(causeError: Boolean) {
 
-        val model = this.binding.model!!
-        model.viewManager.setViewCount(2)
+        this.binding.model?.viewManager?.setViewCount(2)
         EventBus.getDefault().post(ReloadEvent(causeError))
-    }
-
-    /*
-     * Update token storage to make the access token act like it is expired
-     */
-    private fun onExpireAccessToken() {
-        val model = this.binding.model!!
-        model.authenticator!!.expireAccessToken()
-    }
-
-    /*
-     * Update token storage to make the refresh token act like it is expired
-     */
-    private fun onExpireRefreshToken() {
-        val model = this.binding.model!!
-        model.authenticator!!.expireRefreshToken()
     }
 
     /*
@@ -419,8 +326,7 @@ class MainActivity : AppCompatActivity() {
      * Deep linking is disabled unless our activity is top most
      */
     fun isTopMostActivity(): Boolean {
-        val model = this.binding.model!!
-        return model.isTopMost
+        return this.binding.model!!.isTopMost
     }
 
     /*

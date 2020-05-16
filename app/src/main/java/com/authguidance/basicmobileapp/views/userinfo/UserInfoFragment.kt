@@ -113,8 +113,7 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
         }
 
         // Ask the model class to do the work
-        val model = this.binding.model!!
-        model.callApi(
+        this.binding.model?.callApi(
             ApiRequestOptions(causeError),
             onError
         )
@@ -126,7 +125,7 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
     fun clearData() {
 
         // Clear the model
-        this.binding.model!!.setClaims(null)
+        this.binding.model?.setClaims(null)
 
         // Also ensure that any errors are cleared
         val errorFragment = this.childFragmentManager.findFragmentById(R.id.userinfo_error_summary_fragment) as ErrorSummaryFragment

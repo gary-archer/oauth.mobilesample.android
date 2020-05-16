@@ -120,8 +120,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
         }
 
         // Ask the model class to do the work
-        val model = this.binding.model!!
-        model.callApi(
+        this.binding.model?.callApi(
             ApiRequestOptions(causeError),
             onSuccess,
             onError
@@ -134,8 +133,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
     private fun renderData() {
 
         // Get view model items from the raw data
-        val model = this.binding.model!!
-        val viewModelItems = model.transactions.map { TransactionItemViewModel(it) }
+        val viewModelItems = this.binding.model!!.transactions.map { TransactionItemViewModel(it) }
 
         // Render them via an adapter
         val list = this.binding.listTransactions

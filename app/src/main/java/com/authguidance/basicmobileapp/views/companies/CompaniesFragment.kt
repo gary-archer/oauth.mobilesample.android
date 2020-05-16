@@ -102,8 +102,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
         }
 
         // Ask the model class to do the work
-        val model = this.binding.model!!
-        model.callApi(
+        this.binding.model?.callApi(
             ApiRequestOptions(causeError),
             onSuccess,
             onError
@@ -116,8 +115,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
     private fun renderData() {
 
         // Get view model items from the raw data
-        val model = this.binding.model!!
-        val viewModelItems = model.companies.map { CompanyItemViewModel(it) }
+        val viewModelItems = this.binding.model!!.companies.map { CompanyItemViewModel(it) }
 
         // When a company is clicked we will navigate to transactions for the clicked company id
         val onItemClick = { viewModelItem: CompanyItemViewModel ->
