@@ -47,7 +47,7 @@
             </intent-filter>
         </activity>
 
-        <!-- Our custom receiver activity for logout responses, since AppAuth does not yet support logout -->
+        <!-- Our custom receiver activity for logout responses -->
         <activity android:name=".plumbing.oauth.logout.LogoutRedirectUriReceiverActivity">
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
