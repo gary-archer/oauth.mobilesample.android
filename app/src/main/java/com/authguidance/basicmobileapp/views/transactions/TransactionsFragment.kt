@@ -11,15 +11,10 @@ import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.api.client.ApiRequestOptions
 import com.authguidance.basicmobileapp.app.MainActivitySharedViewModel
 import com.authguidance.basicmobileapp.databinding.FragmentTransactionsBinding
-import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
 import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
 import com.authguidance.basicmobileapp.views.errors.ErrorSummaryFragment
 import com.authguidance.basicmobileapp.views.utilities.Constants
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -92,89 +87,45 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
      */
     private fun loadData(causeError: Boolean) {
 
-        // Get the model
-        val model = this.binding.model!!
-
-        // Do not try to load API data if the app is not initialised yet
-        val apiClient = model.apiClientAccessor()
-        if (apiClient == null) {
-            model.viewManager.onViewLoaded()
-            return
-        }
-
-        // Inform the view manager so that a loading state can be rendered
-        model.viewManager.onViewLoading()
-
-        // Initialise for this request
+        // Clear any errors from last time
         val errorFragment = this.childFragmentManager.findFragmentById(R.id.transactions_error_summary_fragment) as ErrorSummaryFragment
         errorFragment.clearError()
-        val options = ApiRequestOptions(causeError)
 
-        CoroutineScope(Dispatchers.IO).launch {
+        // The success action renders the transactions returned
+        val onSuccess = {
+            this.renderData()
+        }
 
-            val that = this@TransactionsFragment
-            try {
-                // Call the API
-                val data = apiClient.getCompanyTransactions(model.companyId, options)
-                model.transactions = data.transactions.toList()
+        // The error action handles non success cases
+        val onError = { uiError: UIError, isExpected: Boolean ->
 
-                // Switch back to the UI thread for rendering
-                withContext(Dispatchers.Main) {
-                    model.viewManager.onViewLoaded()
-                    that.renderData()
-                }
+            if (isExpected) {
 
-            } catch (uiError: UIError) {
+                // Navigate back to the home view for expected errors such as trying to access unauthorized data
+                val args = Bundle()
+                findNavController().navigate(R.id.companies_fragment, args)
 
-                // Process errors on the main thread
-                val isExpected = that.handleApiError(uiError)
-                if (isExpected) {
+            } else {
 
-                    // Handle expected errors by navigating back to the home view
-                    withContext(Dispatchers.Main) {
-                        model.viewManager.onViewLoaded()
-                        val args = Bundle()
-                        findNavController().navigate(R.id.companies_fragment, args)
-                    }
+                // Display technical errors
+                errorFragment.reportError(
+                    this.getString(R.string.transactions_error_hyperlink),
+                    this.getString(R.string.transactions_error_dialogtitle),
+                    uiError
+                )
 
-                } else {
-
-                    withContext(Dispatchers.Main) {
-
-                        // Report other errors on the main thread
-                        model.viewManager.onViewLoadFailed(uiError)
-                        errorFragment.reportError(
-                            that.getString(R.string.transactions_error_hyperlink),
-                            that.getString(R.string.transactions_error_dialogtitle),
-                            uiError)
-
-                        // Render empty data
-                        model.transactions = ArrayList()
-                        that.renderData()
-                    }
-                }
+                // Update the display to clear any shown transactions
+                this.renderData()
             }
         }
-    }
 
-    /*
-     * Handle 'business errors' received from the API
-     */
-    private fun handleApiError(error: UIError): Boolean {
-
-        var isExpected = false
-
-        if (error.statusCode == 404 && error.errorCode.equals(ErrorCodes.companyNotFound)) {
-
-            // A deep link could provide an id such as 3, which is unauthorized
-            isExpected = true
-        } else if (error.statusCode == 400 && error.errorCode.equals(ErrorCodes.invalidCompanyId)) {
-
-            // A deep link could provide an invalid id value such as 'abc'
-            isExpected = true
-        }
-
-        return isExpected
+        // Ask the model class to do the work
+        val model = this.binding.model!!
+        model.callApi(
+            ApiRequestOptions(causeError),
+            onSuccess,
+            onError
+        )
     }
 
     /*

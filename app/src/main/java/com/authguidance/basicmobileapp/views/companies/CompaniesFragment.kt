@@ -15,10 +15,6 @@ import com.authguidance.basicmobileapp.plumbing.errors.UIError
 import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
 import com.authguidance.basicmobileapp.views.errors.ErrorSummaryFragment
 import com.authguidance.basicmobileapp.views.utilities.Constants
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -85,54 +81,33 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
      */
     private fun loadData(causeError: Boolean) {
 
-        // Get the model
-        val model = this.binding.model!!
-
-        // Do not try to load API data if the app is not initialised yet
-        val apiClient = model.apiClientAccessor()
-        if (apiClient == null) {
-            model.viewManager.onViewLoaded()
-            return
-        }
-
-        // Inform the view manager so that a loading state can be rendered
-        model.viewManager.onViewLoading()
-
-        // Initialise for this request
+        // Clear any errors from last time
         val errorFragment = this.childFragmentManager.findFragmentById(R.id.companies_error_summary_fragment) as ErrorSummaryFragment
         errorFragment.clearError()
-        val options = ApiRequestOptions(causeError)
 
-        val that = this@CompaniesFragment
-        CoroutineScope(Dispatchers.IO).launch {
-
-            try {
-                // Call the API
-                model.companies = apiClient.getCompanyList(options).toList()
-
-                // Render results on the main thread
-                withContext(Dispatchers.Main) {
-                    model.viewManager.onViewLoaded()
-                    that.renderData()
-                }
-
-            } catch (uiError: UIError) {
-
-                withContext(Dispatchers.Main) {
-
-                    // Process errors on the main thread
-                    model.viewManager.onViewLoadFailed(uiError)
-                    errorFragment.reportError(
-                        that.getString(R.string.companies_error_hyperlink),
-                        that.getString(R.string.companies_error_dialogtitle),
-                        uiError)
-
-                    // Clear any existing data
-                    model.companies = ArrayList()
-                    that.renderData()
-                }
-            }
+        // The success action renders the companies returned
+        val onSuccess = {
+            this.renderData()
         }
+
+        // The error action renders the error and also zero companies
+        val onError = { uiError: UIError ->
+
+            errorFragment.reportError(
+                this.getString(R.string.companies_error_hyperlink),
+                this.getString(R.string.companies_error_dialogtitle),
+                uiError)
+
+            this.renderData()
+        }
+
+        // Ask the model class to do the work
+        val model = this.binding.model!!
+        model.callApi(
+            ApiRequestOptions(causeError),
+            onSuccess,
+            onError
+        )
     }
 
     /*

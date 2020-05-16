@@ -14,10 +14,6 @@ import com.authguidance.basicmobileapp.plumbing.events.InitialLoadEvent
 import com.authguidance.basicmobileapp.plumbing.events.ReloadEvent
 import com.authguidance.basicmobileapp.plumbing.events.UnloadEvent
 import com.authguidance.basicmobileapp.views.errors.ErrorSummaryFragment
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -103,49 +99,25 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
      */
     private fun loadData(causeError: Boolean) {
 
-        // Only load if conditions are valid
-        val model = this.binding.model!!
-        if (!model.shouldLoadAccessor()) {
-            model.viewManager.onViewLoaded()
-            return
-        }
-
-        // Inform the view manager so that a loading state can be rendered
-        model.viewManager.onViewLoading()
-
-        // Initialise for this request
+        // Clear any errors from last time
         val errorFragment = this.childFragmentManager.findFragmentById(R.id.userinfo_error_summary_fragment) as ErrorSummaryFragment
         errorFragment.clearError()
-        val options = ApiRequestOptions(causeError)
 
-        // Try to get data
-        CoroutineScope(Dispatchers.IO).launch {
+        // Render errors on failure
+        val onError = { uiError: UIError ->
 
-            val that = this@UserInfoFragment
-            try {
-                // Call the API
-                val apiClient = model.apiClientAccessor()!!
-                val userClaims = apiClient.getUserInfo(options)
-
-                // Update the model and render results on the main thread
-                withContext(Dispatchers.Main) {
-                    model.viewManager.onViewLoaded()
-                    model.setClaims(userClaims)
-                }
-            } catch (uiError: UIError) {
-
-                model.setClaims(null)
-                withContext(Dispatchers.Main) {
-
-                    // Process errors on the main thread
-                    model.viewManager.onViewLoadFailed(uiError)
-                    errorFragment.reportError(
-                        that.getString(R.string.userinfo_error_hyperlink),
-                        that.getString(R.string.userinfo_error_dialogtitle),
-                        uiError)
-                }
-            }
+            errorFragment.reportError(
+                this.getString(R.string.userinfo_error_hyperlink),
+                this.getString(R.string.userinfo_error_dialogtitle),
+                uiError)
         }
+
+        // Ask the model class to do the work
+        val model = this.binding.model!!
+        model.callApi(
+            ApiRequestOptions(causeError),
+            onError
+        )
     }
 
     /*
