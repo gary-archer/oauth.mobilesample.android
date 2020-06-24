@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <!-- Makes model a property of this type on the fragment's binding object -->
+        <variable name="model"
+            type="com.authguidance.basicmobileapp.views.headings.HeaderButtonsViewModel" />
+    </data>
+    <TableLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:context=".views.headings.HeaderButtonsFragment">
+
+        <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_home"
+                    android:text="@string/home_button"
+                    android:onClick="@{() -> model.onHome()}"
+                    style="@style/ButtonHeaderStyle"/>
+
+            <com.authguidance.basicmobileapp.views.utilities.LongPressableButton
+                    android:id="@+id/btn_reload_data"
+                    android:text="@string/reload_button"
+                    android:enabled="@{model.sessionButtonsEnabled()}"
+                    style="@style/ButtonHeaderStyle"/>
+
+            <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_expire_access_token"
+                    android:text="@string/expire_access_token_button"
+                    android:enabled="@{model.sessionButtonsEnabled()}"
+                    android:onClick="@{() -> model.onExpireAccessToken()}"
+                    style="@style/ButtonHeaderStyle"/>
+
+            <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_expire_refresh_token"
+                    android:text="@string/expire_refresh_token_button"
+                    android:enabled="@{model.sessionButtonsEnabled()}"
+                    android:onClick="@{() -> model.onExpireRefreshToken()}"
+                    style="@style/ButtonHeaderStyle"/>
+
+            <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_logout"
+                    android:text="@string/logout_button"
+                    android:enabled="@{model.sessionButtonsEnabled()}"
+                    android:onClick="@{() -> model.onLogout()}"
+                    style="@style/ButtonHeaderStyle"/>
+        </TableRow>
+    </TableLayout>
+</layout>

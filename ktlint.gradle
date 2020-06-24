@@ -1,0 +1,27 @@
+repositories {
+    jcenter()
+}
+
+configurations {
+    ktlint
+}
+
+dependencies {
+    ktlint "com.pinterest:ktlint:0.37.0"
+}
+
+/*
+* Check our code against Kotlin coding standards
+*   https://proandroiddev.com/official-kotlin-style-guide-with-ktlint-4a649c172956
+*   https://developer.android.com/kotlin/style-guide
+*
+* Execute code quality checks via one of these commands from the Android Studio terminal
+*   bash ./gradlew ktlint --> on Mac OS / Linux
+*   ./gradlew ktlint      --> on Windows
+*/
+task ktlint(type: JavaExec, group: "verification") {
+    description = "Check Style for Kotlin Code"
+    classpath = configurations.ktlint
+    main = "com.pinterest.ktlint.Main"
+    args "src/**/*.kt"
+}
