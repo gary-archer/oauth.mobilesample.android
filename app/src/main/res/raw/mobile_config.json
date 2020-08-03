@@ -1,17 +1,17 @@
 {
   "app": {
-    "apiBaseUrl": "https://api.authguidance-examples.com/api"
+    "apiBaseUrl":             "https://api.authsamples.com/api"
   },
   "oauth": {
-    "authority":              "https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_mZ3NBYpTo",
-    "clientId":               "3tajc2adp5t39pj4c9gudbiook",
-    "webDomain":              "web.authguidance-examples.com",
+    "authority":              "https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_qqJgVeuTn",
+    "clientId":               "4co5uvgmse68utsekh7p2sc0lg",
+    "webDomain":              "mobile.authsamples.com",
     "loginRedirectPath":      "/mobile/postlogin.html",
     "postLogoutRedirectPath": "/mobile/postlogout.html",
-    "deepLinkDomain":         "authguidance-examples.com",
+    "deepLinkDomain":         "mobile.authsamples.com",
     "loginActivatePath":      "/oauth/callback",
     "postLogoutActivatePath": "/oauth/logoutcallback",
-    "logoutEndpoint":         "https://login.authguidance-examples.com/logout",
+    "logoutEndpoint":         "https://login.authsamples.com/logout",
     "scope":                  "openid profile email"
   }
 }

@@ -1,14 +1,14 @@
 {
   "app": {
-    "apiBaseUrl":             "https://api.mycompany.com/api"
+    "apiBaseUrl":             "https://api.mycompany.com:444/api"
   },
   "oauth": {
     "authority":              "https://dev-843469.oktapreview.com/oauth2/default",
     "clientId":               "0oangdi29uheQ83wQ0h7",
-    "webDomain":              "web.authguidance-examples.com",
+    "webDomain":              "mobile.authsamples.com",
     "loginRedirectPath":      "/mobile/postlogin.html",
     "postLogoutRedirectPath": "/mobile/postlogout.html",
-    "deepLinkDomain":         "authguidance-examples.com",
+    "deepLinkDomain":         "mobile.authsamples.com",
     "loginActivatePath":      "/oauth/callback",
     "postLogoutActivatePath": "/oauth/logoutcallback",
     "logoutEndpoint":         "v1/logout",
