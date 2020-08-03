@@ -42,7 +42,7 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data
                     android:scheme="https"
-                    android:host="authguidance-examples.com"
+                    android:host="mobile.authsamples.com"
                     android:path="/oauth/callback" />
             </intent-filter>
         </activity>
@@ -55,7 +55,7 @@
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data
                     android:scheme="https"
-                    android:host="authguidance-examples.com"
+                    android:host="mobile.authsamples.com"
                     android:path="/oauth/logoutcallback" />
             </intent-filter>
         </activity>
@@ -72,7 +72,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
                     android:scheme="https"
-                    android:host="authguidance-examples.com"
+                    android:host="mobile.authsamples.com"
                     android:path="/" />
             </intent-filter>
         </activity>

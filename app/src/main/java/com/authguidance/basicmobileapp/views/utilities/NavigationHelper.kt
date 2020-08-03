@@ -83,7 +83,7 @@ class NavigationHelper(
     }
 
     /*
-     * Navigate to a deep linking URL such as 'https://authguidance-examples.com#company=2'
+     * Navigate to a deep linking URL such as 'https://mobile.authsamples.com#company=2'
      * Our example is simplistic since we only have a couple of screens
      */
     private fun deepLinkDoNavigate(url: String, activeFragment: Fragment?): Boolean {
@@ -93,7 +93,7 @@ class NavigationHelper(
 
         // Check for our deep linking URL
         val urlData = Uri.parse(url)
-        if (urlData.host?.toLowerCase(Locale.ROOT).equals("authguidance-examples.com")) {
+        if (urlData.host?.toLowerCase(Locale.ROOT).equals("mobile.authsamples.com")) {
 
             // The default action is to move to the company list
             newFragmentId = R.id.companies_fragment
