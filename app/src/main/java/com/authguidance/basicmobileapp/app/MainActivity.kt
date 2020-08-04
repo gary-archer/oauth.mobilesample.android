@@ -103,6 +103,7 @@ class MainActivity : AppCompatActivity() {
         try {
             // Do the main view model initialisation
             this.binding.model?.initialise(this.applicationContext)
+            this.navigationHelper.mobileBaseUrl = this.binding.model?.configuration!!.oauth.mobileBaseUrl
 
             // Load the main view
             this.navigateStart()

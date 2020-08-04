@@ -17,6 +17,7 @@ class NavigationHelper(
     val navHostFragment: NavHostFragment,
     val isDeviceSecuredAccessor: () -> Boolean
 ) {
+    lateinit var mobileBaseUrl: String
 
     /*
      * A utility method to navigate and manage the back stack
@@ -93,7 +94,10 @@ class NavigationHelper(
 
         // Check for our deep linking URL
         val urlData = Uri.parse(url)
-        if (urlData.host?.toLowerCase(Locale.ROOT).equals("mobile.authsamples.com")) {
+        val baseUrl = "${urlData.scheme}://${urlData.host}"
+        if (baseUrl.toLowerCase(Locale.ROOT).equals(this.mobileBaseUrl) &&
+            urlData.path?.toLowerCase(Locale.ROOT)?.startsWith("/basicmobileapp/deeplink", true)!!
+        ) {
 
             // The default action is to move to the company list
             newFragmentId = R.id.companies_fragment
