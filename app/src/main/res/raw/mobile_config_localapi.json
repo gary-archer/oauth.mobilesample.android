@@ -5,9 +5,10 @@
   "oauth": {
     "authority":              "https://dev-843469.oktapreview.com/oauth2/default",
     "clientId":               "0oangdi29uheQ83wQ0h7",
-    "mobileBaseUrl":          "https://mobile.authsamples.com",
-    "loginRedirectPath":      "/html/basicmobileapp/postlogin.html",
-    "postLogoutRedirectPath": "/html/basicmobileapp/postlogout.html",
+    "webBaseUrl":             "https://authsamples.com",
+    "loginRedirectPath":      "/apps/basicmobileapp/postlogin.html",
+    "postLogoutRedirectPath": "/apps/basicmobileapp/postlogout.html",
+    "deepLinkBaseUrl":        "https://mobile.authsamples.com",
     "logoutEndpoint":         "v1/logout",
     "scope":                  "openid profile email offline_access"
   }

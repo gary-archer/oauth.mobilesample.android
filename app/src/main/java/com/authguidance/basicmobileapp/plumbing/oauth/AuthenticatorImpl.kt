@@ -459,7 +459,7 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
      * https://mobile.authsamples.com/mobile/postlogin.html
      */
     private fun getLoginRedirectUri(): String {
-        return "${this.configuration.mobileBaseUrl}${this.configuration.loginRedirectPath}"
+        return "${this.configuration.webBaseUrl}${this.configuration.loginRedirectPath}"
     }
 
     /*
@@ -467,7 +467,7 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
      * https://web.mobile.authsamples.com/mobile/postlogout.html
      */
     private fun getPostLogoutRedirectUri(): String {
-        return "${this.configuration.mobileBaseUrl}${this.configuration.postLogoutRedirectPath}"
+        return "${this.configuration.webBaseUrl}${this.configuration.postLogoutRedirectPath}"
     }
 
     /*

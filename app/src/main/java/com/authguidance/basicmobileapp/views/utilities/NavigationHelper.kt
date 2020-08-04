@@ -17,7 +17,7 @@ class NavigationHelper(
     val navHostFragment: NavHostFragment,
     val isDeviceSecuredAccessor: () -> Boolean
 ) {
-    lateinit var mobileBaseUrl: String
+    lateinit var deepLinkBaseUrl: String
 
     /*
      * A utility method to navigate and manage the back stack
@@ -95,7 +95,7 @@ class NavigationHelper(
         // Check for our deep linking URL
         val urlData = Uri.parse(url)
         val baseUrl = "${urlData.scheme}://${urlData.host}"
-        if (baseUrl.toLowerCase(Locale.ROOT).equals(this.mobileBaseUrl) &&
+        if (baseUrl.toLowerCase(Locale.ROOT).equals(this.deepLinkBaseUrl) &&
             urlData.path?.toLowerCase(Locale.ROOT)?.startsWith("/basicmobileapp/deeplink", true)!!
         ) {
 
