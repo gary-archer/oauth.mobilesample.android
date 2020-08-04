@@ -77,4 +77,13 @@
             </intent-filter>
         </activity>
     </application>
+
+    <!-- The Android 11 SDK requires this extra section in order to use Custom Tabs -->
+    <queries>
+        <intent>
+            <action android:name=
+                "android.support.customtabs.action.CustomTabsService" />
+        </intent>
+    </queries>
+
 </manifest>
