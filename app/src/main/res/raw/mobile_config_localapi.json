@@ -6,11 +6,11 @@
     "authority":              "https://dev-843469.oktapreview.com/oauth2/default",
     "clientId":               "0oangdi29uheQ83wQ0h7",
     "webDomain":              "mobile.authsamples.com",
-    "loginRedirectPath":      "/mobile/postlogin.html",
-    "postLogoutRedirectPath": "/mobile/postlogout.html",
+    "loginRedirectPath":      "/html/basicmobileapp/postlogin.html",
+    "postLogoutRedirectPath": "/html/basicmobileapp/postlogout.html",
     "deepLinkDomain":         "mobile.authsamples.com",
-    "loginActivatePath":      "/oauth/callback",
-    "postLogoutActivatePath": "/oauth/logoutcallback",
+    "loginActivatePath":      "/basicmobileapp/oauth/callback",
+    "postLogoutActivatePath": "/basicmobileapp/oauth/logoutcallback",
     "logoutEndpoint":         "v1/logout",
     "scope":                  "openid profile email offline_access"
   }

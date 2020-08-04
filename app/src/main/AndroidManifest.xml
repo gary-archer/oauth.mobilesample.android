@@ -43,7 +43,7 @@
                 <data
                     android:scheme="https"
                     android:host="mobile.authsamples.com"
-                    android:path="/oauth/callback" />
+                    android:path="/basicmobileapp/oauth/callback" />
             </intent-filter>
         </activity>
 
@@ -56,7 +56,7 @@
                 <data
                     android:scheme="https"
                     android:host="mobile.authsamples.com"
-                    android:path="/oauth/logoutcallback" />
+                    android:path="/basicmobileapp/oauth/logoutcallback" />
             </intent-filter>
         </activity>
 
@@ -73,7 +73,7 @@
                 <data
                     android:scheme="https"
                     android:host="mobile.authsamples.com"
-                    android:path="/" />
+                    android:path="/basicmobileapp/link" />
             </intent-filter>
         </activity>
     </application>
