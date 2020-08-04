@@ -5,12 +5,9 @@
   "oauth": {
     "authority":              "https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_qqJgVeuTn",
     "clientId":               "3pj7bd0ff8h1klhok774303dq8",
-    "webDomain":              "mobile.authsamples.com",
+    "mobileBaseUrl":          "https://mobile.authsamples.com",
     "loginRedirectPath":      "/html/basicmobileapp/postlogin.html",
     "postLogoutRedirectPath": "/html/basicmobileapp/postlogout.html",
-    "deepLinkDomain":         "mobile.authsamples.com",
-    "loginActivatePath":      "/basicmobileapp/oauth/callback",
-    "postLogoutActivatePath": "/basicmobileapp/oauth/logoutcallback",
     "logoutEndpoint":         "https://login.authsamples.com/logout",
     "scope":                  "openid profile email"
   }

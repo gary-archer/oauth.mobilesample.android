@@ -73,7 +73,7 @@
                 <data
                     android:scheme="https"
                     android:host="mobile.authsamples.com"
-                    android:path="/basicmobileapp/link" />
+                    android:path="/basicmobileapp/deeplink" />
             </intent-filter>
         </activity>
     </application>
