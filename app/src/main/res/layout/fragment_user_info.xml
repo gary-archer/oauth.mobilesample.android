@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <!-- Makes model a property of this type on the fragment's binding object -->
+        <variable name="model"
+            type="com.authguidance.basicmobileapp.views.userinfo.UserInfoViewModel" />
+    </data>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:context=".views.userinfo.UserInfoFragment">
+
+        <!-- Show the logged in user name on success -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/logged_in_user"
+            android:text="@{model.getLoggedInUser()}"
+            style="@style/TextViewLabelStyle"/>
+
+        <!-- Show error summary details when there is an error getting user info -->
+        <fragment
+            android:id="@+id/userinfo_error_summary_fragment"
+            android:name="com.authguidance.basicmobileapp.views.errors.ErrorSummaryFragment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_error_summary"/>
+
+    </LinearLayout>
+</layout>

@@ -1,0 +1,17 @@
+/*
+ * Run with one of these commands:
+ *   bash ./gradlew detekt --> on Mac OS / Linux
+ *   ./gradlew detekt      --> on Windows
+ */
+
+apply plugin: 'io.gitlab.arturbosch.detekt'
+
+// Point to the configuration file with Kotlin style rules
+detekt {
+    config = files("$rootDir/detekt.yml")
+}
+
+// Include formatting rules
+dependencies {
+    detektPlugins 'io.gitlab.arturbosch.detekt:detekt-formatting:1.15.0'
+}

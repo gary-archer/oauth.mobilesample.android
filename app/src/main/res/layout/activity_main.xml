@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <!-- Makes model a property of this type on the activity's binding object -->
+        <variable name="model"
+            type="com.authguidance.basicmobileapp.app.MainActivityViewModel" />
+    </data>
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+        <!-- The title bar area shows the app name and the logged in user -->
+        <fragment
+            android:id="@+id/title_fragment"
+            android:name="com.authguidance.basicmobileapp.views.headings.TitleFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_title"/>
+
+        <!-- Next we show a row of buttons for testing data and token operations -->
+        <fragment
+            android:id="@+id/header_buttons_fragment"
+            android:name="com.authguidance.basicmobileapp.views.headings.HeaderButtonsFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_header_buttons"/>
+
+        <!-- When there is an application level error it is rendered via this fragment -->
+        <fragment
+            android:id="@+id/main_error_summary_fragment"
+            android:name="com.authguidance.basicmobileapp.views.errors.ErrorSummaryFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_error_summary"/>
+
+        <!-- Show the API session id -->
+        <fragment
+            android:id="@+id/session_fragment"
+            android:name="com.authguidance.basicmobileapp.views.headings.SessionFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_session"/>
+
+        <!-- The remainder is the main view, which gets swapped out as the user navigates -->
+        <fragment
+            android:id="@+id/nav_host_fragment"
+            android:name="androidx.navigation.fragment.NavHostFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:defaultNavHost="true"
+            app:navGraph="@navigation/nav_graph"/>
+    </LinearLayout>
+</layout>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <!-- Makes model a property of this type on the fragment's binding object -->
+        <variable name="model" type="com.authguidance.basicmobileapp.views.errors.ErrorListItemViewModel" />
+    </data>
+
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="vertical"
+                  android:padding="15dp">
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+            <TextView
+                    android:id="@+id/error_field"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@{model.line.name}"
+                    style="@style/TextViewLabelStyle"/>
+
+            <TextView
+                    android:id="@+id/error_value"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@{model.line.value}"
+                    android:textColor="@{model.line.valueColour}"
+                    style="@style/TextViewValueStyle"/>
+        </LinearLayout>
+
+        <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/divider"
+                android:layout_marginTop="10dp"/>
+
+    </LinearLayout>
+</layout>

@@ -1,0 +1,35 @@
+# Built application files
+*.apk
+*.ap_
+
+# Locally generated files
+.idea/*
+.idea/*
+.settings/*
+*.iml
+local.properties
+
+# Gradle files
+.gradle/
+build/
+
+# Generated files
+bin/
+gen/
+out/
+*.class
+
+# Log Files
+*.log
+
+# Android Studio temp files
+.navigation/
+captures/
+.externalNativeBuild
+
+# MacOS files
+.DS_Store
+
+# Keystore files
+# Uncomment the following line if you do not want to check your keystore files in.
+#*.jks
