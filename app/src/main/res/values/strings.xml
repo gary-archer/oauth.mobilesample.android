@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">OAuth 2.x Demo App</string>
+    <string name="app_name">OAuth Demo App</string>
     <string name="launch_icon_name">Demo</string>
 
     <string name="lock_title">Lock Screen</string>

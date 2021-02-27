@@ -33,16 +33,6 @@ class CompanyArrayAdapter(
 
         val currentCompanyViewModel = this.companies[position]
         holder.bind(currentCompanyViewModel)
-
-        // Load and set the image programmatically
-        val id = this.context.resources.getIdentifier(
-            "company_${currentCompanyViewModel.company.id}",
-            "drawable",
-            context.packageName
-        )
-        holder.layoutBinding.companyImageId.setImageResource(id)
-
-        // Handle the click event
         holder.onClick(currentCompanyViewModel, this.onClickListener)
     }
 
