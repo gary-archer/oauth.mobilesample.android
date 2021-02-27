@@ -9,6 +9,8 @@ data class Company(
 
     val name: String,
 
+    val region: String,
+
     val targetUsd: Int,
 
     val investmentUsd: Int,

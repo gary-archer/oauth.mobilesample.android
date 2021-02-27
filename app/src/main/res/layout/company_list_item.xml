@@ -24,24 +24,21 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"/>
 
-                <ImageView
-                        android:id="@+id/company_image_id"
-                        android:layout_weight="3"
-                        android:layout_width="0dp"
-                        android:layout_gravity="left"
-                        android:scaleType="fitStart"
-                        app:srcCompat="@mipmap/ic_launcher_round"
-                        style="@style/ImageRowValueStyle"
-                    />
-
                 <TextView
                         android:id="@+id/company_name"
-                        android:layout_weight="2"
+                        android:layout_weight="3"
                         android:layout_width="0dp"
-                        android:layout_gravity="left"
                         android:textStyle="bold"
                         android:text="@{model.company.name}"
-                        style="@style/ImageRowLabelStyle" />
+                        style="@style/ItemHeaderRowLabelStyle" />
+
+                <TextView
+                    android:id="@+id/company_region"
+                    android:layout_weight="2"
+                    android:layout_width="0dp"
+                    android:textStyle="bold"
+                    android:text="@{model.company.region}"
+                    style="@style/ItemHeaderRowLabelStyle" />
 
                 <View
                         android:layout_weight="1"
