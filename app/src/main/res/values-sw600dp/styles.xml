@@ -72,14 +72,8 @@
         <item name="android:textSize">28sp</item>
     </style>
 
-    <!-- The image in the companies view -->
-    <style name="ImageRowValueStyle">
-        <item name="android:gravity">center_vertical</item>
-        <item name="android:layout_height">60dp</item>
-    </style>
-
-    <!-- The image row text in the companies view -->
-    <style name="ImageRowLabelStyle" parent="TextViewHeaderStyle">
+    <!-- The header row text in the companies view -->
+    <style name="ItemHeaderRowLabelStyle" parent="TextViewHeaderStyle">
         <item name="android:gravity">center_vertical</item>
         <item name="android:layout_height">60dp</item>
     </style>
