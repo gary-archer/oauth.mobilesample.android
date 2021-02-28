@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <!-- Makes model a property of this type on the fragment's binding object -->
+        <import type="android.view.View"/>
+        <variable name="model"
+            type="com.authguidance.basicmobileapp.views.errors.ErrorDetailsViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minWidth="800dp"
+        android:orientation="vertical"
+        tools:context=".views.fragments.ErrorDetailsFragment">>
+
+        <androidx.appcompat.widget.Toolbar
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@color/primary">
+
+            <!-- Show the page title -->
+            <TextView
+                android:id="@+id/fragment_heading_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@{model.title}"
+                style="@style/TextViewHeaderStyle"/>
+
+            <!-- Show the top right close button -->
+            <ImageView
+                android:id="@+id/image_dismiss"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|right"
+                android:clickable="true"
+                android:onClick="@{() -> model.onDismiss()}"
+                android:background="@android:drawable/ic_menu_close_clear_cancel"/>
+        </androidx.appcompat.widget.Toolbar>
+
+        <!-- The error fragment is occupied by a list of fields -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/list_error_items"
+            tools:context=".views.fragments.ErrorDetailsFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+    </LinearLayout>
+</layout>

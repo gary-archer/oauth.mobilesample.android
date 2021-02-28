@@ -1,0 +1,90 @@
+<resources>
+
+    <!-- Our main theme uses Material blue colours -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:colorPrimary">@color/primary</item>
+        <item name="android:colorPrimaryDark">@color/primary_dark</item>
+        <item name="android:colorAccent">@color/accent</item>
+        <item name="android:textColorPrimary">@color/text_value</item>
+        <item name="android:textColor">@color/text_label</item>
+        <item name="android:navigationBarColor">@color/primary_dark</item>
+    </style>
+
+    <!-- Button style for the header buttons -->
+    <style name="ButtonHeaderStyle" parent="android:Widget.Button">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_marginLeft">2dp</item>
+        <item name="android:layout_marginRight">2dp</item>
+        <item name="android:minHeight">80dp</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:backgroundTint">@color/primary</item>
+    </style>
+
+    <!-- Button style for the Open System Settings button -->
+    <style name="ButtonSecureDeviceStyle" parent="android:Widget.Button">
+        <item name="android:layout_width">400dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_marginLeft">20dp</item>
+        <item name="android:layout_marginRight">20dp</item>
+        <item name="android:minHeight">80dp</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:backgroundTint">@color/text_pale_green</item>
+    </style>
+
+    <!-- The style for label text -->
+    <style name="TextViewLabelStyle" parent="android:Widget.TextView">
+        <item name="android:textColor">@color/text_label</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:layout_gravity">left</item>
+    </style>
+
+    <!-- The style for value text -->
+    <style name="TextViewValueStyle" parent="android:Widget.TextView">
+        <item name="android:textColor">@color/text_value</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:layout_gravity">left</item>
+    </style>
+
+    <!-- The style for money value text -->
+    <style name="TextViewMoneyStyle" parent="android:Widget.TextView">
+        <item name="android:textColor">@color/text_green</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:layout_gravity">left</item>
+    </style>
+
+    <!-- The style for error summary text -->
+    <style name="TextViewErrorSummaryStyle" parent="android:Widget.TextView">
+        <item name="android:textColor">@color/text_error</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:layout_gravity">center</item>
+    </style>
+
+    <!-- The style for header text -->
+    <style name="TextViewHeaderStyle" parent="android:Widget.TextView">
+        <item name="android:textColor">@color/text_value</item>
+        <item name="android:textSize">28sp</item>
+    </style>
+
+    <!-- The header row text in the companies view -->
+    <style name="ItemHeaderRowLabelStyle" parent="TextViewHeaderStyle">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:layout_height">60dp</item>
+    </style>
+
+    <!-- The style for the session id in small text -->
+    <style name="TextViewSessionIdStyle" parent="android:Widget.TextView">
+        <item name="android:textSize">18sp</item>
+        <item name="android:gravity">right</item>
+        <item name="android:layout_marginLeft">5dp</item>
+        <item name="android:layout_marginRight">5dp</item>
+        <item name="android:layout_marginBottom">5dp</item>
+    </style>
+
+</resources>

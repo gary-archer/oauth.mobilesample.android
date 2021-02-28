@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        package="com.authguidance.basicmobileapp">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+
+    <application
+            android:name="com.authguidance.basicmobileapp.app.Application"
+            android:allowBackup="true"
+            android:label="@string/launch_icon_name"
+            android:icon="@mipmap/ic_launcher"
+            android:roundIcon="@mipmap/ic_launcher_round"
+            android:networkSecurityConfig="@xml/network_security_config"
+            android:theme="@style/AppTheme"
+            tools:ignore="GoogleAppIndexingWarning,UnusedAttribute">
+
+        <!-- Our single activity uses single top which prevents recreating it when it is on top of the stack
+             Also we prevent activity restarts when the orientation is changed -->
+        <activity
+                android:name=".app.MainActivity"
+                android:launchMode="singleTop"
+                android:configChanges="orientation|screenSize">
+
+            <!-- The intent to launch the app -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+
+            <!-- Androidx navigation -->
+            <nav-graph android:value="@navigation/nav_graph" />
+        </activity>
+
+        <!-- Override the AppAuth activity to use our claimed HTTPS scheme for login responses -->
+        <activity android:name="net.openid.appauth.RedirectUriReceiverActivity">
+
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data
+                    android:scheme="https"
+                    android:host="mobile.authsamples.com"
+                    android:path="/basicmobileapp/oauth/callback" />
+            </intent-filter>
+        </activity>
+
+        <!-- Our custom receiver activity for logout responses -->
+        <activity android:name=".plumbing.oauth.logout.LogoutRedirectUriReceiverActivity">
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data
+                    android:scheme="https"
+                    android:host="mobile.authsamples.com"
+                    android:path="/basicmobileapp/oauth/logoutcallback" />
+            </intent-filter>
+        </activity>
+
+        <!-- A dedicated activity for handling other deep links in a controlled manner -->
+        <activity
+            android:name=".app.DeepLinkForwardingActivity"
+            android:launchMode="singleTask"
+            android:noHistory="true">
+
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="https"
+                    android:host="mobile.authsamples.com"
+                    android:path="/basicmobileapp/deeplink" />
+            </intent-filter>
+        </activity>
+    </application>
+
+    <!-- The Android 11 SDK requires this extra section in order to use Custom Tabs -->
+    <queries>
+        <intent>
+            <action android:name=
+                "android.support.customtabs.action.CustomTabsService" />
+        </intent>
+    </queries>
+
+</manifest>
