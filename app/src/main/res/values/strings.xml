@@ -19,8 +19,8 @@
     <string name="investment_usd">Investment USD</string>
     <string name="no_investors"># Investors</string>
 
-    <string name="transaction_id">Transaction Id</string>
-    <string name="investor_id">Investor Id</string>
+    <string name="transaction_id">Transaction ID</string>
+    <string name="investor_id">Investor ID</string>
     <string name="amount_usd">Amount USD</string>
 
     <string name="company_list_title">Company List</string>
