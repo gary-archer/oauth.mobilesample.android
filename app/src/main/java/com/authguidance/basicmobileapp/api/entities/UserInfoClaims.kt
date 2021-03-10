@@ -7,7 +7,5 @@ data class UserInfoClaims(
 
     val givenName: String,
 
-    val familyName: String,
-
-    val email: String
+    val familyName: String
 )
