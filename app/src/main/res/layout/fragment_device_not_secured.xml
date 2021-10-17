@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp"
+        tools:context=".views.security.DeviceNotSecuredFragment">
+
+        <!-- Show the user message -->
+        <TextView
+            android:id="@+id/device_not_secured_message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginBottom="10dp"
+            android:text="@string/device_not_secured_message"
+            style="@style/TextViewValueStyle" />
+
+        <!-- Show the green button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_open_device_settings"
+            android:text="@string/open_device_settings"
+            android:layout_gravity="center"
+            style="@style/ButtonSecureDeviceStyle"/>
+
+    </LinearLayout>
+</layout>

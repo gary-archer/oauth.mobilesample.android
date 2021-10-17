@@ -1,0 +1,54 @@
+<resources>
+    <string name="app_name">OAuth Demo App</string>
+    <string name="launch_icon_name">Demo</string>
+
+    <string name="lock_title">Lock Screen</string>
+    <string name="lock_body">To continue working with this app, please ensure that the device is secured by setting a lock screen method</string>
+    <string name="lock_settings">Settings</string>
+    <string name="lock_exit">Exit</string>
+    <string name="device_not_secured_message">Before using this app please configure a device PIN or password so that your data is secure</string>
+    <string name="open_device_settings">Open Settings / Security</string>
+
+    <string name="home_button">Home</string>
+    <string name="reload_button">Reload</string>
+    <string name="expire_access_token_button">Expire Access Token</string>
+    <string name="expire_refresh_token_button">Expire Refresh Token</string>
+    <string name="logout_button">Logout</string>
+
+    <string name="target_usd">Target USD</string>
+    <string name="investment_usd">Investment USD</string>
+    <string name="no_investors"># Investors</string>
+
+    <string name="transaction_id">Transaction ID</string>
+    <string name="investor_id">Investor ID</string>
+    <string name="amount_usd">Amount USD</string>
+
+    <string name="company_list_title">Company List</string>
+    <string name="transactions_title">Today\'s Transactions for Company %s</string>
+    <string name="login_required_title">Login Required</string>
+    <string name="error_title">Problem Encountered</string>
+    <string name="logged_out_message">You are logged out - click HOME to login</string>
+
+    <string name="main_error_hyperlink">Problem Encountered in Application</string>
+    <string name="main_error_dialogtitle">Application Error</string>
+    <string name="companies_error_hyperlink">Problem Encountered in Companies View</string>
+    <string name="companies_error_dialogtitle">Companies View Error</string>
+    <string name="transactions_error_hyperlink">Problem Encountered in Transactions View</string>
+    <string name="transactions_error_dialogtitle">Transactions View Error</string>
+    <string name="userinfo_error_hyperlink">Problem Encountered</string>
+    <string name="userinfo_error_dialogtitle">User Info Error</string>
+
+    <string name="api_session_id">API Session Id</string>
+
+    <string name="error_user_action">User Action</string>
+    <string name="error_info">Info</string>
+    <string name="error_area">Area</string>
+    <string name="error_code">Error Code</string>
+    <string name="error_appauth_code">AppAuth Code</string>
+    <string name="error_utc_time">UTC Time</string>
+    <string name="error_status">Status Code</string>
+    <string name="error_instance_id">Instance Id</string>
+    <string name="error_details">Details</string>
+    <string name="error_url">URL</string>
+    <string name="error_stack">Stack</string>
+</resources>

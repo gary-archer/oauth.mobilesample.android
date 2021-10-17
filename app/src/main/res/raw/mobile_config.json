@@ -1,0 +1,15 @@
+{
+  "app": {
+    "apiBaseUrl":             "https://api.authsamples.com/api"
+  },
+  "oauth": {
+    "authority":              "https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_qqJgVeuTn",
+    "clientId":               "3pj7bd0ff8h1klhok774303dq8",
+    "webBaseUrl":             "https://authsamples.com",
+    "loginRedirectPath":      "/apps/basicmobileapp/postlogin.html",
+    "postLogoutRedirectPath": "/apps/basicmobileapp/postlogout.html",
+    "scope":                  "openid profile email https://api.authsamples.com/api/transactions_read",
+    "deepLinkBaseUrl":        "https://mobile.authsamples.com",
+    "customLogoutEndpoint":   "https://login.authsamples.com/logout"
+  }
+}
