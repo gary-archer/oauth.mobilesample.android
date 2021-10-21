@@ -11,11 +11,8 @@ import com.authguidance.basicmobileapp.views.utilities.ApiViewEvents
 class MainActivitySharedViewModel : ViewModel() {
 
     // Properties used by fragments that do data access
-    lateinit var apiClientAccessor: () -> ApiClient?
+    lateinit var apiClient: ApiClient
     lateinit var apiViewEvents: ApiViewEvents
-
-    // Header buttons are enabled when this evaluates to true
-    lateinit var isMainViewLoadedAccessor: () -> Boolean
 
     // Callbacks used by the header buttons view
     lateinit var onHome: () -> Unit
@@ -23,6 +20,9 @@ class MainActivitySharedViewModel : ViewModel() {
     lateinit var onExpireAccessToken: () -> Unit
     lateinit var onExpireRefreshToken: () -> Unit
     lateinit var onLogout: () -> Unit
+
+    // Header buttons are enabled when this evaluates to true
+    lateinit var isMainViewLoadedAccessor: () -> Boolean
 
     // The user info view loads data when this evaluates to true
     lateinit var shouldLoadUserInfoAccessor: () -> Boolean

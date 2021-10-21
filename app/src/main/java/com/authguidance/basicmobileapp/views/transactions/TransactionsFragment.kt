@@ -47,7 +47,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
 
         // Create our own view model
         this.binding.model = TransactionsViewModel(
-            sharedViewModel.apiClientAccessor,
+            sharedViewModel.apiClient,
             sharedViewModel.apiViewEvents,
             companyId,
             this.getString(R.string.transactions_title)

@@ -43,7 +43,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
 
         // Create our own view model
         this.binding.model = CompaniesViewModel(
-            sharedViewModel.apiClientAccessor,
+            sharedViewModel.apiClient,
             sharedViewModel.apiViewEvents
         )
 

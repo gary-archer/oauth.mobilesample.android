@@ -42,7 +42,7 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
 
         // Create our own view model
         this.binding.model = UserInfoViewModel(
-            sharedViewModel.apiClientAccessor,
+            sharedViewModel.apiClient,
             sharedViewModel.apiViewEvents,
             sharedViewModel.shouldLoadUserInfoAccessor
         )

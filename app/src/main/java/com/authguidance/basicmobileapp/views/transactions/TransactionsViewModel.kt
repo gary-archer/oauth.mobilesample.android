@@ -16,7 +16,7 @@ import kotlinx.coroutines.withContext
  * A simple view model class for the transactions view
  */
 class TransactionsViewModel(
-    val apiClientAccessor: () -> ApiClient?,
+    val apiClient: ApiClient,
     val apiViewEvents: ApiViewEvents,
     val companyId: String,
     val titleFormat: String
@@ -40,12 +40,6 @@ class TransactionsViewModel(
         onError: (UIError, Boolean) -> Unit
     ) {
 
-        // Do not try to load API data if the app is not initialised yet
-        val apiClient = this.apiClientAccessor()
-        if (apiClient == null) {
-            return
-        }
-
         // Indicate a loading state
         this.apiViewEvents.onViewLoading(VIEW_MAIN)
 
@@ -55,7 +49,7 @@ class TransactionsViewModel(
 
             try {
                 // Make the API call
-                val data = apiClient.getCompanyTransactions(that.companyId, options)
+                val data = that.apiClient.getCompanyTransactions(that.companyId, options)
                 that.transactions = data.transactions.toList()
 
                 // Return results on the main thread

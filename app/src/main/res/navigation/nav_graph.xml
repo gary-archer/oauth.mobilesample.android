@@ -3,8 +3,13 @@
             xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
             android:id="@+id/nav_graph"
-            app:startDestination="@id/companies_fragment">
+            app:startDestination="@id/blank_fragment">
 
+    <fragment
+        android:id="@+id/blank_fragment"
+        android:name="com.authguidance.basicmobileapp.views.headings.BlankFragment"
+        tools:layout="@layout/fragment_blank">
+    </fragment>
     <fragment
             android:id="@+id/companies_fragment"
             android:name="com.authguidance.basicmobileapp.views.companies.CompaniesFragment"

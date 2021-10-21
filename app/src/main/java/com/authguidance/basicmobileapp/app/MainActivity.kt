@@ -22,12 +22,13 @@ import com.authguidance.basicmobileapp.views.headings.HeaderButtonsFragment
 import com.authguidance.basicmobileapp.views.utilities.DeviceSecurity
 import com.authguidance.basicmobileapp.views.utilities.NavigationHelper
 import org.greenrobot.eventbus.EventBus
+import java.lang.ref.WeakReference
 
 /*
  * Our Single Activity App's activity
  */
 @Suppress("TooManyFunctions")
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), MainActivityEvents {
 
     // The binding contains our view model
     private lateinit var binding: ActivityMainBinding
@@ -38,8 +39,7 @@ class MainActivity : AppCompatActivity() {
     // Handle launching the lock screen intent
     private val lockScreenLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { _ ->
-
+    ) {
         this.onLockScreenCompleted()
     }
 
@@ -54,23 +54,24 @@ class MainActivity : AppCompatActivity() {
     // Handle launching the logout intent
     private val logoutLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { _ ->
-
+    ) {
         this.onFinishLogout()
     }
 
     /*
-     * Set up of the Single Activity App's main activity
+     * Do Android specific initialization and we allow the app to crash if any of this fails
+     * The alternative leads to more complex code with lots of optionals
      */
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
-        this.app().setMainActivity(this)
+        (this.application as Application).setMainActivity(this)
 
         // Create our view model
-        val model = MainActivityViewModel(this::onLoginRequired, this::onMainLoadStateChanged)
+        //val model: MainActivityViewModel by viewModels()
+        val model = MainActivityViewModel(this.application, WeakReference(this))
 
-        // Populate the shared view model used by child fragments
+        // Populate the view model provided to child fragments
         this.createSharedViewModel(model)
 
         // Inflate the view, which will trigger child fragments to run
@@ -82,8 +83,10 @@ class MainActivity : AppCompatActivity() {
             as NavHostFragment
         this.navigationHelper = NavigationHelper(navHostFragment) { model.isDeviceSecured }
 
-        // Finally, do the main application load
-        this.initialiseApp()
+        // Do initial navigation
+        this.navigationHelper.deepLinkBaseUrl = this.binding.model!!.configuration.oauth.deepLinkBaseUrl
+        this.navigateStart()
+        EventBus.getDefault().post(InitialLoadEvent())
     }
 
     /*
@@ -95,7 +98,7 @@ class MainActivity : AppCompatActivity() {
         val sharedViewModel: MainActivitySharedViewModel by viewModels()
 
         // Properties related to fragment data access
-        sharedViewModel.apiClientAccessor = model::apiClient
+        sharedViewModel.apiClient = model.apiClient
         sharedViewModel.apiViewEvents = model.apiViewEvents
 
         // Properties passed to the header buttons fragment
@@ -108,39 +111,12 @@ class MainActivity : AppCompatActivity() {
 
         // Properties passed to the user info fragment
         sharedViewModel.shouldLoadUserInfoAccessor = {
-            model.isInitialised &&
-                model.isDeviceSecured &&
-                !this.navigationHelper.isInLoginRequired()
+            model.isDeviceSecured && !this.navigationHelper.isInLoginRequired()
         }
 
         // Properties passed to the session fragment
         sharedViewModel.shouldShowSessionIdAccessor = {
-            model.isInitialised &&
-                model.isDeviceSecured &&
-                model.authenticator!!.isLoggedIn()
-        }
-    }
-
-    /*
-     * Initialise the app and handle errors
-     */
-    private fun initialiseApp() {
-
-        try {
-            // Do the main view model initialisation
-            this.binding.model?.initialise(this.applicationContext)
-            this.navigationHelper.deepLinkBaseUrl = this.binding.model?.configuration!!.oauth.deepLinkBaseUrl
-
-            // Load the main view
-            this.navigateStart()
-
-            // Send an initial load event to other views
-            EventBus.getDefault().post(InitialLoadEvent())
-
-        } catch (ex: Throwable) {
-
-            // Display the startup error details
-            this.handleError(ex)
+            model.isDeviceSecured && model.authenticator.isLoggedIn()
         }
     }
 
@@ -167,12 +143,22 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*
+     * Called from the device not secured fragment to prompt the user to set a PIN or password
+     */
+    fun openLockScreenSettings() {
+
+        val intent = Intent(DevicePolicyManager.ACTION_SET_NEW_PASSWORD)
+        this.lockScreenLauncher.launch(intent)
+        this.binding.model!!.isTopMost = false
+    }
+
+    /*
      * Handle the result from configuring the lock screen
      */
-    fun onLockScreenCompleted() {
+    private fun onLockScreenCompleted() {
 
-        this.binding.model?.isTopMost = true
-        this.binding.model?.isDeviceSecured = DeviceSecurity.isDeviceSecured(this)
+        this.binding.model!!.isTopMost = true
+        this.binding.model!!.isDeviceSecured = DeviceSecurity.isDeviceSecured(this)
         this.navigateStart()
     }
 
@@ -189,22 +175,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*
-     * Called from the device not secured fragment to prompt the user to set a PIN or password
-     */
-    fun openLockScreenSettings() {
-
-        val intent = Intent(DevicePolicyManager.ACTION_SET_NEW_PASSWORD)
-        this.lockScreenLauncher.launch(intent)
-        this.binding.model?.isTopMost = false
-    }
-
-    /*
      * Update the load state and session buttons during and after view load
      */
-    private fun onMainLoadStateChanged(loaded: Boolean) {
+    override fun onMainLoadStateChanged(loaded: Boolean) {
 
         // Update our state
-        this.binding.model?.isMainViewLoaded = loaded
+        this.binding.model!!.isMainViewLoaded = loaded
 
         // Ask the header buttons fragment to update
         val buttonFragment =
@@ -215,8 +191,8 @@ class MainActivity : AppCompatActivity() {
     /*
      * Start a login redirect when the API View Events helper informs us that a permanent 401 has occurred
      */
-    private fun onLoginRequired() {
-        this.binding.model?.startLogin(this.loginLauncher::launch, this::handleError)
+    override fun onLoginRequired() {
+        this.binding.model!!.startLogin(this.loginLauncher::launch, this::handleError)
     }
 
     /*
@@ -229,7 +205,7 @@ class MainActivity : AppCompatActivity() {
             this.onReloadData(false)
         }
 
-        this.binding.model?.finishLogin(responseIntent, onSuccess, this::handleError)
+        this.binding.model!!.finishLogin(responseIntent, onSuccess, this::handleError)
     }
 
     /*
@@ -250,7 +226,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Ask the model to do the work
-        this.binding.model?.startLogout(this.logoutLauncher::launch, onError)
+        this.binding.model!!.startLogout(this.logoutLauncher::launch, onError)
     }
 
     /*
@@ -259,7 +235,8 @@ class MainActivity : AppCompatActivity() {
     private fun onFinishLogout() {
 
         // Update state and free resources
-        this.binding.model?.finishLogout()
+        this.binding.model!!.finishLogout()
+        this.binding.model!!.finishLogout()
         this.onMainLoadStateChanged(false)
 
         // Move to the login required page
@@ -274,22 +251,13 @@ class MainActivity : AppCompatActivity() {
      */
     private fun onHome() {
 
-        // If there is a startup error then retry initialising the app
-        val model = this.binding.model!!
-        if (!model.isInitialised) {
-            this.initialiseApp()
-        }
+        // Clear any existing errors
+        val errorFragment =
+            this.supportFragmentManager.findFragmentById(R.id.main_error_summary_fragment) as ErrorSummaryFragment
+        errorFragment.clearError()
 
-        if (model.isInitialised) {
-
-            // Clear any existing errors
-            val errorFragment =
-                this.supportFragmentManager.findFragmentById(R.id.main_error_summary_fragment) as ErrorSummaryFragment
-            errorFragment.clearError()
-
-            // Move to the home view, which forces a reload if already in this view
-            this.navigationHelper.navigateTo(R.id.companies_fragment)
-        }
+        // Move to the home view, which forces a reload if already in this view
+        this.navigationHelper.navigateTo(R.id.companies_fragment)
     }
 
     /*
@@ -297,7 +265,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun onReloadData(causeError: Boolean) {
 
-        this.binding.model?.apiViewEvents?.clearState()
+        this.binding.model!!.apiViewEvents.clearState()
         EventBus.getDefault().post(ReloadMainViewEvent(causeError))
         EventBus.getDefault().post(ReloadUserInfoViewEvent(causeError))
     }
@@ -330,13 +298,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*
-     * Access the application in a typed manner
-     */
-    private fun app(): Application {
-        return this.application as Application
-    }
-
-    /*
      * Deep linking is disabled unless our activity is top most
      */
     fun isTopMost(): Boolean {
@@ -348,6 +309,6 @@ class MainActivity : AppCompatActivity() {
      */
     override fun onDestroy() {
         super.onDestroy()
-        this.app().setMainActivity(null)
+        (this.application as Application).setMainActivity(null)
     }
 }

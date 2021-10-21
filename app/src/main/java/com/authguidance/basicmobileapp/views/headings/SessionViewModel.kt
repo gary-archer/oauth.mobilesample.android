@@ -7,7 +7,7 @@ import com.authguidance.basicmobileapp.api.client.ApiClient
  * A simple view model for the session view
  */
 class SessionViewModel(
-    private val apiClientAccessor: () -> ApiClient?,
+    private val apiClient: ApiClient,
     private val shouldShowAccessor: () -> Boolean,
     private val label: String
 ) : BaseObservable() {
@@ -43,9 +43,7 @@ class SessionViewModel(
      * Update the view model
      */
     fun updateData() {
-
-        val apiClient = this.apiClientAccessor()
-        this.setSessionId(apiClient?.sessionId)
+        this.setSessionId(this.apiClient.sessionId)
     }
 
     /*
