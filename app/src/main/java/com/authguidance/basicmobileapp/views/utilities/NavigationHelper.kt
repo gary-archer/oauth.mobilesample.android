@@ -96,8 +96,8 @@ class NavigationHelper(
         // Check for our deep linking URL
         val urlData = Uri.parse(url)
         val baseUrl = "${urlData.scheme}://${urlData.host}"
-        if (baseUrl.toLowerCase(Locale.ROOT).equals(this.deepLinkBaseUrl) &&
-            urlData.path?.toLowerCase(Locale.ROOT)?.startsWith("/basicmobileapp/deeplink", true)!!
+        if (baseUrl.lowercase(Locale.ROOT).equals(this.deepLinkBaseUrl) &&
+            urlData.path?.lowercase(Locale.ROOT)?.startsWith("/basicmobileapp/deeplink", true)!!
         ) {
 
             // The default action is to move to the company list

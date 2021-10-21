@@ -478,7 +478,7 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
      */
     private fun createLogoutUrlBuilder(): LogoutUrlBuilder {
 
-        if (this.configuration.authority.toLowerCase(Locale.ROOT).contains("cognito")) {
+        if (this.configuration.authority.lowercase(Locale.ROOT).contains("cognito")) {
             return CognitoLogoutUrlBuilder(this.configuration)
         } else {
             return StandardLogoutUrlBuilder(this.configuration, this.metadata!!)
