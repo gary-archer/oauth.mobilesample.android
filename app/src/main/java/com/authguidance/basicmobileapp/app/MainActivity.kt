@@ -38,9 +38,9 @@ class MainActivity : AppCompatActivity() {
     // Handle launching the lock screen intent
     private val lockScreenLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { result ->
+    ) { _ ->
 
-        this.onLockScreenCompleted(result.data!!)
+        this.onLockScreenCompleted()
     }
 
     // Handle launching the login intent
@@ -169,14 +169,11 @@ class MainActivity : AppCompatActivity() {
     /*
      * Handle the result from configuring the lock screen
      */
-    fun onLockScreenCompleted(responseIntent: Intent?) {
+    fun onLockScreenCompleted() {
 
-        if (responseIntent != null) {
-
-            this.binding.model?.isTopMost = true
-            this.binding.model?.isDeviceSecured = DeviceSecurity.isDeviceSecured(this)
-            this.navigateStart()
-        }
+        this.binding.model?.isTopMost = true
+        this.binding.model?.isDeviceSecured = DeviceSecurity.isDeviceSecured(this)
+        this.navigateStart()
     }
 
     /*
