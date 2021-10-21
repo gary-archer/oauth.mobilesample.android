@@ -32,7 +32,7 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
 
         // Create this fragment's view model
         this.binding.model = HeaderButtonsViewModel(
-            sharedViewModel.isMainViewLoadedAccessor,
+            sharedViewModel.isMainViewLoaded,
             sharedViewModel.onHome,
             sharedViewModel.onReload,
             sharedViewModel.onExpireAccessToken,

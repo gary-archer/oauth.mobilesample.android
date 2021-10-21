@@ -41,7 +41,7 @@ class SessionFragment : androidx.fragment.app.Fragment() {
         // Create our own view model
         this.binding.model = SessionViewModel(
             sharedViewModel.apiClient,
-            sharedViewModel.shouldShowSessionIdAccessor,
+            sharedViewModel.shouldShowSessionId,
             this.getString(R.string.api_session_id)
         )
 

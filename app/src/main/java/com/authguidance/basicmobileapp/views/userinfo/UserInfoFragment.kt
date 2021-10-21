@@ -44,7 +44,7 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
         this.binding.model = UserInfoViewModel(
             sharedViewModel.apiClient,
             sharedViewModel.apiViewEvents,
-            sharedViewModel.shouldLoadUserInfoAccessor
+            sharedViewModel.shouldLoadUserInfo
         )
 
         return binding.root

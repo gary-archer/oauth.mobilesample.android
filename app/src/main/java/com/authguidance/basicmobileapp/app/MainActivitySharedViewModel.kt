@@ -24,17 +24,17 @@ class MainActivitySharedViewModel(
     val onLogout = activityEvents::onStartLogout
 
     // Header buttons are enabled when this evaluates to true
-    val isMainViewLoadedAccessor = {
+    val isMainViewLoaded = {
         mainModel.isMainViewLoaded
     }
 
     // Properties passed to the user info fragment
-    val shouldLoadUserInfoAccessor = {
+    val shouldLoadUserInfo = {
         mainModel.isDeviceSecured && !isInLoginRequired()
     }
 
     // Properties passed to the session fragment
-    val shouldShowSessionIdAccessor = {
+    val shouldShowSessionId = {
         mainModel.isDeviceSecured && mainModel.authenticator.isLoggedIn()
     }
 }
