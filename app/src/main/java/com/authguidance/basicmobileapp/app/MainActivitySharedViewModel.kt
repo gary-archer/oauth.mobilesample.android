@@ -1,32 +1,40 @@
 package com.authguidance.basicmobileapp.app
 
 import androidx.lifecycle.ViewModel
-import com.authguidance.basicmobileapp.api.client.ApiClient
-import com.authguidance.basicmobileapp.views.utilities.ApiViewEvents
 
 /*
  * Details from the main activity that are shared with child fragments
- * This is done by the Android system using 'by viewModels()' and 'by activityViewModels()' calls
+ * This is done by the Android system using 'by activityViewModels()' calls
  */
-class MainActivitySharedViewModel : ViewModel() {
+class MainActivitySharedViewModel(
+    mainModel: MainActivityViewModel,
+    activityEvents: MainActivityEvents,
+    private val isInLoginRequired: () -> Boolean
+) : ViewModel() {
 
-    // Properties used by fragments that do data access
-    lateinit var apiClient: ApiClient
-    lateinit var apiViewEvents: ApiViewEvents
+    // Properties used for API calls
+    val apiClient = mainModel.apiClient
+    val apiViewEvents = mainModel.apiViewEvents
 
-    // Callbacks used by the header buttons view
-    lateinit var onHome: () -> Unit
-    lateinit var onReload: (Boolean) -> Unit
-    lateinit var onExpireAccessToken: () -> Unit
-    lateinit var onExpireRefreshToken: () -> Unit
-    lateinit var onLogout: () -> Unit
+    // Header buttons
+    val onHome = activityEvents::onHome
+    val onReload = activityEvents::onReloadData
+    val onExpireAccessToken = mainModel::onExpireAccessToken
+    val onExpireRefreshToken = mainModel::onExpireRefreshToken
+    val onLogout = activityEvents::onStartLogout
 
     // Header buttons are enabled when this evaluates to true
-    lateinit var isMainViewLoadedAccessor: () -> Boolean
+    val isMainViewLoadedAccessor = {
+        mainModel.isMainViewLoaded
+    }
 
-    // The user info view loads data when this evaluates to true
-    lateinit var shouldLoadUserInfoAccessor: () -> Boolean
+    // Properties passed to the user info fragment
+    val shouldLoadUserInfoAccessor = {
+        mainModel.isDeviceSecured && !isInLoginRequired()
+    }
 
-    // The session view is shown when this evaluates to true
-    lateinit var shouldShowSessionIdAccessor: () -> Boolean
+    // Properties passed to the session fragment
+    val shouldShowSessionIdAccessor = {
+        mainModel.isDeviceSecured && mainModel.authenticator.isLoggedIn()
+    }
 }

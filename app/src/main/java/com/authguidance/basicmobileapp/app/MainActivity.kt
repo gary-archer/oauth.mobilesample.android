@@ -4,9 +4,9 @@ import android.app.admin.DevicePolicyManager
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.databinding.ActivityMainBinding
@@ -22,7 +22,6 @@ import com.authguidance.basicmobileapp.views.headings.HeaderButtonsFragment
 import com.authguidance.basicmobileapp.views.utilities.DeviceSecurity
 import com.authguidance.basicmobileapp.views.utilities.NavigationHelper
 import org.greenrobot.eventbus.EventBus
-import java.lang.ref.WeakReference
 
 /*
  * Our Single Activity App's activity
@@ -30,10 +29,7 @@ import java.lang.ref.WeakReference
 @Suppress("TooManyFunctions")
 class MainActivity : AppCompatActivity(), MainActivityEvents {
 
-    // The binding contains our view model
     private lateinit var binding: ActivityMainBinding
-
-    // Navigation properties
     private lateinit var navigationHelper: NavigationHelper
 
     // Handle launching the lock screen intent
@@ -67,12 +63,17 @@ class MainActivity : AppCompatActivity(), MainActivityEvents {
         super.onCreate(savedInstanceState)
         (this.application as Application).setMainActivity(this)
 
-        // Create our view model
-        //val model: MainActivityViewModel by viewModels()
-        val model = MainActivityViewModel(this.application, WeakReference(this))
+        // Create the view model the first time the view is created
+        val model = ViewModelProvider(
+            this,
+            MainActivityViewModelFactory(this.application, this)
+        ).get(MainActivityViewModel::class.java)
 
-        // Populate the view model provided to child fragments
-        this.createSharedViewModel(model)
+        // Populate the shared view model provided to child fragments
+        ViewModelProvider(
+            this,
+            MainActivitySharedViewModelFactory(model, this, this::isInLoginRequired)
+        ).get(MainActivitySharedViewModel::class.java)
 
         // Inflate the view, which will trigger child fragments to run
         this.binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
@@ -87,37 +88,6 @@ class MainActivity : AppCompatActivity(), MainActivityEvents {
         this.navigationHelper.deepLinkBaseUrl = this.binding.model!!.configuration.oauth.deepLinkBaseUrl
         this.navigateStart()
         EventBus.getDefault().post(InitialLoadEvent())
-    }
-
-    /*
-     * Create or update a view model with data needed by child fragments
-     */
-    private fun createSharedViewModel(model: MainActivityViewModel) {
-
-        // Get the model from the Android system, which will be created the first time
-        val sharedViewModel: MainActivitySharedViewModel by viewModels()
-
-        // Properties related to fragment data access
-        sharedViewModel.apiClient = model.apiClient
-        sharedViewModel.apiViewEvents = model.apiViewEvents
-
-        // Properties passed to the header buttons fragment
-        sharedViewModel.isMainViewLoadedAccessor = model::isMainViewLoaded
-        sharedViewModel.onHome = this::onHome
-        sharedViewModel.onReload = this::onReloadData
-        sharedViewModel.onExpireAccessToken = model::onExpireAccessToken
-        sharedViewModel.onExpireRefreshToken = model::onExpireRefreshToken
-        sharedViewModel.onLogout = this::onStartLogout
-
-        // Properties passed to the user info fragment
-        sharedViewModel.shouldLoadUserInfoAccessor = {
-            model.isDeviceSecured && !this.navigationHelper.isInLoginRequired()
-        }
-
-        // Properties passed to the session fragment
-        sharedViewModel.shouldShowSessionIdAccessor = {
-            model.isDeviceSecured && model.authenticator.isLoggedIn()
-        }
     }
 
     /*
@@ -211,7 +181,7 @@ class MainActivity : AppCompatActivity(), MainActivityEvents {
     /*
      * Remove tokens and redirect to remove the authorization server session cookie
      */
-    private fun onStartLogout() {
+    override fun onStartLogout() {
 
         val onError = { ex: Throwable ->
 
@@ -249,7 +219,7 @@ class MainActivity : AppCompatActivity(), MainActivityEvents {
     /*
      * Handle home navigation
      */
-    private fun onHome() {
+    override fun onHome() {
 
         // Clear any existing errors
         val errorFragment =
@@ -263,11 +233,15 @@ class MainActivity : AppCompatActivity(), MainActivityEvents {
     /*
      * Publish an event to update all active views
      */
-    private fun onReloadData(causeError: Boolean) {
+    override fun onReloadData(causeError: Boolean) {
 
         this.binding.model!!.apiViewEvents.clearState()
         EventBus.getDefault().post(ReloadMainViewEvent(causeError))
         EventBus.getDefault().post(ReloadUserInfoViewEvent(causeError))
+    }
+
+    fun isInLoginRequired(): Boolean {
+        return this.navigationHelper.isInLoginRequired()
     }
 
     /*

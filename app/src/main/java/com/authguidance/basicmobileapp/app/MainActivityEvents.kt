@@ -5,13 +5,13 @@ package com.authguidance.basicmobileapp.app
  */
 interface MainActivityEvents {
 
-    /*
-     * Notify the view when the user is prompted to sign in
-     */
+    fun onHome()
+
+    fun onReloadData(causeError: Boolean)
+
     fun onLoginRequired()
 
-    /*
-     * Notify the view when the load state changes
-     */
     fun onMainLoadStateChanged(loaded: Boolean)
+
+    fun onStartLogout()
 }

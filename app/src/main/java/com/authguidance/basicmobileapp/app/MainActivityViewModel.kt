@@ -2,6 +2,7 @@ package com.authguidance.basicmobileapp.app
 
 import android.app.Application
 import android.content.Intent
+import androidx.lifecycle.ViewModel
 import com.authguidance.basicmobileapp.api.client.ApiClient
 import com.authguidance.basicmobileapp.configuration.Configuration
 import com.authguidance.basicmobileapp.configuration.ConfigurationLoader
@@ -13,15 +14,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.lang.ref.WeakReference
 
 /*
  * The view model class for the main activity
  */
 class MainActivityViewModel(
     private val app: Application,
-    private val events: WeakReference<MainActivityEvents>
-) {
+    private val activityEvents: MainActivityEvents
+) : ViewModel() {
 
     // Global objects used by the main activity
     var configuration: Configuration
@@ -51,8 +51,8 @@ class MainActivityViewModel(
         // Create a helper class to notify us about views that make API calls
         // This will enable us to only trigger a login redirect once, after all views have tried to load
         this.apiViewEvents = ApiViewEvents(
-            this.events.get()!!::onLoginRequired,
-            this.events.get()!!::onMainLoadStateChanged,
+            this.activityEvents::onLoginRequired,
+            this.activityEvents::onMainLoadStateChanged,
         )
         this.apiViewEvents.addView(Constants.VIEW_MAIN)
         this.apiViewEvents.addView(Constants.VIEW_USERINFO)
