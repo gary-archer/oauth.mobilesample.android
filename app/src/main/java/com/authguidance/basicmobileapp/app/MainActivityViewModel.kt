@@ -1,6 +1,5 @@
 package com.authguidance.basicmobileapp.app
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import com.authguidance.basicmobileapp.api.client.ApiClient
@@ -76,7 +75,7 @@ class MainActivityViewModel(
     /*
      * Start a login operation
      */
-    fun startLogin(activity: Activity, onError: (Throwable) -> Unit) {
+    fun startLogin(launchAction: (i: Intent) -> Unit, onError: (Throwable) -> Unit) {
 
         // Prevent re-entrancy
         if (!this.isTopMost) {
@@ -93,7 +92,7 @@ class MainActivityViewModel(
             try {
 
                 // Start the redirect
-                that.authenticator!!.startLogin(activity, Constants.LOGIN_REDIRECT_REQUEST_CODE)
+                that.authenticator!!.startLogin(launchAction)
 
             } catch (ex: Throwable) {
 
@@ -149,7 +148,7 @@ class MainActivityViewModel(
     /*
      * Start a logout redirect
      */
-    fun startLogout(activity: Activity, onError: (Throwable) -> Unit) {
+    fun startLogout(launchAction: (i: Intent) -> Unit, onError: (Throwable) -> Unit) {
 
         // Prevent re-entrancy
         if (!this.isTopMost) {
@@ -166,7 +165,7 @@ class MainActivityViewModel(
             try {
 
                 // Trigger the logout process, which will remove tokens and redirect to clear the OAuth session cookie
-                that.authenticator!!.startLogout(activity, Constants.LOGOUT_REDIRECT_REQUEST_CODE)
+                that.authenticator!!.startLogout(launchAction)
 
             } catch (ex: Throwable) {
                 onError(ex)

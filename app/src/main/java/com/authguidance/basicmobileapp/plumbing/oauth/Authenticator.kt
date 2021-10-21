@@ -1,6 +1,5 @@
 package com.authguidance.basicmobileapp.plumbing.oauth
 
-import android.app.Activity
 import android.content.Intent
 
 /*
@@ -18,7 +17,7 @@ interface Authenticator {
     suspend fun refreshAccessToken(): String
 
     // Start a login redirect
-    suspend fun startLogin(activity: Activity, completionCode: Int)
+    suspend fun startLogin(launchAction: (i: Intent) -> Unit)
 
     // Complete a login
     suspend fun finishLogin(intent: Intent)
@@ -30,7 +29,7 @@ interface Authenticator {
     fun expireRefreshToken()
 
     // Start a logout redirect
-    suspend fun startLogout(activity: Activity, completionCode: Int)
+    suspend fun startLogout(launchAction: (i: Intent) -> Unit)
 
     // Complete a logout
     fun finishLogout()

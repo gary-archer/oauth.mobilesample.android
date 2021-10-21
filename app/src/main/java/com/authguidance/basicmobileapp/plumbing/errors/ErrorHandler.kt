@@ -194,11 +194,11 @@ class ErrorHandler {
 
         if (ex.code != 0) {
 
-            val appAuthErrorType = when {
-                ex.type == 1 -> {
+            val appAuthErrorType = when (ex.type) {
+                1 -> {
                     "AUTHORIZATION"
                 }
-                ex.type == 2 -> {
+                2 -> {
                     "TOKEN"
                 }
                 else -> {
@@ -248,10 +248,10 @@ class ErrorHandler {
      */
     private fun getErrorDescription(ex: Throwable): String? {
 
-        if (ex.message != null) {
-            return ex.message
+        return if (ex.message != null) {
+            ex.message
         } else {
-            return ex.javaClass.simpleName
+            ex.javaClass.simpleName
         }
     }
 }
