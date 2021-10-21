@@ -9,9 +9,5 @@ interface MainActivityEvents {
 
     fun onReloadData(causeError: Boolean)
 
-    fun onLoginRequired()
-
-    fun onMainLoadStateChanged(loaded: Boolean)
-
     fun onStartLogout()
 }

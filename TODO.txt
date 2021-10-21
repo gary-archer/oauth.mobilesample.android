@@ -1,0 +1,18 @@
+1. Generally views will be recreated but not view models
+   Android uses events but will this works across all UI tech?
+   Think this through tomorrow
+
+2. Get rid of MainActivitySharedViewModel
+   Get rid of activity events - not useful when view is recreated
+   - isInLoginRequired can be derivable in the userInfo view
+     Split navigationHelper into two classes perhaps
+   Events called by Header buttons fragment:
+   - onHome
+   - onExpireAccessToken
+   - onExpireRefreshToken
+   - onLogout
+
+3. Unregister for events on destroy in both activities and fragments
+   Do a search on all registers and debug this also
+
+4. Update work repos

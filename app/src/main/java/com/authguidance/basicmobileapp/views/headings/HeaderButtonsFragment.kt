@@ -7,6 +7,10 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.authguidance.basicmobileapp.app.MainActivitySharedViewModel
 import com.authguidance.basicmobileapp.databinding.FragmentHeaderButtonsBinding
+import com.authguidance.basicmobileapp.plumbing.events.GetDataEvent
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 /*
  * A simple fragment with the header buttons
@@ -32,7 +36,6 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
 
         // Create this fragment's view model
         this.binding.model = HeaderButtonsViewModel(
-            sharedViewModel.isMainViewLoaded,
             sharedViewModel.onHome,
             sharedViewModel.onReload,
             sharedViewModel.onExpireAccessToken,
@@ -49,14 +52,19 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Set up custom logic for long clicks
         val model = this.binding.model!!
         this.binding.btnReloadData.setCustomClickListener(model.onReload)
+
+        // Subscribe for events
+        EventBus.getDefault().register(this)
     }
 
     /*
-     * Called when the buttons need to redraw their enabled state
+     * During API calls we disable session buttons and then re-enable them afterwards
      */
-    fun update() {
-        this.binding.model?.updateSessionButtonEnabledState()
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: GetDataEvent) {
+        this.binding.model?.updateSessionButtonEnabledState(event.loaded)
     }
 }

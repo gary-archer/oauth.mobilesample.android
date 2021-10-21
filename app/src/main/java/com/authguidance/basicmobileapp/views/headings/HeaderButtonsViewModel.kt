@@ -6,13 +6,14 @@ import androidx.databinding.BaseObservable
  * A simple view model class for the header buttons fragment
  */
 class HeaderButtonsViewModel(
-    val isMainViewLoaded: () -> Boolean,
     val onHomeCallback: () -> Unit,
     val onReload: (Boolean) -> Unit,
     val onExpireAccessTokenCallback: () -> Unit,
     val onExpireRefreshTokenCallback: () -> Unit,
     val onLogoutCallback: () -> Unit
 ) : BaseObservable() {
+
+    private var hasData = false
 
     /*
      * The Android binding system requires real member functions rather than lambdas
@@ -34,16 +35,17 @@ class HeaderButtonsViewModel(
     }
 
     /*
-     * The binding system calls this and we call back the main activity
+     * The binding system calls this
      */
     fun sessionButtonsEnabled(): Boolean {
-        return this.isMainViewLoaded()
+        return this.hasData
     }
 
     /*
      * The enabled state is updated during API calls and when logging out
      */
-    fun updateSessionButtonEnabledState() {
+    fun updateSessionButtonEnabledState(hasData: Boolean) {
+        this.hasData = hasData
         this.notifyChange()
     }
 }

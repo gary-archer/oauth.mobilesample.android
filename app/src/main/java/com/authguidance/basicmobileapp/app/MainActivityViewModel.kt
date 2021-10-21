@@ -2,7 +2,7 @@ package com.authguidance.basicmobileapp.app
 
 import android.app.Application
 import android.content.Intent
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import com.authguidance.basicmobileapp.api.client.ApiClient
 import com.authguidance.basicmobileapp.configuration.Configuration
 import com.authguidance.basicmobileapp.configuration.ConfigurationLoader
@@ -18,10 +18,7 @@ import kotlinx.coroutines.withContext
 /*
  * The view model class for the main activity
  */
-class MainActivityViewModel(
-    private val app: Application,
-    private val activityEvents: MainActivityEvents
-) : ViewModel() {
+class MainActivityViewModel(val app: Application) : AndroidViewModel(app) {
 
     // Global objects used by the main activity
     var configuration: Configuration
@@ -31,7 +28,6 @@ class MainActivityViewModel(
 
     // State used by the main activity
     var isDeviceSecured: Boolean = false
-    var isMainViewLoaded: Boolean = false
     var isTopMost: Boolean = true
 
     init {
@@ -45,15 +41,11 @@ class MainActivityViewModel(
 
         // Initialize flags
         this.isDeviceSecured = DeviceSecurity.isDeviceSecured(this.app.applicationContext)
-        this.isMainViewLoaded = false
         this.isTopMost = true
 
         // Create a helper class to notify us about views that make API calls
         // This will enable us to only trigger a login redirect once, after all views have tried to load
-        this.apiViewEvents = ApiViewEvents(
-            this.activityEvents::onLoginRequired,
-            this.activityEvents::onMainLoadStateChanged,
-        )
+        this.apiViewEvents = ApiViewEvents()
         this.apiViewEvents.addView(Constants.VIEW_MAIN)
         this.apiViewEvents.addView(Constants.VIEW_USERINFO)
     }

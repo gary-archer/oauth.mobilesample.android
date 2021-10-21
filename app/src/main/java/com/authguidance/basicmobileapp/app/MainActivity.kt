@@ -4,6 +4,7 @@ import android.app.admin.DevicePolicyManager
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
@@ -13,15 +14,18 @@ import com.authguidance.basicmobileapp.databinding.ActivityMainBinding
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorConsoleReporter
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorHandler
+import com.authguidance.basicmobileapp.plumbing.events.GetDataEvent
 import com.authguidance.basicmobileapp.plumbing.events.InitialLoadEvent
+import com.authguidance.basicmobileapp.plumbing.events.LoginRequiredEvent
 import com.authguidance.basicmobileapp.plumbing.events.ReloadMainViewEvent
 import com.authguidance.basicmobileapp.plumbing.events.ReloadUserInfoViewEvent
 import com.authguidance.basicmobileapp.plumbing.events.UnloadEvent
 import com.authguidance.basicmobileapp.views.errors.ErrorSummaryFragment
-import com.authguidance.basicmobileapp.views.headings.HeaderButtonsFragment
 import com.authguidance.basicmobileapp.views.utilities.DeviceSecurity
 import com.authguidance.basicmobileapp.views.utilities.NavigationHelper
 import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 /*
  * Our Single Activity App's activity
@@ -64,10 +68,7 @@ class MainActivity : AppCompatActivity(), MainActivityEvents {
         (this.application as Application).setMainActivity(this)
 
         // Create the view model the first time the view is created
-        val model = ViewModelProvider(
-            this,
-            MainActivityViewModelFactory(this.application, this)
-        ).get(MainActivityViewModel::class.java)
+        val model: MainActivityViewModel by viewModels()
 
         // Populate the shared view model provided to child fragments
         ViewModelProvider(
@@ -83,6 +84,9 @@ class MainActivity : AppCompatActivity(), MainActivityEvents {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
             as NavHostFragment
         this.navigationHelper = NavigationHelper(navHostFragment) { model.isDeviceSecured }
+
+        // Subscribe for events
+        EventBus.getDefault().register(this)
 
         // Do initial navigation
         this.navigationHelper.deepLinkBaseUrl = this.binding.model!!.configuration.oauth.deepLinkBaseUrl
@@ -145,23 +149,12 @@ class MainActivity : AppCompatActivity(), MainActivityEvents {
     }
 
     /*
-     * Update the load state and session buttons during and after view load
+     * Start a login redirect when we are notified that we cannot call APIs
      */
-    override fun onMainLoadStateChanged(loaded: Boolean) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onLoginRequired(event: LoginRequiredEvent) {
 
-        // Update our state
-        this.binding.model!!.isMainViewLoaded = loaded
-
-        // Ask the header buttons fragment to update
-        val buttonFragment =
-            this.supportFragmentManager.findFragmentById(R.id.header_buttons_fragment) as HeaderButtonsFragment
-        buttonFragment.update()
-    }
-
-    /*
-     * Start a login redirect when the API View Events helper informs us that a permanent 401 has occurred
-     */
-    override fun onLoginRequired() {
+        event.used()
         this.binding.model!!.startLogin(this.loginLauncher::launch, this::handleError)
     }
 
@@ -206,8 +199,7 @@ class MainActivity : AppCompatActivity(), MainActivityEvents {
 
         // Update state and free resources
         this.binding.model!!.finishLogout()
-        this.binding.model!!.finishLogout()
-        this.onMainLoadStateChanged(false)
+        EventBus.getDefault().post(GetDataEvent(false))
 
         // Move to the login required page
         this.navigationHelper.navigateTo(R.id.login_required_fragment)
@@ -240,6 +232,9 @@ class MainActivity : AppCompatActivity(), MainActivityEvents {
         EventBus.getDefault().post(ReloadUserInfoViewEvent(causeError))
     }
 
+    /*
+     * A utility method to determine if we are in the login required view
+     */
     fun isInLoginRequired(): Boolean {
         return this.navigationHelper.isInLoginRequired()
     }

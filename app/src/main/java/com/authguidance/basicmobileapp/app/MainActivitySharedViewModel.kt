@@ -23,11 +23,6 @@ class MainActivitySharedViewModel(
     val onExpireRefreshToken = mainModel::onExpireRefreshToken
     val onLogout = activityEvents::onStartLogout
 
-    // Header buttons are enabled when this evaluates to true
-    val isMainViewLoaded = {
-        mainModel.isMainViewLoaded
-    }
-
     // Properties passed to the user info fragment
     val shouldLoadUserInfo = {
         mainModel.isDeviceSecured && !isInLoginRequired()
