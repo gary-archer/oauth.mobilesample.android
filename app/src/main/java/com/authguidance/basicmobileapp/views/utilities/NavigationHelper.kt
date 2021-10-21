@@ -15,7 +15,7 @@ import java.util.regex.Pattern
  */
 class NavigationHelper(
     val navHostFragment: NavHostFragment,
-    val isDeviceSecuredAccessor: () -> Boolean
+    val isDeviceSecured: () -> Boolean
 ) {
     lateinit var deepLinkBaseUrl: String
 
@@ -150,7 +150,7 @@ class NavigationHelper(
     private fun preNavigate(activeFragment: Fragment?, newFragmentId: Int): Boolean {
 
         // When the device is not secured, only allow navigation to the Device Not Secured view
-        if (!this.isDeviceSecuredAccessor() && newFragmentId != R.id.device_not_secured_fragment) {
+        if (!this.isDeviceSecured() && newFragmentId != R.id.device_not_secured_fragment) {
             return false
         }
 

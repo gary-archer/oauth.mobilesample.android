@@ -6,7 +6,7 @@ import androidx.databinding.BaseObservable
  * A simple view model class for the header buttons fragment
  */
 class HeaderButtonsViewModel(
-    val isMainViewLoadedAccessor: () -> Boolean,
+    val isMainViewLoaded: () -> Boolean,
     val onHomeCallback: () -> Unit,
     val onReload: (Boolean) -> Unit,
     val onExpireAccessTokenCallback: () -> Unit,
@@ -37,7 +37,7 @@ class HeaderButtonsViewModel(
      * The binding system calls this and we call back the main activity
      */
     fun sessionButtonsEnabled(): Boolean {
-        return this.isMainViewLoadedAccessor()
+        return this.isMainViewLoaded()
     }
 
     /*

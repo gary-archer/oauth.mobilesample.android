@@ -18,7 +18,7 @@ import kotlinx.coroutines.withContext
 class UserInfoViewModel(
     val apiClient: ApiClient,
     val apiViewEvents: ApiViewEvents,
-    val shouldLoadAccessor: () -> Boolean
+    val shouldLoad: () -> Boolean
 ) : BaseObservable() {
 
     // The data once received
@@ -33,7 +33,7 @@ class UserInfoViewModel(
     ) {
 
         // Only load if conditions are valid
-        if (!this.shouldLoadAccessor()) {
+        if (!this.shouldLoad()) {
             return
         }
 

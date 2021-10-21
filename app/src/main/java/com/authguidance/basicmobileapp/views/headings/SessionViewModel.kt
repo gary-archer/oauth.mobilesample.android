@@ -8,7 +8,7 @@ import com.authguidance.basicmobileapp.api.client.ApiClient
  */
 class SessionViewModel(
     private val apiClient: ApiClient,
-    private val shouldShowAccessor: () -> Boolean,
+    private val shouldShow: () -> Boolean,
     private val label: String
 ) : BaseObservable() {
 
@@ -20,7 +20,7 @@ class SessionViewModel(
      */
     fun getSessionId(): String {
 
-        if (this.sessionId == null || !shouldShowAccessor()) {
+        if (this.sessionId == null || !shouldShow()) {
             return ""
         }
 
@@ -32,7 +32,7 @@ class SessionViewModel(
      */
     fun isSessionIdVisible(): Boolean {
 
-        if (this.sessionId == null || !shouldShowAccessor()) {
+        if (this.sessionId == null || !shouldShow()) {
             return false
         }
 
