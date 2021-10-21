@@ -3,6 +3,7 @@ package com.authguidance.basicmobileapp.app
 import android.app.admin.DevicePolicyManager
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -18,7 +19,6 @@ import com.authguidance.basicmobileapp.plumbing.events.ReloadUserInfoViewEvent
 import com.authguidance.basicmobileapp.plumbing.events.UnloadEvent
 import com.authguidance.basicmobileapp.views.errors.ErrorSummaryFragment
 import com.authguidance.basicmobileapp.views.headings.HeaderButtonsFragment
-import com.authguidance.basicmobileapp.views.utilities.Constants
 import com.authguidance.basicmobileapp.views.utilities.DeviceSecurity
 import com.authguidance.basicmobileapp.views.utilities.NavigationHelper
 import org.greenrobot.eventbus.EventBus
@@ -34,6 +34,30 @@ class MainActivity : AppCompatActivity() {
 
     // Navigation properties
     private lateinit var navigationHelper: NavigationHelper
+
+    // Handle launching the lock screen intent
+    private val lockScreenLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+
+        this.onLockScreenCompleted(result.data!!)
+    }
+
+    // Handle launching the login intent
+    private val loginLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+
+        this.onFinishLogin(result.data!!)
+    }
+
+    // Handle launching the logout intent
+    private val logoutLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { _ ->
+
+        this.onFinishLogout()
+    }
 
     /*
      * Set up of the Single Activity App's main activity
@@ -143,24 +167,11 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*
-     * Handle the result from other activities, such as AppAuth or lock screen activities
+     * Handle the result from configuring the lock screen
      */
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+    fun onLockScreenCompleted(responseIntent: Intent?) {
 
-        super.onActivityResult(requestCode, resultCode, data)
-
-        // Handle login responses
-        if (requestCode == Constants.LOGIN_REDIRECT_REQUEST_CODE) {
-            this.onFinishLogin(data)
-        }
-
-        // Handle logout responses and reset state
-        else if (requestCode == Constants.LOGOUT_REDIRECT_REQUEST_CODE) {
-            this.onFinishLogout()
-        }
-
-        // Handle returning from the lock screen
-        else if (requestCode == Constants.SET_LOCK_SCREEN_REQUEST_CODE) {
+        if (responseIntent != null) {
 
             this.binding.model?.isTopMost = true
             this.binding.model?.isDeviceSecured = DeviceSecurity.isDeviceSecured(this)
@@ -186,7 +197,7 @@ class MainActivity : AppCompatActivity() {
     fun openLockScreenSettings() {
 
         val intent = Intent(DevicePolicyManager.ACTION_SET_NEW_PASSWORD)
-        this.startActivityForResult(intent, Constants.SET_LOCK_SCREEN_REQUEST_CODE)
+        this.lockScreenLauncher.launch(intent)
         this.binding.model?.isTopMost = false
     }
 
@@ -208,7 +219,7 @@ class MainActivity : AppCompatActivity() {
      * Start a login redirect when the API View Events helper informs us that a permanent 401 has occurred
      */
     private fun onLoginRequired() {
-        this.binding.model?.startLogin(this, this::handleError)
+        this.binding.model?.startLogin(this.loginLauncher::launch, this::handleError)
     }
 
     /*
@@ -233,7 +244,7 @@ class MainActivity : AppCompatActivity() {
 
             // On error, only output logout errors to the console rather than impacting the end user
             val uiError = ErrorHandler().fromException(ex)
-            if (!uiError.errorCode.equals(ErrorCodes.redirectCancelled)) {
+            if (uiError.errorCode != ErrorCodes.redirectCancelled) {
                 ErrorConsoleReporter.output(uiError, this)
             }
 
@@ -242,7 +253,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Ask the model to do the work
-        this.binding.model?.startLogout(this, onError)
+        this.binding.model?.startLogout(this.logoutLauncher::launch, onError)
     }
 
     /*
@@ -303,7 +314,7 @@ class MainActivity : AppCompatActivity() {
         val handler = ErrorHandler()
         val error = handler.fromException(exception)
 
-        if (error.errorCode.equals(ErrorCodes.redirectCancelled)) {
+        if (error.errorCode == ErrorCodes.redirectCancelled) {
 
             // If the user has closed the Chrome Custom Tab without logging in, move to the Login Required view
             this.navigationHelper.navigateTo(R.id.login_required_fragment)

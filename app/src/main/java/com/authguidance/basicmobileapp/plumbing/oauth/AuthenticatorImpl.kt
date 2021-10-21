@@ -1,6 +1,5 @@
 package com.authguidance.basicmobileapp.plumbing.oauth
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -32,25 +31,19 @@ import kotlin.coroutines.suspendCoroutine
  * The authenticator class manages integration with the AppAuth libraries
  */
 @Suppress("TooManyFunctions")
-class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationContext: Context) : Authenticator {
+class AuthenticatorImpl(
+    private val configuration: OAuthConfiguration,
+    private val applicationContext: Context
+) : Authenticator {
 
     private var metadata: AuthorizationServiceConfiguration? = null
-    private val tokenStorage: PersistentTokenStorage
-    private val concurrencyHandler: ConcurrentActionHandler
+    private val concurrencyHandler: ConcurrentActionHandler = ConcurrentActionHandler()
     private var loginAuthService: AuthorizationService? = null
     private var logoutAuthService: AuthorizationService? = null
-
-    /*
-     * We will store encrypted tokens in shared preferences, but only if the device is secured
-     */
-    init {
-
-        // Create an object used to handle refresh token requests from multiple UI frag
-        this.concurrencyHandler = ConcurrentActionHandler()
-
-        // Tokens are encrypted and persisted across app restarts
-        this.tokenStorage = PersistentTokenStorage(this.applicationContext, EncryptionManager(this.applicationContext))
-    }
+    private val tokenStorage = PersistentTokenStorage(
+        this.applicationContext,
+        EncryptionManager(this.applicationContext)
+    )
 
     /*
      * Return true if the user is logged in
@@ -107,8 +100,8 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
     /*
      * Do the work to perform an authorization redirect
      */
-    override suspend fun startLogin(activity: Activity, completionCode: Int) {
-        this.performLoginRedirect(activity, completionCode)
+    override suspend fun startLogin(launchAction: (i: Intent) -> Unit) {
+        this.performLoginRedirect(launchAction)
     }
 
     /*
@@ -121,7 +114,7 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
     /*
      * Remove local state and start the logout redirect to remove the OAuth session cookie
      */
-    override suspend fun startLogout(activity: Activity, completionCode: Int) {
+    override suspend fun startLogout(launchAction: (i: Intent) -> Unit) {
 
         // First force removal of tokens from storage
         val tokens = this.tokenStorage.loadTokens()
@@ -129,7 +122,7 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
         this.tokenStorage.removeTokens()
 
         // Do the logout redirect to remove the Authorization Server session cookie
-        this.performLogoutRedirect(idToken, activity, completionCode)
+        this.performLogoutRedirect(launchAction, idToken)
     }
 
     /*
@@ -204,11 +197,11 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
     /*
      * Do the work of the login redirect
      */
-    private suspend fun performLoginRedirect(activity: Activity, completionCode: Int) {
+    private suspend fun performLoginRedirect(launchAction: (i: Intent) -> Unit) {
 
         try {
 
-            val authService = AuthorizationService(activity)
+            val authService = AuthorizationService(this.applicationContext)
             this.loginAuthService = authService
 
             // First get metadata if required
@@ -227,7 +220,7 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
 
             // Do the AppAuth redirect
             val authIntent = authService.getAuthorizationRequestIntent(request)
-            activity.startActivityForResult(authIntent, completionCode)
+            launchAction(authIntent)
 
         } catch (ex: Throwable) {
             throw ErrorHandler().fromLoginOperationError(ex, ErrorCodes.loginRequestFailed)
@@ -253,7 +246,7 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
 
                 // Handle the case where the user closes the Chrome Custom Tab rather than logging in
                 if (ex.type == AuthorizationException.TYPE_GENERAL_ERROR &&
-                    ex.code.equals(AuthorizationException.GeneralErrors.USER_CANCELED_AUTH_FLOW.code)
+                    ex.code == AuthorizationException.GeneralErrors.USER_CANCELED_AUTH_FLOW.code
                 ) {
 
                     throw ErrorHandler().fromRedirectCancelled()
@@ -339,7 +332,7 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
 
                             // If we get an invalid_grant error it means the refresh token has expired
                             if (ex.type == AuthorizationException.TYPE_OAUTH_TOKEN_ERROR &&
-                                ex.code.equals(AuthorizationException.TokenRequestErrors.INVALID_GRANT.code)
+                                ex.code == AuthorizationException.TokenRequestErrors.INVALID_GRANT.code
                             ) {
                                 // Remove tokens and indicate success, since this is an expected error
                                 // The caller will throw a login required error to redirect the user to login again
@@ -390,7 +383,7 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
     /*
      * Perform a logout redirect in an equivalent manner to how AppAuth libraries perform the login redirect
      */
-    private suspend fun performLogoutRedirect(idToken: String?, activity: Activity, completionCode: Int) {
+    private suspend fun performLogoutRedirect(launchAction: (i: Intent) -> Unit, idToken: String?) {
 
         try {
             // Fail if there is no id token
@@ -412,12 +405,14 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
             )
 
             // Create and start a logout intent on a Chrome Custom tab
-            val authService = AuthorizationService(activity)
+            val authService = AuthorizationService(this.applicationContext)
             val customTabsIntent = authService.customTabManager.createTabBuilder().build()
             val logoutIntent = customTabsIntent.intent
             logoutIntent.setPackage(authService.browserDescriptor.packageName)
             logoutIntent.data = Uri.parse(logoutUrl)
-            activity.startActivityForResult(logoutIntent, completionCode)
+
+            // Launch the intent to sign the user out
+            launchAction(logoutIntent)
 
         } catch (ex: Throwable) {
             throw ErrorHandler().fromLogoutOperationError(ex)
@@ -478,10 +473,10 @@ class AuthenticatorImpl(val configuration: OAuthConfiguration, val applicationCo
      */
     private fun createLogoutUrlBuilder(): LogoutUrlBuilder {
 
-        if (this.configuration.authority.lowercase(Locale.ROOT).contains("cognito")) {
-            return CognitoLogoutUrlBuilder(this.configuration)
+        return if (this.configuration.authority.lowercase(Locale.ROOT).contains("cognito")) {
+            CognitoLogoutUrlBuilder(this.configuration)
         } else {
-            return StandardLogoutUrlBuilder(this.configuration, this.metadata!!)
+            StandardLogoutUrlBuilder(this.configuration, this.metadata!!)
         }
     }
 }
