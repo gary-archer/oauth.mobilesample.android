@@ -1,9 +1,9 @@
 package com.authguidance.basicmobileapp.plumbing.events
 
 /*
- * An event to reload the user info view
+ * An event to update the access token to make it act expired
  */
-class ReloadUserInfoViewEvent(val causeError: Boolean) {
+class ExpireAccessTokenEvent {
 
     /*
      * A dummy method to work around compiler warnings

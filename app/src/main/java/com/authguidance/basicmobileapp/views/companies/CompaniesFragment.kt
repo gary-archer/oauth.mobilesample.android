@@ -56,7 +56,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Subscribe to the reload event and do the initial load of data
+        // Subscribe to events and do the initial load of data
         EventBus.getDefault().register(this)
         this.loadData(false)
     }
@@ -101,11 +101,12 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
                 uiError
             )
 
+            // Update the display to clear data
             this.renderData()
         }
 
         // Ask the model class to do the work
-        this.binding.model?.callApi(
+        this.binding.model!!.callApi(
             ApiRequestOptions(causeError),
             onSuccess,
             onError

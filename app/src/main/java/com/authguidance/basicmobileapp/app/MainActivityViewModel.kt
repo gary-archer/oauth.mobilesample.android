@@ -51,6 +51,20 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app) {
     }
 
     /*
+     * A calculated property used by the session fragment
+     */
+    fun shouldShowSessionId(): Boolean {
+        return this.isDeviceSecured && this.authenticator.isLoggedIn()
+    }
+
+    /*
+     * A calculated property used by the user info fragment
+     */
+    fun shouldLoadUserInfo(): Boolean {
+        return this.isDeviceSecured && this.authenticator.isLoggedIn()
+    }
+
+    /*
      * Start a login operation
      */
     fun startLogin(launchAction: (i: Intent) -> Unit, onError: (Throwable) -> Unit) {
@@ -157,19 +171,5 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app) {
     fun finishLogout() {
         this.authenticator.finishLogout()
         this.isTopMost = true
-    }
-
-    /*
-     * Update token storage to make the access token act like it is expired
-     */
-    fun onExpireAccessToken() {
-        this.authenticator.expireAccessToken()
-    }
-
-    /*
-     * Update token storage to make the refresh token act like it is expired
-     */
-    fun onExpireRefreshToken() {
-        this.authenticator.expireRefreshToken()
     }
 }

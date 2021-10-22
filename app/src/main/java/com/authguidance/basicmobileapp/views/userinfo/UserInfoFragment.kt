@@ -7,12 +7,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.api.client.ApiRequestOptions
-import com.authguidance.basicmobileapp.app.MainActivitySharedViewModel
+import com.authguidance.basicmobileapp.app.MainActivityViewModel
 import com.authguidance.basicmobileapp.databinding.FragmentUserInfoBinding
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
-import com.authguidance.basicmobileapp.plumbing.events.InitializedEvent
 import com.authguidance.basicmobileapp.plumbing.events.LoggedOutEvent
-import com.authguidance.basicmobileapp.plumbing.events.ReloadUserInfoViewEvent
+import com.authguidance.basicmobileapp.plumbing.events.ReloadUserInfoEvent
 import com.authguidance.basicmobileapp.views.errors.ErrorSummaryFragment
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -37,14 +36,12 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
         // Inflate the view
         this.binding = FragmentUserInfoBinding.inflate(inflater, container, false)
 
-        // Get details that the main activity supplies to child views
-        val sharedViewModel: MainActivitySharedViewModel by activityViewModels()
-
-        // Create our own view model
+        // Create our view model using data from the main view model
+        val mainViewModel: MainActivityViewModel by activityViewModels()
         this.binding.model = UserInfoViewModel(
-            sharedViewModel.apiClient,
-            sharedViewModel.apiViewEvents,
-            sharedViewModel.shouldLoadUserInfo
+            mainViewModel.apiClient,
+            mainViewModel.apiViewEvents,
+            mainViewModel::shouldLoadUserInfo
         )
 
         return binding.root
@@ -56,8 +53,17 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Subscribe to events
+        // Subscribe to events and do the initial load of data
         EventBus.getDefault().register(this)
+        this.loadData(false)
+    }
+
+    /*
+     * Handle reload events
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: ReloadUserInfoEvent) {
+        this.loadData(event.causeError)
     }
 
     /*
@@ -66,23 +72,6 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         EventBus.getDefault().unregister(this)
-    }
-
-    /*
-     * Handle initial load events
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(event: InitializedEvent) {
-        event.used()
-        this.loadData(false)
-    }
-
-    /*
-     * Handle reload events
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(mainViewEvent: ReloadUserInfoViewEvent) {
-        this.loadData(mainViewEvent.causeError)
     }
 
     /*
@@ -115,7 +104,7 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
         }
 
         // Ask the model class to do the work
-        this.binding.model?.callApi(
+        this.binding.model!!.callApi(
             ApiRequestOptions(causeError),
             onError
         )
@@ -127,7 +116,7 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
     fun clearData() {
 
         // Clear the model
-        this.binding.model?.setUserInfo(null)
+        this.binding.model!!.setUserInfo(null)
 
         // Also ensure that any errors are cleared
         val errorFragment =

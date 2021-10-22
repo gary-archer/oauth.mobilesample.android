@@ -25,27 +25,27 @@
             <com.authguidance.basicmobileapp.views.utilities.LongPressableButton
                     android:id="@+id/btn_reload_data"
                     android:text="@string/reload_button"
-                    android:enabled="@{model.sessionButtonsEnabled()}"
+                    android:enabled="@{model.hasData()}"
                     style="@style/ButtonHeaderStyle"/>
 
             <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_expire_access_token"
                     android:text="@string/expire_access_token_button"
-                    android:enabled="@{model.sessionButtonsEnabled()}"
+                    android:enabled="@{model.hasData()}"
                     android:onClick="@{() -> model.onExpireAccessToken()}"
                     style="@style/ButtonHeaderStyle"/>
 
             <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_expire_refresh_token"
                     android:text="@string/expire_refresh_token_button"
-                    android:enabled="@{model.sessionButtonsEnabled()}"
+                    android:enabled="@{model.hasData()}"
                     android:onClick="@{() -> model.onExpireRefreshToken()}"
                     style="@style/ButtonHeaderStyle"/>
 
             <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_logout"
                     android:text="@string/logout_button"
-                    android:enabled="@{model.sessionButtonsEnabled()}"
+                    android:enabled="@{model.hasData()}"
                     android:onClick="@{() -> model.onLogout()}"
                     style="@style/ButtonHeaderStyle"/>
         </TableRow>

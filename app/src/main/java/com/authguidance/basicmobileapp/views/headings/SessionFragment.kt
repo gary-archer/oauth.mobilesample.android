@@ -6,9 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.authguidance.basicmobileapp.R
-import com.authguidance.basicmobileapp.app.MainActivitySharedViewModel
+import com.authguidance.basicmobileapp.app.MainActivityViewModel
 import com.authguidance.basicmobileapp.databinding.FragmentSessionBinding
-import com.authguidance.basicmobileapp.plumbing.events.InitializedEvent
 import com.authguidance.basicmobileapp.plumbing.events.LoggedOutEvent
 import com.authguidance.basicmobileapp.plumbing.events.ReloadMainViewEvent
 import org.greenrobot.eventbus.EventBus
@@ -35,13 +34,11 @@ class SessionFragment : androidx.fragment.app.Fragment() {
         // Inflate the view
         this.binding = FragmentSessionBinding.inflate(inflater, container, false)
 
-        // Get details that the main activity supplies to child views
-        val sharedViewModel: MainActivitySharedViewModel by activityViewModels()
-
-        // Create our own view model
+        // Create our view model using data from the main view model
+        val mainViewModel: MainActivityViewModel by activityViewModels()
         this.binding.model = SessionViewModel(
-            sharedViewModel.apiClient,
-            sharedViewModel.shouldShowSessionId,
+            mainViewModel.apiClient,
+            mainViewModel::shouldShowSessionId,
             this.getString(R.string.api_session_id)
         )
 
@@ -67,21 +64,12 @@ class SessionFragment : androidx.fragment.app.Fragment() {
     }
 
     /*
-     * Handle initial load events by showing the session id
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(event: InitializedEvent) {
-        event.used()
-        this.binding.model?.updateData()
-    }
-
-    /*
      * Handle reload events by showing the session id
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(mainViewEvent: ReloadMainViewEvent) {
         mainViewEvent.used()
-        this.binding.model?.updateData()
+        this.binding.model!!.updateData()
     }
 
     /*
@@ -90,6 +78,6 @@ class SessionFragment : androidx.fragment.app.Fragment() {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: LoggedOutEvent) {
         event.used()
-        this.binding.model?.clearData()
+        this.binding.model!!.clearData()
     }
 }

@@ -1,9 +1,9 @@
 package com.authguidance.basicmobileapp.plumbing.events
 
 /*
- * An event sent at application startup, once the app is initialised
+ * An event to reload the user info view
  */
-class InitializedEvent {
+class ReloadUserInfoEvent(val causeError: Boolean) {
 
     /*
      * A dummy method to work around compiler warnings

@@ -62,17 +62,9 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Subscribe to the reload event and do the initial load of data
+        // Subscribe to events and do the initial load of data
         EventBus.getDefault().register(this)
         this.loadData(false)
-    }
-
-    /*
-     * Unsubscribe from events upon exit
-     */
-    override fun onDestroyView() {
-        super.onDestroyView()
-        EventBus.getDefault().unregister(this)
     }
 
     /*
@@ -81,6 +73,14 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(mainViewEvent: ReloadMainViewEvent) {
         this.loadData(mainViewEvent.causeError)
+    }
+
+    /*
+     * Unsubscribe from events upon exit
+     */
+    override fun onDestroyView() {
+        super.onDestroyView()
+        EventBus.getDefault().unregister(this)
     }
 
     /*
@@ -116,13 +116,13 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
                     uiError
                 )
 
-                // Update the display to clear any shown transactions
+                // Update the display to clear data
                 this.renderData()
             }
         }
 
         // Ask the model class to do the work
-        this.binding.model?.callApi(
+        this.binding.model!!.callApi(
             ApiRequestOptions(causeError),
             onSuccess,
             onError

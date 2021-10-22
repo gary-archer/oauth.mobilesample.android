@@ -11,7 +11,7 @@ import java.util.Locale
 import java.util.regex.Pattern
 
 /*
- * A helper class for dealing with navigation and deep linking, including the back stack
+ * A view helper class for dealing with navigation and deep linking, including the back stack
  */
 class NavigationHelper(
     val navHostFragment: NavHostFragment,
@@ -73,15 +73,6 @@ class NavigationHelper(
         }
 
         return null
-    }
-
-    /*
-     * Some operations are disabled in this view
-     */
-    fun isInLoginRequired(): Boolean {
-
-        val currentFragmentId = NavHostFragment.findNavController(this.navHostFragment).currentDestination?.id
-        return currentFragmentId == R.id.login_required_fragment
     }
 
     /*

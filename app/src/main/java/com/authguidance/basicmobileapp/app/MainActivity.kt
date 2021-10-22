@@ -7,7 +7,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.NavHostFragment
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.databinding.ActivityMainBinding
@@ -15,11 +14,15 @@ import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorConsoleReporter
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorHandler
 import com.authguidance.basicmobileapp.plumbing.events.DataStatusEvent
-import com.authguidance.basicmobileapp.plumbing.events.InitializedEvent
+import com.authguidance.basicmobileapp.plumbing.events.ExpireAccessTokenEvent
+import com.authguidance.basicmobileapp.plumbing.events.ExpireRefreshTokenEvent
+import com.authguidance.basicmobileapp.plumbing.events.HomeEvent
 import com.authguidance.basicmobileapp.plumbing.events.LoggedOutEvent
 import com.authguidance.basicmobileapp.plumbing.events.LoginRequiredEvent
 import com.authguidance.basicmobileapp.plumbing.events.ReloadMainViewEvent
-import com.authguidance.basicmobileapp.plumbing.events.ReloadUserInfoViewEvent
+import com.authguidance.basicmobileapp.plumbing.events.ReloadUserInfoEvent
+import com.authguidance.basicmobileapp.plumbing.events.StartLogoutEvent
+import com.authguidance.basicmobileapp.plumbing.events.StartReloadEvent
 import com.authguidance.basicmobileapp.views.errors.ErrorSummaryFragment
 import com.authguidance.basicmobileapp.views.utilities.DeviceSecurity
 import com.authguidance.basicmobileapp.views.utilities.NavigationHelper
@@ -31,7 +34,7 @@ import org.greenrobot.eventbus.ThreadMode
  * Our Single Activity App's activity
  */
 @Suppress("TooManyFunctions")
-class MainActivity : AppCompatActivity(), MainActivityEvents {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var navigationHelper: NavigationHelper
@@ -70,12 +73,6 @@ class MainActivity : AppCompatActivity(), MainActivityEvents {
         // Create the main view model the first time the view is created
         val model: MainActivityViewModel by viewModels()
 
-        // Populate the shared view model provided to child fragments
-        ViewModelProvider(
-            this,
-            MainActivitySharedViewModelFactory(model, this, this::isInLoginRequired)
-        ).get(MainActivitySharedViewModel::class.java)
-
         // Inflate the view, which will trigger child fragments to run
         this.binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         this.binding.model = model
@@ -84,14 +81,13 @@ class MainActivity : AppCompatActivity(), MainActivityEvents {
         val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
             as NavHostFragment
         this.navigationHelper = NavigationHelper(navHostFragment) { model.isDeviceSecured }
-
-        // Do initial navigation
         this.navigationHelper.deepLinkBaseUrl = this.binding.model!!.configuration.oauth.deepLinkBaseUrl
+
+        // Move to the initial main view, to start loading fragments and trigger API calls
         this.navigateStart()
 
-        // Tell fragments that they can load and start listening for events
+        // Start listening for events
         EventBus.getDefault().register(this)
-        EventBus.getDefault().post(InitializedEvent())
     }
 
     /*
@@ -159,13 +155,12 @@ class MainActivity : AppCompatActivity(), MainActivityEvents {
     }
 
     /*
-     * Finish a login when we receive the response intent
+     * Finish a login when we receive the response intent, then reload data
      */
     private fun onFinishLogin(responseIntent: Intent?) {
 
-        // Reload data after login
         val onSuccess = {
-            this.onReloadData(false)
+            this.onReloadData(StartReloadEvent(false))
         }
 
         this.binding.model!!.finishLogin(responseIntent, onSuccess, this::handleError)
@@ -174,8 +169,10 @@ class MainActivity : AppCompatActivity(), MainActivityEvents {
     /*
      * Remove tokens and redirect to remove the authorization server session cookie
      */
-    override fun onStartLogout() {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onStartLogout(event: StartLogoutEvent) {
 
+        event.used()
         val onError = { ex: Throwable ->
 
             // On error, only output logout errors to the console rather than impacting the end user
@@ -211,9 +208,11 @@ class MainActivity : AppCompatActivity(), MainActivityEvents {
     /*
      * Handle home navigation
      */
-    override fun onHome() {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onHome(event: HomeEvent) {
 
-        // Clear any existing errors
+        // Reset state
+        event.used()
         val errorFragment =
             this.supportFragmentManager.findFragmentById(R.id.main_error_summary_fragment) as ErrorSummaryFragment
         errorFragment.clearError()
@@ -225,18 +224,30 @@ class MainActivity : AppCompatActivity(), MainActivityEvents {
     /*
      * Publish an event to update all active views
      */
-    override fun onReloadData(causeError: Boolean) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onReloadData(event: StartReloadEvent) {
 
         this.binding.model!!.apiViewEvents.clearState()
-        EventBus.getDefault().post(ReloadMainViewEvent(causeError))
-        EventBus.getDefault().post(ReloadUserInfoViewEvent(causeError))
+        EventBus.getDefault().post(ReloadMainViewEvent(event.causeError))
+        EventBus.getDefault().post(ReloadUserInfoEvent(event.causeError))
     }
 
     /*
-     * A utility method to determine if we are in the login required view
+     * Update token storage to make the access token act like it is expired
      */
-    fun isInLoginRequired(): Boolean {
-        return this.navigationHelper.isInLoginRequired()
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onExpireAccessToken(event: ExpireAccessTokenEvent) {
+        event.used()
+        this.binding.model!!.authenticator.expireAccessToken()
+    }
+
+    /*
+     * Update token storage to make the refresh token act like it is expired
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onExpireRefreshToken(event: ExpireRefreshTokenEvent) {
+        event.used()
+        this.binding.model!!.authenticator.expireRefreshToken()
     }
 
     /*
@@ -278,6 +289,7 @@ class MainActivity : AppCompatActivity(), MainActivityEvents {
      */
     override fun onDestroy() {
         super.onDestroy()
+        EventBus.getDefault().unregister(this)
         (this.application as Application).setMainActivity(null)
     }
 }

@@ -37,19 +37,29 @@ class AuthenticatorImpl(
 ) : Authenticator {
 
     private var metadata: AuthorizationServiceConfiguration? = null
-    private val concurrencyHandler: ConcurrentActionHandler = ConcurrentActionHandler()
     private var loginAuthService: AuthorizationService? = null
     private var logoutAuthService: AuthorizationService? = null
-    private val tokenStorage = PersistentTokenStorage(
-        this.applicationContext,
-        EncryptionManager(this.applicationContext)
-    )
+    private val concurrencyHandler: ConcurrentActionHandler
+    private val tokenStorage: PersistentTokenStorage
+    private var isLoggedIn = true
 
     /*
-     * Return true if the user is logged in
+     * Create child objects once
+     */
+    init {
+        this.concurrencyHandler = ConcurrentActionHandler()
+        this.tokenStorage = PersistentTokenStorage(
+            this.applicationContext,
+            EncryptionManager(this.applicationContext)
+        )
+    }
+
+    /*
+     * Initially we assume we are logged in so that views fire API calls
+     * The app then handles any 401s and redirects the user when required
      */
     override fun isLoggedIn(): Boolean {
-        return this.tokenStorage.loadTokens() != null
+        return this.isLoggedIn
     }
 
     /*
@@ -78,8 +88,9 @@ class AuthenticatorImpl(
             // Manage concurrency when there are multiple UI fragments receiving API 401s
             if (this.concurrencyHandler.start()) {
 
-                // Do the work for the first caller only
+                // Do the work for the first UI fragment only
                 this.performRefreshTokenGrant()
+
             } else {
 
                 // Add a continuation that waits on the response from the first fragment
@@ -94,6 +105,7 @@ class AuthenticatorImpl(
         }
 
         // Otherwise abort the API call via a known exception
+        this.isLoggedIn = false
         throw ErrorHandler().fromLoginRequired()
     }
 
@@ -135,6 +147,8 @@ class AuthenticatorImpl(
             this.logoutAuthService?.customTabManager?.dispose()
             this.logoutAuthService = null
         }
+
+        this.isLoggedIn = false
     }
 
     /*
@@ -257,8 +271,9 @@ class AuthenticatorImpl(
             }
             authorizationResponse != null -> {
 
-                // Swap the authorization code for tokens
+                // Swap the authorization code for tokens and update state
                 this.exchangeAuthorizationCode(authorizationResponse)
+                this.isLoggedIn = true
             }
         }
     }
