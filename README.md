@@ -1,4 +1,4 @@
-# oauth.mobilesample.android
+# Android OAuth Mobile Sample
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/0eafe484d5164e0a8ba0628c96784524)](https://www.codacy.com/gh/gary-archer/oauth.mobilesample.android/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=gary-archer/oauth.mobilesample.android&amp;utm_campaign=Badge_Grade)
 
@@ -6,8 +6,8 @@
 
 ### Overview
 
-* A mobile sample using OAuth and Open Id Connect, referenced in my blog at https://authguidance.com
-* **The goal of this sample is to implement Open Id Connect mobile logins with best usability and reliability**
+* A mobile sample using OAuth and Open ID Connect, referenced in my blog at https://authguidance.com
+* **The goal is to implement Open ID Connect mobile logins with best usability and reliability**
 
 ### Details
 
