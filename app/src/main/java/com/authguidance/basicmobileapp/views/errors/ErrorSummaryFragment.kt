@@ -22,7 +22,7 @@ class ErrorSummaryFragment : androidx.fragment.app.Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         // Inflate the binding
         this.binding = FragmentErrorSummaryBinding.inflate(inflater, container, false)

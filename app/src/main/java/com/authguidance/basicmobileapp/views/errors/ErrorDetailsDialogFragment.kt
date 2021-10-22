@@ -40,7 +40,7 @@ class ErrorDetailsDialogFragment : DialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         // Inflate the layout
         this.binding = FragmentErrorDetailsBinding.inflate(inflater, container, false)

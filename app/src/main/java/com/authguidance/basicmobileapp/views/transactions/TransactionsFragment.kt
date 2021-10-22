@@ -34,7 +34,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         // Inflate the view
         this.binding = FragmentTransactionsBinding.inflate(inflater, container, false)

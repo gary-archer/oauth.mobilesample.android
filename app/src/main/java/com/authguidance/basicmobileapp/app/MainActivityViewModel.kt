@@ -17,15 +17,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /*
- * The view model class for the main activity
+ * Global data is stored in the view model class for the main activity, which is created only once
  */
 class MainActivityViewModel(val app: Application) : AndroidViewModel(app) {
 
     // Global objects used by the main activity
-    var configuration: Configuration
-    var authenticator: Authenticator
-    var apiClient: ApiClient
-    var apiViewEvents: ApiViewEvents
+    val configuration: Configuration
+    val authenticator: Authenticator
+    val apiClient: ApiClient
+    val apiViewEvents: ApiViewEvents
 
     // State used by the main activity
     var isDeviceSecured: Boolean = false

@@ -24,7 +24,7 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         // Inflate the layout
         this.binding = FragmentHeaderButtonsBinding.inflate(inflater, container, false)

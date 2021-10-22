@@ -31,7 +31,7 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         // Inflate the view
         this.binding = FragmentUserInfoBinding.inflate(inflater, container, false)

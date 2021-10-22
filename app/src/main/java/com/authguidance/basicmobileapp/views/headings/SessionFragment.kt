@@ -29,7 +29,7 @@ class SessionFragment : androidx.fragment.app.Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         // Inflate the view
         this.binding = FragmentSessionBinding.inflate(inflater, container, false)

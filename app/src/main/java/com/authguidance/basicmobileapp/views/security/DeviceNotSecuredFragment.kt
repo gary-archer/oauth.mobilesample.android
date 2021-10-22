@@ -22,7 +22,7 @@ class DeviceNotSecuredFragment : androidx.fragment.app.Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         this.binding = FragmentDeviceNotSecuredBinding.inflate(inflater, container, false)
         return this.binding.root
