@@ -2,7 +2,7 @@ package com.authguidance.basicmobileapp.views.utilities
 
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
-import com.authguidance.basicmobileapp.plumbing.events.GetDataEvent
+import com.authguidance.basicmobileapp.plumbing.events.DataStatusEvent
 import com.authguidance.basicmobileapp.plumbing.events.LoginRequiredEvent
 import com.authguidance.basicmobileapp.views.utilities.Constants.VIEW_MAIN
 import org.greenrobot.eventbus.EventBus
@@ -41,7 +41,7 @@ class ApiViewEvents {
         views[name] = false
 
         if (name == VIEW_MAIN) {
-            EventBus.getDefault().post(GetDataEvent(false))
+            EventBus.getDefault().post(DataStatusEvent(false))
         }
     }
 
@@ -53,7 +53,7 @@ class ApiViewEvents {
         views[name] = true
 
         if (name == VIEW_MAIN) {
-            EventBus.getDefault().post(GetDataEvent(true))
+            EventBus.getDefault().post(DataStatusEvent(true))
         }
 
         this.triggerLoginIfRequired()

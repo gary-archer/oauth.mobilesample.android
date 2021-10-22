@@ -1,9 +1,9 @@
 package com.authguidance.basicmobileapp.plumbing.events
 
 /*
- * An event sent when logout completes
+ * An event sent at application startup, once the app is initialised
  */
-class UnloadEvent {
+class InitializedEvent {
 
     /*
      * A dummy method to work around compiler warnings

@@ -14,12 +14,12 @@ import com.authguidance.basicmobileapp.databinding.ActivityMainBinding
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorConsoleReporter
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorHandler
-import com.authguidance.basicmobileapp.plumbing.events.GetDataEvent
-import com.authguidance.basicmobileapp.plumbing.events.InitialLoadEvent
+import com.authguidance.basicmobileapp.plumbing.events.DataStatusEvent
+import com.authguidance.basicmobileapp.plumbing.events.InitializedEvent
 import com.authguidance.basicmobileapp.plumbing.events.LoginRequiredEvent
 import com.authguidance.basicmobileapp.plumbing.events.ReloadMainViewEvent
 import com.authguidance.basicmobileapp.plumbing.events.ReloadUserInfoViewEvent
-import com.authguidance.basicmobileapp.plumbing.events.UnloadEvent
+import com.authguidance.basicmobileapp.plumbing.events.LoggedOutEvent
 import com.authguidance.basicmobileapp.views.errors.ErrorSummaryFragment
 import com.authguidance.basicmobileapp.views.utilities.DeviceSecurity
 import com.authguidance.basicmobileapp.views.utilities.NavigationHelper
@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity(), MainActivityEvents {
         // Do initial navigation
         this.navigationHelper.deepLinkBaseUrl = this.binding.model!!.configuration.oauth.deepLinkBaseUrl
         this.navigateStart()
-        EventBus.getDefault().post(InitialLoadEvent())
+        EventBus.getDefault().post(InitializedEvent())
     }
 
     /*
@@ -199,13 +199,13 @@ class MainActivity : AppCompatActivity(), MainActivityEvents {
 
         // Update state and free resources
         this.binding.model!!.finishLogout()
-        EventBus.getDefault().post(GetDataEvent(false))
+        EventBus.getDefault().post(DataStatusEvent(false))
 
         // Move to the login required page
         this.navigationHelper.navigateTo(R.id.login_required_fragment)
 
         // Send an event to fragments that should no longer be visible
-        EventBus.getDefault().post(UnloadEvent())
+        EventBus.getDefault().post(LoggedOutEvent())
     }
 
     /*

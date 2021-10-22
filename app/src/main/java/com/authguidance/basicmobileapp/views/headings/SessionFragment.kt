@@ -8,9 +8,9 @@ import androidx.fragment.app.activityViewModels
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.app.MainActivitySharedViewModel
 import com.authguidance.basicmobileapp.databinding.FragmentSessionBinding
-import com.authguidance.basicmobileapp.plumbing.events.InitialLoadEvent
+import com.authguidance.basicmobileapp.plumbing.events.InitializedEvent
 import com.authguidance.basicmobileapp.plumbing.events.ReloadMainViewEvent
-import com.authguidance.basicmobileapp.plumbing.events.UnloadEvent
+import com.authguidance.basicmobileapp.plumbing.events.LoggedOutEvent
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -70,7 +70,7 @@ class SessionFragment : androidx.fragment.app.Fragment() {
      * Handle initial load events by showing the session id
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(event: InitialLoadEvent) {
+    fun onMessageEvent(event: InitializedEvent) {
         event.used()
         this.binding.model?.updateData()
     }
@@ -88,7 +88,7 @@ class SessionFragment : androidx.fragment.app.Fragment() {
      * Handle logout events by clearing the session id
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(event: UnloadEvent) {
+    fun onMessageEvent(event: LoggedOutEvent) {
         event.used()
         this.binding.model?.clearData()
     }

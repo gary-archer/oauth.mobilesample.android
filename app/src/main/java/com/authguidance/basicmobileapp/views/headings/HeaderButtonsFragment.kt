@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.authguidance.basicmobileapp.app.MainActivitySharedViewModel
 import com.authguidance.basicmobileapp.databinding.FragmentHeaderButtonsBinding
-import com.authguidance.basicmobileapp.plumbing.events.GetDataEvent
+import com.authguidance.basicmobileapp.plumbing.events.DataStatusEvent
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -64,7 +64,7 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
      * During API calls we disable session buttons and then re-enable them afterwards
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(event: GetDataEvent) {
+    fun onMessageEvent(event: DataStatusEvent) {
         this.binding.model?.updateSessionButtonEnabledState(event.loaded)
     }
 }

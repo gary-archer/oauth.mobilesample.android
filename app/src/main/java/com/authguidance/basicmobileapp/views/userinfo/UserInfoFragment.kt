@@ -10,9 +10,9 @@ import com.authguidance.basicmobileapp.api.client.ApiRequestOptions
 import com.authguidance.basicmobileapp.app.MainActivitySharedViewModel
 import com.authguidance.basicmobileapp.databinding.FragmentUserInfoBinding
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
-import com.authguidance.basicmobileapp.plumbing.events.InitialLoadEvent
+import com.authguidance.basicmobileapp.plumbing.events.InitializedEvent
 import com.authguidance.basicmobileapp.plumbing.events.ReloadUserInfoViewEvent
-import com.authguidance.basicmobileapp.plumbing.events.UnloadEvent
+import com.authguidance.basicmobileapp.plumbing.events.LoggedOutEvent
 import com.authguidance.basicmobileapp.views.errors.ErrorSummaryFragment
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -72,7 +72,7 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
      * Handle initial load events
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(event: InitialLoadEvent) {
+    fun onMessageEvent(event: InitializedEvent) {
         event.used()
         this.loadData(false)
     }
@@ -89,7 +89,7 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
      * Handle logout events by clearing our data
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(event: UnloadEvent) {
+    fun onMessageEvent(event: LoggedOutEvent) {
         event.used()
         this.clearData()
     }
