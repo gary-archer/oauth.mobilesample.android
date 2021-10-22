@@ -6,8 +6,8 @@
 
 ### Overview
 
-* A mobile sample using OAuth and Open ID Connect, referenced in my blog at https://authguidance.com
-* **The goal is to implement Open ID Connect mobile logins with best usability and reliability**
+* A mobile sample using OAuth and OpenID Connect, referenced in my blog at https://authguidance.com
+* **The goal is to implement OpenID Connect mobile logins with best usability and reliability**
 
 ### Details
 
