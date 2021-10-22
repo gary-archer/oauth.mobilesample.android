@@ -16,7 +16,7 @@
 
 ### Technologies
 
-* Kotlin and Jetpack are used to develop a Single Activity App that connects to a Cloud API and Authorization Server
+* Kotlin and Jetpack are used to develop an app that connects to a Cloud API and Authorization Server
 
 ### Middleware Used
 
