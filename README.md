@@ -20,7 +20,7 @@
 
 ### Middleware Used
 
-* The [AppAuth-Android Library](https://github.com/openid/AppAuth-Android) is used to implement the Authorization Code Flow (PKCE) via a Claimed HTTPS Scheme
+* [AppAuth-Android](https://github.com/openid/AppAuth-Android) is used to implement Authorization Code Flow (PKCE) with a Claimed HTTPS Scheme
 * AWS API Gateway is used to host the back end OAuth Secured Web API
 * AWS Cognito is used as the default Authorization Server for the Mobile App and API
 * The Android Key Store is used to store encrypted tokens on the device after login
