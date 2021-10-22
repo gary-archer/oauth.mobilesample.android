@@ -27,7 +27,6 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app) {
     val apiClient: ApiClient
     val apiViewEvents: ApiViewEvents
 
-    // State used by the main activity
     var isDeviceSecured: Boolean = false
     var isTopMost: Boolean = true
 
@@ -49,13 +48,6 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app) {
         this.apiViewEvents = ApiViewEvents()
         this.apiViewEvents.addView(Constants.VIEW_MAIN)
         this.apiViewEvents.addView(Constants.VIEW_USERINFO)
-    }
-
-    /*
-     * Views should try to load data when these properties are true
-     */
-    fun shouldLoadData(): Boolean {
-        return this.isDeviceSecured && this.authenticator.isLoggedIn()
     }
 
     /*

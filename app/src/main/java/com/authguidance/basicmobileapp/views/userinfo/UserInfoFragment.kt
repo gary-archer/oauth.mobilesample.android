@@ -40,8 +40,7 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
         val mainViewModel: MainActivityViewModel by activityViewModels()
         this.binding.model = UserInfoViewModel(
             mainViewModel.apiClient,
-            mainViewModel.apiViewEvents,
-            mainViewModel::shouldLoadData
+            mainViewModel.apiViewEvents
         )
 
         return binding.root

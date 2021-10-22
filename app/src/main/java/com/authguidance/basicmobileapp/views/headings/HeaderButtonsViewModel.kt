@@ -47,6 +47,7 @@ class HeaderButtonsViewModel : BaseObservable() {
      * Send an event to tell the main view to initiate logout
      */
     fun onLogout() {
+        this.updateDataStatus(false)
         EventBus.getDefault().post(StartLogoutEvent())
     }
 

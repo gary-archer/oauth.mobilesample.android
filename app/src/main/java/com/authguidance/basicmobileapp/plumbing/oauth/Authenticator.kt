@@ -7,9 +7,6 @@ import android.content.Intent
  */
 interface Authenticator {
 
-    // Query the login state
-    fun isLoggedIn(): Boolean
-
     // Try to get an access token
     suspend fun getAccessToken(): String
 

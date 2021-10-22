@@ -41,7 +41,6 @@ class AuthenticatorImpl(
     private var logoutAuthService: AuthorizationService? = null
     private val concurrencyHandler: ConcurrentActionHandler
     private val tokenStorage: PersistentTokenStorage
-    private var isLoggedIn = true
 
     /*
      * Create child objects once
@@ -52,14 +51,6 @@ class AuthenticatorImpl(
             this.applicationContext,
             EncryptionManager(this.applicationContext)
         )
-    }
-
-    /*
-     * Initially we assume we are logged in so that views fire API calls
-     * The app then handles any 401s and redirects the user when required
-     */
-    override fun isLoggedIn(): Boolean {
-        return this.isLoggedIn
     }
 
     /*
@@ -146,8 +137,6 @@ class AuthenticatorImpl(
             this.logoutAuthService?.customTabManager?.dispose()
             this.logoutAuthService = null
         }
-
-        this.isLoggedIn = false
     }
 
     /*
@@ -272,7 +261,6 @@ class AuthenticatorImpl(
 
                 // Swap the authorization code for tokens and update state
                 this.exchangeAuthorizationCode(authorizationResponse)
-                this.isLoggedIn = true
             }
         }
     }
