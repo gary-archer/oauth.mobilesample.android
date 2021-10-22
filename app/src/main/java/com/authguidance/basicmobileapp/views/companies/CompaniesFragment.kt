@@ -9,7 +9,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.api.client.ApiRequestOptions
-import com.authguidance.basicmobileapp.app.MainActivitySharedViewModel
+import com.authguidance.basicmobileapp.app.MainActivityViewModel
 import com.authguidance.basicmobileapp.databinding.FragmentCompaniesBinding
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
 import com.authguidance.basicmobileapp.plumbing.events.ReloadMainViewEvent
@@ -39,12 +39,12 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
         this.binding = FragmentCompaniesBinding.inflate(inflater, container, false)
 
         // Get details that the main activity supplies to child views
-        val sharedViewModel: MainActivitySharedViewModel by activityViewModels()
+        val mainViewModel: MainActivityViewModel by activityViewModels()
 
         // Create our own view model
         this.binding.model = CompaniesViewModel(
-            sharedViewModel.apiClient,
-            sharedViewModel.apiViewEvents
+            mainViewModel.apiClient,
+            mainViewModel.apiViewEvents
         )
 
         return this.binding.root

@@ -16,10 +16,10 @@ import com.authguidance.basicmobileapp.plumbing.errors.ErrorConsoleReporter
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorHandler
 import com.authguidance.basicmobileapp.plumbing.events.DataStatusEvent
 import com.authguidance.basicmobileapp.plumbing.events.InitializedEvent
+import com.authguidance.basicmobileapp.plumbing.events.LoggedOutEvent
 import com.authguidance.basicmobileapp.plumbing.events.LoginRequiredEvent
 import com.authguidance.basicmobileapp.plumbing.events.ReloadMainViewEvent
 import com.authguidance.basicmobileapp.plumbing.events.ReloadUserInfoViewEvent
-import com.authguidance.basicmobileapp.plumbing.events.LoggedOutEvent
 import com.authguidance.basicmobileapp.views.errors.ErrorSummaryFragment
 import com.authguidance.basicmobileapp.views.utilities.DeviceSecurity
 import com.authguidance.basicmobileapp.views.utilities.NavigationHelper
@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity(), MainActivityEvents {
         super.onCreate(savedInstanceState)
         (this.application as Application).setMainActivity(this)
 
-        // Create the view model the first time the view is created
+        // Create the main view model the first time the view is created
         val model: MainActivityViewModel by viewModels()
 
         // Populate the shared view model provided to child fragments
@@ -85,12 +85,12 @@ class MainActivity : AppCompatActivity(), MainActivityEvents {
             as NavHostFragment
         this.navigationHelper = NavigationHelper(navHostFragment) { model.isDeviceSecured }
 
-        // Subscribe for events
-        EventBus.getDefault().register(this)
-
         // Do initial navigation
         this.navigationHelper.deepLinkBaseUrl = this.binding.model!!.configuration.oauth.deepLinkBaseUrl
         this.navigateStart()
+
+        // Tell fragments that they can load and start listening for events
+        EventBus.getDefault().register(this)
         EventBus.getDefault().post(InitializedEvent())
     }
 

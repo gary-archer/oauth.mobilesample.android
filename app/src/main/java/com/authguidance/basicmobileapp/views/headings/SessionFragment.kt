@@ -9,8 +9,8 @@ import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.app.MainActivitySharedViewModel
 import com.authguidance.basicmobileapp.databinding.FragmentSessionBinding
 import com.authguidance.basicmobileapp.plumbing.events.InitializedEvent
-import com.authguidance.basicmobileapp.plumbing.events.ReloadMainViewEvent
 import com.authguidance.basicmobileapp.plumbing.events.LoggedOutEvent
+import com.authguidance.basicmobileapp.plumbing.events.ReloadMainViewEvent
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
