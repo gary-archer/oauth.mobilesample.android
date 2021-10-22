@@ -22,7 +22,7 @@ class ErrorSummaryFragment : androidx.fragment.app.Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         // Inflate the binding
         this.binding = FragmentErrorSummaryBinding.inflate(inflater, container, false)
@@ -39,7 +39,7 @@ class ErrorSummaryFragment : androidx.fragment.app.Fragment() {
 
         // Record error details unless this a login is required, which is not a real error
         if (!error.errorCode.equals(ErrorCodes.loginRequired)) {
-            this.binding.model?.setErrorDetails(hyperlinkText, dialogTitle, error)
+            this.binding.model!!.setErrorDetails(hyperlinkText, dialogTitle, error)
         }
     }
 
@@ -47,7 +47,7 @@ class ErrorSummaryFragment : androidx.fragment.app.Fragment() {
      * Clear error details when required
      */
     fun clearError() {
-        this.binding.model?.clearErrorDetails()
+        this.binding.model!!.clearErrorDetails()
     }
 
     /*

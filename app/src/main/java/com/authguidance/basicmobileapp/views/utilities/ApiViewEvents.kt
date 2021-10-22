@@ -2,15 +2,16 @@ package com.authguidance.basicmobileapp.views.utilities
 
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
+import com.authguidance.basicmobileapp.plumbing.events.DataStatusEvent
+import com.authguidance.basicmobileapp.plumbing.events.LoginRequiredEvent
 import com.authguidance.basicmobileapp.views.utilities.Constants.VIEW_MAIN
+import org.greenrobot.eventbus.EventBus
 
 /*
  * A helper class to coordinate multiple views
  */
-class ApiViewEvents(
-    val onLoginRequiredAction: () -> Unit,
-    val onMainLoadStateChanged: (loaded: Boolean) -> Unit
-) {
+class ApiViewEvents {
+
     // A map of view names to their loaded state
     private val views: MutableMap<String, Boolean>
 
@@ -40,7 +41,7 @@ class ApiViewEvents(
         views[name] = false
 
         if (name == VIEW_MAIN) {
-            this.onMainLoadStateChanged(false)
+            EventBus.getDefault().post(DataStatusEvent(false))
         }
     }
 
@@ -52,7 +53,7 @@ class ApiViewEvents(
         views[name] = true
 
         if (name == VIEW_MAIN) {
-            this.onMainLoadStateChanged(true)
+            EventBus.getDefault().post(DataStatusEvent(true))
         }
 
         this.triggerLoginIfRequired()
@@ -91,7 +92,7 @@ class ApiViewEvents(
 
         val allViewsLoaded = this.views.filter { i -> i.value }.size == this.views.size
         if (allViewsLoaded && this.loginRequired) {
-            this.onLoginRequiredAction()
+            EventBus.getDefault().post(LoginRequiredEvent())
         }
     }
 }

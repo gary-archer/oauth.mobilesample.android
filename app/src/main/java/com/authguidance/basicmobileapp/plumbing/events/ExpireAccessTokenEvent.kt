@@ -1,9 +1,9 @@
 package com.authguidance.basicmobileapp.plumbing.events
 
 /*
- * An event sent at application startup, once the app is initialised
+ * An event to update the access token to make it act expired
  */
-class InitialLoadEvent {
+class ExpireAccessTokenEvent {
 
     /*
      * A dummy method to work around compiler warnings

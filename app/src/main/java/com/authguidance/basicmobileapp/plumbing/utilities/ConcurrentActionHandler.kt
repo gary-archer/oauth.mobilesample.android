@@ -11,7 +11,7 @@ private typealias ErrorCallback = (ex: Throwable) -> Unit
 
 /*
  * Used when multiple UI fragments attempt an action that needs to be synchronised
- * We have to write the copde a little differently to our React / SwiftUI samples to avoid this compiler error:
+ * We have to write the code a little differently to our React / SwiftUI samples to avoid this compiler error:
  *   'Suspension functions can only be called within coroutine body'
  */
 class ConcurrentActionHandler {

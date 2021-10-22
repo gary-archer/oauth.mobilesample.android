@@ -37,19 +37,20 @@ class AuthenticatorImpl(
 ) : Authenticator {
 
     private var metadata: AuthorizationServiceConfiguration? = null
-    private val concurrencyHandler: ConcurrentActionHandler = ConcurrentActionHandler()
     private var loginAuthService: AuthorizationService? = null
     private var logoutAuthService: AuthorizationService? = null
-    private val tokenStorage = PersistentTokenStorage(
-        this.applicationContext,
-        EncryptionManager(this.applicationContext)
-    )
+    private val concurrencyHandler: ConcurrentActionHandler
+    private val tokenStorage: PersistentTokenStorage
 
     /*
-     * Return true if the user is logged in
+     * Create child objects once
      */
-    override fun isLoggedIn(): Boolean {
-        return this.tokenStorage.loadTokens() != null
+    init {
+        this.concurrencyHandler = ConcurrentActionHandler()
+        this.tokenStorage = PersistentTokenStorage(
+            this.applicationContext,
+            EncryptionManager(this.applicationContext)
+        )
     }
 
     /*
@@ -78,8 +79,9 @@ class AuthenticatorImpl(
             // Manage concurrency when there are multiple UI fragments receiving API 401s
             if (this.concurrencyHandler.start()) {
 
-                // Do the work for the first caller only
+                // Do the work for the first UI fragment only
                 this.performRefreshTokenGrant()
+
             } else {
 
                 // Add a continuation that waits on the response from the first fragment
@@ -257,7 +259,7 @@ class AuthenticatorImpl(
             }
             authorizationResponse != null -> {
 
-                // Swap the authorization code for tokens
+                // Swap the authorization code for tokens and update state
                 this.exchangeAuthorizationCode(authorizationResponse)
             }
         }

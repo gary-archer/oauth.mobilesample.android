@@ -8,11 +8,11 @@ object Constants {
     // The company id passed when navigating to the transactions fragment
     const val ARG_COMPANY_ID = "COMPANY_ID"
 
-    // Error details passed when navigating to error fragments
-    const val ARG_ERROR_DATA = "ERROR_DATA"
-    const val ARG_ERROR_TITLE = "ERROR_TITLE"
-
     // Names of view areas that calls APIs, used by ApiViewEvents
     const val VIEW_MAIN = "VIEW_MAIN"
     const val VIEW_USERINFO = "VIEW_USERINFO"
+
+    // Error details passed when navigating to error fragments
+    const val ARG_ERROR_DATA = "ERROR_DATA"
+    const val ARG_ERROR_TITLE = "ERROR_TITLE"
 }

@@ -20,7 +20,7 @@ class LoginRequiredFragment : androidx.fragment.app.Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         this.binding = FragmentLoginRequiredBinding.inflate(inflater, container, false)
         return binding.root

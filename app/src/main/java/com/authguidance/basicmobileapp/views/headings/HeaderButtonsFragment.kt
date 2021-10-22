@@ -4,9 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.activityViewModels
-import com.authguidance.basicmobileapp.app.MainActivitySharedViewModel
 import com.authguidance.basicmobileapp.databinding.FragmentHeaderButtonsBinding
+import com.authguidance.basicmobileapp.plumbing.events.DataStatusEvent
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
 
 /*
  * A simple fragment with the header buttons
@@ -22,24 +24,13 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         // Inflate the layout
         this.binding = FragmentHeaderButtonsBinding.inflate(inflater, container, false)
 
-        // Get details that the main activity supplies to child views
-        val sharedViewModel: MainActivitySharedViewModel by activityViewModels()
-
-        // Create this fragment's view model
-        this.binding.model = HeaderButtonsViewModel(
-            sharedViewModel.isMainViewLoadedAccessor,
-            sharedViewModel.onHome,
-            sharedViewModel.onReload,
-            sharedViewModel.onExpireAccessToken,
-            sharedViewModel.onExpireRefreshToken,
-            sharedViewModel.onLogout
-        )
-
+        // Create the view model, which informs other views via events
+        this.binding.model = HeaderButtonsViewModel()
         return this.binding.root
     }
 
@@ -49,14 +40,27 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Set up custom logic for long clicks
         val model = this.binding.model!!
-        this.binding.btnReloadData.setCustomClickListener(model.onReload)
+        this.binding.btnReloadData.setCustomClickListener(model::onReload)
+
+        // Subscribe for events
+        EventBus.getDefault().register(this)
     }
 
     /*
-     * Called when the buttons need to redraw their enabled state
+     * During API calls we disable session buttons and then re-enable them afterwards
      */
-    fun update() {
-        this.binding.model?.updateSessionButtonEnabledState()
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: DataStatusEvent) {
+        this.binding.model!!.updateDataStatus(event.loaded)
+    }
+
+    /*
+     * Unsubscribe from events upon exit
+     */
+    override fun onDestroyView() {
+        super.onDestroyView()
+        EventBus.getDefault().unregister(this)
     }
 }

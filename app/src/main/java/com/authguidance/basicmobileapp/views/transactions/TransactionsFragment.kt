@@ -9,7 +9,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.api.client.ApiRequestOptions
-import com.authguidance.basicmobileapp.app.MainActivitySharedViewModel
+import com.authguidance.basicmobileapp.app.MainActivityViewModel
 import com.authguidance.basicmobileapp.databinding.FragmentTransactionsBinding
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
 import com.authguidance.basicmobileapp.plumbing.events.ReloadMainViewEvent
@@ -34,7 +34,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         // Inflate the view
         this.binding = FragmentTransactionsBinding.inflate(inflater, container, false)
@@ -43,12 +43,12 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
         val companyId = this.arguments?.getString(Constants.ARG_COMPANY_ID, "") ?: ""
 
         // Get details that the main activity supplies to child views
-        val sharedViewModel: MainActivitySharedViewModel by activityViewModels()
+        val mainViewModel: MainActivityViewModel by activityViewModels()
 
         // Create our own view model
         this.binding.model = TransactionsViewModel(
-            sharedViewModel.apiClientAccessor,
-            sharedViewModel.apiViewEvents,
+            mainViewModel.apiClient,
+            mainViewModel.apiViewEvents,
             companyId,
             this.getString(R.string.transactions_title)
         )
@@ -62,17 +62,9 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Subscribe to the reload event and do the initial load of data
+        // Subscribe to events and do the initial load of data
         EventBus.getDefault().register(this)
         this.loadData(false)
-    }
-
-    /*
-     * Unsubscribe from events upon exit
-     */
-    override fun onDestroyView() {
-        super.onDestroyView()
-        EventBus.getDefault().unregister(this)
     }
 
     /*
@@ -81,6 +73,14 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(mainViewEvent: ReloadMainViewEvent) {
         this.loadData(mainViewEvent.causeError)
+    }
+
+    /*
+     * Unsubscribe from events upon exit
+     */
+    override fun onDestroyView() {
+        super.onDestroyView()
+        EventBus.getDefault().unregister(this)
     }
 
     /*
@@ -116,13 +116,13 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
                     uiError
                 )
 
-                // Update the display to clear any shown transactions
+                // Update the display to clear data
                 this.renderData()
             }
         }
 
         // Ask the model class to do the work
-        this.binding.model?.callApi(
+        this.binding.model!!.callApi(
             ApiRequestOptions(causeError),
             onSuccess,
             onError

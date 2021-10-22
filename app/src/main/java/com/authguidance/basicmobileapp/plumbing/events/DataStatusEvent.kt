@@ -1,9 +1,9 @@
 package com.authguidance.basicmobileapp.plumbing.events
 
 /*
- * An event sent when logout completes
+ * An event to move between a loaded state when we have data and an unloaded state otherwise
  */
-class UnloadEvent {
+class DataStatusEvent(val loaded: Boolean) {
 
     /*
      * A dummy method to work around compiler warnings

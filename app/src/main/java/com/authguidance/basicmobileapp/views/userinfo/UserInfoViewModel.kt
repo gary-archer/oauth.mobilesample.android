@@ -16,9 +16,8 @@ import kotlinx.coroutines.withContext
  * A simple view model class for the user info view
  */
 class UserInfoViewModel(
-    val apiClientAccessor: () -> ApiClient?,
-    val apiViewEvents: ApiViewEvents,
-    val shouldLoadAccessor: () -> Boolean
+    val apiClient: ApiClient,
+    val apiViewEvents: ApiViewEvents
 ) : BaseObservable() {
 
     // The data once received
@@ -32,11 +31,6 @@ class UserInfoViewModel(
         onError: (UIError) -> Unit
     ) {
 
-        // Only load if conditions are valid
-        if (!this.shouldLoadAccessor()) {
-            return
-        }
-
         // Indicate a loading state
         this.apiViewEvents.onViewLoading(VIEW_USERINFO)
 
@@ -46,7 +40,7 @@ class UserInfoViewModel(
 
             try {
                 // Make the API call
-                val apiClient = that.apiClientAccessor()!!
+                val apiClient = that.apiClient
                 val userInfo = apiClient.getUserInfo(options)
 
                 // Indicate success

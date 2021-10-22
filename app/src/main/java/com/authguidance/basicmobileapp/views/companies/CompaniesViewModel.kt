@@ -15,7 +15,7 @@ import kotlinx.coroutines.withContext
  * A simple view model class for the companies view
  */
 class CompaniesViewModel(
-    private val apiClientAccessor: () -> ApiClient?,
+    private val apiClient: ApiClient,
     private val apiViewEvents: ApiViewEvents
 ) {
 
@@ -30,12 +30,6 @@ class CompaniesViewModel(
         onSuccess: () -> Unit,
         onError: (UIError) -> Unit
     ) {
-
-        // Do not try to load API data if the app is not initialised yet
-        val apiClient = this.apiClientAccessor()
-        if (apiClient == null) {
-            return
-        }
 
         // Indicate a loading state
         this.apiViewEvents.onViewLoading(VIEW_MAIN)

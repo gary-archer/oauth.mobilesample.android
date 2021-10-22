@@ -9,7 +9,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.api.client.ApiRequestOptions
-import com.authguidance.basicmobileapp.app.MainActivitySharedViewModel
+import com.authguidance.basicmobileapp.app.MainActivityViewModel
 import com.authguidance.basicmobileapp.databinding.FragmentCompaniesBinding
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
 import com.authguidance.basicmobileapp.plumbing.events.ReloadMainViewEvent
@@ -33,18 +33,18 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
 
         // Inflate the view
         this.binding = FragmentCompaniesBinding.inflate(inflater, container, false)
 
         // Get details that the main activity supplies to child views
-        val sharedViewModel: MainActivitySharedViewModel by activityViewModels()
+        val mainViewModel: MainActivityViewModel by activityViewModels()
 
         // Create our own view model
         this.binding.model = CompaniesViewModel(
-            sharedViewModel.apiClientAccessor,
-            sharedViewModel.apiViewEvents
+            mainViewModel.apiClient,
+            mainViewModel.apiViewEvents
         )
 
         return this.binding.root
@@ -56,7 +56,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Subscribe to the reload event and do the initial load of data
+        // Subscribe to events and do the initial load of data
         EventBus.getDefault().register(this)
         this.loadData(false)
     }
@@ -101,11 +101,12 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
                 uiError
             )
 
+            // Update the display to clear data
             this.renderData()
         }
 
         // Ask the model class to do the work
-        this.binding.model?.callApi(
+        this.binding.model!!.callApi(
             ApiRequestOptions(causeError),
             onSuccess,
             onError

@@ -1,10 +1,12 @@
 package com.authguidance.basicmobileapp.app
 
-import android.content.Context
+import android.app.Application
 import android.content.Intent
+import androidx.lifecycle.AndroidViewModel
 import com.authguidance.basicmobileapp.api.client.ApiClient
 import com.authguidance.basicmobileapp.configuration.Configuration
 import com.authguidance.basicmobileapp.configuration.ConfigurationLoader
+import com.authguidance.basicmobileapp.plumbing.oauth.Authenticator
 import com.authguidance.basicmobileapp.plumbing.oauth.AuthenticatorImpl
 import com.authguidance.basicmobileapp.views.utilities.ApiViewEvents
 import com.authguidance.basicmobileapp.views.utilities.Constants
@@ -15,61 +17,37 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /*
- * The view model class for the main activity
+ * Global data is stored in the view model class for the main activity, which is created only once
  */
-class MainActivityViewModel(
-    val onLoginRequiredAction: () -> Unit,
-    val onMainLoadStateChanged: (loaded: Boolean) -> Unit
-) {
+class MainActivityViewModel(val app: Application) : AndroidViewModel(app) {
 
     // Global objects used by the main activity
-    var configuration: Configuration? = null
-    var authenticator: AuthenticatorImpl? = null
-    var apiClient: ApiClient? = null
-    var apiViewEvents: ApiViewEvents
+    val configuration: Configuration
+    val authenticator: Authenticator
+    val apiClient: ApiClient
+    val apiViewEvents: ApiViewEvents
 
-    // State used by the main activity
-    var isInitialised: Boolean = false
     var isDeviceSecured: Boolean = false
-    var isMainViewLoaded: Boolean = false
     var isTopMost: Boolean = true
 
-    /*
-     * Create initial objects
-     */
     init {
+
+        // Load configuration from the deployed JSON file
+        this.configuration = ConfigurationLoader().load(this.app.applicationContext)
+
+        // Create global objects for OAuth and API calls
+        this.authenticator = AuthenticatorImpl(this.configuration.oauth, this.app.applicationContext)
+        this.apiClient = ApiClient(this.configuration.app.apiBaseUrl, this.authenticator)
+
+        // Initialize flags
+        this.isDeviceSecured = DeviceSecurity.isDeviceSecured(this.app.applicationContext)
+        this.isTopMost = true
 
         // Create a helper class to notify us about views that make API calls
         // This will enable us to only trigger a login redirect once, after all views have tried to load
-        this.apiViewEvents =
-            ApiViewEvents(
-                this.onLoginRequiredAction,
-                this.onMainLoadStateChanged,
-            )
+        this.apiViewEvents = ApiViewEvents()
         this.apiViewEvents.addView(Constants.VIEW_MAIN)
         this.apiViewEvents.addView(Constants.VIEW_USERINFO)
-    }
-
-    /*
-     * Do the main initialisation
-     */
-    fun initialise(context: Context) {
-
-        // Reset state flags
-        this.isInitialised = false
-        this.isDeviceSecured = DeviceSecurity.isDeviceSecured(context)
-        this.isMainViewLoaded = false
-        this.isTopMost = true
-
-        // Load configuration
-        this.configuration = ConfigurationLoader().load(context)
-
-        // Create the authenticator
-        this.authenticator = AuthenticatorImpl(this.configuration!!.oauth, context)
-        this.apiClient = ApiClient(this.configuration!!.app.apiBaseUrl, this.authenticator!!)
-
-        // Indicate successful startup
-        this.isInitialised = true
     }
 
     /*
@@ -92,7 +70,7 @@ class MainActivityViewModel(
             try {
 
                 // Start the redirect
-                that.authenticator!!.startLogin(launchAction)
+                that.authenticator.startLogin(launchAction)
 
             } catch (ex: Throwable) {
 
@@ -123,7 +101,7 @@ class MainActivityViewModel(
             val that = this@MainActivityViewModel
             try {
                 // Handle completion after login success, which will exchange the authorization code for tokens
-                that.authenticator!!.finishLogin(responseIntent)
+                that.authenticator.finishLogin(responseIntent)
 
                 // Reload data after logging in
                 withContext(Dispatchers.Main) {
@@ -165,7 +143,7 @@ class MainActivityViewModel(
             try {
 
                 // Trigger the logout process, which will remove tokens and redirect to clear the OAuth session cookie
-                that.authenticator!!.startLogout(launchAction)
+                that.authenticator.startLogout(launchAction)
 
             } catch (ex: Throwable) {
                 onError(ex)
@@ -177,21 +155,7 @@ class MainActivityViewModel(
      * Update state when a logout completes
      */
     fun finishLogout() {
-        this.authenticator!!.finishLogout()
+        this.authenticator.finishLogout()
         this.isTopMost = true
-    }
-
-    /*
-     * Update token storage to make the access token act like it is expired
-     */
-    fun onExpireAccessToken() {
-        this.authenticator!!.expireAccessToken()
-    }
-
-    /*
-     * Update token storage to make the refresh token act like it is expired
-     */
-    fun onExpireRefreshToken() {
-        this.authenticator!!.expireRefreshToken()
     }
 }

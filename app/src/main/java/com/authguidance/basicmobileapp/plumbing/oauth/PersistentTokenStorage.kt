@@ -87,7 +87,7 @@ class PersistentTokenStorage(val context: Context, val encryptionManager: Encryp
         }
 
         // Decryption errors could occur during Android or app upgrades
-        var decryptedData: String?
+        val decryptedData: String?
         try {
 
             // Try the decrypt operation
