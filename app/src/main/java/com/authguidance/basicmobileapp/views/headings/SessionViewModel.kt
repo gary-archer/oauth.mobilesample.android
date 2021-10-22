@@ -8,22 +8,15 @@ import com.authguidance.basicmobileapp.api.client.ApiClient
  */
 class SessionViewModel(
     private val apiClient: ApiClient,
-    private val shouldShow: () -> Boolean,
     private val label: String
 ) : BaseObservable() {
 
-    // Properties
-    private var sessionId: String? = null
+    private var sessionId: String = ""
 
     /*
      * Get the session id and inform the binding system
      */
     fun getSessionId(): String {
-
-        if (this.sessionId == null || !shouldShow()) {
-            return ""
-        }
-
         return "${this.label}: ${this.sessionId}"
     }
 
@@ -31,18 +24,13 @@ class SessionViewModel(
      * Return false if space should be hidden via Visibility.GONE
      */
     fun isSessionIdVisible(): Boolean {
-
-        if (this.sessionId == null || !shouldShow()) {
-            return false
-        }
-
-        return true
+        return this.sessionId.length > 0
     }
 
     /*
-     * Update the view model
+     * Show the data
      */
-    fun updateData() {
+    fun showData() {
         this.setSessionId(this.apiClient.sessionId)
     }
 
@@ -50,13 +38,13 @@ class SessionViewModel(
      * Clear the content when logged out
      */
     fun clearData() {
-        this.setSessionId(null)
+        this.setSessionId("")
     }
 
     /*
      * Update the session id and inform the binding system
      */
-    private fun setSessionId(value: String?) {
+    private fun setSessionId(value: String) {
         this.sessionId = value
         this.notifyChange()
     }

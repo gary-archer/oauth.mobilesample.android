@@ -105,7 +105,6 @@ class AuthenticatorImpl(
         }
 
         // Otherwise abort the API call via a known exception
-        this.isLoggedIn = false
         throw ErrorHandler().fromLoginRequired()
     }
 

@@ -13,10 +13,10 @@ import com.authguidance.basicmobileapp.databinding.ActivityMainBinding
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorConsoleReporter
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorHandler
-import com.authguidance.basicmobileapp.plumbing.events.DataStatusEvent
 import com.authguidance.basicmobileapp.plumbing.events.ExpireAccessTokenEvent
 import com.authguidance.basicmobileapp.plumbing.events.ExpireRefreshTokenEvent
 import com.authguidance.basicmobileapp.plumbing.events.HomeEvent
+import com.authguidance.basicmobileapp.plumbing.events.LoggedInEvent
 import com.authguidance.basicmobileapp.plumbing.events.LoggedOutEvent
 import com.authguidance.basicmobileapp.plumbing.events.LoginRequiredEvent
 import com.authguidance.basicmobileapp.plumbing.events.ReloadMainViewEvent
@@ -160,7 +160,11 @@ class MainActivity : AppCompatActivity() {
     private fun onFinishLogin(responseIntent: Intent?) {
 
         val onSuccess = {
+            // Reload data to populate current views
             this.onReloadData(StartReloadEvent(false))
+
+            // Send an event to fragments
+            EventBus.getDefault().post(LoggedInEvent())
         }
 
         this.binding.model!!.finishLogin(responseIntent, onSuccess, this::handleError)
@@ -196,12 +200,11 @@ class MainActivity : AppCompatActivity() {
 
         // Update state and free resources
         this.binding.model!!.finishLogout()
-        EventBus.getDefault().post(DataStatusEvent(false))
 
         // Move to the login required page
         this.navigationHelper.navigateTo(R.id.login_required_fragment)
 
-        // Send an event to fragments that should no longer be visible
+        // Send an event to fragments
         EventBus.getDefault().post(LoggedOutEvent())
     }
 

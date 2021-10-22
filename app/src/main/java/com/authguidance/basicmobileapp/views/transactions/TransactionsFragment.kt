@@ -43,12 +43,12 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
         val companyId = this.arguments?.getString(Constants.ARG_COMPANY_ID, "") ?: ""
 
         // Get details that the main activity supplies to child views
-        val sharedViewModel: MainActivityViewModel by activityViewModels()
+        val mainViewModel: MainActivityViewModel by activityViewModels()
 
         // Create our own view model
         this.binding.model = TransactionsViewModel(
-            sharedViewModel.apiClient,
-            sharedViewModel.apiViewEvents,
+            mainViewModel.apiClient,
+            mainViewModel.apiViewEvents,
             companyId,
             this.getString(R.string.transactions_title)
         )

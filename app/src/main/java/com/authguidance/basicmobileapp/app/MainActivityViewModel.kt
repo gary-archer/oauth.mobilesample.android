@@ -6,6 +6,7 @@ import androidx.lifecycle.AndroidViewModel
 import com.authguidance.basicmobileapp.api.client.ApiClient
 import com.authguidance.basicmobileapp.configuration.Configuration
 import com.authguidance.basicmobileapp.configuration.ConfigurationLoader
+import com.authguidance.basicmobileapp.plumbing.oauth.Authenticator
 import com.authguidance.basicmobileapp.plumbing.oauth.AuthenticatorImpl
 import com.authguidance.basicmobileapp.views.utilities.ApiViewEvents
 import com.authguidance.basicmobileapp.views.utilities.Constants
@@ -22,7 +23,7 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app) {
 
     // Global objects used by the main activity
     var configuration: Configuration
-    var authenticator: AuthenticatorImpl
+    var authenticator: Authenticator
     var apiClient: ApiClient
     var apiViewEvents: ApiViewEvents
 
@@ -51,16 +52,9 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app) {
     }
 
     /*
-     * A calculated property used by the session fragment
+     * Views should try to load data when these properties are true
      */
-    fun shouldShowSessionId(): Boolean {
-        return this.isDeviceSecured && this.authenticator.isLoggedIn()
-    }
-
-    /*
-     * A calculated property used by the user info fragment
-     */
-    fun shouldLoadUserInfo(): Boolean {
+    fun shouldLoadData(): Boolean {
         return this.isDeviceSecured && this.authenticator.isLoggedIn()
     }
 

@@ -41,7 +41,7 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
         this.binding.model = UserInfoViewModel(
             mainViewModel.apiClient,
             mainViewModel.apiViewEvents,
-            mainViewModel::shouldLoadUserInfo
+            mainViewModel::shouldLoadData
         )
 
         return binding.root

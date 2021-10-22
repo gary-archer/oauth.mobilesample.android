@@ -8,8 +8,8 @@ import androidx.fragment.app.activityViewModels
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.app.MainActivityViewModel
 import com.authguidance.basicmobileapp.databinding.FragmentSessionBinding
+import com.authguidance.basicmobileapp.plumbing.events.DataStatusEvent
 import com.authguidance.basicmobileapp.plumbing.events.LoggedOutEvent
-import com.authguidance.basicmobileapp.plumbing.events.ReloadMainViewEvent
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -38,7 +38,6 @@ class SessionFragment : androidx.fragment.app.Fragment() {
         val mainViewModel: MainActivityViewModel by activityViewModels()
         this.binding.model = SessionViewModel(
             mainViewModel.apiClient,
-            mainViewModel::shouldShowSessionId,
             this.getString(R.string.api_session_id)
         )
 
@@ -64,16 +63,17 @@ class SessionFragment : androidx.fragment.app.Fragment() {
     }
 
     /*
-     * Handle reload events by showing the session id
+     * Start showing the session ID when the main view loads
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(mainViewEvent: ReloadMainViewEvent) {
-        mainViewEvent.used()
-        this.binding.model!!.updateData()
+    fun onMessageEvent(event: DataStatusEvent) {
+        if (event.loaded) {
+            this.binding.model!!.showData()
+        }
     }
 
     /*
-     * Handle logout events by clearing the session id
+     * Stop showing the session ID after logout
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: LoggedOutEvent) {

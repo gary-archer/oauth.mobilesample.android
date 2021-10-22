@@ -4,7 +4,7 @@ import com.authguidance.basicmobileapp.api.entities.Company
 import com.authguidance.basicmobileapp.api.entities.CompanyTransactions
 import com.authguidance.basicmobileapp.api.entities.UserInfo
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorHandler
-import com.authguidance.basicmobileapp.plumbing.oauth.AuthenticatorImpl
+import com.authguidance.basicmobileapp.plumbing.oauth.Authenticator
 import com.google.gson.Gson
 import okhttp3.Call
 import okhttp3.Callback
@@ -26,7 +26,7 @@ import kotlin.coroutines.suspendCoroutine
  */
 class ApiClient(
     private val apiBaseUrl: String,
-    private val authenticator: AuthenticatorImpl
+    private val authenticator: Authenticator
 ) {
 
     // Create a session id when the app starts
