@@ -73,17 +73,16 @@ class MainActivity : AppCompatActivity() {
         // Create the main view model the first time the view is created
         val model: MainActivityViewModel by viewModels()
 
-        // Inflate the view, which will trigger child fragments to run
+        // Inflate the view, which will initially render the blank fragment
         this.binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         this.binding.model = model
 
         // Initialise the navigation system
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment)
-            as NavHostFragment
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         this.navigationHelper = NavigationHelper(navHostFragment) { model.isDeviceSecured }
         this.navigationHelper.deepLinkBaseUrl = this.binding.model!!.configuration.oauth.deepLinkBaseUrl
 
-        // Move to the initial main view, to start loading fragments and trigger API calls
+        // Swap the main view based on the deep linking location or use the default
         this.navigateStart()
 
         // Start listening for events
