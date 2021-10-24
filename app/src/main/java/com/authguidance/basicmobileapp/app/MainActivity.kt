@@ -149,7 +149,11 @@ class MainActivity : AppCompatActivity() {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onLoginRequired(event: LoginRequiredEvent) {
 
+        // First ensure that child views are moved to a logged out state
         event.used()
+        EventBus.getDefault().post(LoggedOutEvent())
+
+        // Then trigger a login redirect
         this.binding.model!!.startLogin(this.loginLauncher::launch, this::handleError)
     }
 
