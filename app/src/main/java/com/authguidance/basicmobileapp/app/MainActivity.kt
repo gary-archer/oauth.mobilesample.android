@@ -13,16 +13,11 @@ import com.authguidance.basicmobileapp.databinding.ActivityMainBinding
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorConsoleReporter
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorHandler
-import com.authguidance.basicmobileapp.plumbing.events.ExpireAccessTokenEvent
-import com.authguidance.basicmobileapp.plumbing.events.ExpireRefreshTokenEvent
-import com.authguidance.basicmobileapp.plumbing.events.HomeEvent
 import com.authguidance.basicmobileapp.plumbing.events.LoggedInEvent
 import com.authguidance.basicmobileapp.plumbing.events.LoggedOutEvent
 import com.authguidance.basicmobileapp.plumbing.events.LoginRequiredEvent
 import com.authguidance.basicmobileapp.plumbing.events.ReloadMainViewEvent
 import com.authguidance.basicmobileapp.plumbing.events.ReloadUserInfoEvent
-import com.authguidance.basicmobileapp.plumbing.events.StartLogoutEvent
-import com.authguidance.basicmobileapp.plumbing.events.StartReloadEvent
 import com.authguidance.basicmobileapp.views.errors.ErrorSummaryFragment
 import com.authguidance.basicmobileapp.views.utilities.DeviceSecurity
 import com.authguidance.basicmobileapp.views.utilities.NavigationHelper
@@ -164,7 +159,7 @@ class MainActivity : AppCompatActivity() {
 
         val onSuccess = {
             // Reload data to populate current views
-            this.onReloadData(StartReloadEvent(false))
+            this.onReloadData(false)
 
             // Send an event to fragments
             EventBus.getDefault().post(LoggedInEvent())
@@ -176,10 +171,8 @@ class MainActivity : AppCompatActivity() {
     /*
      * Remove tokens and redirect to remove the authorization server session cookie
      */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onStartLogout(event: StartLogoutEvent) {
+    fun onStartLogout() {
 
-        event.used()
         val onError = { ex: Throwable ->
 
             // On error, only output logout errors to the console rather than impacting the end user
@@ -214,11 +207,9 @@ class MainActivity : AppCompatActivity() {
     /*
      * Handle home navigation
      */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onHome(event: HomeEvent) {
+    fun onHome() {
 
         // Reset state
-        event.used()
         val errorFragment =
             this.supportFragmentManager.findFragmentById(R.id.main_error_summary_fragment) as ErrorSummaryFragment
         errorFragment.clearError()
@@ -230,29 +221,24 @@ class MainActivity : AppCompatActivity() {
     /*
      * Publish an event to update all active views
      */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onReloadData(event: StartReloadEvent) {
+    fun onReloadData(causeError: Boolean) {
 
         this.binding.model!!.apiViewEvents.clearState()
-        EventBus.getDefault().post(ReloadMainViewEvent(event.causeError))
-        EventBus.getDefault().post(ReloadUserInfoEvent(event.causeError))
+        EventBus.getDefault().post(ReloadMainViewEvent(causeError))
+        EventBus.getDefault().post(ReloadUserInfoEvent(causeError))
     }
 
     /*
      * Update token storage to make the access token act like it is expired
      */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onExpireAccessToken(event: ExpireAccessTokenEvent) {
-        event.used()
+    fun onExpireAccessToken() {
         this.binding.model!!.authenticator.expireAccessToken()
     }
 
     /*
      * Update token storage to make the refresh token act like it is expired
      */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onExpireRefreshToken(event: ExpireRefreshTokenEvent) {
-        event.used()
+    fun onExpireRefreshToken() {
         this.binding.model!!.authenticator.expireRefreshToken()
     }
 

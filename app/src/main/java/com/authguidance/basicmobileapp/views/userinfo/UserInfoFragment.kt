@@ -11,6 +11,7 @@ import com.authguidance.basicmobileapp.app.MainActivityViewModel
 import com.authguidance.basicmobileapp.databinding.FragmentUserInfoBinding
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
 import com.authguidance.basicmobileapp.plumbing.events.LoggedOutEvent
+import com.authguidance.basicmobileapp.plumbing.events.NavigatedEvent
 import com.authguidance.basicmobileapp.plumbing.events.ReloadUserInfoEvent
 import com.authguidance.basicmobileapp.views.errors.ErrorSummaryFragment
 import org.greenrobot.eventbus.EventBus
@@ -55,6 +56,13 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
         // Subscribe to events and do the initial load of data
         EventBus.getDefault().register(this)
         this.loadData(false)
+    }
+
+    /*
+     * Change visibility based on whether showing a main view
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: NavigatedEvent) {
     }
 
     /*
