@@ -12,6 +12,7 @@ import com.authguidance.basicmobileapp.api.client.ApiRequestOptions
 import com.authguidance.basicmobileapp.app.MainActivityViewModel
 import com.authguidance.basicmobileapp.databinding.FragmentCompaniesBinding
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
+import com.authguidance.basicmobileapp.plumbing.events.NavigatedEvent
 import com.authguidance.basicmobileapp.plumbing.events.ReloadMainViewEvent
 import com.authguidance.basicmobileapp.views.errors.ErrorSummaryFragment
 import com.authguidance.basicmobileapp.views.utilities.Constants
@@ -47,6 +48,9 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
             mainViewModel.apiViewEvents
         )
 
+        // Notify that the main view has changed
+        println("GJA: Main view navigated")
+        EventBus.getDefault().post(NavigatedEvent(true));
         return this.binding.root
     }
 
