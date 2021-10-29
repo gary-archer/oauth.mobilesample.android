@@ -55,8 +55,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
         )
 
         // Notify that the main view has changed
-        println("GJA: Main view navigated")
-        EventBus.getDefault().post(NavigatedEvent(true));
+        EventBus.getDefault().post(NavigatedEvent(true))
         return binding.root
     }
 

@@ -28,8 +28,7 @@ class LoginRequiredFragment : androidx.fragment.app.Fragment() {
         this.binding = FragmentLoginRequiredBinding.inflate(inflater, container, false)
 
         // Notify that the main view has changed
-        println("GJA: Login required navigated")
-        EventBus.getDefault().post(NavigatedEvent(false));
+        EventBus.getDefault().post(NavigatedEvent(false))
         return binding.root
     }
 }

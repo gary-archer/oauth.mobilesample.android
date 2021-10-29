@@ -63,6 +63,7 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: NavigatedEvent) {
+        event.used()
     }
 
     /*

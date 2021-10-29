@@ -30,7 +30,7 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
 
         // Inflate the layout
         this.binding = FragmentHeaderButtonsBinding.inflate(inflater, container, false)
-        this.binding.fragment = this;
+        this.binding.fragment = this
 
         // Create the view model, which informs other views via events
         this.binding.model = HeaderButtonsViewModel()
@@ -56,6 +56,7 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: NavigatedEvent) {
+        event.used()
     }
 
     /*
@@ -69,6 +70,7 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
     /*
      * Call back the parent view to move home
      */
+    @Suppress("UnusedPrivateMember")
     fun onHome(view: View) {
         val mainActivity = this.activity as MainActivity
         mainActivity.onHome()
@@ -85,8 +87,8 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
     /*
      * Call back the parent view to expire the access token
      */
+    @Suppress("UnusedPrivateMember")
     fun onExpireAccessToken(view: View) {
-
         val mainActivity = this.activity as MainActivity
         mainActivity.onExpireAccessToken()
     }
@@ -94,8 +96,8 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
     /*
      * Call back the parent view to expire the refresh token
      */
+    @Suppress("UnusedPrivateMember")
     fun onExpireRefreshToken(view: View) {
-
         val mainActivity = this.activity as MainActivity
         mainActivity.onExpireRefreshToken()
     }
@@ -103,6 +105,7 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
     /*
      * Call back the parent view to start a logout
      */
+    @Suppress("UnusedPrivateMember")
     fun onLogout(view: View) {
 
         this.binding.model!!.updateDataStatus(false)
