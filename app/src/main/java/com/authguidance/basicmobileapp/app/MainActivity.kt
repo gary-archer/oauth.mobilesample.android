@@ -14,7 +14,6 @@ import com.authguidance.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorConsoleReporter
 import com.authguidance.basicmobileapp.plumbing.errors.ErrorHandler
 import com.authguidance.basicmobileapp.plumbing.events.LoggedInEvent
-import com.authguidance.basicmobileapp.plumbing.events.LoggedOutEvent
 import com.authguidance.basicmobileapp.plumbing.events.LoginRequiredEvent
 import com.authguidance.basicmobileapp.plumbing.events.ReloadMainViewEvent
 import com.authguidance.basicmobileapp.plumbing.events.ReloadUserInfoEvent
@@ -144,11 +143,7 @@ class MainActivity : AppCompatActivity() {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onLoginRequired(event: LoginRequiredEvent) {
 
-        // First ensure that child views are moved to a logged out state
         event.used()
-        EventBus.getDefault().post(LoggedOutEvent())
-
-        // Then trigger a login redirect
         this.binding.model!!.startLogin(this.loginLauncher::launch, this::handleError)
     }
 
@@ -199,9 +194,6 @@ class MainActivity : AppCompatActivity() {
 
         // Move to the login required page
         this.navigationHelper.navigateTo(R.id.login_required_fragment)
-
-        // Send an event to fragments
-        EventBus.getDefault().post(LoggedOutEvent())
     }
 
     /*

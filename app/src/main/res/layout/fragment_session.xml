@@ -21,7 +21,7 @@
             android:id="@+id/api_session_id"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{model.sessionId}"
+            android:text="@{model.getSessionText()}"
             android:visibility="@{model.isSessionIdVisible() ? View.VISIBLE : View.GONE}"
             style="@style/TextViewSessionIdStyle"
              />

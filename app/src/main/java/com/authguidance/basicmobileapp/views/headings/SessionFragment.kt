@@ -8,8 +8,6 @@ import androidx.fragment.app.activityViewModels
 import com.authguidance.basicmobileapp.R
 import com.authguidance.basicmobileapp.app.MainActivityViewModel
 import com.authguidance.basicmobileapp.databinding.FragmentSessionBinding
-import com.authguidance.basicmobileapp.plumbing.events.DataStatusEvent
-import com.authguidance.basicmobileapp.plumbing.events.LoggedOutEvent
 import com.authguidance.basicmobileapp.plumbing.events.NavigatedEvent
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -38,7 +36,7 @@ class SessionFragment : androidx.fragment.app.Fragment() {
         // Create our view model using data from the main view model
         val mainViewModel: MainActivityViewModel by activityViewModels()
         this.binding.model = SessionViewModel(
-            mainViewModel.apiClient,
+            mainViewModel.apiClient.sessionId,
             this.getString(R.string.api_session_id)
         )
 
@@ -68,25 +66,6 @@ class SessionFragment : androidx.fragment.app.Fragment() {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: NavigatedEvent) {
-        event.used()
-    }
-
-    /*
-     * Start showing the session ID when the main view loads
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(event: DataStatusEvent) {
-        if (event.loaded) {
-            this.binding.model!!.showData()
-        }
-    }
-
-    /*
-     * Stop showing the session ID after logout
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(event: LoggedOutEvent) {
-        event.used()
-        this.binding.model!!.clearData()
+        this.binding.model!!.setVisibility(event.isMainView)
     }
 }

@@ -10,7 +10,6 @@ import com.authguidance.basicmobileapp.api.client.ApiRequestOptions
 import com.authguidance.basicmobileapp.app.MainActivityViewModel
 import com.authguidance.basicmobileapp.databinding.FragmentUserInfoBinding
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
-import com.authguidance.basicmobileapp.plumbing.events.LoggedOutEvent
 import com.authguidance.basicmobileapp.plumbing.events.NavigatedEvent
 import com.authguidance.basicmobileapp.plumbing.events.ReloadUserInfoEvent
 import com.authguidance.basicmobileapp.views.errors.ErrorSummaryFragment
@@ -80,15 +79,6 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         EventBus.getDefault().unregister(this)
-    }
-
-    /*
-     * Handle logout events by clearing our data
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(event: LoggedOutEvent) {
-        event.used()
-        this.clearData()
     }
 
     /*
