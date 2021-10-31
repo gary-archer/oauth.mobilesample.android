@@ -43,7 +43,6 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Set up custom logic for long clicks
-        val model = this.binding.model!!
         this.binding.btnReloadData.setCustomClickListener(this::onReload)
 
         // Subscribe for events
