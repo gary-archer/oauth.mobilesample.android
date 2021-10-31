@@ -32,7 +32,7 @@ class UserInfoViewModel(
     ) {
 
         // Return if we already have user info, unless we are doing a reload
-        if (!options.isInMainView || (this.isLoaded() && !options.reload)) {
+        if (this.isLoaded() && !options.reload) {
             this.apiViewEvents.onViewLoaded(VIEW_USERINFO)
             return
         }

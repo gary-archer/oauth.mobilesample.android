@@ -5,6 +5,5 @@ package com.authguidance.basicmobileapp.views.userinfo
  */
 data class UserInfoLoadOptions(
     val reload: Boolean,
-    val isInMainView: Boolean,
     val causeError: Boolean
 )

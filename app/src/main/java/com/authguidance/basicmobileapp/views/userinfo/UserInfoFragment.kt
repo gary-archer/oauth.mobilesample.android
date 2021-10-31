@@ -110,7 +110,6 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
         // Ask the model class to do the work
         val options = UserInfoLoadOptions(
             reload,
-            false,
             causeError
         )
         this.binding.model!!.callApi(options, onError)
