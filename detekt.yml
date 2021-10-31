@@ -168,8 +168,9 @@ empty-blocks:
   EmptyCatchBlock:
     active: true
     allowedExceptionNameRegex: '_|(ignore|expected).*'
+  # Overridden
   EmptyClassBlock:
-    active: true
+    active: false
   EmptyDefaultConstructor:
     active: true
   EmptyDoWhileBlock:
@@ -331,8 +332,9 @@ formatting:
   NoConsecutiveBlankLines:
     active: true
     autoCorrect: true
+  # Overridden
   NoEmptyClassBody:
-    active: true
+    active: false
     autoCorrect: true
   NoEmptyFirstLineInMethodBlock:
     active: false

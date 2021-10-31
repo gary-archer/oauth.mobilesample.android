@@ -27,9 +27,15 @@ class UserInfoViewModel(
      * A method to do the work of calling the API
      */
     fun callApi(
-        options: ApiRequestOptions,
+        options: UserInfoLoadOptions,
         onError: (UIError) -> Unit
     ) {
+
+        // Return if we already have user info, unless we are doing a reload
+        if (!options.isInMainView || (this.isLoaded() && !options.reload)) {
+            this.apiViewEvents.onViewLoaded(VIEW_USERINFO)
+            return
+        }
 
         // Indicate a loading state
         this.apiViewEvents.onViewLoading(VIEW_USERINFO)
@@ -41,7 +47,8 @@ class UserInfoViewModel(
             try {
                 // Make the API call
                 val apiClient = that.apiClient
-                val userInfo = apiClient.getUserInfo(options)
+                val requestOptions = ApiRequestOptions(options.causeError)
+                val userInfo = apiClient.getUserInfo(requestOptions)
 
                 // Indicate success
                 withContext(Dispatchers.Main) {
@@ -52,9 +59,9 @@ class UserInfoViewModel(
 
                 // Inform the view so that the error can be reported
                 withContext(Dispatchers.Main) {
-                    that.setUserInfo(null)
                     that.apiViewEvents.onViewLoadFailed(VIEW_USERINFO, uiError)
                     onError(uiError)
+                    that.clearUserInfo()
                 }
             }
         }
@@ -73,11 +80,27 @@ class UserInfoViewModel(
     }
 
     /*
-     * Update claims and inform the binding system
+     * Clear user info when we log out and inform the binding system
      */
-    fun setUserInfo(userInfo: UserInfo?) {
+    fun clearUserInfo() {
+
+        this.userInfo = null
+        this.notifyChange()
+    }
+
+    /*
+     * Set user info and inform the binding system
+     */
+    private fun setUserInfo(userInfo: UserInfo) {
 
         this.userInfo = userInfo
         this.notifyChange()
+    }
+
+    /*
+     * Determine whether we need to load data
+     */
+    private fun isLoaded(): Boolean {
+        return this.userInfo != null
     }
 }

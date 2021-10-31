@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import com.authguidance.basicmobileapp.app.MainActivity
 import com.authguidance.basicmobileapp.databinding.FragmentHeaderButtonsBinding
 import com.authguidance.basicmobileapp.plumbing.events.DataStatusEvent
-import com.authguidance.basicmobileapp.plumbing.events.NavigatedEvent
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -52,11 +51,11 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
     }
 
     /*
-     * Change visibility based on whether showing a main view
+     * Unsubscribe from events upon exit
      */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(event: NavigatedEvent) {
-        event.used()
+    override fun onDestroyView() {
+        super.onDestroyView()
+        EventBus.getDefault().unregister(this)
     }
 
     /*
@@ -111,13 +110,5 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
         this.binding.model!!.updateDataStatus(false)
         val mainActivity = this.activity as MainActivity
         mainActivity.onStartLogout()
-    }
-
-    /*
-     * Unsubscribe from events upon exit
-     */
-    override fun onDestroyView() {
-        super.onDestroyView()
-        EventBus.getDefault().unregister(this)
     }
 }

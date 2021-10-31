@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import com.authguidance.basicmobileapp.R
-import com.authguidance.basicmobileapp.api.client.ApiRequestOptions
 import com.authguidance.basicmobileapp.app.MainActivityViewModel
 import com.authguidance.basicmobileapp.databinding.FragmentUserInfoBinding
 import com.authguidance.basicmobileapp.plumbing.errors.UIError
@@ -47,30 +46,11 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
     }
 
     /*
-     * View initialization
+     * Subscribe to events when the view is created
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // Subscribe to events and do the initial load of data
         EventBus.getDefault().register(this)
-        this.loadData(false)
-    }
-
-    /*
-     * Change visibility based on whether showing a main view
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(event: NavigatedEvent) {
-        event.used()
-    }
-
-    /*
-     * Handle reload events
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(event: ReloadUserInfoEvent) {
-        this.loadData(event.causeError)
     }
 
     /*
@@ -82,9 +62,35 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
     }
 
     /*
+     * Change visibility based on whether showing a main view
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: NavigatedEvent) {
+
+        if (event.isMainView) {
+
+            // Load user info if required after navigating to a main view
+            this.loadData()
+
+        } else {
+
+            // Otherwise remove user info
+            this.clearData()
+        }
+    }
+
+    /*
+     * Handle reload events
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMessageEvent(event: ReloadUserInfoEvent) {
+        this.loadData(true, event.causeError)
+    }
+
+    /*
      * When logged in, call the API to get user info for display
      */
-    private fun loadData(causeError: Boolean) {
+    private fun loadData(reload: Boolean = false, causeError: Boolean = false) {
 
         // Clear any errors from last time
         val errorFragment =
@@ -102,10 +108,12 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
         }
 
         // Ask the model class to do the work
-        this.binding.model!!.callApi(
-            ApiRequestOptions(causeError),
-            onError
+        val options = UserInfoLoadOptions(
+            reload,
+            false,
+            causeError
         )
+        this.binding.model!!.callApi(options, onError)
     }
 
     /*
@@ -114,7 +122,7 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
     fun clearData() {
 
         // Clear the model
-        this.binding.model!!.setUserInfo(null)
+        this.binding.model!!.clearUserInfo()
 
         // Also ensure that any errors are cleared
         val errorFragment =

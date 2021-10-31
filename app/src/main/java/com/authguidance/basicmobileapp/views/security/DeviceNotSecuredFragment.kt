@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import com.authguidance.basicmobileapp.app.MainActivity
 import com.authguidance.basicmobileapp.databinding.FragmentDeviceNotSecuredBinding
+import com.authguidance.basicmobileapp.plumbing.events.NavigatedEvent
+import org.greenrobot.eventbus.EventBus
 
 /*
  * Handle prompting the user to secure their lock screen
@@ -24,7 +26,11 @@ class DeviceNotSecuredFragment : androidx.fragment.app.Fragment() {
         savedInstanceState: Bundle?
     ): View {
 
+        // Inflate the layout
         this.binding = FragmentDeviceNotSecuredBinding.inflate(inflater, container, false)
+
+        // Notify that the main view has changed
+        EventBus.getDefault().post(NavigatedEvent(false))
         return this.binding.root
     }
 

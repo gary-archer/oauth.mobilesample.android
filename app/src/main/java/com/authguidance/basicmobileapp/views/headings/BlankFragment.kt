@@ -1,5 +1,3 @@
-@file:Suppress("EmptyClassBlock", "NoEmptyClassBody")
-
 package com.authguidance.basicmobileapp.views.headings
 
 /*
