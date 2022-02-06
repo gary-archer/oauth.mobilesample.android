@@ -1,0 +1,9 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "com.authguidance.basicmobileapp",
+    "sha256_cert_fingerprints":
+    ["CF:10:E6:6C:14:A1:15:7B:22:37:AD:9E:D4:25:DC:69:44:C7:DC:D3:49:94:26:75:28:E6:BD:27:C7:D7:FE:4B"]
+  }
+}]
