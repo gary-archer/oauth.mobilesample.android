@@ -11,7 +11,7 @@ android {
 
     // Support devices from Android 6.0+
     defaultConfig {
-        applicationId "com.authguidance.basicmobileapp"
+        applicationId "com.authsamples.basicmobileapp"
         minSdkVersion 23
         targetSdkVersion 31
         versionCode 1
@@ -38,7 +38,7 @@ android {
         release {
             storeFile file("${rootDir}/security/app-keystore.jks")
             storePassword "android"
-            keyAlias "com.authguidance.basicmobileapp"
+            keyAlias "com.authsamples.basicmobileapp"
             keyPassword "android"
         }
     }

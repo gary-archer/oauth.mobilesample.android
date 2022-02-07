@@ -3,8 +3,8 @@
         xmlns:tools="http://schemas.android.com/tools">
     <data>
         <!-- Bind to both the model and the fragment -->
-        <variable name="model" type="com.authguidance.basicmobileapp.views.headings.HeaderButtonsViewModel" />
-        <variable name="fragment" type="com.authguidance.basicmobileapp.views.headings.HeaderButtonsFragment" />
+        <variable name="model" type="com.authsamples.basicmobileapp.views.headings.HeaderButtonsViewModel" />
+        <variable name="fragment" type="com.authsamples.basicmobileapp.views.headings.HeaderButtonsFragment" />
     </data>
     <LinearLayout
             android:orientation="horizontal"
@@ -18,7 +18,7 @@
                 android:onClick="@{(v) -> fragment.onHome()}"
                 style="@style/ButtonHeaderStyle"/>
 
-        <com.authguidance.basicmobileapp.views.utilities.LongPressableButton
+        <com.authsamples.basicmobileapp.views.utilities.LongPressableButton
                 android:id="@+id/btn_reload_data"
                 android:text="@string/reload_button"
                 android:enabled="@{model.hasData()}"

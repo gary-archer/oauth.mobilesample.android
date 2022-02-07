@@ -2,12 +2,12 @@
 <manifest
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        package="com.authguidance.basicmobileapp">
+        package="com.authsamples.basicmobileapp">
 
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
-            android:name="com.authguidance.basicmobileapp.app.Application"
+            android:name="com.authsamples.basicmobileapp.app.Application"
             android:allowBackup="false"
             android:label="@string/launch_icon_name"
             android:icon="@mipmap/ic_launcher"
