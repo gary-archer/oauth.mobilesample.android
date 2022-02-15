@@ -12,7 +12,7 @@
             android:layout_height="wrap_content"
             tools:context=".views.headings.HeaderButtonsFragment">
 
-        <com.google.android.material.button.MaterialButton
+        <Button
                 android:id="@+id/btn_home"
                 android:text="@string/home_button"
                 android:onClick="@{(v) -> fragment.onHome()}"
@@ -24,21 +24,21 @@
                 android:enabled="@{model.hasData()}"
                 style="@style/ButtonHeaderStyle"/>
 
-        <com.google.android.material.button.MaterialButton
+        <Button
                 android:id="@+id/btn_expire_access_token"
                 android:text="@string/expire_access_token_button"
                 android:enabled="@{model.hasData()}"
                 android:onClick="@{(v) -> fragment.onExpireAccessToken()}"
                 style="@style/ButtonHeaderStyle"/>
 
-        <com.google.android.material.button.MaterialButton
+        <Button
                 android:id="@+id/btn_expire_refresh_token"
                 android:text="@string/expire_refresh_token_button"
                 android:enabled="@{model.hasData()}"
                 android:onClick="@{(v) -> fragment.onExpireRefreshToken()}"
                 style="@style/ButtonHeaderStyle"/>
 
-        <com.google.android.material.button.MaterialButton
+        <Button
                 android:id="@+id/btn_logout"
                 android:text="@string/logout_button"
                 android:enabled="@{model.hasData()}"

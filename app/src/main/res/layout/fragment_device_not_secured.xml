@@ -19,7 +19,7 @@
             style="@style/TextViewValueStyle" />
 
         <!-- Show the green button -->
-        <com.google.android.material.button.MaterialButton
+        <Button
             android:id="@+id/btn_open_device_settings"
             android:text="@string/open_device_settings"
             android:layout_gravity="center"

@@ -3,12 +3,12 @@ package com.authsamples.basicmobileapp.views.utilities
 import android.content.Context
 import android.util.AttributeSet
 import android.view.MotionEvent
-import com.google.android.material.button.MaterialButton
+import android.widget.Button
 
 /*
  * Override the material button to support long press handling
  */
-class LongPressableButton : MaterialButton {
+class LongPressableButton : Button {
 
     private var longPressStartTime: Long? = null
     private val longPressMilliseconds = 2000
