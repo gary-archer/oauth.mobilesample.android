@@ -1,0 +1,11 @@
+I have updated to Theme.MaterialComponents.Light, which is ok
+
+Material theme provides rounded buttons
+
+Buttons use 'letterSpacing' and 'textAllCaps' and a new 'textColor'
+
+But button text opacity is wrong and effects are not right
+
+I need to test device not secured also
+
+Tablet styles not changes and testing needed there also
