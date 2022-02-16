@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    // Build with latest SDK, which is Android 12
+    // Build with latest non beta SDK, which is Android 12 (version code = S)
     compileSdkVersion 31
     buildToolsVersion "31.0.0"
 
@@ -65,12 +65,12 @@ android {
 
 // Dependency versions
 ext {
-    nav_version = '2.3.5'
+    nav_version = '2.4.1'
     lifecycle_extensions = '2.2.0'
     coroutines_version = '1.5.2'
     appauth_version = '0.10.0'
     browser_version = '1.4.0'
-    okhttp3_version = '4.9.2'
+    okhttp3_version = '4.9.3'
     gson_version = '2.8.9'
     okio_version = '2.10.0'
     eventbus_version = '3.2.0'

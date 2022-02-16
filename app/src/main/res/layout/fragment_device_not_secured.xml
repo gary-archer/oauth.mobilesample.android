@@ -24,6 +24,5 @@
             android:text="@string/open_device_settings"
             android:layout_gravity="center"
             style="@style/ButtonSecureDeviceStyle"/>
-
     </LinearLayout>
 </layout>
