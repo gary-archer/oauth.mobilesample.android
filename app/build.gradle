@@ -68,7 +68,7 @@ ext {
     nav_version = '2.4.1'
     lifecycle_extensions = '2.2.0'
     coroutines_version = '1.5.2'
-    appauth_version = '0.10.0'
+    appauth_version = '0.11.1'
     browser_version = '1.4.0'
     okhttp3_version = '4.9.3'
     gson_version = '2.8.9'
