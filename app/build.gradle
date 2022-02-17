@@ -5,15 +5,15 @@ plugins {
 }
 
 android {
-    // Build with latest non beta SDK, which is Android 12 (version code = S)
-    compileSdkVersion 31
-    buildToolsVersion "31.0.0"
+    // Build with latest non beta SDK, which is Android 12 (version S_V2)
+    compileSdkVersion 32
+    buildToolsVersion "32.0.0"
 
     // Support devices from Android 6.0+
     defaultConfig {
         applicationId "com.authsamples.basicmobileapp"
         minSdkVersion 23
-        targetSdkVersion 31
+        targetSdkVersion 32
         versionCode 1
         versionName "1.0"
 
