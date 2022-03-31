@@ -406,8 +406,10 @@ class AuthenticatorImpl(
                 idToken
             )
 
-            // Create and start a logout intent on a Chrome Custom tab
             val authService = AuthorizationService(this.applicationContext)
+            this.logoutAuthService = authService
+
+            // Start a logout intent on a Chrome Custom tab
             val customTabsIntent = authService.customTabManager.createTabBuilder().build()
             val logoutIntent = customTabsIntent.intent
             logoutIntent.setPackage(authService.browserDescriptor.packageName)
