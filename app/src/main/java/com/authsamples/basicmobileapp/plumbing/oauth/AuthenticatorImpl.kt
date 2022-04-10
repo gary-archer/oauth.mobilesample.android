@@ -37,8 +37,7 @@ class AuthenticatorImpl(
 ) : Authenticator {
 
     private var metadata: AuthorizationServiceConfiguration? = null
-    private var loginAuthService: AuthorizationService? = null
-    private var logoutAuthService: AuthorizationService? = null
+    private var authService: AuthorizationService
     private val concurrencyHandler: ConcurrentActionHandler
     private val tokenStorage: PersistentTokenStorage
 
@@ -46,6 +45,7 @@ class AuthenticatorImpl(
      * Create child objects once
      */
     init {
+        this.authService = AuthorizationService(this.applicationContext)
         this.concurrencyHandler = ConcurrentActionHandler()
         this.tokenStorage = PersistentTokenStorage(
             this.applicationContext,
@@ -132,11 +132,7 @@ class AuthenticatorImpl(
      * https://github.com/openid/AppAuth-Android/issues/91
      */
     override fun finishLogout() {
-
-        if (this.logoutAuthService != null) {
-            this.logoutAuthService?.customTabManager?.dispose()
-            this.logoutAuthService = null
-        }
+        this.authService.customTabManager?.dispose()
     }
 
     /*
@@ -203,9 +199,6 @@ class AuthenticatorImpl(
 
         try {
 
-            val authService = AuthorizationService(this.applicationContext)
-            this.loginAuthService = authService
-
             // First get metadata if required
             this.getMetadata()
 
@@ -221,7 +214,7 @@ class AuthenticatorImpl(
             val request = builder.build()
 
             // Do the AppAuth redirect
-            val authIntent = authService.getAuthorizationRequestIntent(request)
+            val authIntent = this.authService.getAuthorizationRequestIntent(request)
             launchAction(authIntent)
 
         } catch (ex: Throwable) {
@@ -234,14 +227,12 @@ class AuthenticatorImpl(
      */
     private suspend fun handleLoginResponse(intent: Intent) {
 
-        // Free custom tab resources
-        // https://github.com/openid/AppAuth-Android/issues/91
-        this.loginAuthService?.customTabManager?.dispose()
-        this.loginAuthService = null
-
         // Get the response details
         val authorizationResponse = AuthorizationResponse.fromIntent(intent)
         val ex = AuthorizationException.fromIntent(intent)
+
+        // Free custom tab resources
+        this.authService.customTabManager?.dispose()
 
         when {
             ex != null -> {
@@ -302,8 +293,7 @@ class AuthenticatorImpl(
             val tokenRequest = authResponse.createTokenExchangeRequest()
 
             // Trigger the request
-            val authService = AuthorizationService(this.applicationContext)
-            authService.performTokenRequest(tokenRequest, NoClientAuthentication.INSTANCE, callback)
+            this.authService.performTokenRequest(tokenRequest, NoClientAuthentication.INSTANCE, callback)
         }
     }
 
@@ -377,8 +367,7 @@ class AuthenticatorImpl(
                 .build()
 
             // Trigger the request
-            val authService = AuthorizationService(this.applicationContext)
-            authService.performTokenRequest(tokenRequest, callback)
+            this.authService.performTokenRequest(tokenRequest, callback)
         }
     }
 
@@ -406,13 +395,10 @@ class AuthenticatorImpl(
                 idToken
             )
 
-            val authService = AuthorizationService(this.applicationContext)
-            this.logoutAuthService = authService
-
             // Start a logout intent on a Chrome Custom tab
-            val customTabsIntent = authService.customTabManager.createTabBuilder().build()
+            val customTabsIntent = this.authService.customTabManager.createTabBuilder().build()
             val logoutIntent = customTabsIntent.intent
-            logoutIntent.setPackage(authService.browserDescriptor.packageName)
+            logoutIntent.setPackage(this.authService.browserDescriptor.packageName)
             logoutIntent.data = Uri.parse(logoutUrl)
 
             // Launch the intent to sign the user out
