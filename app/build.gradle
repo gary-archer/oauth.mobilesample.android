@@ -65,7 +65,7 @@ android {
 
 // Dependency versions
 ext {
-    nav_version = '2.4.1'
+    nav_version = '2.4.2'
     lifecycle_extensions = '2.2.0'
     coroutines_version = '1.5.2'
     appauth_version = '0.11.1'

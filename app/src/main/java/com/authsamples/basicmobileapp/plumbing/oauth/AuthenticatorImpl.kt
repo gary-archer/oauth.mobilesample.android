@@ -134,7 +134,7 @@ class AuthenticatorImpl(
     override fun finishLogout() {
 
         if (this.logoutAuthService != null) {
-            this.logoutAuthService?.customTabManager?.dispose()
+            this.logoutAuthService?.dispose()
             this.logoutAuthService = null
         }
     }
@@ -234,14 +234,14 @@ class AuthenticatorImpl(
      */
     private suspend fun handleLoginResponse(intent: Intent) {
 
-        // Free custom tab resources
-        // https://github.com/openid/AppAuth-Android/issues/91
-        this.loginAuthService?.customTabManager?.dispose()
-        this.loginAuthService = null
-
         // Get the response details
         val authorizationResponse = AuthorizationResponse.fromIntent(intent)
         val ex = AuthorizationException.fromIntent(intent)
+
+        // Free custom tab resources after a login
+        // https://github.com/openid/AppAuth-Android/issues/91
+        this.loginAuthService?.dispose()
+        this.loginAuthService = null
 
         when {
             ex != null -> {
