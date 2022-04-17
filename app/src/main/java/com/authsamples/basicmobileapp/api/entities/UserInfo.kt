@@ -5,7 +5,10 @@ package com.authsamples.basicmobileapp.api.entities
  */
 data class UserInfo(
 
+    // These values originate from OAuth user info
     val givenName: String,
+    val familyName: String,
 
-    val familyName: String
+    // This value originates from the API's own data
+    val regions: ArrayList<String>
 )
