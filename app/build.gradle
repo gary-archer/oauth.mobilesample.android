@@ -61,6 +61,9 @@ android {
         dataBinding = true
         viewBinding true
     }
+
+    // Declare the application namespace here
+    namespace 'com.authsamples.basicmobileapp'
 }
 
 // Dependency versions
@@ -98,14 +101,18 @@ dependencies {
     // Include Chrome Custom tabs for the login window
     implementation "androidx.browser:browser:$browser_version"
 
-    // API requests
-    implementation "com.squareup.okhttp3:okhttp:$okhttp3_version"
+    // API requests, which currently depends on a version of the stdlib with a security warning
+    implementation("com.squareup.okhttp3:okhttp:$okhttp3_version") {
+        exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib'
+    }
+
+    // Resource file reading, which currently depends on a version of the stdlib with a security warning
+    implementation("com.squareup.okio:okio:$okio_version") {
+        exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib'
+    }
 
     // JSON serialization
     implementation "com.google.code.gson:gson:$gson_version"
-
-    // Resource file reading
-    implementation "com.squareup.okio:okio:$okio_version"
 
     // Event messages
     implementation "org.greenrobot:eventbus:$eventbus_version"
