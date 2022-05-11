@@ -96,7 +96,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
 
     // The AppAuth library manages OAuth security
-    implementation("net.openid:appauth:$appauth_version")
+    implementation "net.openid:appauth:$appauth_version"
 
     // Include Chrome Custom tabs for the login window
     implementation "androidx.browser:browser:$browser_version"
