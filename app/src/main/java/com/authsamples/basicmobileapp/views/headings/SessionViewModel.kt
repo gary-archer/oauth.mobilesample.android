@@ -5,7 +5,7 @@ import androidx.databinding.BaseObservable
 /*
  * A simple view model for the session view
  */
-class SessionViewModel(
+class SessionViewModel (
     private val sessionId: String,
     private val label: String
 ) : BaseObservable() {
