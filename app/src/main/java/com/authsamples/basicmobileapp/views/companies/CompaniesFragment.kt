@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.authsamples.basicmobileapp.R
@@ -39,14 +40,10 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
         // Inflate the view
         this.binding = FragmentCompaniesBinding.inflate(inflater, container, false)
 
-        // Get details that the main activity supplies to child views
+        // Create the view model
         val mainViewModel: MainActivityViewModel by activityViewModels()
-
-        // Create our own view model
-        this.binding.model = CompaniesViewModel(
-            mainViewModel.apiClient,
-            mainViewModel.apiViewEvents
-        )
+        val factory = CompaniesViewModelFactory(mainViewModel.apiClient, mainViewModel.apiViewEvents)
+        this.binding.model = ViewModelProvider(this, factory).get(CompaniesViewModel::class.java)
 
         // Notify that the main view has changed
         EventBus.getDefault().post(NavigatedEvent(true))

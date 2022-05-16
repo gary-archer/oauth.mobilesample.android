@@ -45,13 +45,11 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
 
         // Get details that the main activity supplies to child views
         val mainViewModel: MainActivityViewModel by activityViewModels()
-
-        // Create our own view model
         this.binding.model = TransactionsViewModel(
             mainViewModel.apiClient,
             mainViewModel.apiViewEvents,
             companyId,
-            this.getString(R.string.transactions_title)
+            this.requireActivity().application
         )
 
         // Notify that the main view has changed

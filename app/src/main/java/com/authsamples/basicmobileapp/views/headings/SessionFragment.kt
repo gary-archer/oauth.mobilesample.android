@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
-import com.authsamples.basicmobileapp.R
+import androidx.lifecycle.ViewModelProvider
 import com.authsamples.basicmobileapp.app.MainActivityViewModel
 import com.authsamples.basicmobileapp.databinding.FragmentSessionBinding
 import com.authsamples.basicmobileapp.plumbing.events.NavigatedEvent
@@ -35,10 +35,8 @@ class SessionFragment : androidx.fragment.app.Fragment() {
 
         // Create our view model using data from the main view model
         val mainViewModel: MainActivityViewModel by activityViewModels()
-        this.binding.model = SessionViewModel(
-            mainViewModel.apiClient.sessionId,
-            this.getString(R.string.api_session_id)
-        )
+        val factory = SessionViewModelFactory(mainViewModel.apiClient.sessionId, this.requireActivity().application)
+        this.binding.model = ViewModelProvider(this, factory).get(SessionViewModel::class.java)
 
         return this.binding.root
     }

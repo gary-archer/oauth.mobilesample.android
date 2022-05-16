@@ -1,5 +1,8 @@
 package com.authsamples.basicmobileapp.views.transactions
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.api.client.ApiClient
 import com.authsamples.basicmobileapp.api.client.ApiRequestOptions
 import com.authsamples.basicmobileapp.api.entities.Transaction
@@ -19,10 +22,12 @@ class TransactionsViewModel(
     val apiClient: ApiClient,
     val apiViewEvents: ApiViewEvents,
     val companyId: String,
-    val titleFormat: String
-) {
+    val app: Application
+) : AndroidViewModel(app) {
+
     // Data once retrieved
     var transactions: List<Transaction> = ArrayList()
+    val titleFormat = app.getString(R.string.transactions_title)
 
     /*
      * Markup calls this method to get the title including the company id

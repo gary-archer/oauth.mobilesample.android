@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import com.authsamples.basicmobileapp.app.MainActivity
 import com.authsamples.basicmobileapp.databinding.FragmentHeaderButtonsBinding
 import com.authsamples.basicmobileapp.plumbing.events.DataStatusEvent
@@ -32,7 +33,7 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
         this.binding.fragment = this
 
         // Create the view model, which informs other views via events
-        this.binding.model = HeaderButtonsViewModel()
+        this.binding.model = ViewModelProvider(this).get(HeaderButtonsViewModel::class.java)
         return this.binding.root
     }
 

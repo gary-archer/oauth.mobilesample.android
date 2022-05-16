@@ -1,7 +1,5 @@
 /*
- * Run with one of these commands:
- *   bash ./gradlew detekt --> on Mac OS / Linux
- *   ./gradlew detekt      --> on Windows
+ * Run ./gradlew detekt
  */
 
 apply plugin: 'io.gitlab.arturbosch.detekt'

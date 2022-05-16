@@ -1,6 +1,8 @@
 package com.authsamples.basicmobileapp.views.userinfo
 
-import androidx.databinding.BaseObservable
+import androidx.databinding.Observable
+import androidx.databinding.PropertyChangeRegistry
+import androidx.lifecycle.ViewModel
 import com.authsamples.basicmobileapp.api.client.ApiClient
 import com.authsamples.basicmobileapp.api.client.ApiRequestOptions
 import com.authsamples.basicmobileapp.api.entities.UserInfo
@@ -18,10 +20,11 @@ import kotlinx.coroutines.withContext
 class UserInfoViewModel(
     val apiClient: ApiClient,
     val apiViewEvents: ApiViewEvents
-) : BaseObservable() {
+) : ViewModel(), Observable {
 
-    // The data once received
+    // Observable data for which the UI must be notified upon change
     private var userInfo: UserInfo? = null
+    private val callbacks = PropertyChangeRegistry()
 
     /*
      * A method to do the work of calling the API
@@ -83,18 +86,30 @@ class UserInfoViewModel(
      * Clear user info when we log out and inform the binding system
      */
     fun clearUserInfo() {
-
         this.userInfo = null
-        this.notifyChange()
+        callbacks.notifyCallbacks(this, 0, null)
+    }
+
+    /*
+     * Observable plumbing to allow XML views to register
+     */
+    override fun addOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback) {
+        callbacks.add(callback)
+    }
+
+    /*
+     * Observable plumbing to allow XML views to unregister
+     */
+    override fun removeOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback) {
+        callbacks.remove(callback)
     }
 
     /*
      * Set user info and inform the binding system
      */
     private fun setUserInfo(userInfo: UserInfo) {
-
         this.userInfo = userInfo
-        this.notifyChange()
+        callbacks.notifyCallbacks(this, 0, null)
     }
 
     /*

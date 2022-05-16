@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.app.MainActivityViewModel
 import com.authsamples.basicmobileapp.databinding.FragmentUserInfoBinding
@@ -37,10 +38,8 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
 
         // Create our view model using data from the main view model
         val mainViewModel: MainActivityViewModel by activityViewModels()
-        this.binding.model = UserInfoViewModel(
-            mainViewModel.apiClient,
-            mainViewModel.apiViewEvents
-        )
+        val factory = UserInfoViewModelFactory(mainViewModel.apiClient, mainViewModel.apiViewEvents)
+        this.binding.model = ViewModelProvider(this, factory).get(UserInfoViewModel::class.java)
 
         return binding.root
     }

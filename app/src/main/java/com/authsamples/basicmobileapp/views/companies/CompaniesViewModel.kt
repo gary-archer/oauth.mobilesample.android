@@ -1,5 +1,6 @@
 package com.authsamples.basicmobileapp.views.companies
 
+import androidx.lifecycle.ViewModel
 import com.authsamples.basicmobileapp.api.client.ApiClient
 import com.authsamples.basicmobileapp.api.client.ApiRequestOptions
 import com.authsamples.basicmobileapp.api.entities.Company
@@ -17,7 +18,7 @@ import kotlinx.coroutines.withContext
 class CompaniesViewModel(
     private val apiClient: ApiClient,
     private val apiViewEvents: ApiViewEvents
-) {
+) : ViewModel() {
 
     // Data once retrieved
     var companies: List<Company> = ArrayList()
