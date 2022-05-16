@@ -61,13 +61,13 @@ class ErrorDetailsDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         super.onViewCreated(view, savedInstanceState)
-        this.renderData()
+        this.populateList()
     }
 
     /*
-     * Render error items in the list view
+     * Set up the recycler view with the list of error items
      */
-    private fun renderData() {
+    private fun populateList() {
 
         // Get error lines as a collection
         val lines = ErrorFormatter(this.requireContext()).getErrorLines(this.binding.model!!.error)

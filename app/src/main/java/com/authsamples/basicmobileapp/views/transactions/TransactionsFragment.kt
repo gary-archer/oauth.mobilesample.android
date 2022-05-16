@@ -95,7 +95,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
 
         // The success action renders the transactions returned
         val onSuccess = {
-            this.renderData()
+            this.populateList()
         }
 
         // The error action handles non success cases
@@ -114,7 +114,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
                 EventBus.getDefault().post(setEvent)
 
                 // Update the display to clear data
-                this.renderData()
+                this.populateList()
             }
         }
 
@@ -127,9 +127,9 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
     }
 
     /*
-     * Render API response data
+     * Set up the recycler view with the API response data
      */
-    private fun renderData() {
+    private fun populateList() {
 
         // Get view model items from the raw data
         val viewModelItems = this.binding.model!!.transactions.map { TransactionItemViewModel(it) }
