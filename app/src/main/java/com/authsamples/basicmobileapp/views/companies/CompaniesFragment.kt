@@ -88,7 +88,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
 
         // The success action renders the companies returned
         val onSuccess = {
-            this.renderData()
+            this.populateList()
         }
 
         // The error action renders the error and also zero companies
@@ -99,7 +99,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
             EventBus.getDefault().post(setEvent)
 
             // Update the display to clear data
-            this.renderData()
+            this.populateList()
         }
 
         // Ask the model class to do the work
@@ -111,9 +111,9 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
     }
 
     /*
-     * Render API response data
+     * Set up the recycler view with the API response data
      */
-    private fun renderData() {
+    private fun populateList() {
 
         // Get view model items from the raw data
         val viewModelItems = this.binding.model!!.companies.map { CompanyItemViewModel(it) }
@@ -126,7 +126,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
             findNavController().navigate(R.id.transactions_fragment, args)
         }
 
-        // Bind the data
+        // Bind the data to the recycler view
         val list = this.binding.listCompanies
         list.layoutManager = LinearLayoutManager(this.context)
         list.adapter = CompanyArrayAdapter(this.requireContext(), viewModelItems.toList(), onItemClick)
