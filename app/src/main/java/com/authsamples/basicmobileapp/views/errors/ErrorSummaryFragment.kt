@@ -6,6 +6,7 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.databinding.FragmentErrorSummaryBinding
 import com.authsamples.basicmobileapp.plumbing.errors.ErrorCodes
@@ -64,7 +65,9 @@ class ErrorSummaryFragment : androidx.fragment.app.Fragment() {
         this.binding = FragmentErrorSummaryBinding.inflate(inflater, container, false)
 
         // Create the view model with default settings
-        this.binding.model = ErrorSummaryViewModel(this::showDetailsDialog)
+        val factory = ErrorSummaryViewModelFactory(this::showDetailsDialog)
+        this.binding.model = ViewModelProvider(this, factory).get(ErrorSummaryViewModel::class.java)
+
         return binding.root
     }
 

@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.authsamples.basicmobileapp.databinding.FragmentErrorDetailsBinding
 import com.authsamples.basicmobileapp.plumbing.errors.ErrorFormatter
@@ -48,7 +49,8 @@ class ErrorDetailsDialogFragment : DialogFragment() {
         // Create the view model from data passed in
         val title = this.arguments?.getString(Constants.ARG_ERROR_TITLE)
         val error = this.arguments?.getSerializable(Constants.ARG_ERROR_DATA) as UIError
-        this.binding.model = ErrorDetailsViewModel(title!!, error, this::dismiss)
+        val factory = ErrorDetailsViewModelFactory(title!!, error, this::dismiss)
+        this.binding.model = ViewModelProvider(this, factory).get(ErrorDetailsViewModel::class.java)
 
         return binding.root
     }
