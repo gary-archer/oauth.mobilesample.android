@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ErrorAttributes">
+        <attr name="containingViewName" format="string" />
+        <attr name="hyperlinkText" format="string" />
+        <attr name="dialogTitle" format="string" />
+    </declare-styleable>
+</resources>

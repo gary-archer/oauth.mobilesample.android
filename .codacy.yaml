@@ -1,0 +1,8 @@
+---
+exclude_paths: [
+    '*',    
+    'app/*',
+    'gradle/*',
+    'security/*',
+    'web/*'
+]

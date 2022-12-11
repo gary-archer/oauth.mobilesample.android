@@ -1,0 +1,115 @@
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+}
+
+android {
+    // Build with latest non beta SDK, which is Android 13
+    compileSdkVersion 33
+    buildToolsVersion "33.0.0"
+
+    // Support devices from Android 6.0+
+    defaultConfig {
+        applicationId "com.authsamples.basicmobileapp"
+        minSdkVersion 23
+        targetSdkVersion 33
+        versionCode 1
+        versionName "1.0"
+
+        // The scheme value used by AppAuth's RedirectUriReceiverActivity class to receive login responses
+        manifestPlaceholders = [
+                'appAuthRedirectScheme': 'https'
+        ]
+    }
+
+    // Be explicit about the JVM version to avoid certain types of warning or error
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_11.toString()
+    }
+
+    // All builds of the app are signed with a self signed key to identify the app for app links
+    signingConfigs {
+        release {
+            storeFile file("${rootDir}/security/app-keystore.jks")
+            storePassword "android"
+            keyAlias "com.authsamples.basicmobileapp"
+            keyPassword "android"
+        }
+    }
+
+    // Sign both debug and release builds
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.release
+            debuggable true
+        }
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    // Enable newer Jetpack binding features
+    buildFeatures {
+        dataBinding = true
+        viewBinding true
+    }
+
+    // Declare the application namespace here
+    namespace 'com.authsamples.basicmobileapp'
+}
+
+// Dependency versions
+ext {
+    coroutines_version = '1.6.2'
+    nav_version = '2.5.3'
+    lifecycle_extensions = '2.2.0'
+    appauth_version = '0.11.1'
+    browser_version = '1.4.0'
+    okhttp_version = '4.10.0'
+    gson_version = '2.8.9'
+    okio_version = '3.1.0'
+    eventbus_version = '3.2.0'
+}
+
+dependencies {
+
+    // Base libraries
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    // Kotlin async support
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
+
+    // View model support
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_extensions"
+
+    // Navigation for Single Activity Apps
+    implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
+    implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+
+    // The AppAuth library manages OAuth security
+    implementation "net.openid:appauth:$appauth_version"
+
+    // Include Chrome Custom tabs for the login window
+    implementation "androidx.browser:browser:$browser_version"
+
+    // API requests
+    implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
+
+    // Resource file reading
+    implementation "com.squareup.okio:okio:$okio_version"
+
+    // JSON serialization
+    implementation "com.google.code.gson:gson:$gson_version"
+
+    // Event messages
+    implementation "org.greenrobot:eventbus:$eventbus_version"
+}

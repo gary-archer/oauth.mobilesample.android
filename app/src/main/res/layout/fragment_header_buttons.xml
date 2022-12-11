@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <!-- Bind to both the model and the fragment -->
+        <variable name="model" type="com.authsamples.basicmobileapp.views.headings.HeaderButtonsViewModel" />
+        <variable name="fragment" type="com.authsamples.basicmobileapp.views.headings.HeaderButtonsFragment" />
+    </data>
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:context=".views.headings.HeaderButtonsFragment">
+
+        <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_home"
+                android:text="@string/home_button"
+                android:onClick="@{(v) -> fragment.onHome()}"
+                style="@style/ButtonHeaderStyle"/>
+
+        <com.authsamples.basicmobileapp.views.utilities.LongPressableButton
+                android:id="@+id/btn_reload_data"
+                android:text="@string/reload_button"
+                android:enabled="@{model.hasData()}"
+                style="@style/ButtonHeaderStyle"/>
+
+        <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_expire_access_token"
+                android:text="@string/expire_access_token_button"
+                android:enabled="@{model.hasData()}"
+                android:onClick="@{(v) -> fragment.onExpireAccessToken()}"
+                style="@style/ButtonHeaderStyle"/>
+
+        <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_expire_refresh_token"
+                android:text="@string/expire_refresh_token_button"
+                android:enabled="@{model.hasData()}"
+                android:onClick="@{(v) -> fragment.onExpireRefreshToken()}"
+                style="@style/ButtonHeaderStyle"/>
+
+        <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_logout"
+                android:text="@string/logout_button"
+                android:enabled="@{model.hasData()}"
+                android:onClick="@{(v) -> fragment.onLogout()}"
+                style="@style/ButtonHeaderStyle"/>
+    </LinearLayout>
+</layout>
