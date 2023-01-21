@@ -68,15 +68,15 @@ android {
 
 // Dependency versions
 ext {
-    coroutines_version = '1.6.2'
+    coroutines_version = '1.6.4'
     nav_version = '2.5.3'
     lifecycle_extensions = '2.2.0'
     appauth_version = '0.11.1'
     browser_version = '1.4.0'
     okhttp_version = '4.10.0'
-    gson_version = '2.8.9'
-    okio_version = '3.1.0'
-    eventbus_version = '3.2.0'
+    gson_version = '2.10.1'
+    okio_version = '3.3.0'
+    eventbus_version = '3.3.1'
 }
 
 dependencies {
