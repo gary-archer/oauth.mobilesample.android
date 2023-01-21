@@ -56,7 +56,7 @@ fi
 #
 # Then run the app
 #
-adb shell am start -n "$APP_PACKAGE_ID/$APP_PACKAGE_ID.app.MainActivity"
+adb shell am start -n "$APP_PACKAGE_ID/$APP_PACKAGE_ID.app.MainActivity" -a android.intent.action.MAIN -c android.intent.category.LAUNCHER
 if [ $? -ne 0 ]; then
   echo 'Problem encountered deploying the Android app to the device'
   exit
