@@ -2,7 +2,7 @@
 
 ####################################################################################################
 # A script to build and deploy the release build of the APK file to the connected emulator or device
-# First ensure that ~/Library/Android/sdk/platform-tools is in your PATH environment variable
+# First ensure that JAVA_HOME is set and the Android platform tools folder is in your PATH
 ####################################################################################################
 
 cd "$(dirname "${BASH_SOURCE[0]}")"
@@ -10,7 +10,6 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 #
 # Point to the Android Java location
 #
-JAVA_HOME='/Applications/Android Studio.app/Contents/jre/Contents/Home'
 APP_PACKAGE_ID='com.authsamples.basicmobileapp'
 
 #
