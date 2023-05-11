@@ -75,11 +75,11 @@ android {
 
 // Dependency versions
 ext {
-    coroutines_version = '1.6.4'
-    nav_version = '2.5.3'
+    coroutines_version = '1.7.0'
     lifecycle_extensions = '2.2.0'
+    nav_version = '2.5.3'
     appauth_version = '0.11.1'
-    browser_version = '1.4.0'
+    browser_version = '1.5.0'
     okhttp_version = '4.11.0'
     gson_version = '2.10.1'
     okio_version = '3.3.0'
@@ -111,11 +111,11 @@ dependencies {
     // API requests
     implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
 
-    // Resource file reading
-    implementation "com.squareup.okio:okio:$okio_version"
-
     // JSON serialization
     implementation "com.google.code.gson:gson:$gson_version"
+
+    // Resource file reading
+    implementation "com.squareup.okio:okio:$okio_version"
 
     // Event messages
     implementation "org.greenrobot:eventbus:$eventbus_version"
