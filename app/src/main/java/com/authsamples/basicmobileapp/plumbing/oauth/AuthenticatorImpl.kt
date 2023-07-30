@@ -11,6 +11,7 @@ import com.authsamples.basicmobileapp.plumbing.oauth.logout.CognitoLogoutUrlBuil
 import com.authsamples.basicmobileapp.plumbing.oauth.logout.LogoutUrlBuilder
 import com.authsamples.basicmobileapp.plumbing.oauth.logout.StandardLogoutUrlBuilder
 import com.authsamples.basicmobileapp.plumbing.utilities.ConcurrentActionHandler
+import com.authsamples.basicmobileapp.plumbing.utilities.HttpResponseDeserializer
 import net.openid.appauth.AppAuthConfiguration
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
@@ -26,7 +27,15 @@ import net.openid.appauth.browser.BrowserAllowList
 import net.openid.appauth.browser.BrowserMatcher
 import net.openid.appauth.browser.VersionedBrowserMatcher
 import net.openid.appauth.connectivity.DefaultConnectionBuilder
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.Response
+import java.io.IOException
 import java.util.Locale
+import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -255,6 +264,50 @@ class AuthenticatorImpl(
     }
 
     /*
+     * Get data from the OAuth user info endpoint
+     */
+    override suspend fun getUserInfo(): OAuthUserInfo {
+
+        // First get an access token
+        var accessToken = this.getAccessToken()
+
+        // Get metadata if required
+        this.getMetadata()
+
+        // Make the request
+        var response = this.makeUserInfoRequest(accessToken)
+        if (response.isSuccessful) {
+
+            // Handle successful responses
+            return HttpResponseDeserializer().readBody(response, OAuthUserInfo::class.java)
+        } else {
+
+            // Retry once with a new token if there is a 401 error
+            if (response.code == 401) {
+
+                // Try to refresh the access token
+                accessToken = this.refreshAccessToken()
+
+                // Retry the API call
+                response = this.makeUserInfoRequest(accessToken)
+                if (response.isSuccessful) {
+
+                    // Handle successful responses
+                    return HttpResponseDeserializer().readBody(response, OAuthUserInfo::class.java)
+                } else {
+
+                    // Handle failed responses on the retry
+                    throw ErrorFactory().fromApiResponseError(response, this.configuration.userInfoEndpoint)
+                }
+            } else {
+
+                // Handle failed responses on the original call
+                throw ErrorFactory().fromApiResponseError(response, this.configuration.userInfoEndpoint)
+            }
+        }
+    }
+
+    /*
      * For testing, make the access token act like it is expired
      */
     override fun expireAccessToken() {
@@ -307,6 +360,43 @@ class AuthenticatorImpl(
             // Trigger the request
             val authService = AuthorizationService(this.applicationContext)
             authService.performTokenRequest(tokenRequest, NoClientAuthentication.INSTANCE, callback)
+        }
+    }
+
+    /*
+     * Make a user info request with the current access token
+     */
+    private suspend fun makeUserInfoRequest(accessToken: String): Response {
+
+        val body: RequestBody? = null
+        val builder = Request.Builder()
+            .header("Accept", "application/json")
+            .header("Authorization", "Bearer $accessToken")
+            .method("GET", body)
+            .url(this.configuration.userInfoEndpoint)
+        val request = builder.build()
+
+        val client = OkHttpClient.Builder()
+            .callTimeout(10, TimeUnit.SECONDS)
+            .build()
+
+        val that = this@AuthenticatorImpl
+        return suspendCoroutine { continuation ->
+
+            client.newCall(request).enqueue(object : Callback {
+                override fun onResponse(call: Call, response: Response) {
+
+                    // Return the data on success
+                    continuation.resumeWith(Result.success(response))
+                }
+
+                override fun onFailure(call: Call, e: IOException) {
+
+                    // Translate the API error
+                    val exception = ErrorFactory().fromApiRequestError(e, that.configuration.userInfoEndpoint)
+                    continuation.resumeWithException(exception)
+                }
+            })
         }
     }
 

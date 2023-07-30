@@ -8,6 +8,9 @@ class OAuthConfiguration {
     // The authority base URL
     lateinit var authority: String
 
+    // The user info endpoint
+    lateinit var userInfoEndpoint: String
+
     // The identifier for our mobile app
     lateinit var clientId: String
 

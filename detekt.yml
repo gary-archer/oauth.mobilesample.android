@@ -318,7 +318,7 @@ naming:
     active: true
     classPattern: '[A-Z][a-zA-Z0-9]*'
   ConstructorParameterNaming:
-    active: true
+    active: false
     parameterPattern: '[a-z][A-Za-z0-9]*'
     privateParameterPattern: '[a-z][A-Za-z0-9]*'
     excludeClassPattern: '$^'
