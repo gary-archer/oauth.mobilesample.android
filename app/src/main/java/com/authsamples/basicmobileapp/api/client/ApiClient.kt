@@ -108,12 +108,12 @@ class ApiClient(
                 } else {
 
                     // Handle failed responses on the retry
-                    throw ErrorFactory().fromApiResponseError(response, url)
+                    throw ErrorFactory().fromHttpResponseError(response, url, "web API")
                 }
             } else {
 
                 // Handle failed responses on the original call
-                throw ErrorFactory().fromApiResponseError(response, url)
+                throw ErrorFactory().fromHttpResponseError(response, url, "web API")
             }
         }
     }
@@ -157,7 +157,7 @@ class ApiClient(
                 override fun onFailure(call: Call, e: IOException) {
 
                     // Translate the API error
-                    val exception = ErrorFactory().fromApiRequestError(e, url)
+                    val exception = ErrorFactory().fromHttpRequestError(e, url, "web API")
                     continuation.resumeWithException(exception)
                 }
             })

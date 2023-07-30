@@ -297,12 +297,12 @@ class AuthenticatorImpl(
                 } else {
 
                     // Handle failed responses on the retry
-                    throw ErrorFactory().fromApiResponseError(response, this.configuration.userInfoEndpoint)
+                    throw ErrorFactory().fromHttpResponseError(response, this.configuration.userInfoEndpoint, "authorization server")
                 }
             } else {
 
                 // Handle failed responses on the original call
-                throw ErrorFactory().fromApiResponseError(response, this.configuration.userInfoEndpoint)
+                throw ErrorFactory().fromHttpResponseError(response, this.configuration.userInfoEndpoint, "authorization server")
             }
         }
     }
@@ -393,7 +393,7 @@ class AuthenticatorImpl(
                 override fun onFailure(call: Call, e: IOException) {
 
                     // Translate the API error
-                    val exception = ErrorFactory().fromApiRequestError(e, that.configuration.userInfoEndpoint)
+                    val exception = ErrorFactory().fromHttpRequestError(e, that.configuration.userInfoEndpoint, "authorization server")
                     continuation.resumeWithException(exception)
                 }
             })

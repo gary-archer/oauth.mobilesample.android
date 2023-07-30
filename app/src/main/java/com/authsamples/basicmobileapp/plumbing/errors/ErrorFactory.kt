@@ -140,12 +140,12 @@ class ErrorFactory {
     /*
      * Translate a failed API request into a presentable error response
      */
-    fun fromApiRequestError(ex: IOException?, url: String): UIError {
+    fun fromHttpRequestError(ex: IOException?, url: String, source: String): UIError {
 
         val error = UIError(
             "Network",
             ErrorCodes.apiNetworkError,
-            "A network problem occurred when the UI called the server"
+            "A network problem occurred when the UI called the $source"
         )
 
         // Set other details
@@ -161,20 +161,20 @@ class ErrorFactory {
     }
 
     /*
-     * Translate a failed API response into a presentable error response
+     * Translate a failed HTTP response into a presentable error response
      */
-    fun fromApiResponseError(response: Response, url: String): UIError {
+    fun fromHttpResponseError(response: Response, url: String, source: String): UIError {
 
         val error = UIError(
             "API",
             ErrorCodes.apiResponseError,
-            "A technical problem occurred when the UI called the server"
+            "A technical problem occurred when the UI called the $source"
         )
 
         error.statusCode = response.code
         error.url = url
 
-        this.updateFromApiErrorResponse(error, response.body?.string())
+        this.updateFromErrorResponseBody(error, response.body?.string())
         return error
     }
 
@@ -213,9 +213,9 @@ class ErrorFactory {
     }
 
     /*
-     * Try to update the default API error with response details
+     * Try to update the default HTTP error with response details
      */
-    private fun updateFromApiErrorResponse(error: UIError, response: String?) {
+    private fun updateFromErrorResponseBody(error: UIError, response: String?) {
 
         if (response != null) {
             val tree = JsonParser.parseString(response)
@@ -223,21 +223,29 @@ class ErrorFactory {
 
                 // Try to read expected error fields
                 val data = tree.asJsonObject
-                val errorCode = data.get("code")
-                val errorMessage = data.get("message")
+                var errorCode = data.get("code")
+                var errorMessage = data.get("message")
 
-                // Update the error object on success
+                // Handle API errors, which include extra details for 5xx errors
+                if (errorCode != null && errorMessage != null) {
+
+                    error.errorCode = errorCode.asString
+                    error.details = errorMessage.asString
+
+                    val area = data.get("area")
+                    val id = data.get("id")
+                    val utcTime = data.get("utcTime")
+                    if (area != null && id != null && utcTime != null) {
+                        error.setApiErrorDetails(area.asString, id.asInt, utcTime.asString)
+                    }
+                }
+
+                // Handle OAuth errors in HTTP reponses
+                errorCode = data.get("error")
+                errorMessage = data.get("error_description")
                 if (errorCode != null && errorMessage != null) {
                     error.errorCode = errorCode.asString
                     error.details = errorMessage.asString
-                }
-
-                // For 500 errors also read additional details for error lookup
-                val area = data.get("area")
-                val id = data.get("id")
-                val utcTime = data.get("utcTime")
-                if (area != null && id != null && utcTime != null) {
-                    error.setApiErrorDetails(area.asString, id.asInt, utcTime.asString)
                 }
             }
         }
