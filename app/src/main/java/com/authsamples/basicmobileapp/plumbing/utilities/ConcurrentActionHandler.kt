@@ -39,7 +39,7 @@ class ConcurrentActionHandler {
             }
 
             // Add the callback to the collection, in a thread safe manner
-            synchronized (this.lock) {
+            synchronized(this.lock) {
                 this.callbacks.add(Pair(onSuccess, onError))
             }
 
@@ -53,7 +53,7 @@ class ConcurrentActionHandler {
                         action()
 
                         // Resolve all promises with the same success result
-                        synchronized (that.lock) {
+                        synchronized(that.lock) {
                             that.callbacks.forEach {
                                 it.first()
                             }
@@ -64,7 +64,7 @@ class ConcurrentActionHandler {
                     } catch (ex: Throwable) {
 
                         // Resolve all promises with the same error
-                        synchronized (that.lock) {
+                        synchronized(that.lock) {
                             that.callbacks.forEach {
                                 it.second(ex)
                             }

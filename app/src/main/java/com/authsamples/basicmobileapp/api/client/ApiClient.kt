@@ -38,7 +38,7 @@ class ApiClient(
     val sessionId = UUID.randomUUID().toString()
 
     /*
-     * Download user info from the API so that we can get any data we need
+     * Download user attributes stored in the API's own data
      */
     suspend fun getUserInfo(options: ApiRequestOptions? = null): ApiUserInfo {
 

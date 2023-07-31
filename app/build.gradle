@@ -4,6 +4,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.kapt'
     id 'io.gitlab.arturbosch.detekt'
 }
 
@@ -13,8 +14,7 @@ allprojects {
 
 android {
     // Build with latest non beta SDK, which is Android 13
-    compileSdkVersion 33
-    buildToolsVersion "33.0.0"
+    compileSdk 33
 
     // Support devices from Android 6.0+
     defaultConfig {
@@ -75,14 +75,14 @@ android {
 
 // Dependency versions
 ext {
-    coroutines_version = '1.7.0'
+    coroutines_version = '1.7.3'
     lifecycle_extensions = '2.2.0'
-    nav_version = '2.5.3'
+    nav_version = '2.6.0'
     appauth_version = '0.11.1'
     browser_version = '1.5.0'
     okhttp_version = '4.11.0'
     gson_version = '2.10.1'
-    okio_version = '3.3.0'
+    okio_version = '3.4.0'
     eventbus_version = '3.3.1'
 }
 
