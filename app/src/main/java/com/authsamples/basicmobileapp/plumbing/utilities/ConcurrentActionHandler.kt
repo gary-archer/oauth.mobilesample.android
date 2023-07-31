@@ -3,44 +3,34 @@ package com.authsamples.basicmobileapp.plumbing.utilities
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
-
-private typealias SuccessCallback = () -> Unit
-private typealias ErrorCallback = (ex: Throwable) -> Unit
 
 /*
  * Used when multiple UI fragments attempt an action that needs to be synchronised
  */
 class ConcurrentActionHandler {
 
-    // A concurrent collection of callbacks
+    // Queue all requests in an array of continuations
     private val callbacks = ArrayList(
-        ArrayList<Pair<SuccessCallback, ErrorCallback>>().toList()
+        ArrayList<Continuation<Unit>>().toList()
     )
 
     // A lock object for multiple statements
     private val lock = Object()
 
     /*
-     * Run the supplied action the first time only and return a promise to the caller
+     * Run the supplied action the first time only and return a continuation to the caller
      */
     suspend fun execute(action: suspend () -> Unit) {
 
         return suspendCoroutine { continuation ->
 
-            val onSuccess = {
-                continuation.resume(Unit)
-            }
-
-            val onError = { exception: Throwable ->
-                continuation.resumeWithException(exception)
-            }
-
-            // Add the callback to the collection, in a thread safe manner
+            // Add the continuation to the collection, in a thread safe manner
             synchronized(this.lock) {
-                this.callbacks.add(Pair(onSuccess, onError))
+                this.callbacks.add(continuation)
             }
 
             // Perform the action for the first caller only
@@ -52,10 +42,10 @@ class ConcurrentActionHandler {
                         // Do the work
                         action()
 
-                        // Resolve all promises with the same success result
+                        // Resolve all continuations with the same success result
                         synchronized(that.lock) {
                             that.callbacks.forEach {
-                                it.first()
+                                it.resume(Unit)
                             }
 
                             that.callbacks.clear()
@@ -63,10 +53,10 @@ class ConcurrentActionHandler {
 
                     } catch (ex: Throwable) {
 
-                        // Resolve all promises with the same error
+                        // Resolve all continuations with the same error
                         synchronized(that.lock) {
                             that.callbacks.forEach {
-                                it.second(ex)
+                                it.resumeWithException(ex)
                             }
 
                             that.callbacks.clear()
