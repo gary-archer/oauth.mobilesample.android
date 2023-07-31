@@ -29,11 +29,6 @@ class ApiClient(
     private val authenticator: Authenticator
 ) {
 
-    // Create an HTTP client
-    var client: OkHttpClient = OkHttpClient.Builder()
-        .callTimeout(10, TimeUnit.SECONDS)
-        .build()
-
     // Create a session id for API logs
     val sessionId = UUID.randomUUID().toString()
 
@@ -140,9 +135,14 @@ class ApiClient(
         this.addCustomHeaders(builder, options)
         val request = builder.build()
 
+        // Create an HTTP client
+        val client = OkHttpClient.Builder()
+            .callTimeout(10, TimeUnit.SECONDS)
+            .build()
+
         return suspendCoroutine { continuation ->
 
-            this.client.newCall(request).enqueue(object : Callback {
+            client.newCall(request).enqueue(object : Callback {
                 override fun onResponse(call: Call, response: Response) {
 
                     continuation.resumeWith(Result.success(response))
