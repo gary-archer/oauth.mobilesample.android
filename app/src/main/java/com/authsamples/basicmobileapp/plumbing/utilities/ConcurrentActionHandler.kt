@@ -14,7 +14,7 @@ import kotlin.coroutines.suspendCoroutine
 class ConcurrentActionHandler {
 
     // Queue all requests in an array of continuations
-    private val callbacks = ArrayList(
+    private val continuations = ArrayList(
         ArrayList<Continuation<Unit>>().toList()
     )
 
@@ -30,11 +30,11 @@ class ConcurrentActionHandler {
 
             // Add the continuation to the collection, in a thread safe manner
             synchronized(this.lock) {
-                this.callbacks.add(continuation)
+                this.continuations.add(continuation)
             }
 
             // Perform the action for the first caller only
-            if (this.callbacks.count() == 1) {
+            if (this.continuations.count() == 1) {
 
                 val that = this@ConcurrentActionHandler
                 CoroutineScope(Dispatchers.IO).launch {
@@ -44,22 +44,22 @@ class ConcurrentActionHandler {
 
                         // Resolve all continuations with the same success result
                         synchronized(that.lock) {
-                            that.callbacks.forEach {
+                            that.continuations.forEach {
                                 it.resume(Unit)
                             }
 
-                            that.callbacks.clear()
+                            that.continuations.clear()
                         }
 
                     } catch (ex: Throwable) {
 
                         // Resolve all continuations with the same error
                         synchronized(that.lock) {
-                            that.callbacks.forEach {
+                            that.continuations.forEach {
                                 it.resumeWithException(ex)
                             }
 
-                            that.callbacks.clear()
+                            that.continuations.clear()
                         }
                     }
                 }
