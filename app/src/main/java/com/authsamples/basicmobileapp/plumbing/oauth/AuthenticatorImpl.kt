@@ -52,7 +52,7 @@ class AuthenticatorImpl(
     private var metadata: AuthorizationServiceConfiguration? = null
     private var loginAuthService: AuthorizationService? = null
     private var logoutAuthService: AuthorizationService? = null
-    private val concurrencyHandler: ConcurrentActionHandler = ConcurrentActionHandler()
+    private val concurrencyHandler = ConcurrentActionHandler()
     private val tokenStorage: PersistentTokenStorage
 
     /*
@@ -128,17 +128,8 @@ class AuthenticatorImpl(
         val refreshToken = this.tokenStorage.loadTokens()?.refreshToken
         if (!refreshToken.isNullOrBlank()) {
 
-            // Manage concurrency when there are multiple UI fragments receiving API 401s
-            if (this.concurrencyHandler.start()) {
-
-                // Do the work for the first UI fragment only
-                this.performRefreshTokenGrant()
-
-            } else {
-
-                // Add a continuation that waits on the response from the first fragment
-                this.concurrencyHandler.addContinuation()
-            }
+            // Perform token refresh and manage concurrency
+            this.concurrencyHandler.execute(this::performRefreshTokenGrant)
 
             // Return the token on success
             val accessToken = this.tokenStorage.loadTokens()?.accessToken
@@ -459,14 +450,12 @@ class AuthenticatorImpl(
                                 // The caller will throw a login required error to redirect the user to login again
                                 this.tokenStorage.removeTokens()
                                 continuation.resume(Unit)
-                                this.concurrencyHandler.resume()
 
                             } else {
 
                                 // Process real errors
                                 val error = ErrorFactory().fromTokenError(ex, ErrorCodes.tokenRenewalError)
                                 continuation.resumeWithException(error)
-                                this.concurrencyHandler.resumeWithException(error)
                             }
                         }
 
@@ -474,14 +463,12 @@ class AuthenticatorImpl(
                         tokenResponse == null -> {
                             val error = RuntimeException("Refresh token grant returned an empty response")
                             continuation.resumeWithException(error)
-                            this.concurrencyHandler.resumeWithException(error)
                         }
 
                         // Process the response by saving tokens to secure storage
                         else -> {
                             this.saveTokens(tokenResponse)
                             continuation.resume(Unit)
-                            this.concurrencyHandler.resume()
                         }
                     }
                 }

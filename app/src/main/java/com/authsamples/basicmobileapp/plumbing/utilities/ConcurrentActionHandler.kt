@@ -1,27 +1,22 @@
 package com.authsamples.basicmobileapp.plumbing.utilities
 
-import java.util.concurrent.CopyOnWriteArrayList
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-// Internal types
 private typealias SuccessCallback = () -> Unit
 private typealias ErrorCallback = (ex: Throwable) -> Unit
 
 /*
  * Used when multiple UI fragments attempt an action that needs to be synchronised
- * We have to write the code a little differently to our React / SwiftUI samples to avoid this compiler error:
- *   'Suspension functions can only be called within coroutine body'
  */
 class ConcurrentActionHandler {
 
-    // A flag to record whether the work is in progress
-    @Volatile
-    private var actionInProgress = false
-
     // A concurrent collection of callbacks
-    private val callbacks = CopyOnWriteArrayList(
+    private val callbacks = ArrayList(
         ArrayList<Pair<SuccessCallback, ErrorCallback>>().toList()
     )
 
@@ -29,24 +24,9 @@ class ConcurrentActionHandler {
     private val lock = Object()
 
     /*
-     * Start the concurrent action once only
+     * Run the supplied action the first time only and return a promise to the caller
      */
-    fun start(): Boolean {
-
-        synchronized(this.lock) {
-            if (!this.actionInProgress) {
-                this.actionInProgress = true
-                return true
-            }
-        }
-
-        return false
-    }
-
-    /*
-     * The first UI fragment does a refresh action and other UI fragments wait on a continuation
-     */
-    suspend fun addContinuation() {
+    suspend fun execute(action: suspend () -> Unit) {
 
         return suspendCoroutine { continuation ->
 
@@ -58,37 +38,42 @@ class ConcurrentActionHandler {
                 continuation.resumeWithException(exception)
             }
 
-            this.callbacks.add(Pair(onSuccess, onError))
-        }
-    }
-
-    /*
-     * When the first UI fragment has completed successfully, return the same result to all other fragments
-     */
-    fun resume() {
-
-        synchronized(this.lock) {
-            this.callbacks.forEach {
-                it.first()
+            // Add the callback to the collection, in a thread safe manner
+            synchronized (this.lock) {
+                this.callbacks.add(Pair(onSuccess, onError))
             }
 
-            this.callbacks.clear()
-            this.actionInProgress = false
-        }
-    }
+            // Perform the action for the first caller only
+            if (this.callbacks.count() == 1) {
 
-    /*
-     * When the first UI fragment has failed, return the same error to all other fragments
-     */
-    fun resumeWithException(ex: Throwable) {
+                val that = this@ConcurrentActionHandler
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        // Do the work
+                        action()
 
-        synchronized(this.lock) {
-            this.callbacks.forEach {
-                it.second(ex)
+                        // Resolve all promises with the same success result
+                        synchronized (that.lock) {
+                            that.callbacks.forEach {
+                                it.first()
+                            }
+
+                            that.callbacks.clear()
+                        }
+
+                    } catch (ex: Throwable) {
+
+                        // Resolve all promises with the same error
+                        synchronized (that.lock) {
+                            that.callbacks.forEach {
+                                it.second(ex)
+                            }
+
+                            that.callbacks.clear()
+                        }
+                    }
+                }
             }
-
-            this.callbacks.clear()
-            this.actionInProgress = false
         }
     }
 }
