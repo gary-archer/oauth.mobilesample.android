@@ -217,37 +217,37 @@ class ErrorFactory {
      */
     private fun updateFromErrorResponseBody(error: UIError, response: String?) {
 
-        if (response != null) {
-            val tree = JsonParser.parseString(response)
-            if (tree != null) {
+        if (response == null) {
+            return
+        }
 
-                // Try to read expected error fields
-                val data = tree.asJsonObject
-                var errorCode = data.get("code")
-                var errorMessage = data.get("message")
+        val tree = JsonParser.parseString(response) ?: return
 
-                // Handle API errors, which include extra details for 5xx errors
-                if (errorCode != null && errorMessage != null) {
+        // Try to read expected error fields
+        val data = tree.asJsonObject
+        var errorCode = data.get("code")
+        var errorMessage = data.get("message")
 
-                    error.errorCode = errorCode.asString
-                    error.details = errorMessage.asString
+        // Handle API errors, which include extra details for 5xx errors
+        if (errorCode != null && errorMessage != null) {
 
-                    val area = data.get("area")
-                    val id = data.get("id")
-                    val utcTime = data.get("utcTime")
-                    if (area != null && id != null && utcTime != null) {
-                        error.setApiErrorDetails(area.asString, id.asInt, utcTime.asString)
-                    }
-                }
+            error.errorCode = errorCode.asString
+            error.details = errorMessage.asString
 
-                // Handle OAuth errors in HTTP reponses
-                errorCode = data.get("error")
-                errorMessage = data.get("error_description")
-                if (errorCode != null && errorMessage != null) {
-                    error.errorCode = errorCode.asString
-                    error.details = errorMessage.asString
-                }
+            val area = data.get("area")
+            val id = data.get("id")
+            val utcTime = data.get("utcTime")
+            if (area != null && id != null && utcTime != null) {
+                error.setApiErrorDetails(area.asString, id.asInt, utcTime.asString)
             }
+        }
+
+        // Handle OAuth errors in HTTP reponses
+        errorCode = data.get("error")
+        errorMessage = data.get("error_description")
+        if (errorCode != null && errorMessage != null) {
+            error.errorCode = errorCode.asString
+            error.details = errorMessage.asString
         }
     }
 

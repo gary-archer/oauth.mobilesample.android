@@ -11,7 +11,7 @@ import com.authsamples.basicmobileapp.plumbing.oauth.logout.CognitoLogoutUrlBuil
 import com.authsamples.basicmobileapp.plumbing.oauth.logout.LogoutUrlBuilder
 import com.authsamples.basicmobileapp.plumbing.oauth.logout.StandardLogoutUrlBuilder
 import com.authsamples.basicmobileapp.plumbing.utilities.ConcurrentActionHandler
-import com.authsamples.basicmobileapp.plumbing.utilities.HttpResponseDeserializer
+import com.google.gson.JsonParser
 import net.openid.appauth.AppAuthConfiguration
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
@@ -268,18 +268,18 @@ class AuthenticatorImpl(
      */
     override suspend fun getUserInfo(): OAuthUserInfo {
 
-        // First get an access token
+        // First get the current access token
         var accessToken = this.getAccessToken()
 
         // Get metadata if required
         this.getMetadata()
 
-        // Make the request
+        // Make the userinfo request
         var response = this.makeUserInfoRequest(accessToken)
         if (response.isSuccessful) {
 
             // Handle successful responses
-            return HttpResponseDeserializer().readBody(response, OAuthUserInfo::class.java)
+            return this.deserializeUserInfo(response)
         } else {
 
             // Retry once with a new token if there is a 401 error
@@ -288,21 +288,29 @@ class AuthenticatorImpl(
                 // Try to refresh the access token
                 accessToken = this.refreshAccessToken()
 
-                // Retry the API call
+                // Retry the userinfo request
                 response = this.makeUserInfoRequest(accessToken)
                 if (response.isSuccessful) {
 
-                    // Handle successful responses
-                    return HttpResponseDeserializer().readBody(response, OAuthUserInfo::class.java)
+                    return this.deserializeUserInfo(response)
+
                 } else {
 
                     // Handle failed responses on the retry
-                    throw ErrorFactory().fromHttpResponseError(response, this.configuration.userInfoEndpoint, "authorization server")
+                    throw ErrorFactory().fromHttpResponseError(
+                        response,
+                        this.configuration.userInfoEndpoint,
+                        "authorization server"
+                    )
                 }
             } else {
 
                 // Handle failed responses on the original call
-                throw ErrorFactory().fromHttpResponseError(response, this.configuration.userInfoEndpoint, "authorization server")
+                throw ErrorFactory().fromHttpResponseError(
+                    response,
+                    this.configuration.userInfoEndpoint,
+                    "authorization server"
+                )
             }
         }
     }
@@ -386,18 +394,36 @@ class AuthenticatorImpl(
             client.newCall(request).enqueue(object : Callback {
                 override fun onResponse(call: Call, response: Response) {
 
-                    // Return the data on success
                     continuation.resumeWith(Result.success(response))
                 }
 
                 override fun onFailure(call: Call, e: IOException) {
 
-                    // Translate the API error
-                    val exception = ErrorFactory().fromHttpRequestError(e, that.configuration.userInfoEndpoint, "authorization server")
+                    val exception = ErrorFactory().fromHttpRequestError(
+                        e,
+                        that.configuration.userInfoEndpoint,
+                        "authorization server"
+                    )
                     continuation.resumeWithException(exception)
                 }
             })
         }
+    }
+
+    /*
+     * Deserialize the response data for user info
+     */
+    private fun deserializeUserInfo(response: Response): OAuthUserInfo {
+
+        if (response.body == null) {
+            throw IllegalStateException("Unable to deserialize HTTP response into user info")
+        }
+
+        val tree = JsonParser.parseString(response.body?.string())
+        val data = tree.asJsonObject
+        val givenName = data.get("given_name")?.asString ?: ""
+        val familyName = data.get("family_name")?.asString ?: ""
+        return OAuthUserInfo(givenName, familyName)
     }
 
     /*

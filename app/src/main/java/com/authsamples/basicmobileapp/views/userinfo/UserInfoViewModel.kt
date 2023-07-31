@@ -88,7 +88,7 @@ class UserInfoViewModel(
             return ""
         }
 
-        var name = "${this.oauthUserInfo!!.given_name} ${this.oauthUserInfo!!.family_name}"
+        var name = "${this.oauthUserInfo!!.givenName} ${this.oauthUserInfo!!.familyName}"
         if (this.apiUserInfo?.role == "admin") {
             name += " (ADMIN)"
         }

@@ -5,7 +5,6 @@ import com.authsamples.basicmobileapp.api.entities.Company
 import com.authsamples.basicmobileapp.api.entities.CompanyTransactions
 import com.authsamples.basicmobileapp.plumbing.errors.ErrorFactory
 import com.authsamples.basicmobileapp.plumbing.oauth.Authenticator
-import com.authsamples.basicmobileapp.plumbing.utilities.HttpResponseDeserializer
 import com.google.gson.Gson
 import okhttp3.Call
 import okhttp3.Callback
@@ -16,6 +15,7 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import java.io.IOException
+import java.lang.IllegalStateException
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resumeWithException
@@ -29,18 +29,13 @@ class ApiClient(
     private val authenticator: Authenticator
 ) {
 
-    // Create a session id when the app starts
-    var client: OkHttpClient
-    val sessionId = UUID.randomUUID().toString()
+    // Create an HTTP client
+    var client: OkHttpClient = OkHttpClient.Builder()
+        .callTimeout(10, TimeUnit.SECONDS)
+        .build()
 
-    /*
-     * Create a singleton HTTP client at application startup
-     */
-    init {
-        this.client = OkHttpClient.Builder()
-            .callTimeout(10, TimeUnit.SECONDS)
-            .build()
-    }
+    // Create a session id for API logs
+    val sessionId = UUID.randomUUID().toString()
 
     /*
      * Download user info from the API so that we can get any data we need
@@ -48,7 +43,7 @@ class ApiClient(
     suspend fun getUserInfo(options: ApiRequestOptions? = null): ApiUserInfo {
 
         val response = this.callApi("userinfo", "GET", null, options)
-        return HttpResponseDeserializer().readBody(response, ApiUserInfo::class.java)
+        return this.deserializeResponse(response, ApiUserInfo::class.java)
     }
 
     /*
@@ -57,7 +52,7 @@ class ApiClient(
     suspend fun getCompanyList(options: ApiRequestOptions? = null): Array<Company> {
 
         val response = this.callApi("companies", "GET", null, options)
-        return HttpResponseDeserializer().readBody(response, Array<Company>::class.java)
+        return this.deserializeResponse(response, Array<Company>::class.java)
     }
 
     /*
@@ -66,7 +61,7 @@ class ApiClient(
     suspend fun getCompanyTransactions(companyId: String, options: ApiRequestOptions? = null): CompanyTransactions {
 
         val response = this.callApi("companies/$companyId/transactions", "GET", null, options)
-        return HttpResponseDeserializer().readBody(response, CompanyTransactions::class.java)
+        return this.deserializeResponse(response, CompanyTransactions::class.java)
     }
 
     /*
@@ -150,13 +145,11 @@ class ApiClient(
             this.client.newCall(request).enqueue(object : Callback {
                 override fun onResponse(call: Call, response: Response) {
 
-                    // Return the data on success
                     continuation.resumeWith(Result.success(response))
                 }
 
                 override fun onFailure(call: Call, e: IOException) {
 
-                    // Translate the API error
                     val exception = ErrorFactory().fromHttpRequestError(e, url, "web API")
                     continuation.resumeWithException(exception)
                 }
@@ -177,5 +170,14 @@ class ApiClient(
         if (options != null && options.causeError) {
             builder.header("x-mycompany-test-exception", "SampleApi")
         }
+    }
+
+    fun <T> deserializeResponse(response: Response, runtimeType: Class<T>): T {
+
+        if (response.body == null) {
+            throw IllegalStateException("Unable to deserialize HTTP response into type ${runtimeType.simpleName}")
+        }
+
+        return Gson().fromJson(response.body?.string(), runtimeType)
     }
 }
