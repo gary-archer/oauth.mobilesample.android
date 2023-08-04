@@ -79,6 +79,7 @@ object VERSION {
     const val gson = "2.10.1"
     const val okio = "3.4.0"
     const val eventbus = "3.3.1"
+    const val detekt = "1.23.1"
 }
 
 dependencies {
@@ -112,7 +113,8 @@ dependencies {
     // Event messages
     implementation ("org.greenrobot:eventbus:${VERSION.eventbus}")
 
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.1")
+    // The plugin to enable code quality checks
+    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${VERSION.detekt}")
 }
 
 // Code quality configuration
