@@ -115,6 +115,7 @@ dependencies {
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.1")
 }
 
+// Code quality configuration
 detekt {
     config.setFrom(files("$rootDir/detekt.yml"))
 }
