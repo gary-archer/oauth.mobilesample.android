@@ -10,14 +10,14 @@ plugins {
 
 android {
     // Build with latest non beta SDK
-    compileSdk = 34
+    compileSdk = 33
     namespace = "com.authsamples.basicmobileapp"
 
     // Support devices from Android 6.0+
     defaultConfig {
         applicationId = "com.authsamples.basicmobileapp"
         minSdk = 23
-        targetSdk = 34
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 
