@@ -14,4 +14,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "OAuth Demo App"
-include ':app'
+include(":app")
