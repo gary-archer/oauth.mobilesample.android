@@ -1,5 +1,6 @@
 package com.authsamples.basicmobileapp.views.userinfo
 
+import android.icu.text.IDNA
 import androidx.databinding.Observable
 import androidx.databinding.PropertyChangeRegistry
 import androidx.lifecycle.ViewModel
@@ -20,6 +21,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
 
 /*
@@ -61,32 +63,33 @@ class UserInfoViewModel(
                 // Initialize
                 val apiClient = that.apiClient
                 val requestOptions = ApiRequestOptions(options.causeError)
-                var oauthUserInfo: OAuthUserInfo? = null
-                var apiUserInfo: ApiUserInfo? = null
 
-                // Make the requests in parallel
-                val tasks = listOf(
+                // Prevent an error on one thread causing a cancellation error on the other
+                supervisorScope {
 
                     // Get OAuth user information from the authorization server
-                    async { oauthUserInfo = authenticator.getUserInfo() },
+                    val oauthUserInfoTask = async { authenticator.getUserInfo() }
 
-                    // Also get user information stored in the business data from the API
-                    async { apiUserInfo = apiClient.getUserInfo(requestOptions) }
-                )
-                tasks.awaitAll()
+                    // Also get user attributes stored in the API's data
+                    val apiUserInfoTask = async { apiClient.getUserInfo(requestOptions) }
 
-                // Update the view model on success
-                withContext(Dispatchers.Main) {
-                    that.setUserInfo(oauthUserInfo!!, apiUserInfo!!)
-                    that.apiViewEvents.onViewLoaded(VIEW_USERINFO)
+                    // Run tasks and wait for them all to complete
+                    val results = awaitAll(oauthUserInfoTask, apiUserInfoTask)
+                    val oauthUserInfo = results[0] as OAuthUserInfo
+                    val apiUserInfo = results[1] as ApiUserInfo
+
+                    // Update the view model on success
+                    withContext(Dispatchers.Main) {
+                        that.setUserInfo(oauthUserInfo, apiUserInfo)
+                        that.apiViewEvents.onViewLoaded(VIEW_USERINFO)
+                    }
                 }
             }
             catch (ex: Throwable) {
 
+                // Report errors
                 val uiError = ErrorFactory().fromException(ex)
                 withContext(Dispatchers.Main) {
-
-                    // GJA: Exception is caught OK but never comes here
                     that.apiViewEvents.onViewLoadFailed(VIEW_USERINFO, uiError)
                     onError(uiError)
                     that.clearUserInfo()
