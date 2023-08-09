@@ -4,6 +4,7 @@ import com.google.gson.JsonParser
 import net.openid.appauth.AuthorizationException
 import okhttp3.Response
 import java.io.IOException
+import java.util.Locale
 
 /*
  * A class to manage processing errors and translation to a presentation format
@@ -174,7 +175,13 @@ class ErrorFactory {
         error.statusCode = response.code
         error.url = url
 
-        this.updateFromErrorResponseBody(error, response.body?.string())
+        val contentType = response.headers["content-type"]?.lowercase(Locale.ROOT)
+        if (contentType == "application/json") {
+            if (response.body != null) {
+                this.updateFromErrorResponseBody(error, response.body!!.string())
+            }
+        }
+
         return error
     }
 
