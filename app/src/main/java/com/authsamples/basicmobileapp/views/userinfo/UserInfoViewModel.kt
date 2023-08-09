@@ -73,7 +73,7 @@ class UserInfoViewModel(
                     // Also get user attributes stored in the API's data
                     val apiUserInfoTask = async { apiClient.getUserInfo(requestOptions) }
 
-                    // Run tasks and wait for them all to complete
+                    // Run tasks in parallel and wait for them both to complete
                     val results = awaitAll(oauthUserInfoTask, apiUserInfoTask)
                     val oauthUserInfo = results[0] as OAuthUserInfo
                     val apiUserInfo = results[1] as ApiUserInfo
