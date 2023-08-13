@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang='en'>
+    <head>
+        <!-- Based on the page used in the extended AppAuth sample 
+             https://github.com/iainmcgin/AppAuth-Demo -->
+
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width, initial-scale=1'>
+        <title>Login Complete</title>
+
+        <script>
+            window.addEventListener('DOMContentLoaded', function() {
+                var redirectUri = 'https://mobile.authsamples.com/basicmobileapp/oauth/callback';
+
+                if (window.location.search) {
+                    redirectUri += window.location.search;
+                }
+                if (window.location.hash) {
+                    redirectUri += window.location.hash;
+                }
+
+                document.getElementById('continueButton').onclick = () => {
+                    window.location.href = redirectUri;
+                };
+            });
+        </script>
+
+        <style>
+            #container {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                font-family: sans-serif;
+                padding: 10px;
+                font-size: 20px;
+            }
+            #continueButton {
+                margin-top: 10px;
+                padding: 8px 32px;
+                color: white;
+                background-color: #2196F3;
+                font-size: 16px;
+            }
+            #heading {
+                color: #2196F3;
+            }
+        </style>
+    </head>
+    <body>
+        <div id='container'>
+            <h3 id='heading'>Login Complete</h3>
+            <h5>You have securely verified your identity</h5>
+            <button id='continueButton'>Continue</button>
+        </div>
+    </body>
+</html>
