@@ -12,7 +12,6 @@ import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.api.client.ApiRequestOptions
 import com.authsamples.basicmobileapp.app.MainActivityViewModel
 import com.authsamples.basicmobileapp.databinding.FragmentCompaniesBinding
-import com.authsamples.basicmobileapp.plumbing.errors.UIError
 import com.authsamples.basicmobileapp.plumbing.events.NavigatedEvent
 import com.authsamples.basicmobileapp.plumbing.events.ReloadMainViewEvent
 import com.authsamples.basicmobileapp.plumbing.events.SetErrorEvent
@@ -86,28 +85,22 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
         val clearEvent = SetErrorEvent(this.getString(R.string.companies_error_container), null)
         EventBus.getDefault().post(clearEvent)
 
-        // The success action renders the companies returned
-        val onSuccess = {
+        // Render results
+        val onComplete = {
+
+            // Update the list
             this.populateList()
+
+            // Notify the child error summary fragment if required
+            if (this.binding.model!!.error != null) {
+                val setEvent =
+                    SetErrorEvent(this.getString(R.string.companies_error_container), this.binding.model!!.error)
+                EventBus.getDefault().post(setEvent)
+            }
         }
 
-        // The error action renders the error and also zero companies
-        val onError = { uiError: UIError ->
-
-            // Notify the child error summary fragment
-            val setEvent = SetErrorEvent(this.getString(R.string.companies_error_container), uiError)
-            EventBus.getDefault().post(setEvent)
-
-            // Update the display to clear data
-            this.populateList()
-        }
-
-        // Ask the model class to do the work
-        this.binding.model!!.callApi(
-            ApiRequestOptions(causeError),
-            onSuccess,
-            onError
-        )
+        // Ask the view model to do the work
+        this.binding.model!!.callApi(ApiRequestOptions(causeError), onComplete)
     }
 
     /*

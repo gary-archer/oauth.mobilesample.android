@@ -1,5 +1,7 @@
 package com.authsamples.basicmobileapp.views.companies
 
+import androidx.databinding.Observable
+import androidx.databinding.PropertyChangeRegistry
 import androidx.lifecycle.ViewModel
 import com.authsamples.basicmobileapp.api.client.ApiClient
 import com.authsamples.basicmobileapp.api.client.ApiRequestOptions
@@ -18,22 +20,25 @@ import kotlinx.coroutines.withContext
 class CompaniesViewModel(
     private val apiClient: ApiClient,
     private val apiViewEvents: ApiViewEvents
-) : ViewModel() {
+) : ViewModel(), Observable {
 
-    // Data once retrieved
+    // Observable data
     var companies: List<Company> = ArrayList()
+    var error: UIError? = null
+    private val callbacks = PropertyChangeRegistry()
 
     /*
      * A method to do the work of calling the API
      */
-    fun callApi(
-        options: ApiRequestOptions,
-        onSuccess: () -> Unit,
-        onError: (UIError) -> Unit
-    ) {
+    fun callApi(options: ApiRequestOptions, onComplete: () -> Unit,) {
 
         // Indicate a loading state
         this.apiViewEvents.onViewLoading(VIEW_MAIN)
+
+        // Initialize state
+        var companies: List<Company> = ArrayList()
+        val error = null
+        this.updateData(ArrayList(), error)
 
         // Make the remote call on a background thread
         val that = this@CompaniesViewModel
@@ -41,22 +46,47 @@ class CompaniesViewModel(
 
             try {
                 // Make the API call
-                that.companies = apiClient.getCompanyList(options).toList()
+                companies = apiClient.getCompanyList(options).toList()
 
-                // Return results on the main thread
+                // Return success results on the main thread
                 withContext(Dispatchers.Main) {
+                    that.updateData(companies, error)
                     that.apiViewEvents.onViewLoaded(VIEW_MAIN)
-                    onSuccess()
+                    onComplete()
                 }
+
             } catch (uiError: UIError) {
 
-                // Return results on the main thread
+                // Return error results on the main thread
                 withContext(Dispatchers.Main) {
-                    that.companies = ArrayList()
+                    that.updateData(companies, uiError)
                     that.apiViewEvents.onViewLoadFailed(VIEW_MAIN, uiError)
-                    onError(uiError)
+                    onComplete()
                 }
             }
         }
+    }
+
+    /*
+     * Observable plumbing to allow XML views to register
+     */
+    override fun addOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback) {
+        callbacks.add(callback)
+    }
+
+    /*
+     * Observable plumbing to allow XML views to unregister
+     */
+    override fun removeOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback) {
+        callbacks.remove(callback)
+    }
+
+    /*
+     * Update data and inform the binding system
+     */
+    private fun updateData(companies: List<Company>, error: UIError? = null) {
+        this.companies = companies
+        this.error = error
+        callbacks.notifyCallbacks(this, 0, null)
     }
 }

@@ -55,8 +55,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*
-     * Do Android specific initialization and we allow the app to crash if any of this fails
-     * The alternative leads to more complex code with lots of optionals
+     * Do Android specific initialization, and allow the app to crash if any of this fails
      */
     override fun onCreate(savedInstanceState: Bundle?) {
 
