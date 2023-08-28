@@ -34,7 +34,7 @@ class CompaniesViewModel(
 
         // Initialize state
         this.apiViewEvents.onViewLoading(VIEW_MAIN)
-        this.updateData(ArrayList(), null)
+        this.resetError()
 
         // Make the remote call on a background thread
         val that = this@CompaniesViewModel
@@ -83,6 +83,14 @@ class CompaniesViewModel(
     private fun updateData(companies: List<Company>, error: UIError? = null) {
         this.companiesList = companies
         this.error = error
+        callbacks.notifyCallbacks(this, 0, null)
+    }
+
+    /*
+     * Clear any errors before attempting an operation
+     */
+    private fun resetError() {
+        this.error = null
         callbacks.notifyCallbacks(this, 0, null)
     }
 }

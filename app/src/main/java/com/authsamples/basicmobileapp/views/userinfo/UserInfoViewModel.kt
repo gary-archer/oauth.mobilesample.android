@@ -32,15 +32,13 @@ class UserInfoViewModel(
     // Observable data for which the UI must be notified upon change
     private var oauthUserInfo: OAuthUserInfo? = null
     private var apiUserInfo: ApiUserInfo? = null
+    var error: UIError? = null
     private val callbacks = PropertyChangeRegistry()
 
     /*
      * A method to do the work of calling the API
      */
-    fun callApi(
-        options: UserInfoLoadOptions,
-        onError: (UIError) -> Unit
-    ) {
+    fun callApi(options: UserInfoLoadOptions, onComplete: () -> Unit) {
 
         // Return if we already have user info, unless we are doing a reload
         if (this.isLoaded() && !options.reload) {
@@ -50,6 +48,7 @@ class UserInfoViewModel(
 
         // Indicate a loading state
         this.apiViewEvents.onViewLoading(VIEW_USERINFO)
+        this.resetError()
 
         // Make the remote call on a background thread
         val that = this@UserInfoViewModel
@@ -72,13 +71,14 @@ class UserInfoViewModel(
 
                     // Run tasks in parallel and wait for them both to complete
                     val results = awaitAll(oauthUserInfoTask, apiUserInfoTask)
-                    val oauthUserInfo = results[0] as OAuthUserInfo
-                    val apiUserInfo = results[1] as ApiUserInfo
+                    val oauthUserData = results[0] as OAuthUserInfo
+                    val apiUserData = results[1] as ApiUserInfo
 
                     // Update the view model on success
                     withContext(Dispatchers.Main) {
-                        that.setUserInfo(oauthUserInfo, apiUserInfo)
+                        that.updateData(oauthUserData, apiUserData, null)
                         that.apiViewEvents.onViewLoaded(VIEW_USERINFO)
+                        onComplete()
                     }
                 }
 
@@ -87,9 +87,9 @@ class UserInfoViewModel(
                 // Report errors
                 val uiError = ErrorFactory().fromException(ex)
                 withContext(Dispatchers.Main) {
+                    that.updateData(null, null ,uiError)
                     that.apiViewEvents.onViewLoadFailed(VIEW_USERINFO, uiError)
-                    onError(uiError)
-                    that.clearUserInfo()
+                    onComplete()
                 }
             }
         }
@@ -133,9 +133,18 @@ class UserInfoViewModel(
     /*
      * Set user info and inform the binding system
      */
-    private fun setUserInfo(oauthUserInfo: OAuthUserInfo, apiUserInfo: ApiUserInfo) {
+    private fun updateData(oauthUserInfo: OAuthUserInfo?, apiUserInfo: ApiUserInfo?, error: UIError?) {
         this.oauthUserInfo = oauthUserInfo
         this.apiUserInfo = apiUserInfo
+        this.error = error
+        callbacks.notifyCallbacks(this, 0, null)
+    }
+
+    /*
+     * Clear any errors before attempting an operation
+     */
+    private fun resetError() {
+        this.error = null
         callbacks.notifyCallbacks(this, 0, null)
     }
 

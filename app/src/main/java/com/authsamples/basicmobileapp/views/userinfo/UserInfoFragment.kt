@@ -9,7 +9,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.app.MainActivityViewModel
 import com.authsamples.basicmobileapp.databinding.FragmentUserInfoBinding
-import com.authsamples.basicmobileapp.plumbing.errors.UIError
 import com.authsamples.basicmobileapp.plumbing.events.NavigatedEvent
 import com.authsamples.basicmobileapp.plumbing.events.ReloadUserInfoEvent
 import com.authsamples.basicmobileapp.plumbing.events.SetErrorEvent
@@ -104,9 +103,11 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
         EventBus.getDefault().post(clearEvent)
 
         // Render errors on failure
-        val onError = { uiError: UIError ->
-            val setEvent = SetErrorEvent(this.getString(R.string.userinfo_error_container), uiError)
-            EventBus.getDefault().post(setEvent)
+        val onComplete = {
+            if (this.binding.model!!.error != null) {
+                val setEvent = SetErrorEvent(this.getString(R.string.userinfo_error_container), this.binding.model!!.error)
+                EventBus.getDefault().post(setEvent)
+            }
         }
 
         // Ask the model class to do the work
@@ -114,6 +115,6 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
             reload,
             causeError
         )
-        this.binding.model!!.callApi(options, onError)
+        this.binding.model!!.callApi(options, onComplete)
     }
 }
