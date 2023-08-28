@@ -23,7 +23,7 @@ class CompaniesViewModel(
 ) : ViewModel(), Observable {
 
     // Observable data
-    var companies: List<Company> = ArrayList()
+    var companiesList: List<Company> = ArrayList()
     var error: UIError? = null
     private val callbacks = PropertyChangeRegistry()
 
@@ -32,13 +32,9 @@ class CompaniesViewModel(
      */
     fun callApi(options: ApiRequestOptions, onComplete: () -> Unit,) {
 
-        // Indicate a loading state
-        this.apiViewEvents.onViewLoading(VIEW_MAIN)
-
         // Initialize state
-        var companies: List<Company> = ArrayList()
-        val error = null
-        this.updateData(ArrayList(), error)
+        this.apiViewEvents.onViewLoading(VIEW_MAIN)
+        this.updateData(ArrayList(), null)
 
         // Make the remote call on a background thread
         val that = this@CompaniesViewModel
@@ -46,11 +42,11 @@ class CompaniesViewModel(
 
             try {
                 // Make the API call
-                companies = apiClient.getCompanyList(options).toList()
+                val companies = apiClient.getCompanyList(options).toList()
 
                 // Return success results on the main thread
                 withContext(Dispatchers.Main) {
-                    that.updateData(companies, error)
+                    that.updateData(companies, null)
                     that.apiViewEvents.onViewLoaded(VIEW_MAIN)
                     onComplete()
                 }
@@ -59,7 +55,7 @@ class CompaniesViewModel(
 
                 // Return error results on the main thread
                 withContext(Dispatchers.Main) {
-                    that.updateData(companies, uiError)
+                    that.updateData(ArrayList(), uiError)
                     that.apiViewEvents.onViewLoadFailed(VIEW_MAIN, uiError)
                     onComplete()
                 }
@@ -85,7 +81,7 @@ class CompaniesViewModel(
      * Update data and inform the binding system
      */
     private fun updateData(companies: List<Company>, error: UIError? = null) {
-        this.companies = companies
+        this.companiesList = companies
         this.error = error
         callbacks.notifyCallbacks(this, 0, null)
     }

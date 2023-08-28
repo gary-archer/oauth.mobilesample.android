@@ -12,7 +12,6 @@ import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.api.client.ApiRequestOptions
 import com.authsamples.basicmobileapp.app.MainActivityViewModel
 import com.authsamples.basicmobileapp.databinding.FragmentTransactionsBinding
-import com.authsamples.basicmobileapp.plumbing.errors.UIError
 import com.authsamples.basicmobileapp.plumbing.events.NavigatedEvent
 import com.authsamples.basicmobileapp.plumbing.events.ReloadMainViewEvent
 import com.authsamples.basicmobileapp.plumbing.events.SetErrorEvent
@@ -95,37 +94,36 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
         val clearEvent = SetErrorEvent(this.getString(R.string.transactions_error_container), null)
         EventBus.getDefault().post(clearEvent)
 
-        // The success action renders the transactions returned
-        val onSuccess = {
+        // React to results
+        val onComplete = {
+
+            // Update the list
             this.populateList()
-        }
 
-        // The error action handles non success cases
-        val onError = { uiError: UIError, isExpected: Boolean ->
+            // Notify the child error summary fragment if required
+            if (this.binding.model!!.error != null) {
 
-            if (isExpected) {
+                if (this.binding.model!!.isExpectedError()) {
 
-                // Navigate back to the home view for expected errors such as trying to access unauthorized data
-                val args = Bundle()
-                findNavController().navigate(R.id.companies_fragment, args)
 
-            } else {
+                    // Navigate back to the home view for expected errors such as trying to access unauthorized data
+                    val args = Bundle()
+                    findNavController().navigate(R.id.companies_fragment, args)
 
-                // Display technical errors
-                val setEvent = SetErrorEvent(this.getString(R.string.transactions_error_container), uiError)
-                EventBus.getDefault().post(setEvent)
+                } else {
 
-                // Update the display to clear data
-                this.populateList()
+                    // Display other errors
+                    val setEvent = SetErrorEvent(
+                        this.getString(R.string.transactions_error_container),
+                        this.binding.model!!.error
+                    )
+                    EventBus.getDefault().post(setEvent)
+                }
             }
         }
 
         // Ask the model class to do the work
-        this.binding.model!!.callApi(
-            ApiRequestOptions(causeError),
-            onSuccess,
-            onError
-        )
+        this.binding.model!!.callApi(ApiRequestOptions(causeError), onComplete)
     }
 
     /*
@@ -135,7 +133,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
     private fun populateList() {
 
         // Get view model items from the raw data
-        val viewModelItems = this.binding.model!!.transactions.map { TransactionItemViewModel(it) }
+        val viewModelItems = this.binding.model!!.transactionsList.map { TransactionItemViewModel(it) }
 
         // Render them via an adapter
         val list = this.binding.listTransactions

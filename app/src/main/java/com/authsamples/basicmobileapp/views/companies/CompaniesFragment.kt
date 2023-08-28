@@ -85,7 +85,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
         val clearEvent = SetErrorEvent(this.getString(R.string.companies_error_container), null)
         EventBus.getDefault().post(clearEvent)
 
-        // Render results
+        // React to results
         val onComplete = {
 
             // Update the list
@@ -110,7 +110,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
     private fun populateList() {
 
         // Get view model items from the raw data
-        val viewModelItems = this.binding.model!!.companies.map { CompanyItemViewModel(it) }
+        val viewModelItems = this.binding.model!!.companiesList.map { CompanyItemViewModel(it) }
 
         // When a company is clicked we will navigate to transactions for the clicked company id
         val onItemClick = { viewModelItem: CompanyItemViewModel ->
