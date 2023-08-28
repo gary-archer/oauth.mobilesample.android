@@ -130,6 +130,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
 
     /*
      * Set up the recycler view with the API response data
+     * https://github.com/radzio/android-data-binding-recyclerview
      */
     private fun populateList() {
 
