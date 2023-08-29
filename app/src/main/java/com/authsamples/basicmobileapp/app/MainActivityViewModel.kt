@@ -212,6 +212,36 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
     }
 
     /*
+     * For testing, make the access token act expired and handle any errors
+     */
+    fun expireAccessToken() {
+        try {
+
+            this.authenticator.expireAccessToken()
+
+        } catch (ex: Throwable) {
+
+            val uiError = ErrorFactory().fromException(ex)
+            this.updateError(uiError)
+        }
+    }
+
+    /*
+     * For testing, make the refresh token act expired and handle any errors
+     */
+    fun expireRefreshToken() {
+        try {
+
+            this.authenticator.expireRefreshToken()
+
+        } catch (ex: Throwable) {
+
+            val uiError = ErrorFactory().fromException(ex)
+            this.updateError(uiError)
+        }
+    }
+
+    /*
      * Data to pass when invoking the child error summary view
      */
     fun errorSummaryViewModel(): ErrorSummaryViewModelData {

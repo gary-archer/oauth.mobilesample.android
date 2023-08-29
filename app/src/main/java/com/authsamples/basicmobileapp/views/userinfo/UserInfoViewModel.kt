@@ -52,7 +52,7 @@ class UserInfoViewModel(
 
         // Initialize state
         this.apiViewEvents.onViewLoading(VIEW_USERINFO)
-        this.updateData(null, null, null)
+        this.resetError()
 
         // Make the remote call on a background thread
         val that = this@UserInfoViewModel
@@ -150,6 +150,14 @@ class UserInfoViewModel(
         this.oauthUserInfo = oauthUserInfo
         this.apiUserInfo = apiUserInfo
         this.error = error
+        this.callbacks.notifyCallbacks(this, 0, null)
+    }
+
+    /*
+     * Reset any current errors before attempting to get user info
+     */
+    private fun resetError() {
+        this.error = null
         this.callbacks.notifyCallbacks(this, 0, null)
     }
 

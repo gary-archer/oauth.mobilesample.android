@@ -208,14 +208,14 @@ class MainActivity : AppCompatActivity() {
      * Update token storage to make the access token act like it is expired
      */
     fun onExpireAccessToken() {
-        this.binding.model!!.authenticator.expireAccessToken()
+        this.binding.model!!.expireAccessToken()
     }
 
     /*
      * Update token storage to make the refresh token act like it is expired
      */
     fun onExpireRefreshToken() {
-        this.binding.model!!.authenticator.expireRefreshToken()
+        this.binding.model!!.expireRefreshToken()
     }
 
     /*
