@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    // Build with latest non beta SDK
+    // Build with the latest non beta SDK
     compileSdk = 34
     namespace = "com.authsamples.basicmobileapp"
 

@@ -1,20 +1,15 @@
 package com.authsamples.basicmobileapp.views.errors
 
-import android.content.Context
 import android.os.Bundle
-import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.databinding.BindingAdapter
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
-import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.databinding.FragmentErrorSummaryBinding
 import com.authsamples.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authsamples.basicmobileapp.plumbing.errors.UIError
-import com.authsamples.basicmobileapp.plumbing.events.SetErrorEvent
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
 
 /*
  * The fragment to show an initial error indication
@@ -22,35 +17,6 @@ import org.greenrobot.eventbus.ThreadMode
 class ErrorSummaryFragment : androidx.fragment.app.Fragment() {
 
     private lateinit var binding: FragmentErrorSummaryBinding
-    private lateinit var containingViewName: String
-    private lateinit var hyperlinkText: String
-    private lateinit var dialogTitle: String
-
-    /*
-     * Read fields specified in the markup file, for this instance of the error summary fragment
-     */
-    override fun onInflate(context: Context, attrs: AttributeSet, savedInstanceState: Bundle?) {
-        super.onInflate(context, attrs, savedInstanceState)
-
-        val typedArray = context.obtainStyledAttributes(attrs, R.styleable.ErrorAttributes)
-
-        val containingViewName = typedArray.getString(R.styleable.ErrorAttributes_containingViewName)
-        if (containingViewName != null) {
-            this.containingViewName = containingViewName
-        }
-
-        val hyperlinkText = typedArray.getString(R.styleable.ErrorAttributes_hyperlinkText)
-        if (hyperlinkText != null) {
-            this.hyperlinkText = hyperlinkText
-        }
-
-        val dialogTitle = typedArray.getString(R.styleable.ErrorAttributes_dialogTitle)
-        if (dialogTitle != null) {
-            this.dialogTitle = dialogTitle
-        }
-
-        typedArray.recycle()
-    }
 
     /*
      * Initialise the view
@@ -67,53 +33,36 @@ class ErrorSummaryFragment : androidx.fragment.app.Fragment() {
         // Create the view model with default settings
         val factory = ErrorSummaryViewModelFactory(this::showDetailsDialog)
         this.binding.model = ViewModelProvider(this, factory).get(ErrorSummaryViewModel::class.java)
-
         return binding.root
     }
 
     /*
-     * Register for events during view initialization
+     * Receive the error from the parent view and update the model
      */
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        EventBus.getDefault().register(this)
-    }
+    companion object {
+        @JvmStatic
+        @BindingAdapter("error")
+        fun setCurrentError(view: FragmentContainerView, data: ErrorSummaryViewModelData) {
 
-    /*
-     * Receive and handle errors from the parent view
-     */
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(event: SetErrorEvent) {
+            val errorSummaryView = view.getFragment<ErrorSummaryFragment>()
+            if (data.error == null) {
 
-        // Ensure that the error is for this instance of the error summary view
-        if (event.containingViewName == this.containingViewName) {
-
-            if (event.error == null) {
-
-                // Clear previous error details before retrying an operation
-                this.binding.model!!.clearErrorDetails()
+                // Clear any existing error details
+                errorSummaryView.binding.model!!.clearErrorDetails()
 
             } else {
 
-                // Set details unless this is an ignored error, to terminate failed API calls
-                if (!event.error.errorCode.equals(ErrorCodes.loginRequired)) {
+                // Populate any error details but ignore expected errors
+                if (!data.error.errorCode.equals(ErrorCodes.loginRequired)) {
 
-                    this.binding.model!!.setErrorDetails(
-                        this.hyperlinkText,
-                        this.dialogTitle,
-                        event.error
+                    errorSummaryView.binding.model!!.setErrorDetails(
+                        data.hyperlinkText,
+                        data.dialogTitle,
+                        data.error
                     )
                 }
             }
         }
-    }
-
-    /*
-     * Unsubscribe from events upon exit
-     */
-    override fun onDestroyView() {
-        super.onDestroyView()
-        EventBus.getDefault().unregister(this)
     }
 
     /*

@@ -1,8 +1,10 @@
 package com.authsamples.basicmobileapp.views.userinfo
 
+import android.app.Application
 import androidx.databinding.Observable
 import androidx.databinding.PropertyChangeRegistry
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
+import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.api.client.ApiClient
 import com.authsamples.basicmobileapp.api.client.ApiRequestOptions
 import com.authsamples.basicmobileapp.api.entities.ApiUserInfo
@@ -10,6 +12,7 @@ import com.authsamples.basicmobileapp.plumbing.errors.ErrorFactory
 import com.authsamples.basicmobileapp.plumbing.errors.UIError
 import com.authsamples.basicmobileapp.plumbing.oauth.Authenticator
 import com.authsamples.basicmobileapp.plumbing.oauth.OAuthUserInfo
+import com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModelData
 import com.authsamples.basicmobileapp.views.utilities.ApiViewEvents
 import com.authsamples.basicmobileapp.views.utilities.Constants.VIEW_USERINFO
 import kotlinx.coroutines.CoroutineScope
@@ -26,8 +29,9 @@ import kotlinx.coroutines.withContext
 class UserInfoViewModel(
     val authenticator: Authenticator,
     val apiClient: ApiClient,
-    val apiViewEvents: ApiViewEvents
-) : ViewModel(), Observable {
+    val apiViewEvents: ApiViewEvents,
+    val app: Application
+) : AndroidViewModel(app), Observable {
 
     // Observable data for which the UI must be notified upon change
     private var oauthUserInfo: OAuthUserInfo? = null
@@ -38,7 +42,7 @@ class UserInfoViewModel(
     /*
      * A method to do the work of calling the API
      */
-    fun callApi(options: UserInfoLoadOptions, onComplete: () -> Unit) {
+    fun callApi(options: UserInfoLoadOptions) {
 
         // Return if we already have user info, unless we are doing a reload
         if (this.isLoaded() && !options.reload) {
@@ -46,9 +50,9 @@ class UserInfoViewModel(
             return
         }
 
-        // Indicate a loading state
+        // Initialize state
         this.apiViewEvents.onViewLoading(VIEW_USERINFO)
-        this.resetError()
+        this.updateData(null, null, null)
 
         // Make the remote call on a background thread
         val that = this@UserInfoViewModel
@@ -78,7 +82,6 @@ class UserInfoViewModel(
                     withContext(Dispatchers.Main) {
                         that.updateData(oauthUserData, apiUserData, null)
                         that.apiViewEvents.onViewLoaded(VIEW_USERINFO)
-                        onComplete()
                     }
                 }
 
@@ -89,7 +92,6 @@ class UserInfoViewModel(
                 withContext(Dispatchers.Main) {
                     that.updateData(null, null ,uiError)
                     that.apiViewEvents.onViewLoadFailed(VIEW_USERINFO, uiError)
-                    onComplete()
                 }
             }
         }
@@ -108,6 +110,17 @@ class UserInfoViewModel(
     }
 
     /*
+     * Data to pass when invoking the child error summary view
+     */
+    fun errorSummaryViewModel(): ErrorSummaryViewModelData {
+        return ErrorSummaryViewModelData(
+            hyperlinkText = app.getString(R.string.userinfo_error_hyperlink),
+            dialogTitle = app.getString(R.string.userinfo_error_dialogtitle),
+            error = this.error
+        )
+    }
+
+    /*
      * Clear user info when we log out and inform the binding system
      */
     fun clearUserInfo() {
@@ -120,14 +133,14 @@ class UserInfoViewModel(
      * Observable plumbing to allow XML views to register
      */
     override fun addOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback) {
-        callbacks.add(callback)
+        this.callbacks.add(callback)
     }
 
     /*
      * Observable plumbing to allow XML views to unregister
      */
     override fun removeOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback) {
-        callbacks.remove(callback)
+        this.callbacks.remove(callback)
     }
 
     /*
@@ -137,15 +150,7 @@ class UserInfoViewModel(
         this.oauthUserInfo = oauthUserInfo
         this.apiUserInfo = apiUserInfo
         this.error = error
-        callbacks.notifyCallbacks(this, 0, null)
-    }
-
-    /*
-     * Clear any errors before attempting an operation
-     */
-    private fun resetError() {
-        this.error = null
-        callbacks.notifyCallbacks(this, 0, null)
+        this.callbacks.notifyCallbacks(this, 0, null)
     }
 
     /*

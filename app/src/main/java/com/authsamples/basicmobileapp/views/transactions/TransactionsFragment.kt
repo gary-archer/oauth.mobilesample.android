@@ -14,7 +14,6 @@ import com.authsamples.basicmobileapp.app.MainActivityViewModel
 import com.authsamples.basicmobileapp.databinding.FragmentTransactionsBinding
 import com.authsamples.basicmobileapp.plumbing.events.NavigatedEvent
 import com.authsamples.basicmobileapp.plumbing.events.ReloadMainViewEvent
-import com.authsamples.basicmobileapp.plumbing.events.SetErrorEvent
 import com.authsamples.basicmobileapp.views.utilities.Constants
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -90,40 +89,18 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
      */
     private fun loadData(causeError: Boolean) {
 
-        // Clear any errors from last time
-        val clearEvent = SetErrorEvent(this.getString(R.string.transactions_error_container), null)
-        EventBus.getDefault().post(clearEvent)
-
-        // React to results
+        // Rebind the UI to the latest data
         val onComplete = {
-
-            // Update the list
             this.populateList()
+        }
 
-            // Notify the child error summary fragment if required
-            if (this.binding.model!!.error != null) {
-
-                if (this.binding.model!!.isExpectedError()) {
-
-
-                    // Navigate back to the home view for expected errors such as trying to access unauthorized data
-                    val args = Bundle()
-                    findNavController().navigate(R.id.companies_fragment, args)
-
-                } else {
-
-                    // Display other errors
-                    val setEvent = SetErrorEvent(
-                        this.getString(R.string.transactions_error_container),
-                        this.binding.model!!.error
-                    )
-                    EventBus.getDefault().post(setEvent)
-                }
-            }
+        // Navigate back to the home view for expected errors such as trying to access unauthorized data
+        val onForbidden = {
+            findNavController().navigate(R.id.companies_fragment, Bundle())
         }
 
         // Ask the model class to do the work
-        this.binding.model!!.callApi(ApiRequestOptions(causeError), onComplete)
+        this.binding.model!!.callApi(ApiRequestOptions(causeError), onComplete, onForbidden)
     }
 
     /*

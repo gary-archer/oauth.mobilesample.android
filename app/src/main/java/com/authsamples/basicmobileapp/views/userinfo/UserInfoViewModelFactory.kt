@@ -1,5 +1,6 @@
 package com.authsamples.basicmobileapp.views.userinfo
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.authsamples.basicmobileapp.api.client.ApiClient
@@ -11,11 +12,12 @@ import com.authsamples.basicmobileapp.views.utilities.ApiViewEvents
 class UserInfoViewModelFactory(
     private val authenticator: com.authsamples.basicmobileapp.plumbing.oauth.Authenticator,
     private val apiClient: ApiClient,
-    private val apiViewEvents: ApiViewEvents
+    private val apiViewEvents: ApiViewEvents,
+    private val app: Application
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         @Suppress("UNCHECKED_CAST")
-        return UserInfoViewModel(authenticator, apiClient, apiViewEvents) as T
+        return UserInfoViewModel(authenticator, apiClient, apiViewEvents, app) as T
     }
 }

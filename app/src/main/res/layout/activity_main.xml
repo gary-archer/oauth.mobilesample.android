@@ -35,9 +35,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:layout="@layout/fragment_error_summary"
-            app:containingViewName="@string/main_error_container"
-            app:hyperlinkText="@string/main_error_hyperlink"
-            app:dialogTitle="@string/main_error_dialogtitle"/>
+            app:error="@{model.errorSummaryViewModel}"/>
 
         <!-- Show the API session id -->
         <androidx.fragment.app.FragmentContainerView

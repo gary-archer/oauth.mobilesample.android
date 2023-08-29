@@ -40,20 +40,20 @@ class SessionViewModel(
      */
     fun setVisibility(isVisible: Boolean) {
         this.isVisible = isVisible
-        callbacks.notifyCallbacks(this, 0, null)
+        this.callbacks.notifyCallbacks(this, 0, null)
     }
 
     /*
      * Observable plumbing to allow XML views to register
      */
     override fun addOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback) {
-        callbacks.add(callback)
+        this.callbacks.add(callback)
     }
 
     /*
      * Observable plumbing to allow XML views to unregister
      */
     override fun removeOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback) {
-        callbacks.remove(callback)
+        this.callbacks.remove(callback)
     }
 }

@@ -10,13 +10,9 @@ import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.NavHostFragment
 import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.databinding.ActivityMainBinding
-import com.authsamples.basicmobileapp.plumbing.errors.ErrorCodes
-import com.authsamples.basicmobileapp.plumbing.errors.ErrorConsoleReporter
-import com.authsamples.basicmobileapp.plumbing.errors.ErrorFactory
 import com.authsamples.basicmobileapp.plumbing.events.LoginRequiredEvent
 import com.authsamples.basicmobileapp.plumbing.events.ReloadMainViewEvent
 import com.authsamples.basicmobileapp.plumbing.events.ReloadUserInfoEvent
-import com.authsamples.basicmobileapp.plumbing.events.SetErrorEvent
 import com.authsamples.basicmobileapp.views.utilities.DeviceSecurity
 import com.authsamples.basicmobileapp.views.utilities.NavigationHelper
 import org.greenrobot.eventbus.EventBus
@@ -142,7 +138,12 @@ class MainActivity : AppCompatActivity() {
     fun onLoginRequired(event: LoginRequiredEvent) {
 
         event.used()
-        this.binding.model!!.startLogin(this.loginLauncher::launch, this::handleError)
+
+        val onCancelled = {
+            this.navigationHelper.navigateTo(R.id.login_required_fragment)
+        }
+
+        this.binding.model!!.startLogin(this.loginLauncher::launch, onCancelled)
     }
 
     /*
@@ -154,7 +155,11 @@ class MainActivity : AppCompatActivity() {
             this.onReloadData(false)
         }
 
-        this.binding.model!!.finishLogin(responseIntent, onSuccess, this::handleError)
+        val onCancelled = {
+            this.navigationHelper.navigateTo(R.id.login_required_fragment)
+        }
+
+        this.binding.model!!.finishLogin(responseIntent, onSuccess, onCancelled)
     }
 
     /*
@@ -162,19 +167,10 @@ class MainActivity : AppCompatActivity() {
      */
     fun onStartLogout() {
 
-        val onError = { ex: Throwable ->
-
-            // On error, only output logout errors to the console rather than impacting the end user
-            val uiError = ErrorFactory().fromException(ex)
-            if (uiError.errorCode != ErrorCodes.redirectCancelled) {
-                ErrorConsoleReporter.output(uiError, this)
-            }
-
-            // Move to the login required view
-            this.onFinishLogout()
+        val onError = {
+            this.navigationHelper.navigateTo(R.id.login_required_fragment)
         }
 
-        // Ask the model to do the work
         this.binding.model!!.startLogout(this.logoutLauncher::launch, onError)
     }
 
@@ -182,11 +178,7 @@ class MainActivity : AppCompatActivity() {
      * Perform post logout actions
      */
     private fun onFinishLogout() {
-
-        // Update state and free resources
         this.binding.model!!.finishLogout()
-
-        // Move to the login required page
         this.navigationHelper.navigateTo(R.id.login_required_fragment)
     }
 
@@ -196,8 +188,7 @@ class MainActivity : AppCompatActivity() {
     fun onHome() {
 
         // Reset error state
-        val clearEvent = SetErrorEvent(this.getString(R.string.main_error_container), null)
-        EventBus.getDefault().post(clearEvent)
+        this.binding.model!!.updateError(null)
 
         // Move to the home view, which forces a reload if already in this view
         this.navigationHelper.navigateTo(R.id.companies_fragment)
@@ -225,28 +216,6 @@ class MainActivity : AppCompatActivity() {
      */
     fun onExpireRefreshToken() {
         this.binding.model!!.authenticator.expireRefreshToken()
-    }
-
-    /*
-     * Receive unhandled exceptions and navigate to the error fragment
-     */
-    private fun handleError(exception: Throwable) {
-
-        // Get the error as a known object
-        val handler = ErrorFactory()
-        val error = handler.fromException(exception)
-
-        if (error.errorCode == ErrorCodes.redirectCancelled) {
-
-            // If the user has closed the Chrome Custom Tab without logging in, move to the Login Required view
-            this.navigationHelper.navigateTo(R.id.login_required_fragment)
-
-        } else {
-
-            // Otherwise there is a technical error and we display summary details
-            val setEvent = SetErrorEvent(this.getString(R.string.main_error_container), error)
-            EventBus.getDefault().post(setEvent)
-        }
     }
 
     /*

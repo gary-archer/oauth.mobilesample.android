@@ -42,7 +42,7 @@ class ErrorSummaryViewModel(
         this.hyperlinkText = hyperlinkText
         this.dialogTitle = dialogTitle
         this.error = error
-        callbacks.notifyCallbacks(this, 0, null)
+        this.callbacks.notifyCallbacks(this, 0, null)
     }
 
     /*
@@ -52,20 +52,20 @@ class ErrorSummaryViewModel(
         this.hyperlinkText = null
         this.dialogTitle = null
         this.error = null
-        callbacks.notifyCallbacks(this, 0, null)
+        this.callbacks.notifyCallbacks(this, 0, null)
     }
 
     /*
      * Observable plumbing to allow XML views to register
      */
     override fun addOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback) {
-        callbacks.add(callback)
+        this.callbacks.add(callback)
     }
 
     /*
      * Observable plumbing to allow XML views to unregister
      */
     override fun removeOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback) {
-        callbacks.remove(callback)
+        this.callbacks.remove(callback)
     }
 }

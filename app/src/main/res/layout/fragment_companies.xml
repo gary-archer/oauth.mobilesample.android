@@ -36,9 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             tools:layout="@layout/fragment_error_summary"
-            app:containingViewName="@string/companies_error_container"
-            app:hyperlinkText="@string/companies_error_hyperlink"
-            app:dialogTitle="@string/companies_error_dialogtitle"/>
+            app:error="@{model.errorSummaryViewModel}"/>
 
         <!-- The companies fragment is a list of companies -->
         <androidx.recyclerview.widget.RecyclerView

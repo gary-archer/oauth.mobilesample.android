@@ -2,12 +2,20 @@ package com.authsamples.basicmobileapp.app
 
 import android.app.Application
 import android.content.Intent
+import androidx.databinding.Observable
+import androidx.databinding.PropertyChangeRegistry
 import androidx.lifecycle.AndroidViewModel
+import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.api.client.ApiClient
 import com.authsamples.basicmobileapp.configuration.Configuration
 import com.authsamples.basicmobileapp.configuration.ConfigurationLoader
+import com.authsamples.basicmobileapp.plumbing.errors.ErrorCodes
+import com.authsamples.basicmobileapp.plumbing.errors.ErrorConsoleReporter
+import com.authsamples.basicmobileapp.plumbing.errors.ErrorFactory
+import com.authsamples.basicmobileapp.plumbing.errors.UIError
 import com.authsamples.basicmobileapp.plumbing.oauth.Authenticator
 import com.authsamples.basicmobileapp.plumbing.oauth.AuthenticatorImpl
+import com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModelData
 import com.authsamples.basicmobileapp.views.utilities.ApiViewEvents
 import com.authsamples.basicmobileapp.views.utilities.Constants
 import com.authsamples.basicmobileapp.views.utilities.DeviceSecurity
@@ -19,16 +27,19 @@ import kotlinx.coroutines.withContext
 /*
  * Global data is stored in the view model class for the main activity, which is created only once
  */
-class MainActivityViewModel(val app: Application) : AndroidViewModel(app) {
+class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Observable {
 
-    // Global objects used by the main activity
+    // Global objects
     val configuration: Configuration
     val authenticator: Authenticator
     val apiClient: ApiClient
     val apiViewEvents: ApiViewEvents
-
     var isDeviceSecured: Boolean = false
     var isTopMost: Boolean = true
+
+    // Observable data
+    var error: UIError? = null
+    private val callbacks = PropertyChangeRegistry()
 
     init {
 
@@ -51,16 +62,17 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app) {
     }
 
     /*
-     * Start a login operation
+     * Start a login operation to run the authorization redirect
      */
-    fun startLogin(launchAction: (i: Intent) -> Unit, onError: (Throwable) -> Unit) {
+    fun startLogin(launchAction: (i: Intent) -> Unit, onCancelled: () -> Unit) {
 
         // Prevent re-entrancy
         if (!this.isTopMost) {
             return
         }
 
-        // Prevent deep links during login
+        // Initialize state, and prevent deep links during login
+        this.updateError(null)
         this.isTopMost = false
 
         // Run on a background thread
@@ -79,22 +91,28 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app) {
 
             } catch (ex: Throwable) {
 
-                // Report errors on the main thread
+                // Report errors on the main thread, but ignore expected errors
                 withContext(Dispatchers.Main) {
                     that.isTopMost = true
-                    onError(ex)
+
+                    val uiError = ErrorFactory().fromException(ex)
+                    if (uiError.errorCode == ErrorCodes.redirectCancelled) {
+                        onCancelled()
+                    } else {
+                        that.updateError(uiError)
+                    }
                 }
             }
         }
     }
 
     /*
-     * After the post login page executes, we receive the login response here
+     * Complete login processing after the post login page executes
      */
     fun finishLogin(
         responseIntent: Intent?,
         onSuccess: () -> Unit,
-        onError: (Throwable) -> Unit
+        onCancelled: () -> Unit
     ) {
 
         if (responseIntent == null) {
@@ -118,9 +136,15 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app) {
 
             } catch (ex: Throwable) {
 
-                // Report errors on the main thread
+                // Report errors on the main thread, but ignore expected errors
                 withContext(Dispatchers.Main) {
-                    onError(ex)
+
+                    val uiError = ErrorFactory().fromException(ex)
+                    if (uiError.errorCode == ErrorCodes.redirectCancelled) {
+                        onCancelled()
+                    } else {
+                        that.updateError(uiError)
+                    }
                 }
 
             } finally {
@@ -134,16 +158,17 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app) {
     }
 
     /*
-     * Start a logout redirect
+     * Run a logout redirect
      */
-    fun startLogout(launchAction: (i: Intent) -> Unit, onError: (Throwable) -> Unit) {
+    fun startLogout(launchAction: (i: Intent) -> Unit, onError: () -> Unit) {
 
         // Prevent re-entrancy
         if (!this.isTopMost) {
             return
         }
 
-        // Prevent deep links while the login window is top most
+        // Initialize state, and prevent deep links during logout
+        this.updateError(null)
         this.isTopMost = false
 
         // Run on a background thread
@@ -164,17 +189,59 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app) {
 
                 // Report errors on the main thread
                 withContext(Dispatchers.Main) {
-                    onError(ex)
+
+                    // Only report logout errors to the console
+                    val uiError = ErrorFactory().fromException(ex)
+                    if (uiError.errorCode != ErrorCodes.redirectCancelled) {
+                        ErrorConsoleReporter.output(uiError, that.app)
+                    }
+
+                    // Then free resources and notify the caller
+                    that.finishLogout()
+                    onError()
                 }
             }
         }
     }
-
     /*
      * Update state when a logout completes
      */
     fun finishLogout() {
         this.authenticator.finishLogout()
         this.isTopMost = true
+    }
+
+    /*
+     * Data to pass when invoking the child error summary view
+     */
+    fun errorSummaryViewModel(): ErrorSummaryViewModelData {
+
+        return ErrorSummaryViewModelData(
+            hyperlinkText = app.getString(R.string.main_error_hyperlink),
+            dialogTitle = app.getString(R.string.main_error_dialogtitle),
+            error = this.error
+        )
+    }
+
+    /*
+     * Observable plumbing to allow XML views to register
+     */
+    override fun addOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback) {
+        this.callbacks.add(callback)
+    }
+
+    /*
+     * Observable plumbing to allow XML views to unregister
+     */
+    override fun removeOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback) {
+        this.callbacks.remove(callback)
+    }
+
+    /*
+     * Update data and inform the binding system
+     */
+    fun updateError(error: UIError?) {
+        this.error = error
+        this.callbacks.notifyCallbacks(this, 0, null)
     }
 }

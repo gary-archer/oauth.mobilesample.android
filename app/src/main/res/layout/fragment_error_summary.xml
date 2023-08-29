@@ -3,10 +3,13 @@
         xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <!-- Makes model a property of this type on the fragment's binding object -->
         <import type="android.view.View"/>
         <variable name="model"
             type="com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModel" />
+        <variable
+            name="error"
+            type="com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModelData" />
+
     </data>
     <LinearLayout
         android:orientation="vertical"

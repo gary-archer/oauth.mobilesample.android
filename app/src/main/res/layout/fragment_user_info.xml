@@ -29,9 +29,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:layout="@layout/fragment_error_summary"
-            app:containingViewName="@string/userinfo_error_container"
-            app:hyperlinkText="@string/userinfo_error_hyperlink"
-            app:dialogTitle="@string/userinfo_error_dialogtitle"/>
+            app:error="@{model.errorSummaryViewModel}"/>
 
     </LinearLayout>
 </layout>

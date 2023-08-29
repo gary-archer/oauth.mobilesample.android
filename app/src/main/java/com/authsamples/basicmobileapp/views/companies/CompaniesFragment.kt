@@ -14,7 +14,6 @@ import com.authsamples.basicmobileapp.app.MainActivityViewModel
 import com.authsamples.basicmobileapp.databinding.FragmentCompaniesBinding
 import com.authsamples.basicmobileapp.plumbing.events.NavigatedEvent
 import com.authsamples.basicmobileapp.plumbing.events.ReloadMainViewEvent
-import com.authsamples.basicmobileapp.plumbing.events.SetErrorEvent
 import com.authsamples.basicmobileapp.views.utilities.Constants
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -41,7 +40,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
 
         // Create the view model
         val mainViewModel: MainActivityViewModel by activityViewModels()
-        val factory = CompaniesViewModelFactory(mainViewModel.apiClient, mainViewModel.apiViewEvents)
+        val factory = CompaniesViewModelFactory(mainViewModel.apiClient, mainViewModel.apiViewEvents, mainViewModel.app)
         this.binding.model = ViewModelProvider(this, factory).get(CompaniesViewModel::class.java)
 
         // Notify that the main view has changed
@@ -81,25 +80,10 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
      */
     private fun loadData(causeError: Boolean) {
 
-        // Clear any errors from last time
-        val clearEvent = SetErrorEvent(this.getString(R.string.companies_error_container), null)
-        EventBus.getDefault().post(clearEvent)
-
-        // React to results
         val onComplete = {
-
-            // Update the list
             this.populateList()
-
-            // Notify the child error summary fragment if required
-            if (this.binding.model!!.error != null) {
-                val setEvent =
-                    SetErrorEvent(this.getString(R.string.companies_error_container), this.binding.model!!.error)
-                EventBus.getDefault().post(setEvent)
-            }
         }
 
-        // Ask the view model to do the work
         this.binding.model!!.callApi(ApiRequestOptions(causeError), onComplete)
     }
 

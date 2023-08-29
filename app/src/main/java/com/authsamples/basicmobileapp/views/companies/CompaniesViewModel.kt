@@ -1,12 +1,15 @@
 package com.authsamples.basicmobileapp.views.companies
 
+import android.app.Application
 import androidx.databinding.Observable
 import androidx.databinding.PropertyChangeRegistry
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
+import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.api.client.ApiClient
 import com.authsamples.basicmobileapp.api.client.ApiRequestOptions
 import com.authsamples.basicmobileapp.api.entities.Company
 import com.authsamples.basicmobileapp.plumbing.errors.UIError
+import com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModelData
 import com.authsamples.basicmobileapp.views.utilities.ApiViewEvents
 import com.authsamples.basicmobileapp.views.utilities.Constants.VIEW_MAIN
 import kotlinx.coroutines.CoroutineScope
@@ -19,8 +22,9 @@ import kotlinx.coroutines.withContext
  */
 class CompaniesViewModel(
     private val apiClient: ApiClient,
-    private val apiViewEvents: ApiViewEvents
-) : ViewModel(), Observable {
+    private val apiViewEvents: ApiViewEvents,
+    val app: Application
+) : AndroidViewModel(app), Observable {
 
     // Observable data
     var companiesList: List<Company> = ArrayList()
@@ -34,7 +38,7 @@ class CompaniesViewModel(
 
         // Initialize state
         this.apiViewEvents.onViewLoading(VIEW_MAIN)
-        this.resetError()
+        this.updateData(ArrayList(), null)
 
         // Make the remote call on a background thread
         val that = this@CompaniesViewModel
@@ -64,17 +68,28 @@ class CompaniesViewModel(
     }
 
     /*
+     * Data to pass when invoking the child error summary view
+     */
+    fun errorSummaryViewModel(): ErrorSummaryViewModelData {
+        return ErrorSummaryViewModelData(
+            hyperlinkText = app.getString(R.string.companies_error_hyperlink),
+            dialogTitle = app.getString(R.string.companies_error_dialogtitle),
+            error = this.error
+        )
+    }
+
+    /*
      * Observable plumbing to allow XML views to register
      */
     override fun addOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback) {
-        callbacks.add(callback)
+        this.callbacks.add(callback)
     }
 
     /*
      * Observable plumbing to allow XML views to unregister
      */
     override fun removeOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback) {
-        callbacks.remove(callback)
+        this.callbacks.remove(callback)
     }
 
     /*
@@ -83,14 +98,6 @@ class CompaniesViewModel(
     private fun updateData(companies: List<Company>, error: UIError? = null) {
         this.companiesList = companies
         this.error = error
-        callbacks.notifyCallbacks(this, 0, null)
-    }
-
-    /*
-     * Clear any errors before attempting an operation
-     */
-    private fun resetError() {
-        this.error = null
-        callbacks.notifyCallbacks(this, 0, null)
+        this.callbacks.notifyCallbacks(this, 0, null)
     }
 }
