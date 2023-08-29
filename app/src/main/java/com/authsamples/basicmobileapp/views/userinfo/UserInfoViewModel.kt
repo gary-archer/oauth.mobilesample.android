@@ -90,7 +90,7 @@ class UserInfoViewModel(
                 // Report errors
                 val uiError = ErrorFactory().fromException(ex)
                 withContext(Dispatchers.Main) {
-                    that.updateData(null, null ,uiError)
+                    that.updateData(null, null, uiError)
                     that.apiViewEvents.onViewLoadFailed(VIEW_USERINFO, uiError)
                 }
             }

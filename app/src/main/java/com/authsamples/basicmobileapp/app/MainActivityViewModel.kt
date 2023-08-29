@@ -203,6 +203,7 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
             }
         }
     }
+
     /*
      * Update state when a logout completes
      */
@@ -217,6 +218,7 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
     fun expireAccessToken() {
         try {
 
+            this.updateError(null)
             this.authenticator.expireAccessToken()
 
         } catch (ex: Throwable) {
@@ -232,6 +234,7 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
     fun expireRefreshToken() {
         try {
 
+            this.updateError(null)
             this.authenticator.expireRefreshToken()
 
         } catch (ex: Throwable) {

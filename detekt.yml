@@ -681,9 +681,10 @@ style:
     active: true
   RedundantVisibilityModifierRule:
     active: false
+  # Overridden
   ReturnCount:
     active: true
-    max: 2
+    max: 3
     excludedFunctions:
       - 'equals'
     excludeLabeled: false

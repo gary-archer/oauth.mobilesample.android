@@ -183,14 +183,10 @@ class MainActivity : AppCompatActivity() {
     }
 
     /*
-     * Handle home navigation
+     * Move to the home view, which forces a reload if already in this view
      */
     fun onHome() {
-
-        // Reset error state
         this.binding.model!!.updateError(null)
-
-        // Move to the home view, which forces a reload if already in this view
         this.navigationHelper.navigateTo(R.id.companies_fragment)
     }
 
@@ -199,6 +195,7 @@ class MainActivity : AppCompatActivity() {
      */
     fun onReloadData(causeError: Boolean) {
 
+        this.binding.model!!.updateError(null)
         this.binding.model!!.apiViewEvents.clearState()
         EventBus.getDefault().post(ReloadMainViewEvent(causeError))
         EventBus.getDefault().post(ReloadUserInfoEvent(causeError))
