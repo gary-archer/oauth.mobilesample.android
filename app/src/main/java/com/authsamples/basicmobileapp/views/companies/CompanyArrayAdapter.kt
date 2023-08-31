@@ -31,7 +31,6 @@ class CompanyArrayAdapter(
      */
     override fun onBindViewHolder(holder: CompanyItemViewHolder, position: Int) {
 
-        //val currentCompanyViewModel = CompanyItemViewModel(model.companiesList.value!![position])
         val currentCompanyViewModel = CompanyItemViewModel(model.companiesList[position])
         holder.bind(currentCompanyViewModel)
         holder.onClick(currentCompanyViewModel, this.onClickListener)
@@ -41,7 +40,6 @@ class CompanyArrayAdapter(
      * Return the total size
      */
     override fun getItemCount(): Int {
-        //return this.model.companiesList.value!!.size
         return this.model.companiesList.size
     }
 

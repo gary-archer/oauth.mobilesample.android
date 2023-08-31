@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.databinding.Observable
 import androidx.databinding.PropertyChangeRegistry
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.MutableLiveData
 import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.api.client.ApiClient
 import com.authsamples.basicmobileapp.api.client.ApiRequestOptions
@@ -27,8 +26,6 @@ class CompaniesViewModel(
     val app: Application
 ) : AndroidViewModel(app), Observable {
 
-    // Observable data
-    //var companiesList = MutableLiveData<List<Company>>()
     var companiesList: List<Company> = ArrayList()
     var error: UIError? = null
     private val callbacks = PropertyChangeRegistry()
@@ -103,7 +100,6 @@ class CompaniesViewModel(
      * Update data and inform the binding system
      */
     private fun updateData(companies: List<Company>, error: UIError? = null) {
-        //this.companiesList.value = companies
         this.companiesList = companies
         this.error = error
         this.callbacks.notifyCallbacks(this, 0, null)
