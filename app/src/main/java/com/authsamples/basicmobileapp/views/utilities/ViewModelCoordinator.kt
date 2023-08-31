@@ -8,9 +8,10 @@ import com.authsamples.basicmobileapp.views.utilities.Constants.VIEW_MAIN
 import org.greenrobot.eventbus.EventBus
 
 /*
- * A helper class to coordinate multiple views
+ * Coordinates API requests from multiple views, and notifies once all API calls are complete
+ * This ensures that login redirects are only triggered once
  */
-class ApiViewEvents {
+class ViewModelCoordinator {
 
     // A map of view names to their loaded state
     private val views: MutableMap<String, Boolean>

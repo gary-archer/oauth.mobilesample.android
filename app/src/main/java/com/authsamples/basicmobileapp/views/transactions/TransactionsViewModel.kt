@@ -11,9 +11,9 @@ import com.authsamples.basicmobileapp.api.entities.Transaction
 import com.authsamples.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authsamples.basicmobileapp.plumbing.errors.UIError
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModelData
-import com.authsamples.basicmobileapp.views.utilities.ApiViewEvents
 import com.authsamples.basicmobileapp.views.utilities.Constants.VIEW_MAIN
 import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
+import com.authsamples.basicmobileapp.views.utilities.ViewModelCoordinator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,7 +24,7 @@ import kotlinx.coroutines.withContext
  */
 class TransactionsViewModel(
     val apiClient: ApiClient,
-    val apiViewEvents: ApiViewEvents,
+    val viewModelCoordinator: ViewModelCoordinator,
     val companyId: String,
     val app: Application
 ) : AndroidViewModel(app), Observable {
@@ -51,7 +51,7 @@ class TransactionsViewModel(
     ) {
 
         // Initialize state
-        this.apiViewEvents.onViewLoading(VIEW_MAIN)
+        this.viewModelCoordinator.onViewLoading(VIEW_MAIN)
         this.updateData(ArrayList(), null)
 
         // Make the remote call on a background thread
@@ -67,7 +67,7 @@ class TransactionsViewModel(
                 // Update data on the main thread
                 withContext(Dispatchers.Main) {
                     that.updateData(transactions, null)
-                    that.apiViewEvents.onViewLoaded(VIEW_MAIN)
+                    that.viewModelCoordinator.onViewLoaded(VIEW_MAIN)
                     onComplete(false)
                 }
             } catch (uiError: UIError) {
@@ -84,7 +84,7 @@ class TransactionsViewModel(
 
                         // Report other types of errors
                         that.updateData(ArrayList(), uiError)
-                        that.apiViewEvents.onViewLoadFailed(VIEW_MAIN, uiError)
+                        that.viewModelCoordinator.onViewLoadFailed(VIEW_MAIN, uiError)
                         onComplete(false)
                     }
                 }

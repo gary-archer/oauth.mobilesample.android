@@ -13,9 +13,9 @@ import com.authsamples.basicmobileapp.plumbing.errors.UIError
 import com.authsamples.basicmobileapp.plumbing.oauth.Authenticator
 import com.authsamples.basicmobileapp.plumbing.oauth.OAuthUserInfo
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModelData
-import com.authsamples.basicmobileapp.views.utilities.ApiViewEvents
 import com.authsamples.basicmobileapp.views.utilities.Constants.VIEW_USERINFO
 import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
+import com.authsamples.basicmobileapp.views.utilities.ViewModelCoordinator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -30,7 +30,7 @@ import kotlinx.coroutines.withContext
 class UserInfoViewModel(
     val authenticator: Authenticator,
     val apiClient: ApiClient,
-    val apiViewEvents: ApiViewEvents,
+    val viewModelCoordinator: ViewModelCoordinator,
     val app: Application
 ) : AndroidViewModel(app), Observable {
 
@@ -47,12 +47,12 @@ class UserInfoViewModel(
 
         // Return if we already have user info, unless we are doing a reload
         if (this.isLoaded() && options?.forceReload != true) {
-            this.apiViewEvents.onViewLoaded(VIEW_USERINFO)
+            this.viewModelCoordinator.onViewLoaded(VIEW_USERINFO)
             return
         }
 
         // Initialize state
-        this.apiViewEvents.onViewLoading(VIEW_USERINFO)
+        this.viewModelCoordinator.onViewLoading(VIEW_USERINFO)
         this.resetError()
 
         // Make the remote call on a background thread
@@ -82,7 +82,7 @@ class UserInfoViewModel(
                     // Update the view model on success
                     withContext(Dispatchers.Main) {
                         that.updateData(oauthUserData, apiUserData, null)
-                        that.apiViewEvents.onViewLoaded(VIEW_USERINFO)
+                        that.viewModelCoordinator.onViewLoaded(VIEW_USERINFO)
                     }
                 }
 
@@ -92,7 +92,7 @@ class UserInfoViewModel(
                 val uiError = ErrorFactory().fromException(ex)
                 withContext(Dispatchers.Main) {
                     that.updateData(null, null, uiError)
-                    that.apiViewEvents.onViewLoadFailed(VIEW_USERINFO, uiError)
+                    that.viewModelCoordinator.onViewLoadFailed(VIEW_USERINFO, uiError)
                 }
             }
         }

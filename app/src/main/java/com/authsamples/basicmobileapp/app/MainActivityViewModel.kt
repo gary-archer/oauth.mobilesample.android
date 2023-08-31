@@ -16,9 +16,9 @@ import com.authsamples.basicmobileapp.plumbing.errors.UIError
 import com.authsamples.basicmobileapp.plumbing.oauth.Authenticator
 import com.authsamples.basicmobileapp.plumbing.oauth.AuthenticatorImpl
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModelData
-import com.authsamples.basicmobileapp.views.utilities.ApiViewEvents
 import com.authsamples.basicmobileapp.views.utilities.Constants
 import com.authsamples.basicmobileapp.views.utilities.DeviceSecurity
+import com.authsamples.basicmobileapp.views.utilities.ViewModelCoordinator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,7 +33,7 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
     val configuration: Configuration
     val authenticator: Authenticator
     val apiClient: ApiClient
-    val apiViewEvents: ApiViewEvents
+    val viewModelCoordinator: ViewModelCoordinator
     var isDeviceSecured: Boolean = false
     var isTopMost: Boolean = true
 
@@ -56,9 +56,9 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
 
         // Create a helper class to notify us about views that make API calls
         // This will enable us to only trigger a login redirect once, after all views have tried to load
-        this.apiViewEvents = ApiViewEvents()
-        this.apiViewEvents.addView(Constants.VIEW_MAIN)
-        this.apiViewEvents.addView(Constants.VIEW_USERINFO)
+        this.viewModelCoordinator = ViewModelCoordinator()
+        this.viewModelCoordinator.addView(Constants.VIEW_MAIN)
+        this.viewModelCoordinator.addView(Constants.VIEW_USERINFO)
     }
 
     /*

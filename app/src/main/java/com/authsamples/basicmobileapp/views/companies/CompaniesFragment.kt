@@ -40,7 +40,11 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
 
         // Create the view model
         val mainViewModel: MainActivityViewModel by activityViewModels()
-        val factory = CompaniesViewModelFactory(mainViewModel.apiClient, mainViewModel.apiViewEvents, mainViewModel.app)
+        val factory = CompaniesViewModelFactory(
+            mainViewModel.apiClient,
+            mainViewModel.viewModelCoordinator,
+            mainViewModel.app
+        )
         this.binding.model = ViewModelProvider(this, factory).get(CompaniesViewModel::class.java)
 
         // Create the recycler view

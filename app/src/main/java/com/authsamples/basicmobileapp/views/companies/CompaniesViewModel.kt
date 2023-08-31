@@ -10,9 +10,9 @@ import com.authsamples.basicmobileapp.api.client.ApiRequestOptions
 import com.authsamples.basicmobileapp.api.entities.Company
 import com.authsamples.basicmobileapp.plumbing.errors.UIError
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModelData
-import com.authsamples.basicmobileapp.views.utilities.ApiViewEvents
 import com.authsamples.basicmobileapp.views.utilities.Constants.VIEW_MAIN
 import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
+import com.authsamples.basicmobileapp.views.utilities.ViewModelCoordinator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,7 +23,7 @@ import kotlinx.coroutines.withContext
  */
 class CompaniesViewModel(
     private val apiClient: ApiClient,
-    private val apiViewEvents: ApiViewEvents,
+    private val viewModelCoordinator: ViewModelCoordinator,
     val app: Application
 ) : AndroidViewModel(app), Observable {
 
@@ -37,7 +37,7 @@ class CompaniesViewModel(
     fun callApi(options: ViewLoadOptions?, onComplete: () -> Unit) {
 
         // Initialize state
-        this.apiViewEvents.onViewLoading(VIEW_MAIN)
+        this.viewModelCoordinator.onViewLoading(VIEW_MAIN)
         this.updateData(ArrayList(), null)
 
         // Make the remote call on a background thread
@@ -53,7 +53,7 @@ class CompaniesViewModel(
                 // Return success results on the main thread
                 withContext(Dispatchers.Main) {
                     that.updateData(companies, null)
-                    that.apiViewEvents.onViewLoaded(VIEW_MAIN)
+                    that.viewModelCoordinator.onViewLoaded(VIEW_MAIN)
                 }
 
             } catch (uiError: UIError) {
@@ -61,7 +61,7 @@ class CompaniesViewModel(
                 // Return error results on the main thread
                 withContext(Dispatchers.Main) {
                     that.updateData(ArrayList(), uiError)
-                    that.apiViewEvents.onViewLoadFailed(VIEW_MAIN, uiError)
+                    that.viewModelCoordinator.onViewLoadFailed(VIEW_MAIN, uiError)
                 }
 
             } finally {

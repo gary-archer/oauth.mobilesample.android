@@ -8,7 +8,7 @@ object Constants {
     // The company id passed when navigating to the transactions fragment
     const val ARG_COMPANY_ID = "COMPANY_ID"
 
-    // Names of view areas that calls APIs, used by ApiViewEvents
+    // Names of view areas that calls APIs, used by the ViewModelCoordinator
     const val VIEW_MAIN = "VIEW_MAIN"
     const val VIEW_USERINFO = "VIEW_USERINFO"
 
