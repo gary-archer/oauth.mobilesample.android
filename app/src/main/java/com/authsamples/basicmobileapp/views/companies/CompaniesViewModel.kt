@@ -12,6 +12,7 @@ import com.authsamples.basicmobileapp.plumbing.errors.UIError
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModelData
 import com.authsamples.basicmobileapp.views.utilities.ApiViewEvents
 import com.authsamples.basicmobileapp.views.utilities.Constants.VIEW_MAIN
+import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -33,7 +34,7 @@ class CompaniesViewModel(
     /*
      * A method to do the work of calling the API
      */
-    fun callApi(options: ApiRequestOptions, onComplete: () -> Unit) {
+    fun callApi(options: ViewLoadOptions?, onComplete: () -> Unit) {
 
         // Initialize state
         this.apiViewEvents.onViewLoading(VIEW_MAIN)
@@ -44,8 +45,10 @@ class CompaniesViewModel(
         CoroutineScope(Dispatchers.IO).launch {
 
             try {
+
                 // Make the API call
-                val companies = apiClient.getCompanyList(options).toList()
+                val fetchOptions = ApiRequestOptions(options?.causeError ?: false)
+                val companies = apiClient.getCompanyList(fetchOptions).toList()
 
                 // Return success results on the main thread
                 withContext(Dispatchers.Main) {

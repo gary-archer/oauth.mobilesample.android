@@ -13,6 +13,7 @@ import com.authsamples.basicmobileapp.plumbing.errors.UIError
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModelData
 import com.authsamples.basicmobileapp.views.utilities.ApiViewEvents
 import com.authsamples.basicmobileapp.views.utilities.Constants.VIEW_MAIN
+import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -45,7 +46,7 @@ class TransactionsViewModel(
      * A method to do the work of calling the API
      */
     fun callApi(
-        options: ApiRequestOptions,
+        options: ViewLoadOptions?,
         onComplete: (isForbidden: Boolean) -> Unit
     ) {
 
@@ -59,7 +60,8 @@ class TransactionsViewModel(
 
             try {
                 // Make the API call
-                val data = that.apiClient.getCompanyTransactions(that.companyId, options)
+                val fetchOptions = ApiRequestOptions(options?.causeError ?: false)
+                val data = that.apiClient.getCompanyTransactions(that.companyId, fetchOptions)
                 val transactions = data.transactions.toList()
 
                 // Update data on the main thread

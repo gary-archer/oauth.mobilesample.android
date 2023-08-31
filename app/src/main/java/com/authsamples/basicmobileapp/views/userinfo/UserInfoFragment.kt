@@ -10,6 +10,7 @@ import com.authsamples.basicmobileapp.app.MainActivityViewModel
 import com.authsamples.basicmobileapp.databinding.FragmentUserInfoBinding
 import com.authsamples.basicmobileapp.plumbing.events.NavigatedEvent
 import com.authsamples.basicmobileapp.plumbing.events.ReloadUserInfoEvent
+import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -85,18 +86,13 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: ReloadUserInfoEvent) {
-        this.loadData(true, event.causeError)
+        this.loadData(ViewLoadOptions(true, event.causeError))
     }
 
     /*
      * When logged in, call the API to get user info for display
      */
-    private fun loadData(reload: Boolean = false, causeError: Boolean = false) {
-
-        val options = UserInfoLoadOptions(
-            reload,
-            causeError
-        )
+    private fun loadData(options: ViewLoadOptions? = null) {
         this.binding.model!!.callApi(options)
     }
 }

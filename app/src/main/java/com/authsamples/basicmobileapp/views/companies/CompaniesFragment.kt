@@ -9,12 +9,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.authsamples.basicmobileapp.R
-import com.authsamples.basicmobileapp.api.client.ApiRequestOptions
 import com.authsamples.basicmobileapp.app.MainActivityViewModel
 import com.authsamples.basicmobileapp.databinding.FragmentCompaniesBinding
 import com.authsamples.basicmobileapp.plumbing.events.NavigatedEvent
 import com.authsamples.basicmobileapp.plumbing.events.ReloadMainViewEvent
 import com.authsamples.basicmobileapp.views.utilities.Constants
+import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -61,7 +61,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
 
         // Subscribe to events and do the initial load of data
         EventBus.getDefault().register(this)
-        this.loadData(false)
+        this.loadData()
     }
 
     /*
@@ -86,13 +86,13 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: ReloadMainViewEvent) {
-        this.loadData(event.causeError)
+        this.loadData(ViewLoadOptions(true, event.causeError))
     }
 
     /*
      * Load data for the fragment
      */
-    private fun loadData(causeError: Boolean) {
+    private fun loadData(options: ViewLoadOptions? = null) {
 
         // Reload the recycler view on completion
         val onComplete = {
@@ -100,6 +100,6 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
         }
 
         // Ask the model class to do the work
-        this.binding.model!!.callApi(ApiRequestOptions(causeError), onComplete)
+        this.binding.model!!.callApi(options, onComplete)
     }
 }

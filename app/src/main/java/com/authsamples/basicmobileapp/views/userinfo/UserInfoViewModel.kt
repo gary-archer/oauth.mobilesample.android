@@ -15,6 +15,7 @@ import com.authsamples.basicmobileapp.plumbing.oauth.OAuthUserInfo
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModelData
 import com.authsamples.basicmobileapp.views.utilities.ApiViewEvents
 import com.authsamples.basicmobileapp.views.utilities.Constants.VIEW_USERINFO
+import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -42,10 +43,10 @@ class UserInfoViewModel(
     /*
      * A method to do the work of calling the API
      */
-    fun callApi(options: UserInfoLoadOptions) {
+    fun callApi(options: ViewLoadOptions?) {
 
         // Return if we already have user info, unless we are doing a reload
-        if (this.isLoaded() && !options.reload) {
+        if (this.isLoaded() && options?.forceReload != true) {
             this.apiViewEvents.onViewLoaded(VIEW_USERINFO)
             return
         }
@@ -61,7 +62,7 @@ class UserInfoViewModel(
             try {
                 // Initialize
                 val apiClient = that.apiClient
-                val requestOptions = ApiRequestOptions(options.causeError)
+                val fetchOptions = ApiRequestOptions(options?.causeError ?: false)
 
                 // Prevent an error on one thread causing a cancellation on the other, and hence a crash
                 // Use async in the below calls, to catch error info in this thread
@@ -71,7 +72,7 @@ class UserInfoViewModel(
                     val oauthUserInfoTask = CoroutineScope(Dispatchers.IO).async { authenticator.getUserInfo() }
 
                     // Also get user attributes stored in the API's data
-                    val apiUserInfoTask = CoroutineScope(Dispatchers.IO).async { apiClient.getUserInfo(requestOptions) }
+                    val apiUserInfoTask = CoroutineScope(Dispatchers.IO).async { apiClient.getUserInfo(fetchOptions) }
 
                     // Run tasks in parallel and wait for them both to complete
                     val results = awaitAll(oauthUserInfoTask, apiUserInfoTask)
