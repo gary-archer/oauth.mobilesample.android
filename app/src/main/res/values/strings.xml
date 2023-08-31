@@ -25,18 +25,27 @@
     <string name="company_list_title">Company List</string>
     <string name="transactions_title">Today\'s Transactions for Company %s</string>
     <string name="login_required_title">Login Required</string>
-    <string name="error_title">Problem Encountered</string>
     <string name="logged_out_message">You are logged out - click HOME to login</string>
+    <string name="error_title">Problem Encountered</string>
+    <string name="error_dialog_close">Close Dialog</string>
 
     <string name="main_error_hyperlink">Problem Encountered in Application</string>
     <string name="main_error_dialogtitle">Application Error</string>
+    <string name="main_error_keyname">main_error</string>
+
     <string name="companies_error_hyperlink">Problem Encountered in Companies View</string>
     <string name="companies_error_dialogtitle">Companies View Error</string>
+    <string name="companies_error_keyname">companies_error</string>
+
     <string name="transactions_error_hyperlink">Problem Encountered in Transactions View</string>
     <string name="transactions_error_dialogtitle">Transactions View Error</string>
+    <string name="transactions_error_keyname">transactions_error</string>
+
     <string name="userinfo_error_hyperlink">Problem Encountered</string>
     <string name="userinfo_error_dialogtitle">User Info Error</string>
-    <string name="error_dialog_close">Close Dialog</string>
+    <string name="userinfo_error_keyname">userinfo_error</string>
+
+
 
     <string name="api_session_id">API Session Id</string>
 

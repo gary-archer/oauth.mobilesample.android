@@ -36,7 +36,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             tools:layout="@layout/fragment_error_summary"
-            app:error="@{model.errorSummaryViewModel}"/>
+            app:error="@{model.errorSummaryViewModel}"
+            app:keyName="@string/transactions_error_keyname" />/>
 
         <!-- The transactions fragment is occupied by a list of transactions -->
         <androidx.recyclerview.widget.RecyclerView
