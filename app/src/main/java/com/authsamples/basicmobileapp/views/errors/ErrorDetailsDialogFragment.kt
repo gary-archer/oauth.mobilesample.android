@@ -8,7 +8,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.authsamples.basicmobileapp.databinding.FragmentErrorDetailsBinding
-import com.authsamples.basicmobileapp.plumbing.errors.ErrorFormatter
 import com.authsamples.basicmobileapp.plumbing.errors.UIError
 import com.authsamples.basicmobileapp.views.utilities.Constants
 
@@ -52,34 +51,11 @@ class ErrorDetailsDialogFragment : DialogFragment() {
         val factory = ErrorDetailsViewModelFactory(title!!, error, this::dismiss)
         this.binding.model = ViewModelProvider(this, factory).get(ErrorDetailsViewModel::class.java)
 
-        return binding.root
-    }
-
-    /*
-     * Render data after the view is created
-     */
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
-        super.onViewCreated(view, savedInstanceState)
-        this.populateList()
-    }
-
-    /*
-     * Set up the recycler view with the list of error items
-     */
-    private fun populateList() {
-
-        // Get error lines as a collection
-        val lines = ErrorFormatter(this.requireContext()).getErrorLines(this.binding.model!!.error)
-
-        // Get view model items from the above data
-        val viewModelItems = lines.map {
-            ErrorListItemViewModel(it)
-        }
-
-        // Render them via an adapter
+        // Create the recycler view
         val list = this.binding.listErrorItems
         list.layoutManager = LinearLayoutManager(this.context)
-        list.adapter = ErrorItemArrayAdapter(this.requireContext(), viewModelItems)
+        list.adapter = ErrorItemArrayAdapter(this.requireContext(), this.binding.model!!)
+
+        return binding.root
     }
 }

@@ -5,14 +5,22 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.authsamples.basicmobileapp.databinding.ErrorListItemBinding
+import com.authsamples.basicmobileapp.plumbing.errors.ErrorFormatter
+import com.authsamples.basicmobileapp.plumbing.errors.ErrorLine
 
 /*
- * An adapter to render error items
+ * An adapter to render error items in a recycler view
  */
 class ErrorItemArrayAdapter(
     val context: Context,
-    val errorLines: List<ErrorListItemViewModel>
+    val model: ErrorDetailsViewModel
 ) : RecyclerView.Adapter<ErrorListItemViewHolder>() {
+
+    private val errorLines: List<ErrorLine>
+
+    init {
+        this.errorLines = ErrorFormatter(context).getErrorLines(this.model.error)
+    }
 
     /*
      * Inflate this list item
@@ -29,7 +37,11 @@ class ErrorItemArrayAdapter(
      */
     override fun onBindViewHolder(holder: ErrorListItemViewHolder, position: Int) {
 
-        val currentErrorLine = this.errorLines[position]
+        val viewModelItems = this.errorLines.map {
+            ErrorListItemViewModel(it)
+        }
+
+        val currentErrorLine = viewModelItems[position]
         holder.bind(currentErrorLine)
     }
 

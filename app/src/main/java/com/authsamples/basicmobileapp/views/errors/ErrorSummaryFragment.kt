@@ -56,7 +56,7 @@ class ErrorSummaryFragment : androidx.fragment.app.Fragment() {
     }
 
     /*
-     * Receive the error from the parent view and update the model
+     * Receive the error data from the parent view and update the model
      */
     companion object {
         @JvmStatic

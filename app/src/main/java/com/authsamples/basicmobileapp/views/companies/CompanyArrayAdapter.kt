@@ -1,5 +1,6 @@
 package com.authsamples.basicmobileapp.views.companies
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -7,8 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.authsamples.basicmobileapp.databinding.CompanyListItemBinding
 
 /*
- * An adapter to render company items in a custom manner
- * https://medium.com/@sanjeevy133/an-idiots-guide-to-android-recyclerview-and-databinding-4ebf8db0daff
+ * An adapter to render company items in a recycler view
  */
 class CompanyArrayAdapter(
     val context: Context,
@@ -46,6 +46,7 @@ class CompanyArrayAdapter(
     /*
      * Tell the adapter to reload its data from the model
      */
+    @SuppressLint("NotifyDataSetChanged")
     fun reloadData() {
         notifyDataSetChanged()
     }

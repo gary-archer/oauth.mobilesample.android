@@ -1,5 +1,6 @@
 package com.authsamples.basicmobileapp.views.transactions
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -7,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.authsamples.basicmobileapp.databinding.TransactionListItemBinding
 
 /*
- * An adapter to render transaction items
+ * An adapter to render transaction items in a recycler view
  */
 class TransactionArrayAdapter(
     val context: Context,
@@ -43,7 +44,8 @@ class TransactionArrayAdapter(
     /*
      * Tell the adapter to reload its data from the model
      */
+    @SuppressLint("NotifyDataSetChanged")
     fun reloadData() {
-        notifyDataSetChanged()
+        this.notifyDataSetChanged()
     }
 }
