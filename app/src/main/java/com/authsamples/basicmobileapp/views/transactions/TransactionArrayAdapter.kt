@@ -11,7 +11,7 @@ import com.authsamples.basicmobileapp.databinding.TransactionListItemBinding
  */
 class TransactionArrayAdapter(
     val context: Context,
-    val transactions: List<TransactionItemViewModel>
+    val model: TransactionsViewModel,
 ) : RecyclerView.Adapter<TransactionItemViewHolder>() {
 
     /*
@@ -29,7 +29,7 @@ class TransactionArrayAdapter(
      */
     override fun onBindViewHolder(holder: TransactionItemViewHolder, position: Int) {
 
-        val currentTransactionViewModel = this.transactions[position]
+        val currentTransactionViewModel = TransactionItemViewModel(this.model.transactionsList[position])
         holder.bind(currentTransactionViewModel)
     }
 
@@ -37,6 +37,13 @@ class TransactionArrayAdapter(
      * Return the total size
      */
     override fun getItemCount(): Int {
-        return this.transactions.size
+        return this.model.transactionsList.size
+    }
+
+    /*
+     * Tell the adapter to reload its data from the model
+     */
+    fun reloadData() {
+        notifyDataSetChanged()
     }
 }

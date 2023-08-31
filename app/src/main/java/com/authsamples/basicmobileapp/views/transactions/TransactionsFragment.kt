@@ -52,6 +52,11 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
         )
         this.binding.model = ViewModelProvider(this, factory).get(TransactionsViewModel::class.java)
 
+        // Create the recycler view
+        val list = this.binding.listTransactions
+        list.layoutManager = LinearLayoutManager(this.context)
+        list.adapter = TransactionArrayAdapter(this.requireContext(), this.binding.model!!)
+
         // Notify that the main view has changed
         EventBus.getDefault().post(NavigatedEvent(true))
         return binding.root
@@ -89,32 +94,21 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
      */
     private fun loadData(causeError: Boolean) {
 
-        // Rebind the UI to the latest data
-        val onComplete = {
-            this.populateList()
-        }
+        val onComplete = { isForbidden: Boolean ->
 
-        // Navigate back to the home view for expected errors such as trying to access unauthorized data
-        val onForbidden = {
-            findNavController().navigate(R.id.companies_fragment, Bundle())
+            if (isForbidden) {
+
+                // Navigate back to the home view for expected errors such as trying to access unauthorized data
+                findNavController().navigate(R.id.companies_fragment, Bundle())
+
+            } else {
+
+                // Otherwise ask the recycler view to reload
+                (this.binding.listTransactions.adapter as TransactionArrayAdapter).reloadData()
+            }
         }
 
         // Ask the model class to do the work
-        this.binding.model!!.callApi(ApiRequestOptions(causeError), onComplete, onForbidden)
-    }
-
-    /*
-     * Set up the recycler view with the API response data
-     * https://github.com/radzio/android-data-binding-recyclerview
-     */
-    private fun populateList() {
-
-        // Get view model items from the raw data
-        val viewModelItems = this.binding.model!!.transactionsList.map { TransactionItemViewModel(it) }
-
-        // Render them via an adapter
-        val list = this.binding.listTransactions
-        list.layoutManager = LinearLayoutManager(this.context)
-        list.adapter = TransactionArrayAdapter(this.requireContext(), viewModelItems.toList())
+        this.binding.model!!.callApi(ApiRequestOptions(causeError), onComplete)
     }
 }

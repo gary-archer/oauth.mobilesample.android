@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.databinding.Observable
 import androidx.databinding.PropertyChangeRegistry
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.MutableLiveData
 import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.api.client.ApiClient
 import com.authsamples.basicmobileapp.api.client.ApiRequestOptions
@@ -27,6 +28,7 @@ class CompaniesViewModel(
 ) : AndroidViewModel(app), Observable {
 
     // Observable data
+    //var companiesList = MutableLiveData<List<Company>>()
     var companiesList: List<Company> = ArrayList()
     var error: UIError? = null
     private val callbacks = PropertyChangeRegistry()
@@ -34,7 +36,7 @@ class CompaniesViewModel(
     /*
      * A method to do the work of calling the API
      */
-    fun callApi(options: ApiRequestOptions, onComplete: () -> Unit,) {
+    fun callApi(options: ApiRequestOptions, onComplete: () -> Unit) {
 
         // Initialize state
         this.apiViewEvents.onViewLoading(VIEW_MAIN)
@@ -52,7 +54,6 @@ class CompaniesViewModel(
                 withContext(Dispatchers.Main) {
                     that.updateData(companies, null)
                     that.apiViewEvents.onViewLoaded(VIEW_MAIN)
-                    onComplete()
                 }
 
             } catch (uiError: UIError) {
@@ -61,6 +62,12 @@ class CompaniesViewModel(
                 withContext(Dispatchers.Main) {
                     that.updateData(ArrayList(), uiError)
                     that.apiViewEvents.onViewLoadFailed(VIEW_MAIN, uiError)
+                }
+
+            } finally {
+
+                // Inform the view once complete
+                withContext(Dispatchers.Main) {
                     onComplete()
                 }
             }
@@ -96,6 +103,7 @@ class CompaniesViewModel(
      * Update data and inform the binding system
      */
     private fun updateData(companies: List<Company>, error: UIError? = null) {
+        //this.companiesList.value = companies
         this.companiesList = companies
         this.error = error
         this.callbacks.notifyCallbacks(this, 0, null)

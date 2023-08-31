@@ -46,8 +46,7 @@ class TransactionsViewModel(
      */
     fun callApi(
         options: ApiRequestOptions,
-        onComplete: () -> Unit,
-        onForbidden: () -> Unit
+        onComplete: (isForbidden: Boolean) -> Unit
     ) {
 
         // Initialize state
@@ -67,7 +66,7 @@ class TransactionsViewModel(
                 withContext(Dispatchers.Main) {
                     that.updateData(transactions, null)
                     that.apiViewEvents.onViewLoaded(VIEW_MAIN)
-                    onComplete()
+                    onComplete(false)
                 }
             } catch (uiError: UIError) {
 
@@ -77,14 +76,14 @@ class TransactionsViewModel(
                     if (that.isForbiddenError(uiError)) {
 
                         // For expected errors, the view redirects back to the home view
-                        onForbidden()
+                        onComplete(true)
 
                     } else {
 
                         // Report other types of errors
                         that.updateData(ArrayList(), uiError)
                         that.apiViewEvents.onViewLoadFailed(VIEW_MAIN, uiError)
-                        onComplete()
+                        onComplete(false)
                     }
                 }
             }
@@ -114,6 +113,7 @@ class TransactionsViewModel(
      * Data to pass when invoking the child error summary view
      */
     fun errorSummaryViewModel(): ErrorSummaryViewModelData {
+
         return ErrorSummaryViewModelData(
             hyperlinkText = app.getString(R.string.transactions_error_hyperlink),
             dialogTitle = app.getString(R.string.transactions_error_dialogtitle),

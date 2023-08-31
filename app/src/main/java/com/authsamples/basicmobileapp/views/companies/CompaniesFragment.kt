@@ -43,6 +43,11 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
         val factory = CompaniesViewModelFactory(mainViewModel.apiClient, mainViewModel.apiViewEvents, mainViewModel.app)
         this.binding.model = ViewModelProvider(this, factory).get(CompaniesViewModel::class.java)
 
+        // Create the recycler view
+        val list = this.binding.listCompanies
+        list.layoutManager = LinearLayoutManager(this.context)
+        list.adapter = CompanyArrayAdapter(this.requireContext(), this.binding.model!!, this::onItemClick)
+
         // Notify that the main view has changed
         EventBus.getDefault().post(NavigatedEvent(true))
         return this.binding.root
@@ -57,6 +62,15 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
         // Subscribe to events and do the initial load of data
         EventBus.getDefault().register(this)
         this.loadData(false)
+    }
+
+    /*
+     * When an item is clicked, navigate to its transactions
+     */
+    fun onItemClick(viewModelItem: CompanyItemViewModel) {
+        val args = Bundle()
+        args.putString(Constants.ARG_COMPANY_ID, viewModelItem.company.id.toString())
+        findNavController().navigate(R.id.transactions_fragment, args)
     }
 
     /*
@@ -80,33 +94,12 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
      */
     private fun loadData(causeError: Boolean) {
 
+        // Reload the recycler view on completion
         val onComplete = {
-            this.populateList()
+            (this.binding.listCompanies.adapter as CompanyArrayAdapter).reloadData()
         }
 
+        // Ask the model class to do the work
         this.binding.model!!.callApi(ApiRequestOptions(causeError), onComplete)
-    }
-
-    /*
-     * Set up the recycler view with the API response data
-     * https://github.com/radzio/android-data-binding-recyclerview
-     */
-    private fun populateList() {
-
-        // Get view model items from the raw data
-        val viewModelItems = this.binding.model!!.companiesList.map { CompanyItemViewModel(it) }
-
-        // When a company is clicked we will navigate to transactions for the clicked company id
-        val onItemClick = { viewModelItem: CompanyItemViewModel ->
-
-            val args = Bundle()
-            args.putString(Constants.ARG_COMPANY_ID, viewModelItem.company.id.toString())
-            findNavController().navigate(R.id.transactions_fragment, args)
-        }
-
-        // Bind the data to the recycler view
-        val list = this.binding.listCompanies
-        list.layoutManager = LinearLayoutManager(this.context)
-        list.adapter = CompanyArrayAdapter(this.requireContext(), viewModelItems.toList(), onItemClick)
     }
 }
