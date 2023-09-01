@@ -3,6 +3,8 @@ package com.authsamples.basicmobileapp.api.client
 import com.authsamples.basicmobileapp.api.entities.ApiUserInfo
 import com.authsamples.basicmobileapp.api.entities.Company
 import com.authsamples.basicmobileapp.api.entities.CompanyTransactions
+import com.authsamples.basicmobileapp.api.entities.OAuthUserInfo
+import com.authsamples.basicmobileapp.configuration.Configuration
 import com.authsamples.basicmobileapp.plumbing.errors.ErrorFactory
 import com.authsamples.basicmobileapp.plumbing.oauth.Authenticator
 import com.google.gson.Gson
@@ -25,7 +27,7 @@ import kotlin.coroutines.suspendCoroutine
  * Plumbing related to making HTTP calls
  */
 class FetchClient(
-    private val apiBaseUrl: String,
+    private val configuration: Configuration,
     private val authenticator: Authenticator
 ) {
 
@@ -33,20 +35,16 @@ class FetchClient(
     val sessionId = UUID.randomUUID().toString()
 
     /*
-     * Download user attributes stored in the API's own data
-     */
-    suspend fun getUserInfo(options: FetchOptions? = null): ApiUserInfo {
-
-        val response = this.callApi("userinfo", "GET", null, options)
-        return this.deserializeResponse(response, ApiUserInfo::class.java)
-    }
-
-    /*
      * Get the list of companies
      */
     suspend fun getCompanyList(options: FetchOptions? = null): Array<Company> {
 
-        val response = this.callApi("companies", "GET", null, options)
+        val response = this.callApi(
+            "${this.configuration.app.apiBaseUrl}/companies",
+            "GET",
+            null,
+            options
+        )
         return this.deserializeResponse(response, Array<Company>::class.java)
     }
 
@@ -55,22 +53,52 @@ class FetchClient(
      */
     suspend fun getCompanyTransactions(companyId: String, options: FetchOptions? = null): CompanyTransactions {
 
-        val response = this.callApi("companies/$companyId/transactions", "GET", null, options)
+        val response = this.callApi(
+            "${this.configuration.app.apiBaseUrl}/companies/$companyId/transactions",
+            "GET",
+            null,
+            options
+        )
         return this.deserializeResponse(response, CompanyTransactions::class.java)
+    }
+
+    /*
+     * Download user attributes from the authorization server
+     */
+    suspend fun getOAuthUserInfo(options: FetchOptions? = null): OAuthUserInfo {
+
+        val response = this.callApi(
+            this.configuration.oauth.userInfoEndpoint,
+            "GET",
+            null,
+            options
+        )
+        return this.deserializeResponse(response, OAuthUserInfo::class.java)
+    }
+
+    /*
+     * Download user attributes stored in the API's own data
+     */
+    suspend fun getApiUserInfo(options: FetchOptions? = null): ApiUserInfo {
+
+        val response = this.callApi(
+            "${this.configuration.app.apiBaseUrl}/userinfo",
+            "GET",
+            null,
+            options
+        )
+        return this.deserializeResponse(response, ApiUserInfo::class.java)
     }
 
     /*
      * The entry point for calling an API in a parameterised manner
      */
     private suspend fun callApi(
-        path: String,
+        url: String,
         method: String,
         data: Any?,
         options: FetchOptions? = null
     ): Response {
-
-        // Get the full URL
-        val url = "${this.apiBaseUrl}/$path"
 
         // First get an access token
         var accessToken = this.authenticator.getAccessToken()
@@ -172,7 +200,10 @@ class FetchClient(
         }
     }
 
-    fun <T> deserializeResponse(response: Response, runtimeType: Class<T>): T {
+    /*
+     * Convert the string response to the required type
+     */
+    private fun <T> deserializeResponse(response: Response, runtimeType: Class<T>): T {
 
         if (response.body == null) {
             throw IllegalStateException("Unable to deserialize HTTP response into type ${runtimeType.simpleName}")

@@ -48,7 +48,7 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
 
         // Create global objects for OAuth and API calls
         this.authenticator = AuthenticatorImpl(this.configuration.oauth, this.app.applicationContext)
-        this.fetchClient = FetchClient(this.configuration.app.apiBaseUrl, this.authenticator)
+        this.fetchClient = FetchClient(this.configuration, this.authenticator)
 
         // Initialize flags
         this.isDeviceSecured = DeviceSecurity.isDeviceSecured(this.app.applicationContext)

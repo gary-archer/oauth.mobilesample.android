@@ -37,7 +37,6 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
         // Create our view model using data from the main view model
         val mainViewModel: MainActivityViewModel by activityViewModels()
         val factory = UserInfoViewModelFactory(
-            mainViewModel.authenticator,
             mainViewModel.fetchClient,
             mainViewModel.viewModelCoordinator,
             mainViewModel.app

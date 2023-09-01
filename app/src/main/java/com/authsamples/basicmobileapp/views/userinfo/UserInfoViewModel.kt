@@ -8,10 +8,9 @@ import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.api.client.FetchClient
 import com.authsamples.basicmobileapp.api.client.FetchOptions
 import com.authsamples.basicmobileapp.api.entities.ApiUserInfo
+import com.authsamples.basicmobileapp.api.entities.OAuthUserInfo
 import com.authsamples.basicmobileapp.plumbing.errors.ErrorFactory
 import com.authsamples.basicmobileapp.plumbing.errors.UIError
-import com.authsamples.basicmobileapp.plumbing.oauth.Authenticator
-import com.authsamples.basicmobileapp.plumbing.oauth.OAuthUserInfo
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModelData
 import com.authsamples.basicmobileapp.views.utilities.Constants.VIEW_USERINFO
 import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
@@ -28,7 +27,6 @@ import kotlinx.coroutines.withContext
  * A simple view model class for the user info view
  */
 class UserInfoViewModel(
-    val authenticator: Authenticator,
     val fetchClient: FetchClient,
     val viewModelCoordinator: ViewModelCoordinator,
     val app: Application
@@ -68,11 +66,13 @@ class UserInfoViewModel(
                 supervisorScope {
 
                     // Get OAuth user information from the authorization server
-                    val oauthUserInfoTask = CoroutineScope(Dispatchers.IO).async { that.authenticator.getUserInfo() }
+                    val oauthUserInfoTask = CoroutineScope(Dispatchers.IO).async {
+                        that.fetchClient.getOAuthUserInfo(fetchOptions)
+                    }
 
                     // Also get user attributes stored in the API's data
                     val apiUserInfoTask = CoroutineScope(Dispatchers.IO).async {
-                        that.fetchClient.getUserInfo(fetchOptions)
+                        that.fetchClient.getApiUserInfo(fetchOptions)
                     }
 
                     // Run tasks in parallel and wait for them both to complete

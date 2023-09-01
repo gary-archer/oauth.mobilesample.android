@@ -22,9 +22,6 @@ interface Authenticator {
     // Complete a login
     suspend fun finishLogin(intent: Intent)
 
-    // Get data from the OAuth user info endpoint
-    suspend fun getUserInfo(): OAuthUserInfo
-
     // For testing, make the access token act expired
     fun expireAccessToken()
 

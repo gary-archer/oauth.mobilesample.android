@@ -246,15 +246,6 @@ class AuthenticatorImpl(
     }
 
     /*
-     * Get data from the OAuth user info endpoint
-     */
-    override suspend fun getUserInfo(): OAuthUserInfo {
-
-        val client = UserInfoClient(this.configuration, this)
-        return client.getUserInfo()
-    }
-
-    /*
      * For testing, make the access token act like it is expired
      */
     override fun expireAccessToken() {

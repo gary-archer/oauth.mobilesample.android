@@ -10,7 +10,6 @@ import com.authsamples.basicmobileapp.views.utilities.ViewModelCoordinator
  * Android plumbing needed to avoid recreating the view model if the view is recreated
  */
 class UserInfoViewModelFactory(
-    private val authenticator: com.authsamples.basicmobileapp.plumbing.oauth.Authenticator,
     private val fetchClient: FetchClient,
     private val viewModelCoordinator: ViewModelCoordinator,
     private val app: Application
@@ -18,6 +17,6 @@ class UserInfoViewModelFactory(
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         @Suppress("UNCHECKED_CAST")
-        return UserInfoViewModel(authenticator, fetchClient, viewModelCoordinator, app) as T
+        return UserInfoViewModel(fetchClient, viewModelCoordinator, app) as T
     }
 }
