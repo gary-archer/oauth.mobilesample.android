@@ -6,7 +6,7 @@ import androidx.databinding.Observable
 import androidx.databinding.PropertyChangeRegistry
 import androidx.lifecycle.AndroidViewModel
 import com.authsamples.basicmobileapp.R
-import com.authsamples.basicmobileapp.api.client.ApiClient
+import com.authsamples.basicmobileapp.api.client.FetchClient
 import com.authsamples.basicmobileapp.configuration.Configuration
 import com.authsamples.basicmobileapp.configuration.ConfigurationLoader
 import com.authsamples.basicmobileapp.plumbing.errors.ErrorCodes
@@ -32,7 +32,7 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
     // Global objects
     val configuration: Configuration
     val authenticator: Authenticator
-    val apiClient: ApiClient
+    val fetchClient: FetchClient
     val viewModelCoordinator: ViewModelCoordinator
     var isDeviceSecured: Boolean = false
     var isTopMost: Boolean = true
@@ -48,7 +48,7 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
 
         // Create global objects for OAuth and API calls
         this.authenticator = AuthenticatorImpl(this.configuration.oauth, this.app.applicationContext)
-        this.apiClient = ApiClient(this.configuration.app.apiBaseUrl, this.authenticator)
+        this.fetchClient = FetchClient(this.configuration.app.apiBaseUrl, this.authenticator)
 
         // Initialize flags
         this.isDeviceSecured = DeviceSecurity.isDeviceSecured(this.app.applicationContext)

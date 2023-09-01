@@ -35,7 +35,7 @@ class SessionFragment : androidx.fragment.app.Fragment() {
 
         // Create our view model using data from the main view model
         val mainViewModel: MainActivityViewModel by activityViewModels()
-        val factory = SessionViewModelFactory(mainViewModel.apiClient.sessionId, this.requireActivity().application)
+        val factory = SessionViewModelFactory(mainViewModel.fetchClient.sessionId, this.requireActivity().application)
         this.binding.model = ViewModelProvider(this, factory).get(SessionViewModel::class.java)
 
         return this.binding.root

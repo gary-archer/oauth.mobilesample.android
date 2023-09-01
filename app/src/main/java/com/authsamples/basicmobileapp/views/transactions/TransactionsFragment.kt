@@ -45,7 +45,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
         // Create the view model
         val mainViewModel: MainActivityViewModel by activityViewModels()
         val factory = TransactionsViewModelFactory(
-            mainViewModel.apiClient,
+            mainViewModel.fetchClient,
             mainViewModel.viewModelCoordinator,
             companyId,
             this.requireActivity().application

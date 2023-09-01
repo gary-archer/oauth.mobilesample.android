@@ -38,7 +38,7 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
         val mainViewModel: MainActivityViewModel by activityViewModels()
         val factory = UserInfoViewModelFactory(
             mainViewModel.authenticator,
-            mainViewModel.apiClient,
+            mainViewModel.fetchClient,
             mainViewModel.viewModelCoordinator,
             mainViewModel.app
         )

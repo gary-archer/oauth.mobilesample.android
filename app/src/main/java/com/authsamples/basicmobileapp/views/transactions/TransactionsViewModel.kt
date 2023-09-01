@@ -5,8 +5,8 @@ import androidx.databinding.Observable
 import androidx.databinding.PropertyChangeRegistry
 import androidx.lifecycle.AndroidViewModel
 import com.authsamples.basicmobileapp.R
-import com.authsamples.basicmobileapp.api.client.ApiClient
-import com.authsamples.basicmobileapp.api.client.ApiRequestOptions
+import com.authsamples.basicmobileapp.api.client.FetchClient
+import com.authsamples.basicmobileapp.api.client.FetchOptions
 import com.authsamples.basicmobileapp.api.entities.Transaction
 import com.authsamples.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authsamples.basicmobileapp.plumbing.errors.UIError
@@ -23,7 +23,7 @@ import kotlinx.coroutines.withContext
  * A simple view model class for the transactions view
  */
 class TransactionsViewModel(
-    val apiClient: ApiClient,
+    val fetchClient: FetchClient,
     val viewModelCoordinator: ViewModelCoordinator,
     val companyId: String,
     val app: Application
@@ -60,8 +60,8 @@ class TransactionsViewModel(
 
             try {
                 // Make the API call
-                val fetchOptions = ApiRequestOptions(options?.causeError ?: false)
-                val data = that.apiClient.getCompanyTransactions(that.companyId, fetchOptions)
+                val fetchOptions = FetchOptions(options?.causeError ?: false)
+                val data = that.fetchClient.getCompanyTransactions(that.companyId, fetchOptions)
                 val transactions = data.transactions.toList()
 
                 // Update data on the main thread

@@ -24,7 +24,7 @@ import kotlin.coroutines.suspendCoroutine
 /*
  * Plumbing related to making HTTP calls
  */
-class ApiClient(
+class FetchClient(
     private val apiBaseUrl: String,
     private val authenticator: Authenticator
 ) {
@@ -35,7 +35,7 @@ class ApiClient(
     /*
      * Download user attributes stored in the API's own data
      */
-    suspend fun getUserInfo(options: ApiRequestOptions? = null): ApiUserInfo {
+    suspend fun getUserInfo(options: FetchOptions? = null): ApiUserInfo {
 
         val response = this.callApi("userinfo", "GET", null, options)
         return this.deserializeResponse(response, ApiUserInfo::class.java)
@@ -44,7 +44,7 @@ class ApiClient(
     /*
      * Get the list of companies
      */
-    suspend fun getCompanyList(options: ApiRequestOptions? = null): Array<Company> {
+    suspend fun getCompanyList(options: FetchOptions? = null): Array<Company> {
 
         val response = this.callApi("companies", "GET", null, options)
         return this.deserializeResponse(response, Array<Company>::class.java)
@@ -53,7 +53,7 @@ class ApiClient(
     /*
      * Get the list of transactions for a company
      */
-    suspend fun getCompanyTransactions(companyId: String, options: ApiRequestOptions? = null): CompanyTransactions {
+    suspend fun getCompanyTransactions(companyId: String, options: FetchOptions? = null): CompanyTransactions {
 
         val response = this.callApi("companies/$companyId/transactions", "GET", null, options)
         return this.deserializeResponse(response, CompanyTransactions::class.java)
@@ -66,7 +66,7 @@ class ApiClient(
         path: String,
         method: String,
         data: Any?,
-        options: ApiRequestOptions? = null
+        options: FetchOptions? = null
     ): Response {
 
         // Get the full URL
@@ -116,7 +116,7 @@ class ApiClient(
         url: String,
         data: Any?,
         accessToken: String,
-        options: ApiRequestOptions? = null
+        options: FetchOptions? = null
     ): Response {
 
         // Configure the request body
@@ -160,7 +160,7 @@ class ApiClient(
     /*
      * Send custom headers to the API for logging purposes
      */
-    private fun addCustomHeaders(builder: Request.Builder, options: ApiRequestOptions? = null) {
+    private fun addCustomHeaders(builder: Request.Builder, options: FetchOptions? = null) {
 
         builder.header("x-mycompany-api-client", "BasicAndroidApp")
         builder.header("x-mycompany-session-id", this.sessionId)

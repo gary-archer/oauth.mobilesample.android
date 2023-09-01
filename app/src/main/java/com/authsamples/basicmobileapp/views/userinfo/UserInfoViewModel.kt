@@ -5,8 +5,8 @@ import androidx.databinding.Observable
 import androidx.databinding.PropertyChangeRegistry
 import androidx.lifecycle.AndroidViewModel
 import com.authsamples.basicmobileapp.R
-import com.authsamples.basicmobileapp.api.client.ApiClient
-import com.authsamples.basicmobileapp.api.client.ApiRequestOptions
+import com.authsamples.basicmobileapp.api.client.FetchClient
+import com.authsamples.basicmobileapp.api.client.FetchOptions
 import com.authsamples.basicmobileapp.api.entities.ApiUserInfo
 import com.authsamples.basicmobileapp.plumbing.errors.ErrorFactory
 import com.authsamples.basicmobileapp.plumbing.errors.UIError
@@ -29,7 +29,7 @@ import kotlinx.coroutines.withContext
  */
 class UserInfoViewModel(
     val authenticator: Authenticator,
-    val apiClient: ApiClient,
+    val fetchClient: FetchClient,
     val viewModelCoordinator: ViewModelCoordinator,
     val app: Application
 ) : AndroidViewModel(app), Observable {
@@ -61,18 +61,19 @@ class UserInfoViewModel(
 
             try {
                 // Initialize
-                val apiClient = that.apiClient
-                val fetchOptions = ApiRequestOptions(options?.causeError ?: false)
+                val fetchOptions = FetchOptions(options?.causeError ?: false)
 
                 // Prevent an error on one thread causing a cancellation on the other, and hence a crash
                 // Use async in the below calls, to catch error info in this thread
                 supervisorScope {
 
                     // Get OAuth user information from the authorization server
-                    val oauthUserInfoTask = CoroutineScope(Dispatchers.IO).async { authenticator.getUserInfo() }
+                    val oauthUserInfoTask = CoroutineScope(Dispatchers.IO).async { that.authenticator.getUserInfo() }
 
                     // Also get user attributes stored in the API's data
-                    val apiUserInfoTask = CoroutineScope(Dispatchers.IO).async { apiClient.getUserInfo(fetchOptions) }
+                    val apiUserInfoTask = CoroutineScope(Dispatchers.IO).async {
+                        that.fetchClient.getUserInfo(fetchOptions)
+                    }
 
                     // Run tasks in parallel and wait for them both to complete
                     val results = awaitAll(oauthUserInfoTask, apiUserInfoTask)

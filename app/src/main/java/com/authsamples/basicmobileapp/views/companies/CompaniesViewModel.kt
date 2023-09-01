@@ -5,8 +5,8 @@ import androidx.databinding.Observable
 import androidx.databinding.PropertyChangeRegistry
 import androidx.lifecycle.AndroidViewModel
 import com.authsamples.basicmobileapp.R
-import com.authsamples.basicmobileapp.api.client.ApiClient
-import com.authsamples.basicmobileapp.api.client.ApiRequestOptions
+import com.authsamples.basicmobileapp.api.client.FetchClient
+import com.authsamples.basicmobileapp.api.client.FetchOptions
 import com.authsamples.basicmobileapp.api.entities.Company
 import com.authsamples.basicmobileapp.plumbing.errors.UIError
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModelData
@@ -22,7 +22,7 @@ import kotlinx.coroutines.withContext
  * A simple view model class for the companies view
  */
 class CompaniesViewModel(
-    private val apiClient: ApiClient,
+    private val fetchClient: FetchClient,
     private val viewModelCoordinator: ViewModelCoordinator,
     val app: Application
 ) : AndroidViewModel(app), Observable {
@@ -47,8 +47,8 @@ class CompaniesViewModel(
             try {
 
                 // Make the API call
-                val fetchOptions = ApiRequestOptions(options?.causeError ?: false)
-                val companies = apiClient.getCompanyList(fetchOptions).toList()
+                val fetchOptions = FetchOptions(options?.causeError ?: false)
+                val companies = fetchClient.getCompanyList(fetchOptions).toList()
 
                 // Return success results on the main thread
                 withContext(Dispatchers.Main) {
