@@ -64,7 +64,7 @@ class PersistentTokenStorage(val context: Context) {
     fun expireRefreshToken() {
 
         if (this.tokenData != null) {
-            this.tokenData!!.accessToken = null
+            this.tokenData!!.accessToken = "${this.tokenData!!.accessToken}x"
             this.tokenData!!.refreshToken = "${this.tokenData!!.refreshToken}x"
             this.saveTokenData()
         }
