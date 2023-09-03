@@ -17,7 +17,6 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import java.io.IOException
-import java.lang.IllegalStateException
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resumeWithException
@@ -39,13 +38,13 @@ class FetchClient(
      */
     suspend fun getCompanyList(options: FetchOptions? = null): Array<Company> {
 
-        val response = this.callApi(
+        return this.callApi(
             "${this.configuration.app.apiBaseUrl}/companies",
             "GET",
             null,
+            Array<Company>::class.java,
             options
         )
-        return this.deserializeResponse(response, Array<Company>::class.java)
     }
 
     /*
@@ -53,13 +52,13 @@ class FetchClient(
      */
     suspend fun getCompanyTransactions(companyId: String, options: FetchOptions? = null): CompanyTransactions {
 
-        val response = this.callApi(
+        return this.callApi(
             "${this.configuration.app.apiBaseUrl}/companies/$companyId/transactions",
             "GET",
             null,
+            CompanyTransactions::class.java,
             options
         )
-        return this.deserializeResponse(response, CompanyTransactions::class.java)
     }
 
     /*
@@ -67,13 +66,13 @@ class FetchClient(
      */
     suspend fun getOAuthUserInfo(options: FetchOptions? = null): OAuthUserInfo {
 
-        val response = this.callApi(
+        return this.callApi(
             this.configuration.oauth.userInfoEndpoint,
             "GET",
             null,
+            OAuthUserInfo::class.java,
             options
         )
-        return this.deserializeResponse(response, OAuthUserInfo::class.java)
     }
 
     /*
@@ -81,34 +80,36 @@ class FetchClient(
      */
     suspend fun getApiUserInfo(options: FetchOptions? = null): ApiUserInfo {
 
-        val response = this.callApi(
+        return this.callApi(
             "${this.configuration.app.apiBaseUrl}/userinfo",
             "GET",
             null,
+            ApiUserInfo::class.java,
             options
         )
-        return this.deserializeResponse(response, ApiUserInfo::class.java)
     }
 
     /*
      * The entry point for calling an API in a parameterised manner
      */
-    private suspend fun callApi(
+    private suspend fun <T> callApi(
         url: String,
         method: String,
-        data: Any?,
+        requestData: Any?,
+        responseType: Class<T>,
         options: FetchOptions? = null
-    ): Response {
+    ): T {
 
         // First get an access token
         var accessToken = this.authenticator.getAccessToken()
 
         // Make the request
-        var response = this.callApiWithToken(method, url, data, accessToken, options)
+        var response = this.callApiWithToken(method, url, requestData, accessToken, options)
         if (response.isSuccessful) {
 
             // Handle successful responses
-            return response
+            return Gson().fromJson(response.body?.string(), responseType)
+
         } else {
 
             // Retry once with a new token if there is a 401 error
@@ -118,11 +119,12 @@ class FetchClient(
                 accessToken = this.authenticator.refreshAccessToken()
 
                 // Retry the API call
-                response = this.callApiWithToken(method, url, data, accessToken, options)
+                response = this.callApiWithToken(method, url, requestData, accessToken, options)
                 if (response.isSuccessful) {
 
                     // Handle successful responses
-                    return response
+                    return Gson().fromJson(response.body?.string(), responseType)
+
                 } else {
 
                     // Handle failed responses on the retry
@@ -171,13 +173,12 @@ class FetchClient(
         return suspendCoroutine { continuation ->
 
             client.newCall(request).enqueue(object : Callback {
-                override fun onResponse(call: Call, response: Response) {
 
+                override fun onResponse(call: Call, response: Response) {
                     continuation.resumeWith(Result.success(response))
                 }
 
                 override fun onFailure(call: Call, e: IOException) {
-
                     val exception = ErrorFactory().fromHttpRequestError(e, url, "web API")
                     continuation.resumeWithException(exception)
                 }
@@ -198,17 +199,5 @@ class FetchClient(
         if (options != null && options.causeError) {
             builder.header("x-mycompany-test-exception", "SampleApi")
         }
-    }
-
-    /*
-     * Convert the string response to the required type
-     */
-    private fun <T> deserializeResponse(response: Response, runtimeType: Class<T>): T {
-
-        if (response.body == null) {
-            throw IllegalStateException("Unable to deserialize HTTP response into type ${runtimeType.simpleName}")
-        }
-
-        return Gson().fromJson(response.body?.string(), runtimeType)
     }
 }
