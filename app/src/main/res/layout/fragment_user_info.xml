@@ -4,9 +4,7 @@
         xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <!-- Makes model a property of this type on the fragment's binding object -->
-        <variable name="model"
-            type="com.authsamples.basicmobileapp.views.userinfo.UserInfoViewModel" />
+        <variable name="model" type="com.authsamples.basicmobileapp.views.userinfo.UserInfoViewModel" />
     </data>
     <LinearLayout
         android:orientation="horizontal"

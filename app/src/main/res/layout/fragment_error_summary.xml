@@ -4,12 +4,7 @@
 
     <data>
         <import type="android.view.View"/>
-        <variable name="model"
-            type="com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModel" />
-        <variable
-            name="error"
-            type="com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModelData" />
-
+        <variable name="model" type="com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModel" />
     </data>
     <LinearLayout
         android:orientation="vertical"

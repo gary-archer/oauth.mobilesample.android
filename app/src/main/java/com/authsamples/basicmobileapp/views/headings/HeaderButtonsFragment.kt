@@ -4,8 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import com.authsamples.basicmobileapp.app.MainActivity
+import com.authsamples.basicmobileapp.app.MainActivityViewModel
 import com.authsamples.basicmobileapp.databinding.FragmentHeaderButtonsBinding
 import com.authsamples.basicmobileapp.plumbing.events.ViewModelFetchEvent
 import org.greenrobot.eventbus.Subscribe
@@ -29,10 +31,15 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
 
         // Inflate the layout
         this.binding = FragmentHeaderButtonsBinding.inflate(inflater, container, false)
-        this.binding.fragment = this
+        this.binding.view = this
 
-        // Create the view model, which informs other views via events
-        this.binding.model = ViewModelProvider(this).get(HeaderButtonsViewModel::class.java)
+        // Create our view model using data from the main view model
+        val mainViewModel: MainActivityViewModel by activityViewModels()
+        val factory = HeaderButtonsViewModelFactory(
+            mainViewModel.eventBus
+        )
+        this.binding.model = ViewModelProvider(this, factory).get(HeaderButtonsViewModel::class.java)
+
         return this.binding.root
     }
 

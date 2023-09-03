@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
     <data>
-        <!-- Makes model a property of this type on the fragment's binding object -->
         <variable name="model" type="com.authsamples.basicmobileapp.views.transactions.TransactionItemViewModel" />
     </data>
 
@@ -10,7 +9,6 @@
                   android:orientation="vertical"
                   android:padding="5dp">
 
-        <!-- Show a table of label / value pairs -->
         <TableLayout android:layout_width="match_parent"
                      android:layout_height="wrap_content"
                      android:layout_marginTop="15dp"

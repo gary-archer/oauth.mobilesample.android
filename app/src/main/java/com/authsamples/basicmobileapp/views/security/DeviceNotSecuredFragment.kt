@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import com.authsamples.basicmobileapp.app.MainActivity
+import com.authsamples.basicmobileapp.app.MainActivityViewModel
 import com.authsamples.basicmobileapp.databinding.FragmentDeviceNotSecuredBinding
 import com.authsamples.basicmobileapp.plumbing.events.NavigatedEvent
-import org.greenrobot.eventbus.EventBus
 
 /*
  * Handle prompting the user to secure their lock screen
@@ -29,8 +31,13 @@ class DeviceNotSecuredFragment : androidx.fragment.app.Fragment() {
         // Inflate the layout
         this.binding = FragmentDeviceNotSecuredBinding.inflate(inflater, container, false)
 
+        // Create our view model using data from the main view model
+        val mainViewModel: MainActivityViewModel by activityViewModels()
+        val factory = DeviceNotSecuredViewModelFactory(mainViewModel.eventBus)
+        this.binding.model = ViewModelProvider(this, factory).get(DeviceNotSecuredViewModel::class.java)
+
         // Notify that the main view has changed
-        EventBus.getDefault().post(NavigatedEvent(false))
+        this.binding.model!!.eventBus.post(NavigatedEvent(false))
         return this.binding.root
     }
 
