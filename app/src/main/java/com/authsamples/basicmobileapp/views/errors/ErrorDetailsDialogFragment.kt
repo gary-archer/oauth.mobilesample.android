@@ -9,7 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.authsamples.basicmobileapp.databinding.FragmentErrorDetailsBinding
 import com.authsamples.basicmobileapp.plumbing.errors.UIError
-import com.authsamples.basicmobileapp.views.utilities.Constants
+import com.authsamples.basicmobileapp.views.utilities.ViewConstants
 
 /*
  * A custom modal dialog based on the error details fragment
@@ -26,8 +26,8 @@ class ErrorDetailsDialogFragment : DialogFragment() {
         fun create(dialogTitle: String, error: UIError): ErrorDetailsDialogFragment {
             val dialog = ErrorDetailsDialogFragment()
             val args = Bundle()
-            args.putString(Constants.ARG_ERROR_TITLE, dialogTitle)
-            args.putSerializable(Constants.ARG_ERROR_DATA, error)
+            args.putString(ViewConstants.ARG_ERROR_TITLE, dialogTitle)
+            args.putSerializable(ViewConstants.ARG_ERROR_DATA, error)
             dialog.arguments = args
             return dialog
         }
@@ -46,8 +46,8 @@ class ErrorDetailsDialogFragment : DialogFragment() {
         this.binding = FragmentErrorDetailsBinding.inflate(inflater, container, false)
 
         // Create the view model from data passed in
-        val title = this.arguments?.getString(Constants.ARG_ERROR_TITLE)
-        val error = this.arguments?.getSerializable(Constants.ARG_ERROR_DATA) as UIError
+        val title = this.arguments?.getString(ViewConstants.ARG_ERROR_TITLE)
+        val error = this.arguments?.getSerializable(ViewConstants.ARG_ERROR_DATA) as UIError
         val factory = ErrorDetailsViewModelFactory(title!!, error, this::dismiss)
         this.binding.model = ViewModelProvider(this, factory).get(ErrorDetailsViewModel::class.java)
 

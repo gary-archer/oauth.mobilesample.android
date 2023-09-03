@@ -27,6 +27,7 @@ import kotlin.coroutines.suspendCoroutine
  */
 class FetchClient(
     private val configuration: Configuration,
+    private val fetchCache: FetchCache,
     private val authenticator: Authenticator
 ) {
 
@@ -36,7 +37,7 @@ class FetchClient(
     /*
      * Get the list of companies
      */
-    suspend fun getCompanyList(options: FetchOptions? = null): Array<Company> {
+    suspend fun getCompanyList(options: FetchOptions): Array<Company>? {
 
         return this.callApi(
             "${this.configuration.app.apiBaseUrl}/companies",
@@ -50,7 +51,7 @@ class FetchClient(
     /*
      * Get the list of transactions for a company
      */
-    suspend fun getCompanyTransactions(companyId: String, options: FetchOptions? = null): CompanyTransactions {
+    suspend fun getCompanyTransactions(companyId: String, options: FetchOptions): CompanyTransactions? {
 
         return this.callApi(
             "${this.configuration.app.apiBaseUrl}/companies/$companyId/transactions",
@@ -64,7 +65,7 @@ class FetchClient(
     /*
      * Download user attributes from the authorization server
      */
-    suspend fun getOAuthUserInfo(options: FetchOptions? = null): OAuthUserInfo {
+    suspend fun getOAuthUserInfo(options: FetchOptions): OAuthUserInfo? {
 
         return this.callApi(
             this.configuration.oauth.userInfoEndpoint,
@@ -78,7 +79,7 @@ class FetchClient(
     /*
      * Download user attributes stored in the API's own data
      */
-    suspend fun getApiUserInfo(options: FetchOptions? = null): ApiUserInfo {
+    suspend fun getApiUserInfo(options: FetchOptions): ApiUserInfo? {
 
         return this.callApi(
             "${this.configuration.app.apiBaseUrl}/userinfo",
@@ -92,48 +93,84 @@ class FetchClient(
     /*
      * The entry point for calling an API in a parameterised manner
      */
+    @Suppress("ThrowsCount")
     private suspend fun <T> callApi(
         url: String,
         method: String,
         requestData: Any?,
         responseType: Class<T>,
-        options: FetchOptions? = null
-    ): T {
+        options: FetchOptions
+    ): T? {
 
-        // First get an access token
+        // Remove the item from the cache when a reload is requested
+        if (options.forceReload) {
+            this.fetchCache.removeItem(options.cacheKey)
+        }
+
+        // Return existing data from the memory cache when available
+        // If a view is created whiles its API requests are in flight, this returns null to the view model
+        var cacheItem = this.fetchCache.getItem(options.cacheKey)
+        if (cacheItem != null) {
+            @Suppress("UNCHECKED_CAST")
+            return cacheItem.getData() as T?
+        }
+
+        // Ensure that the cache item exists, to avoid a redundant API request on every view recreation
+        cacheItem = this.fetchCache.createItem(options.cacheKey)
+
+        // Avoid API requests when there is no access token, and instead trigger a login redirect
         var accessToken = this.authenticator.getAccessToken()
+        if (accessToken.isNullOrBlank()) {
 
-        // Make the request
-        var response = this.callApiWithToken(method, url, requestData, accessToken, options)
-        if (response.isSuccessful) {
+            val loginRequiredError = ErrorFactory().fromLoginRequired()
+            cacheItem.setError(loginRequiredError)
+            throw loginRequiredError
+        }
 
-            // Handle successful responses
-            return Gson().fromJson(response.body?.string(), responseType)
+        try {
 
-        } else {
+            // Call the API and return data on success
+            val data1 = this.callApiWithToken(method, url, requestData, accessToken, responseType, options)
+            cacheItem.setData(data1)
+            return data1
 
-            // Retry once with a new token if there is a 401 error
-            if (response.code == 401) {
+        } catch (e1: Throwable) {
 
-                // Try to refresh the access token
-                accessToken = this.authenticator.refreshAccessToken()
+            val error1 = ErrorFactory().fromException(e1)
+            if (error1.statusCode != 401) {
 
-                // Retry the API call
-                response = this.callApiWithToken(method, url, requestData, accessToken, options)
-                if (response.isSuccessful) {
+                // Report errors if this is not a 401
+                cacheItem.setError(error1)
+                throw error1
+            }
 
-                    // Handle successful responses
-                    return Gson().fromJson(response.body?.string(), responseType)
+            try {
 
-                } else {
+                // Try to refresh the access token cookie
+                accessToken = this.authenticator.synchronizedRefreshAccessToken()
 
-                    // Handle failed responses on the retry
-                    throw ErrorFactory().fromHttpResponseError(response, url, "web API")
-                }
-            } else {
+            } catch (e2: Throwable) {
 
-                // Handle failed responses on the original call
-                throw ErrorFactory().fromHttpResponseError(response, url, "web API")
+                // Save refresh errors
+                val error2 = ErrorFactory().fromException(e2)
+                cacheItem.setError(error2)
+                throw error2
+            }
+
+            try {
+
+                // Call the API and return data on success
+                val data3 = this.callApiWithToken(method, url, requestData, accessToken, responseType, options)
+                cacheItem.setData(data3)
+                return data3
+
+            } catch (e3: Throwable) {
+
+                // Save retry errors
+                val error3 = ErrorFactory().fromException(e3)
+                cacheItem.setError(error3)
+                throw error3
+
             }
         }
     }
@@ -141,13 +178,15 @@ class FetchClient(
     /*
      * Use the okhttp library to make an async request for data
      */
-    private suspend fun callApiWithToken(
+    @Suppress("LongParameterList")
+    private suspend fun <T> callApiWithToken(
         method: String,
         url: String,
         data: Any?,
         accessToken: String,
+        responseType: Class<T>,
         options: FetchOptions? = null
-    ): Response {
+    ): T {
 
         // Configure the request body
         var body: RequestBody? = null
@@ -162,7 +201,17 @@ class FetchClient(
             .header("Authorization", "Bearer $accessToken")
             .method(method, body)
             .url(url)
-        this.addCustomHeaders(builder, options)
+
+        // Add headers used for API logging
+        builder.header("x-mycompany-api-client", "BasicAndroidApp")
+        builder.header("x-mycompany-session-id", this.sessionId)
+        builder.header("x-mycompany-correlation-id", UUID.randomUUID().toString())
+
+        // A special header can be sent to the API to cause a simulated exception
+        if (options != null && options.causeError) {
+            builder.header("x-mycompany-test-exception", "SampleApi")
+        }
+
         val request = builder.build()
 
         // Create an HTTP client
@@ -175,29 +224,28 @@ class FetchClient(
             client.newCall(request).enqueue(object : Callback {
 
                 override fun onResponse(call: Call, response: Response) {
-                    continuation.resumeWith(Result.success(response))
+
+                    if (response.isSuccessful) {
+
+                        // Return deserialized data if the call succeeded
+                        val responseData = Gson().fromJson(response.body?.string(), responseType)
+                        continuation.resumeWith(Result.success(responseData))
+
+                    } else {
+
+                        // Return response errors
+                        val responseError = ErrorFactory().fromHttpResponseError(response, url, "API")
+                        continuation.resumeWithException(responseError)
+                    }
                 }
 
                 override fun onFailure(call: Call, e: IOException) {
-                    val exception = ErrorFactory().fromHttpRequestError(e, url, "web API")
-                    continuation.resumeWithException(exception)
+
+                    // Return request errors such as connectivity failures
+                    val requestError = ErrorFactory().fromHttpRequestError(e, url, "API")
+                    continuation.resumeWithException(requestError)
                 }
             })
-        }
-    }
-
-    /*
-     * Send custom headers to the API for logging purposes
-     */
-    private fun addCustomHeaders(builder: Request.Builder, options: FetchOptions? = null) {
-
-        builder.header("x-mycompany-api-client", "BasicAndroidApp")
-        builder.header("x-mycompany-session-id", this.sessionId)
-        builder.header("x-mycompany-correlation-id", UUID.randomUUID().toString())
-
-        // A special header can be sent to thr API to cause a simulated exception
-        if (options != null && options.causeError) {
-            builder.header("x-mycompany-test-exception", "SampleApi")
         }
     }
 }

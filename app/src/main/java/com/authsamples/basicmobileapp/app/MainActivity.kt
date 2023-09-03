@@ -11,11 +11,8 @@ import androidx.navigation.fragment.NavHostFragment
 import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.databinding.ActivityMainBinding
 import com.authsamples.basicmobileapp.plumbing.events.LoginRequiredEvent
-import com.authsamples.basicmobileapp.plumbing.events.ReloadMainViewEvent
-import com.authsamples.basicmobileapp.plumbing.events.ReloadUserInfoEvent
 import com.authsamples.basicmobileapp.views.utilities.DeviceSecurity
 import com.authsamples.basicmobileapp.views.utilities.NavigationHelper
-import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
@@ -74,7 +71,7 @@ class MainActivity : AppCompatActivity() {
         this.navigateStart()
 
         // Start listening for events
-        EventBus.getDefault().register(this)
+        this.binding.model!!.eventBus.register(this)
     }
 
     /*
@@ -152,7 +149,7 @@ class MainActivity : AppCompatActivity() {
     private fun onFinishLogin(responseIntent: Intent?) {
 
         val onSuccess = {
-            this.onReloadData(false)
+            this.binding.model!!.reloadData(false)
         }
 
         val onCancelled = {
@@ -186,19 +183,22 @@ class MainActivity : AppCompatActivity() {
      * Move to the home view, which forces a reload if already in this view
      */
     fun onHome() {
+
+        // Reset the main view's own error
         this.binding.model!!.updateError(null)
+
+        // Navigate to the home view unless already there
         this.navigationHelper.navigateTo(R.id.companies_fragment)
+
+        // Force a data reload if recovering from errors
+        this.binding.model!!.reloadDataOnError()
     }
 
     /*
      * Publish an event to update all active views
      */
     fun onReloadData(causeError: Boolean) {
-
-        this.binding.model!!.updateError(null)
-        this.binding.model!!.viewModelCoordinator.clearState()
-        EventBus.getDefault().post(ReloadMainViewEvent(causeError))
-        EventBus.getDefault().post(ReloadUserInfoEvent(causeError))
+        this.binding.model!!.reloadData(causeError)
     }
 
     /*
@@ -227,7 +227,7 @@ class MainActivity : AppCompatActivity() {
      */
     override fun onDestroy() {
         super.onDestroy()
-        EventBus.getDefault().unregister(this)
+        this.binding.model!!.eventBus.unregister(this)
         (this.application as Application).setMainActivity(null)
     }
 }

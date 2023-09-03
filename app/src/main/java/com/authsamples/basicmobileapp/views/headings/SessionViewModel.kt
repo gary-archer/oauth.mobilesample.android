@@ -5,12 +5,14 @@ import androidx.databinding.Observable
 import androidx.databinding.PropertyChangeRegistry
 import androidx.lifecycle.AndroidViewModel
 import com.authsamples.basicmobileapp.R
+import org.greenrobot.eventbus.EventBus
 
 /*
  * A simple view model for the session view
  */
 class SessionViewModel(
     private val sessionId: String,
+    val eventBus: EventBus,
     val app: Application
 ) : AndroidViewModel(app), Observable {
 

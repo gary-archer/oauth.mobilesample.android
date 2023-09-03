@@ -1,10 +1,10 @@
 package com.authsamples.basicmobileapp.api.client
 
 /*
- * Special options when making an API request
+ * Input when making a cacheable fetch request
  */
 data class FetchOptions(
-
-    // We can send an option to make the API fail, to demonstrate 500 handling
+    val cacheKey: String,
+    val forceReload: Boolean,
     val causeError: Boolean
 )

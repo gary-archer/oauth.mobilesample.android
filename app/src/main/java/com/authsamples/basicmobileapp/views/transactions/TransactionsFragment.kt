@@ -12,10 +12,9 @@ import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.app.MainActivityViewModel
 import com.authsamples.basicmobileapp.databinding.FragmentTransactionsBinding
 import com.authsamples.basicmobileapp.plumbing.events.NavigatedEvent
-import com.authsamples.basicmobileapp.plumbing.events.ReloadMainViewEvent
-import com.authsamples.basicmobileapp.views.utilities.Constants
+import com.authsamples.basicmobileapp.plumbing.events.ReloadDataEvent
+import com.authsamples.basicmobileapp.views.utilities.ViewConstants
 import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
-import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
@@ -40,12 +39,13 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
         this.binding = FragmentTransactionsBinding.inflate(inflater, container, false)
 
         // Get data passed in
-        val companyId = this.arguments?.getString(Constants.ARG_COMPANY_ID, "") ?: ""
+        val companyId = this.arguments?.getString(ViewConstants.ARG_COMPANY_ID, "") ?: ""
 
         // Create the view model
         val mainViewModel: MainActivityViewModel by activityViewModels()
         val factory = TransactionsViewModelFactory(
             mainViewModel.fetchClient,
+            mainViewModel.eventBus,
             mainViewModel.viewModelCoordinator,
             companyId,
             this.requireActivity().application
@@ -58,7 +58,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
         list.adapter = TransactionArrayAdapter(this.requireContext(), this.binding.model!!)
 
         // Notify that the main view has changed
-        EventBus.getDefault().post(NavigatedEvent(true))
+        this.binding.model!!.eventBus.post(NavigatedEvent(true))
         return binding.root
     }
 
@@ -69,7 +69,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Subscribe to events and do the initial load of data
-        EventBus.getDefault().register(this)
+        this.binding.model!!.eventBus.register(this)
         this.loadData()
     }
 
@@ -77,7 +77,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
      * Receive messages
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(mainViewEvent: ReloadMainViewEvent) {
+    fun onMessageEvent(mainViewEvent: ReloadDataEvent) {
         this.loadData(ViewLoadOptions(true, mainViewEvent.causeError))
     }
 
@@ -86,7 +86,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
      */
     override fun onDestroyView() {
         super.onDestroyView()
-        EventBus.getDefault().unregister(this)
+        this.binding.model!!.eventBus.unregister(this)
     }
 
     /*

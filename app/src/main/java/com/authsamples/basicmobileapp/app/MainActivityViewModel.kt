@@ -6,6 +6,7 @@ import androidx.databinding.Observable
 import androidx.databinding.PropertyChangeRegistry
 import androidx.lifecycle.AndroidViewModel
 import com.authsamples.basicmobileapp.R
+import com.authsamples.basicmobileapp.api.client.FetchCache
 import com.authsamples.basicmobileapp.api.client.FetchClient
 import com.authsamples.basicmobileapp.configuration.Configuration
 import com.authsamples.basicmobileapp.configuration.ConfigurationLoader
@@ -13,26 +14,30 @@ import com.authsamples.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authsamples.basicmobileapp.plumbing.errors.ErrorConsoleReporter
 import com.authsamples.basicmobileapp.plumbing.errors.ErrorFactory
 import com.authsamples.basicmobileapp.plumbing.errors.UIError
+import com.authsamples.basicmobileapp.plumbing.events.ReloadDataEvent
 import com.authsamples.basicmobileapp.plumbing.oauth.Authenticator
 import com.authsamples.basicmobileapp.plumbing.oauth.AuthenticatorImpl
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModelData
-import com.authsamples.basicmobileapp.views.utilities.Constants
 import com.authsamples.basicmobileapp.views.utilities.DeviceSecurity
 import com.authsamples.basicmobileapp.views.utilities.ViewModelCoordinator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
 
 /*
  * Global data is stored in the view model class for the main activity, which is created only once
  */
+@Suppress("TooManyFunctions")
 class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Observable {
 
     // Global objects
     val configuration: Configuration
     val authenticator: Authenticator
     val fetchClient: FetchClient
+    val fetchCache: FetchCache
+    val eventBus: EventBus
     val viewModelCoordinator: ViewModelCoordinator
     var isDeviceSecured: Boolean = false
     var isTopMost: Boolean = true
@@ -46,19 +51,18 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
         // Load configuration from the deployed JSON file
         this.configuration = ConfigurationLoader().load(this.app.applicationContext)
 
+        // Create objects used for coordination
+        this.fetchCache = FetchCache()
+        this.eventBus = EventBus.getDefault()
+        this.viewModelCoordinator = ViewModelCoordinator(this.eventBus, this.fetchCache)
+
         // Create global objects for OAuth and API calls
         this.authenticator = AuthenticatorImpl(this.configuration.oauth, this.app.applicationContext)
-        this.fetchClient = FetchClient(this.configuration, this.authenticator)
+        this.fetchClient = FetchClient(this.configuration, this.fetchCache, this.authenticator)
 
         // Initialize flags
         this.isDeviceSecured = DeviceSecurity.isDeviceSecured(this.app.applicationContext)
         this.isTopMost = true
-
-        // Create a helper class to notify us about views that make API calls
-        // This will enable us to only trigger a login redirect once, after all views have tried to load
-        this.viewModelCoordinator = ViewModelCoordinator()
-        this.viewModelCoordinator.addView(Constants.VIEW_MAIN)
-        this.viewModelCoordinator.addView(Constants.VIEW_USERINFO)
     }
 
     /*
@@ -71,8 +75,12 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
             return
         }
 
-        // Initialize state, and prevent deep links during login
+        // Reset cached state
+        this.fetchCache.clearAll()
+        this.viewModelCoordinator.resetState()
         this.updateError(null)
+
+        // Prevent deep links being processed during login
         this.isTopMost = false
 
         // Run on a background thread
@@ -167,8 +175,12 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
             return
         }
 
-        // Initialize state, and prevent deep links during logout
+        // Reset cached state
+        this.fetchCache.clearAll()
+        this.viewModelCoordinator.resetState()
         this.updateError(null)
+
+        // Prevent deep links being processed during logout
         this.isTopMost = false
 
         // Run on a background thread
@@ -213,9 +225,30 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
     }
 
     /*
+     * Publish an event to update all active views
+     */
+    fun reloadData(causeError: Boolean) {
+
+        this.updateError(null)
+        this.viewModelCoordinator.resetState()
+        this.eventBus.post(ReloadDataEvent(causeError))
+    }
+
+    /*
+     * If there were load errors, try to reload data when Home is pressed
+     */
+    fun reloadDataOnError() {
+
+        if (this.error != null || this.viewModelCoordinator.hasErrors()) {
+            this.reloadData(false)
+        }
+    }
+
+    /*
      * For testing, make the access token act expired and handle any errors
      */
     fun expireAccessToken() {
+
         try {
 
             this.updateError(null)
@@ -232,6 +265,7 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
      * For testing, make the refresh token act expired and handle any errors
      */
     fun expireRefreshToken() {
+
         try {
 
             this.updateError(null)

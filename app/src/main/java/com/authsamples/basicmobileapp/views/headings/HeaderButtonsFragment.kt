@@ -4,11 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import com.authsamples.basicmobileapp.app.MainActivity
+import com.authsamples.basicmobileapp.app.MainActivityViewModel
 import com.authsamples.basicmobileapp.databinding.FragmentHeaderButtonsBinding
-import com.authsamples.basicmobileapp.plumbing.events.DataStatusEvent
-import org.greenrobot.eventbus.EventBus
+import com.authsamples.basicmobileapp.plumbing.events.ViewModelFetchEvent
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
@@ -30,10 +31,15 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
 
         // Inflate the layout
         this.binding = FragmentHeaderButtonsBinding.inflate(inflater, container, false)
-        this.binding.fragment = this
+        this.binding.view = this
 
-        // Create the view model, which informs other views via events
-        this.binding.model = ViewModelProvider(this).get(HeaderButtonsViewModel::class.java)
+        // Create our view model using data from the main view model
+        val mainViewModel: MainActivityViewModel by activityViewModels()
+        val factory = HeaderButtonsViewModelFactory(
+            mainViewModel.eventBus
+        )
+        this.binding.model = ViewModelProvider(this, factory).get(HeaderButtonsViewModel::class.java)
+
         return this.binding.root
     }
 
@@ -47,7 +53,7 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
         this.binding.btnReloadData.setCustomClickListener(this::onReload)
 
         // Subscribe for events
-        EventBus.getDefault().register(this)
+        this.binding.model!!.eventBus.register(this)
     }
 
     /*
@@ -55,14 +61,14 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
      */
     override fun onDestroyView() {
         super.onDestroyView()
-        EventBus.getDefault().unregister(this)
+        this.binding.model!!.eventBus.unregister(this)
     }
 
     /*
      * During API calls we disable session buttons and then re-enable them afterwards
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(event: DataStatusEvent) {
+    fun onMessageEvent(event: ViewModelFetchEvent) {
         this.binding.model!!.updateDataStatus(event.loaded)
     }
 

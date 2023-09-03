@@ -5,26 +5,28 @@ import androidx.databinding.Observable
 import androidx.databinding.PropertyChangeRegistry
 import androidx.lifecycle.AndroidViewModel
 import com.authsamples.basicmobileapp.R
+import com.authsamples.basicmobileapp.api.client.FetchCacheKeys
 import com.authsamples.basicmobileapp.api.client.FetchClient
 import com.authsamples.basicmobileapp.api.client.FetchOptions
 import com.authsamples.basicmobileapp.api.entities.Transaction
 import com.authsamples.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authsamples.basicmobileapp.plumbing.errors.UIError
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModelData
-import com.authsamples.basicmobileapp.views.utilities.Constants.VIEW_MAIN
 import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
 import com.authsamples.basicmobileapp.views.utilities.ViewModelCoordinator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
 
 /*
  * A simple view model class for the transactions view
  */
 class TransactionsViewModel(
-    val fetchClient: FetchClient,
-    val viewModelCoordinator: ViewModelCoordinator,
+    private val fetchClient: FetchClient,
+    val eventBus: EventBus,
+    private val viewModelCoordinator: ViewModelCoordinator,
     val companyId: String,
     val app: Application
 ) : AndroidViewModel(app), Observable {
@@ -45,13 +47,16 @@ class TransactionsViewModel(
     /*
      * A method to do the work of calling the API
      */
-    fun callApi(
-        options: ViewLoadOptions?,
-        onComplete: (isForbidden: Boolean) -> Unit
-    ) {
+    fun callApi(options: ViewLoadOptions?, onComplete: (isForbidden: Boolean) -> Unit) {
+
+        val fetchOptions = FetchOptions(
+            "${FetchCacheKeys.TRANSACTIONS}-${this.companyId}",
+            options?.forceReload ?: false,
+            options?.causeError ?: false
+        )
 
         // Initialize state
-        this.viewModelCoordinator.onViewLoading(VIEW_MAIN)
+        this.viewModelCoordinator.onMainViewModelLoading()
         this.updateData(ArrayList(), null)
 
         // Make the remote call on a background thread
@@ -60,16 +65,18 @@ class TransactionsViewModel(
 
             try {
                 // Make the API call
-                val fetchOptions = FetchOptions(options?.causeError ?: false)
                 val data = that.fetchClient.getCompanyTransactions(that.companyId, fetchOptions)
-                val transactions = data.transactions.toList()
 
                 // Update data on the main thread
                 withContext(Dispatchers.Main) {
-                    that.updateData(transactions, null)
-                    that.viewModelCoordinator.onViewLoaded(VIEW_MAIN)
-                    onComplete(false)
+
+                    if (data != null) {
+                        that.updateData(data.transactions.toList(), null)
+                        that.viewModelCoordinator.onMainViewModelLoaded(fetchOptions.cacheKey)
+                        onComplete(false)
+                    }
                 }
+
             } catch (uiError: UIError) {
 
                 // Handle errors on the main thread
@@ -84,7 +91,7 @@ class TransactionsViewModel(
 
                         // Report other types of errors
                         that.updateData(ArrayList(), uiError)
-                        that.viewModelCoordinator.onViewLoadFailed(VIEW_MAIN, uiError)
+                        that.viewModelCoordinator.onMainViewModelLoaded(fetchOptions.cacheKey)
                         onComplete(false)
                     }
                 }

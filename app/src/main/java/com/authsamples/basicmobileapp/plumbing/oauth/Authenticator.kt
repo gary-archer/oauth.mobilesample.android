@@ -11,10 +11,10 @@ interface Authenticator {
     suspend fun getMetadata()
 
     // Try to get an access token
-    suspend fun getAccessToken(): String
+    suspend fun getAccessToken(): String?
 
     // Try to refresh an access token
-    suspend fun refreshAccessToken(): String
+    suspend fun synchronizedRefreshAccessToken(): String
 
     // Start a login redirect
     fun startLogin(launchAction: (i: Intent) -> Unit)

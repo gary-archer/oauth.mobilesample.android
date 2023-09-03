@@ -5,24 +5,26 @@ import androidx.databinding.Observable
 import androidx.databinding.PropertyChangeRegistry
 import androidx.lifecycle.AndroidViewModel
 import com.authsamples.basicmobileapp.R
+import com.authsamples.basicmobileapp.api.client.FetchCacheKeys
 import com.authsamples.basicmobileapp.api.client.FetchClient
 import com.authsamples.basicmobileapp.api.client.FetchOptions
 import com.authsamples.basicmobileapp.api.entities.Company
 import com.authsamples.basicmobileapp.plumbing.errors.UIError
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModelData
-import com.authsamples.basicmobileapp.views.utilities.Constants.VIEW_MAIN
 import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
 import com.authsamples.basicmobileapp.views.utilities.ViewModelCoordinator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
 
 /*
  * A simple view model class for the companies view
  */
 class CompaniesViewModel(
     private val fetchClient: FetchClient,
+    val eventBus: EventBus,
     private val viewModelCoordinator: ViewModelCoordinator,
     val app: Application
 ) : AndroidViewModel(app), Observable {
@@ -36,8 +38,14 @@ class CompaniesViewModel(
      */
     fun callApi(options: ViewLoadOptions?, onComplete: () -> Unit) {
 
+        val fetchOptions = FetchOptions(
+            FetchCacheKeys.COMPANIES,
+            options?.forceReload ?: false,
+            options?.causeError ?: false
+        )
+
         // Initialize state
-        this.viewModelCoordinator.onViewLoading(VIEW_MAIN)
+        this.viewModelCoordinator.onMainViewModelLoading()
         this.updateData(ArrayList(), null)
 
         // Make the remote call on a background thread
@@ -47,13 +55,15 @@ class CompaniesViewModel(
             try {
 
                 // Make the API call
-                val fetchOptions = FetchOptions(options?.causeError ?: false)
-                val companies = fetchClient.getCompanyList(fetchOptions).toList()
+                val companies = fetchClient.getCompanyList(fetchOptions)
 
                 // Return success results on the main thread
                 withContext(Dispatchers.Main) {
-                    that.updateData(companies, null)
-                    that.viewModelCoordinator.onViewLoaded(VIEW_MAIN)
+
+                    if (companies != null) {
+                        that.updateData(companies.toList(), null)
+                        that.viewModelCoordinator.onMainViewModelLoaded(fetchOptions.cacheKey)
+                    }
                 }
 
             } catch (uiError: UIError) {
@@ -61,7 +71,7 @@ class CompaniesViewModel(
                 // Return error results on the main thread
                 withContext(Dispatchers.Main) {
                     that.updateData(ArrayList(), uiError)
-                    that.viewModelCoordinator.onViewLoadFailed(VIEW_MAIN, uiError)
+                    that.viewModelCoordinator.onMainViewModelLoaded(fetchOptions.cacheKey)
                 }
 
             } finally {

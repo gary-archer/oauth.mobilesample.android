@@ -5,6 +5,7 @@ import androidx.databinding.Observable
 import androidx.databinding.PropertyChangeRegistry
 import androidx.lifecycle.AndroidViewModel
 import com.authsamples.basicmobileapp.R
+import com.authsamples.basicmobileapp.api.client.FetchCacheKeys
 import com.authsamples.basicmobileapp.api.client.FetchClient
 import com.authsamples.basicmobileapp.api.client.FetchOptions
 import com.authsamples.basicmobileapp.api.entities.ApiUserInfo
@@ -12,7 +13,6 @@ import com.authsamples.basicmobileapp.api.entities.OAuthUserInfo
 import com.authsamples.basicmobileapp.plumbing.errors.ErrorFactory
 import com.authsamples.basicmobileapp.plumbing.errors.UIError
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModelData
-import com.authsamples.basicmobileapp.views.utilities.Constants.VIEW_USERINFO
 import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
 import com.authsamples.basicmobileapp.views.utilities.ViewModelCoordinator
 import kotlinx.coroutines.CoroutineScope
@@ -22,12 +22,14 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
 
 /*
  * A simple view model class for the user info view
  */
 class UserInfoViewModel(
     val fetchClient: FetchClient,
+    val eventBus: EventBus,
     val viewModelCoordinator: ViewModelCoordinator,
     val app: Application
 ) : AndroidViewModel(app), Observable {
@@ -43,14 +45,20 @@ class UserInfoViewModel(
      */
     fun callApi(options: ViewLoadOptions?) {
 
-        // Return if we already have user info, unless we are doing a reload
-        if (this.isLoaded() && options?.forceReload != true) {
-            this.viewModelCoordinator.onViewLoaded(VIEW_USERINFO)
-            return
-        }
+        val oauthFetchOptions = FetchOptions(
+            FetchCacheKeys.OAUTHUSERINFO,
+            options?.forceReload ?: false,
+            options?.causeError ?: false
+        )
+
+        val apiFetchOptions = FetchOptions(
+            FetchCacheKeys.APIUSERINFO,
+            options?.forceReload ?: false,
+            options?.causeError ?: false
+        )
 
         // Initialize state
-        this.viewModelCoordinator.onViewLoading(VIEW_USERINFO)
+        this.viewModelCoordinator.onUserInfoViewModelLoading()
         this.resetError()
 
         // Make the remote call on a background thread
@@ -58,32 +66,41 @@ class UserInfoViewModel(
         CoroutineScope(Dispatchers.IO).launch {
 
             try {
-                // Initialize
-                val fetchOptions = FetchOptions(options?.causeError ?: false)
 
                 // Prevent an error on one thread causing a cancellation on the other, and hence a crash
-                // Use async in the below calls, to catch error info in this thread
+                // Also use async in the below calls, to catch error info in this calling thread
                 supervisorScope {
 
                     // Get OAuth user information from the authorization server
                     val oauthUserInfoTask = CoroutineScope(Dispatchers.IO).async {
-                        that.fetchClient.getOAuthUserInfo(fetchOptions)
+                        that.fetchClient.getOAuthUserInfo(oauthFetchOptions)
                     }
 
                     // Also get user attributes stored in the API's data
                     val apiUserInfoTask = CoroutineScope(Dispatchers.IO).async {
-                        that.fetchClient.getApiUserInfo(fetchOptions)
+                        that.fetchClient.getApiUserInfo(apiFetchOptions)
                     }
 
                     // Run tasks in parallel and wait for them both to complete
                     val results = awaitAll(oauthUserInfoTask, apiUserInfoTask)
-                    val oauthUserData = results[0] as OAuthUserInfo
-                    val apiUserData = results[1] as ApiUserInfo
+                    val oauthUserData = results[0] as OAuthUserInfo?
+                    val apiUserData = results[1] as ApiUserInfo?
 
                     // Update the view model on success
                     withContext(Dispatchers.Main) {
-                        that.updateData(oauthUserData, apiUserData, null)
-                        that.viewModelCoordinator.onViewLoaded(VIEW_USERINFO)
+
+                        // Update data
+                        if (oauthUserData != null) {
+                            that.updateOAuthUserInfo(oauthUserData)
+                        }
+                        if (apiUserData != null) {
+                            that.updateApiUserInfo(apiUserData)
+                        }
+
+                        // Send a notification if any data loaded
+                        if (oauthUserData != null || apiUserData != null) {
+                            that.viewModelCoordinator.onUserInfoViewModelLoaded()
+                        }
                     }
                 }
 
@@ -92,8 +109,8 @@ class UserInfoViewModel(
                 // Report errors
                 val uiError = ErrorFactory().fromException(ex)
                 withContext(Dispatchers.Main) {
-                    that.updateData(null, null, uiError)
-                    that.viewModelCoordinator.onViewLoadFailed(VIEW_USERINFO, uiError)
+                    that.updateError(uiError)
+                    that.viewModelCoordinator.onUserInfoViewModelLoaded()
                 }
             }
         }
@@ -148,9 +165,31 @@ class UserInfoViewModel(
     /*
      * Set user info and inform the binding system
      */
-    private fun updateData(oauthUserInfo: OAuthUserInfo?, apiUserInfo: ApiUserInfo?, error: UIError?) {
-        this.oauthUserInfo = oauthUserInfo
-        this.apiUserInfo = apiUserInfo
+    private fun updateOAuthUserInfo(oauthUserData: OAuthUserInfo?) {
+
+        if (oauthUserData != null) {
+            this.oauthUserInfo = oauthUserData
+            this.callbacks.notifyCallbacks(this, 0, null)
+        }
+    }
+
+    /*
+     * Set user info and inform the binding system
+     */
+    private fun updateApiUserInfo(apiUserData: ApiUserInfo?) {
+
+        if (apiUserData != null) {
+            this.apiUserInfo = apiUserData
+            this.callbacks.notifyCallbacks(this, 0, null)
+        }
+    }
+
+    /*
+     * Set an error state and blank out data
+     */
+    private fun updateError(error: UIError?) {
+        this.oauthUserInfo = null
+        this.apiUserInfo = null
         this.error = error
         this.callbacks.notifyCallbacks(this, 0, null)
     }
@@ -161,12 +200,5 @@ class UserInfoViewModel(
     private fun resetError() {
         this.error = null
         this.callbacks.notifyCallbacks(this, 0, null)
-    }
-
-    /*
-     * Determine whether we need to load data
-     */
-    private fun isLoaded(): Boolean {
-        return this.oauthUserInfo != null && this.apiUserInfo != null
     }
 }
