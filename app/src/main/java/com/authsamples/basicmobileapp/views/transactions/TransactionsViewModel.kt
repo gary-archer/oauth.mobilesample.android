@@ -66,14 +66,17 @@ class TransactionsViewModel(
             try {
                 // Make the API call
                 val data = that.fetchClient.getCompanyTransactions(that.companyId, fetchOptions)
-                val transactions = data.transactions.toList()
 
                 // Update data on the main thread
                 withContext(Dispatchers.Main) {
-                    that.updateData(transactions, null)
-                    that.viewModelCoordinator.onMainViewModelLoaded(fetchOptions.cacheKey)
-                    onComplete(false)
+
+                    if (data != null) {
+                        that.updateData(data.transactions.toList(), null)
+                        that.viewModelCoordinator.onMainViewModelLoaded(fetchOptions.cacheKey)
+                        onComplete(false)
+                    }
                 }
+
             } catch (uiError: UIError) {
 
                 // Handle errors on the main thread

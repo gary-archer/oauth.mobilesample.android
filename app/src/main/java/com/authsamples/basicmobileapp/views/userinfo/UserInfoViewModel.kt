@@ -83,13 +83,24 @@ class UserInfoViewModel(
 
                     // Run tasks in parallel and wait for them both to complete
                     val results = awaitAll(oauthUserInfoTask, apiUserInfoTask)
-                    val oauthUserData = results[0] as OAuthUserInfo
-                    val apiUserData = results[1] as ApiUserInfo
+                    val oauthUserData = results[0] as OAuthUserInfo?
+                    val apiUserData = results[1] as ApiUserInfo?
 
                     // Update the view model on success
                     withContext(Dispatchers.Main) {
-                        that.updateData(oauthUserData, apiUserData, null)
-                        that.viewModelCoordinator.onUserInfoViewModelLoaded()
+
+                        // Update data
+                        if (oauthUserData != null) {
+                            that.updateOAuthUserInfo(oauthUserData)
+                        }
+                        if (apiUserData != null) {
+                            that.updateApiUserInfo(apiUserData)
+                        }
+
+                        // Send a notification if any data loaded
+                        if (oauthUserData != null || apiUserData != null) {
+                            that.viewModelCoordinator.onUserInfoViewModelLoaded()
+                        }
                     }
                 }
 
@@ -98,7 +109,7 @@ class UserInfoViewModel(
                 // Report errors
                 val uiError = ErrorFactory().fromException(ex)
                 withContext(Dispatchers.Main) {
-                    that.updateData(null, null, uiError)
+                    that.updateError(uiError)
                     that.viewModelCoordinator.onUserInfoViewModelLoaded()
                 }
             }
@@ -154,9 +165,31 @@ class UserInfoViewModel(
     /*
      * Set user info and inform the binding system
      */
-    private fun updateData(oauthUserInfo: OAuthUserInfo?, apiUserInfo: ApiUserInfo?, error: UIError?) {
-        this.oauthUserInfo = oauthUserInfo
-        this.apiUserInfo = apiUserInfo
+    private fun updateOAuthUserInfo(oauthUserData: OAuthUserInfo?) {
+
+        if (oauthUserData != null) {
+            this.oauthUserInfo = oauthUserData
+            this.callbacks.notifyCallbacks(this, 0, null)
+        }
+    }
+
+    /*
+     * Set user info and inform the binding system
+     */
+    private fun updateApiUserInfo(apiUserData: ApiUserInfo?) {
+
+        if (apiUserData != null) {
+            this.apiUserInfo = apiUserData
+            this.callbacks.notifyCallbacks(this, 0, null)
+        }
+    }
+
+    /*
+     * Set an error state and blank out data
+     */
+    private fun updateError(error: UIError?) {
+        this.oauthUserInfo = null
+        this.apiUserInfo = null
         this.error = error
         this.callbacks.notifyCallbacks(this, 0, null)
     }

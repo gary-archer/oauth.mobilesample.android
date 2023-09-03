@@ -99,7 +99,7 @@ class AuthenticatorImpl(
     /*
      * Try to get an access token, which most commonly involves returning the current one
      */
-    override suspend fun getAccessToken(): String {
+    override suspend fun getAccessToken(): String? {
 
         // See if there is a token in storage
         val accessToken = this.tokenStorage.loadTokens()?.accessToken
@@ -107,14 +107,14 @@ class AuthenticatorImpl(
             return accessToken
         }
 
-        // Try to use the refresh token to get a new access token
-        return this.refreshAccessToken()
+        // Indicate no access token
+        return null
     }
 
     /*
      * Try to refresh an access token
      */
-    override suspend fun refreshAccessToken(): String {
+    override suspend fun synchronizedRefreshAccessToken(): String {
 
         val refreshToken = this.tokenStorage.loadTokens()?.refreshToken
         if (!refreshToken.isNullOrBlank()) {

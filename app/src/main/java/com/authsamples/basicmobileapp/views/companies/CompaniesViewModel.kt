@@ -55,12 +55,15 @@ class CompaniesViewModel(
             try {
 
                 // Make the API call
-                val companies = fetchClient.getCompanyList(fetchOptions).toList()
+                val companies = fetchClient.getCompanyList(fetchOptions)
 
                 // Return success results on the main thread
                 withContext(Dispatchers.Main) {
-                    that.updateData(companies, null)
-                    that.viewModelCoordinator.onMainViewModelLoaded(fetchOptions.cacheKey)
+
+                    if (companies != null) {
+                        that.updateData(companies.toList(), null)
+                        that.viewModelCoordinator.onMainViewModelLoaded(fetchOptions.cacheKey)
+                    }
                 }
 
             } catch (uiError: UIError) {
