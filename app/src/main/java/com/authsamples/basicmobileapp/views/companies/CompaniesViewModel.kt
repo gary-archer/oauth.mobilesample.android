@@ -17,12 +17,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
 
 /*
  * A simple view model class for the companies view
  */
 class CompaniesViewModel(
     private val fetchClient: FetchClient,
+    val eventBus: EventBus,
     private val viewModelCoordinator: ViewModelCoordinator,
     val app: Application
 ) : AndroidViewModel(app), Observable {

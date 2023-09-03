@@ -7,8 +7,7 @@ import android.view.ViewGroup
 import androidx.lifecycle.ViewModelProvider
 import com.authsamples.basicmobileapp.app.MainActivity
 import com.authsamples.basicmobileapp.databinding.FragmentHeaderButtonsBinding
-import com.authsamples.basicmobileapp.plumbing.events.DataStatusEvent
-import org.greenrobot.eventbus.EventBus
+import com.authsamples.basicmobileapp.plumbing.events.ViewModelFetchEvent
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
@@ -47,7 +46,7 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
         this.binding.btnReloadData.setCustomClickListener(this::onReload)
 
         // Subscribe for events
-        EventBus.getDefault().register(this)
+        this.binding.model!!.eventBus.register(this)
     }
 
     /*
@@ -55,14 +54,14 @@ class HeaderButtonsFragment : androidx.fragment.app.Fragment() {
      */
     override fun onDestroyView() {
         super.onDestroyView()
-        EventBus.getDefault().unregister(this)
+        this.binding.model!!.eventBus.unregister(this)
     }
 
     /*
      * During API calls we disable session buttons and then re-enable them afterwards
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(event: DataStatusEvent) {
+    fun onMessageEvent(event: ViewModelFetchEvent) {
         this.binding.model!!.updateDataStatus(event.loaded)
     }
 

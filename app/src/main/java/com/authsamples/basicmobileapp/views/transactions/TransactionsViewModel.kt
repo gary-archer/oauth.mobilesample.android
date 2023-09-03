@@ -18,13 +18,15 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
 
 /*
  * A simple view model class for the transactions view
  */
 class TransactionsViewModel(
-    val fetchClient: FetchClient,
-    val viewModelCoordinator: ViewModelCoordinator,
+    private val fetchClient: FetchClient,
+    val eventBus: EventBus,
+    private val viewModelCoordinator: ViewModelCoordinator,
     val companyId: String,
     val app: Application
 ) : AndroidViewModel(app), Observable {

@@ -14,6 +14,7 @@ import com.authsamples.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authsamples.basicmobileapp.plumbing.errors.ErrorConsoleReporter
 import com.authsamples.basicmobileapp.plumbing.errors.ErrorFactory
 import com.authsamples.basicmobileapp.plumbing.errors.UIError
+import com.authsamples.basicmobileapp.plumbing.events.ReloadDataEvent
 import com.authsamples.basicmobileapp.plumbing.oauth.Authenticator
 import com.authsamples.basicmobileapp.plumbing.oauth.AuthenticatorImpl
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModelData
@@ -23,10 +24,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
 
 /*
  * Global data is stored in the view model class for the main activity, which is created only once
  */
+@Suppress("TooManyFunctions")
 class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Observable {
 
     // Global objects
@@ -34,6 +37,7 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
     val authenticator: Authenticator
     val fetchClient: FetchClient
     val fetchCache: FetchCache
+    val eventBus: EventBus
     val viewModelCoordinator: ViewModelCoordinator
     var isDeviceSecured: Boolean = false
     var isTopMost: Boolean = true
@@ -47,14 +51,14 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
         // Load configuration from the deployed JSON file
         this.configuration = ConfigurationLoader().load(this.app.applicationContext)
 
+        // Create objects used for coordination
+        this.fetchCache = FetchCache()
+        this.eventBus = EventBus.getDefault()
+        this.viewModelCoordinator = ViewModelCoordinator(this.eventBus, this.fetchCache)
+
         // Create global objects for OAuth and API calls
         this.authenticator = AuthenticatorImpl(this.configuration.oauth, this.app.applicationContext)
         this.fetchClient = FetchClient(this.configuration, this.authenticator)
-        this.fetchCache = FetchCache()
-
-        // Create a helper class notified by view models that call APIs
-        // This is used to trigger a login redirect only once, after all view models have tried to load
-        this.viewModelCoordinator = ViewModelCoordinator(this.fetchCache)
 
         // Initialize flags
         this.isDeviceSecured = DeviceSecurity.isDeviceSecured(this.app.applicationContext)
@@ -218,6 +222,26 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
     fun finishLogout() {
         this.authenticator.finishLogout()
         this.isTopMost = true
+    }
+
+    /*
+     * Publish an event to update all active views
+     */
+    fun reloadData(causeError: Boolean) {
+
+        this.updateError(null)
+        this.viewModelCoordinator.resetState()
+        this.eventBus.post(ReloadDataEvent(causeError))
+    }
+
+    /*
+     * If there were load errors, try to reload data when Home is pressed
+     */
+    fun reloadDataOnError() {
+
+        if (this.error != null || this.viewModelCoordinator.hasErrors()) {
+            this.reloadData(false)
+        }
     }
 
     /*

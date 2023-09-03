@@ -12,10 +12,9 @@ import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.app.MainActivityViewModel
 import com.authsamples.basicmobileapp.databinding.FragmentCompaniesBinding
 import com.authsamples.basicmobileapp.plumbing.events.NavigatedEvent
-import com.authsamples.basicmobileapp.plumbing.events.ReloadMainViewEvent
+import com.authsamples.basicmobileapp.plumbing.events.ReloadDataEvent
 import com.authsamples.basicmobileapp.views.utilities.ViewConstants
 import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
-import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
@@ -42,6 +41,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
         val mainViewModel: MainActivityViewModel by activityViewModels()
         val factory = CompaniesViewModelFactory(
             mainViewModel.fetchClient,
+            mainViewModel.eventBus,
             mainViewModel.viewModelCoordinator,
             mainViewModel.app
         )
@@ -53,7 +53,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
         list.adapter = CompanyArrayAdapter(this.requireContext(), this.binding.model!!, this::onItemClick)
 
         // Notify that the main view has changed
-        EventBus.getDefault().post(NavigatedEvent(true))
+        this.binding.model!!.eventBus.post(NavigatedEvent(true))
         return this.binding.root
     }
 
@@ -64,7 +64,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Subscribe to events and do the initial load of data
-        EventBus.getDefault().register(this)
+        this.binding.model!!.eventBus.register(this)
         this.loadData()
     }
 
@@ -82,14 +82,14 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
      */
     override fun onDestroyView() {
         super.onDestroyView()
-        EventBus.getDefault().unregister(this)
+        this.binding.model!!.eventBus.unregister(this)
     }
 
     /*
      * Receive messages
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(event: ReloadMainViewEvent) {
+    fun onMessageEvent(event: ReloadDataEvent) {
         this.loadData(ViewLoadOptions(true, event.causeError))
     }
 

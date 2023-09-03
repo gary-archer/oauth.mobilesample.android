@@ -22,12 +22,14 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
+import org.greenrobot.eventbus.EventBus
 
 /*
  * A simple view model class for the user info view
  */
 class UserInfoViewModel(
     val fetchClient: FetchClient,
+    val eventBus: EventBus,
     val viewModelCoordinator: ViewModelCoordinator,
     val app: Application
 ) : AndroidViewModel(app), Observable {

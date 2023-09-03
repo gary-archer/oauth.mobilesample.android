@@ -9,7 +9,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.authsamples.basicmobileapp.app.MainActivityViewModel
 import com.authsamples.basicmobileapp.databinding.FragmentSessionBinding
 import com.authsamples.basicmobileapp.plumbing.events.NavigatedEvent
-import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
@@ -35,7 +34,11 @@ class SessionFragment : androidx.fragment.app.Fragment() {
 
         // Create our view model using data from the main view model
         val mainViewModel: MainActivityViewModel by activityViewModels()
-        val factory = SessionViewModelFactory(mainViewModel.fetchClient.sessionId, this.requireActivity().application)
+        val factory = SessionViewModelFactory(
+            mainViewModel.fetchClient.sessionId,
+            mainViewModel.eventBus,
+            this.requireActivity().application
+        )
         this.binding.model = ViewModelProvider(this, factory).get(SessionViewModel::class.java)
 
         return this.binding.root
@@ -48,7 +51,7 @@ class SessionFragment : androidx.fragment.app.Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Subscribe to events
-        EventBus.getDefault().register(this)
+        this.binding.model!!.eventBus.register(this)
     }
 
     /*
@@ -56,7 +59,7 @@ class SessionFragment : androidx.fragment.app.Fragment() {
      */
     override fun onDestroyView() {
         super.onDestroyView()
-        EventBus.getDefault().unregister(this)
+        this.binding.model!!.eventBus.unregister(this)
     }
 
     /*

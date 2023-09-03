@@ -9,9 +9,8 @@ import androidx.lifecycle.ViewModelProvider
 import com.authsamples.basicmobileapp.app.MainActivityViewModel
 import com.authsamples.basicmobileapp.databinding.FragmentUserInfoBinding
 import com.authsamples.basicmobileapp.plumbing.events.NavigatedEvent
-import com.authsamples.basicmobileapp.plumbing.events.ReloadUserInfoEvent
+import com.authsamples.basicmobileapp.plumbing.events.ReloadDataEvent
 import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
-import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
@@ -38,6 +37,7 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
         val mainViewModel: MainActivityViewModel by activityViewModels()
         val factory = UserInfoViewModelFactory(
             mainViewModel.fetchClient,
+            mainViewModel.eventBus,
             mainViewModel.viewModelCoordinator,
             mainViewModel.app
         )
@@ -51,7 +51,7 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        EventBus.getDefault().register(this)
+        this.binding.model!!.eventBus.register(this)
     }
 
     /*
@@ -59,7 +59,7 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
      */
     override fun onDestroyView() {
         super.onDestroyView()
-        EventBus.getDefault().unregister(this)
+        this.binding.model!!.eventBus.unregister(this)
     }
 
     /*
@@ -84,7 +84,7 @@ class UserInfoFragment : androidx.fragment.app.Fragment() {
      * Handle reload events
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    fun onMessageEvent(event: ReloadUserInfoEvent) {
+    fun onMessageEvent(event: ReloadDataEvent) {
         this.loadData(ViewLoadOptions(true, event.causeError))
     }
 

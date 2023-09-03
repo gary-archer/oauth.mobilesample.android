@@ -13,6 +13,7 @@ import org.greenrobot.eventbus.EventBus
  * This ensures that login redirects are only triggered once
  */
 class ViewModelCoordinator(
+    private val eventBus: EventBus,
     private val fetchCache: FetchCache
 ) {
 
@@ -28,7 +29,7 @@ class ViewModelCoordinator(
         // Send an event so that a subscriber can show a UI effect, such as disabling header buttons
         if (!this.isMainLoading) {
             this.isMainLoading = true
-            EventBus.getDefault().post(ViewModelFetchEvent(false))
+            this.eventBus.post(ViewModelFetchEvent(false))
         }
     }
 
@@ -43,8 +44,8 @@ class ViewModelCoordinator(
 
         // On success, send an event so that a subscriber can show a UI effect such as enabling header buttons
         val found = this.fetchCache.getItem(cacheKey)
-        if (found?.getError() != null) {
-            EventBus.getDefault().post(ViewModelFetchEvent(true))
+        if (found?.getError() == null) {
+            this.eventBus.post(ViewModelFetchEvent(true))
         }
 
         // If all views have loaded, see if we need to trigger a login redirect
@@ -96,7 +97,7 @@ class ViewModelCoordinator(
             }
 
             if (found != null) {
-                EventBus.getDefault().post(LoginRequiredEvent())
+                this.eventBus.post(LoginRequiredEvent())
             }
         }
     }
