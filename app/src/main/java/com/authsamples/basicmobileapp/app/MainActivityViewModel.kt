@@ -248,6 +248,7 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
      * For testing, make the access token act expired and handle any errors
      */
     fun expireAccessToken() {
+
         try {
 
             this.updateError(null)
@@ -264,6 +265,7 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
      * For testing, make the refresh token act expired and handle any errors
      */
     fun expireRefreshToken() {
+
         try {
 
             this.updateError(null)

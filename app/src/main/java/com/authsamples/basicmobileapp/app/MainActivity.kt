@@ -187,7 +187,7 @@ class MainActivity : AppCompatActivity() {
         // Reset the main view's own error
         this.binding.model!!.updateError(null)
 
-        // Navigate to the home view
+        // Navigate to the home view unless already there
         this.navigationHelper.navigateTo(R.id.companies_fragment)
 
         // Force a data reload if recovering from errors
