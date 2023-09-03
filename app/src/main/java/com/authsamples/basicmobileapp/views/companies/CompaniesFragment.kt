@@ -13,7 +13,7 @@ import com.authsamples.basicmobileapp.app.MainActivityViewModel
 import com.authsamples.basicmobileapp.databinding.FragmentCompaniesBinding
 import com.authsamples.basicmobileapp.plumbing.events.NavigatedEvent
 import com.authsamples.basicmobileapp.plumbing.events.ReloadMainViewEvent
-import com.authsamples.basicmobileapp.views.utilities.Constants
+import com.authsamples.basicmobileapp.views.utilities.ViewConstants
 import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -73,7 +73,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
      */
     fun onItemClick(viewModelItem: CompanyItemViewModel) {
         val args = Bundle()
-        args.putString(Constants.ARG_COMPANY_ID, viewModelItem.company.id.toString())
+        args.putString(ViewConstants.ARG_COMPANY_ID, viewModelItem.company.id.toString())
         findNavController().navigate(R.id.transactions_fragment, args)
     }
 

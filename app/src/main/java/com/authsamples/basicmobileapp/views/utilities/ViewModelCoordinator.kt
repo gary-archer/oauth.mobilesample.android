@@ -1,89 +1,86 @@
 package com.authsamples.basicmobileapp.views.utilities
 
+import com.authsamples.basicmobileapp.api.client.FetchCache
+import com.authsamples.basicmobileapp.api.client.FetchCacheKeys
 import com.authsamples.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authsamples.basicmobileapp.plumbing.errors.UIError
-import com.authsamples.basicmobileapp.plumbing.events.DataStatusEvent
 import com.authsamples.basicmobileapp.plumbing.events.LoginRequiredEvent
-import com.authsamples.basicmobileapp.views.utilities.Constants.VIEW_MAIN
+import com.authsamples.basicmobileapp.plumbing.events.ViewModelFetchEvent
 import org.greenrobot.eventbus.EventBus
 
 /*
  * Coordinates API requests from multiple views, and notifies once all API calls are complete
  * This ensures that login redirects are only triggered once
  */
-class ViewModelCoordinator {
+class ViewModelCoordinator(
+    private val fetchCache: FetchCache
+) {
 
-    // A map of view names to their loaded state
-    private val views: MutableMap<String, Boolean>
-
-    // An overall login required flag
-    private var loginRequired: Boolean
-
-    /*
-     * Set initial state
-     */
-    init {
-        this.views = mutableMapOf()
-        this.loginRequired = false
-    }
+    private var isMainLoading = false
+    private var isUserInfoLoading = false
+    private var mainCacheKey = ""
 
     /*
-     * Each view is added along with an initial unloaded state
+     * This is called when the companies or transactions view model start sending API requests
      */
-    fun addView(name: String) {
-        this.views.put(name, false)
-    }
+    fun onMainViewModelLoading() {
 
-    /*
-     * Handle loading notifications, which will disable the header buttons
-     */
-    fun onViewLoading(name: String) {
-
-        views[name] = false
-
-        if (name == VIEW_MAIN) {
-            EventBus.getDefault().post(DataStatusEvent(false))
+        // Send an event so that a subscriber can show a UI effect, such as disabling header buttons
+        if (!this.isMainLoading) {
+            this.isMainLoading = true
+            EventBus.getDefault().post(ViewModelFetchEvent(false))
         }
     }
 
     /*
-     * Update state when loaded, which may trigger a login redirect once all views are loaded
+     * This is called when the companies or transactions view model receive an API response
      */
-    fun onViewLoaded(name: String) {
+    fun onMainViewModelLoaded(cacheKey: String) {
 
-        views[name] = true
+        // Record the cache key so that we can look up its result later
+        this.isMainLoading = false
+        this.mainCacheKey = cacheKey
 
-        if (name == VIEW_MAIN) {
-            EventBus.getDefault().post(DataStatusEvent(true))
+        // On success, send an event so that a subscriber can show a UI effect such as enabling header buttons
+        val found = this.fetchCache.getItem(cacheKey)
+        if (found?.getError() != null) {
+            EventBus.getDefault().post(ViewModelFetchEvent(true))
         }
 
+        // If all views have loaded, see if we need to trigger a login redirect
         this.triggerLoginIfRequired()
     }
 
     /*
-     * Update state when there is a load error, which may trigger a login redirect once all views are loaded
+     * Called when a non-main view model begins loading
      */
-    fun onViewLoadFailed(name: String, error: UIError) {
+    fun onUserInfoViewModelLoading() {
+        this.isUserInfoLoading = true
+    }
 
-        views[name] = true
-
-        if (error.errorCode.equals(ErrorCodes.loginRequired)) {
-            this.loginRequired = true
-        }
-
+    /*
+     * This is called when the user info view model receives an API response
+     * If all views have loaded, see if we need to trigger a login redirect
+     */
+    fun onUserInfoViewModelLoaded() {
+        this.isUserInfoLoading = false
         this.triggerLoginIfRequired()
+    }
+
+    /*
+     * Return true if there were any load errors
+     */
+    fun hasErrors(): Boolean {
+        return this.getLoadErrors().isNotEmpty()
     }
 
     /*
      * Reset state when the Reload Data button is clicked
      */
-    fun clearState() {
-
-        for (view in this.views) {
-            view.setValue(false)
-        }
-
-        this.loginRequired = false
+    fun resetState() {
+        this.isMainLoading = false
+        this.isUserInfoLoading = false
+        this.mainCacheKey = ""
     }
 
     /*
@@ -91,9 +88,49 @@ class ViewModelCoordinator {
      */
     private fun triggerLoginIfRequired() {
 
-        val allViewsLoaded = this.views.filter { i -> i.value }.size == this.views.size
-        if (allViewsLoaded && this.loginRequired) {
-            EventBus.getDefault().post(LoginRequiredEvent())
+        if (this.isAllViewsLoaded()) {
+
+            val errors = this.getLoadErrors()
+            val found = errors.find { e ->
+                e.errorCode == ErrorCodes.loginRequired
+            }
+
+            if (found != null) {
+                EventBus.getDefault().post(LoginRequiredEvent())
+            }
         }
+    }
+
+    /*
+     * See if all API requests have completed, and there are only 3 in the app
+     */
+    private fun isAllViewsLoaded(): Boolean {
+        return !this.isMainLoading && !this.isUserInfoLoading
+    }
+
+    /*
+     * Get the result of loading all views
+     */
+    private fun getLoadErrors(): List<UIError> {
+
+        val errors: MutableList<UIError> = ArrayList()
+
+        val keys: MutableList<String> = ArrayList()
+        if (this.mainCacheKey.isNotBlank()) {
+            keys.add(this.mainCacheKey)
+        }
+        keys.add(FetchCacheKeys.OAUTHUSERINFO)
+        keys.add(FetchCacheKeys.APIUSERINFO)
+
+        keys.forEach { key ->
+
+            val found = this.fetchCache.getItem(key)
+            val error = found?.getError()
+            if (error != null) {
+                errors.add(error)
+            }
+        }
+
+        return errors
     }
 }

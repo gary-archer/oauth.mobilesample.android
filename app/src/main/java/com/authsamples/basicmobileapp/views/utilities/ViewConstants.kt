@@ -1,9 +1,9 @@
 package com.authsamples.basicmobileapp.views.utilities
 
 /*
- * Constant values
+ * Constant values related to views
  */
-object Constants {
+object ViewConstants {
 
     // The company id passed when navigating to the transactions fragment
     const val ARG_COMPANY_ID = "COMPANY_ID"

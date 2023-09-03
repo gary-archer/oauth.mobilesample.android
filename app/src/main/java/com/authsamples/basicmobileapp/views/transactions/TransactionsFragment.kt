@@ -13,7 +13,7 @@ import com.authsamples.basicmobileapp.app.MainActivityViewModel
 import com.authsamples.basicmobileapp.databinding.FragmentTransactionsBinding
 import com.authsamples.basicmobileapp.plumbing.events.NavigatedEvent
 import com.authsamples.basicmobileapp.plumbing.events.ReloadMainViewEvent
-import com.authsamples.basicmobileapp.views.utilities.Constants
+import com.authsamples.basicmobileapp.views.utilities.ViewConstants
 import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -40,7 +40,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
         this.binding = FragmentTransactionsBinding.inflate(inflater, container, false)
 
         // Get data passed in
-        val companyId = this.arguments?.getString(Constants.ARG_COMPANY_ID, "") ?: ""
+        val companyId = this.arguments?.getString(ViewConstants.ARG_COMPANY_ID, "") ?: ""
 
         // Create the view model
         val mainViewModel: MainActivityViewModel by activityViewModels()

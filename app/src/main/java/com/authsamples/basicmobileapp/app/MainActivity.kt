@@ -196,7 +196,7 @@ class MainActivity : AppCompatActivity() {
     fun onReloadData(causeError: Boolean) {
 
         this.binding.model!!.updateError(null)
-        this.binding.model!!.viewModelCoordinator.clearState()
+        this.binding.model!!.viewModelCoordinator.resetState()
         EventBus.getDefault().post(ReloadMainViewEvent(causeError))
         EventBus.getDefault().post(ReloadUserInfoEvent(causeError))
     }

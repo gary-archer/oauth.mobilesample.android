@@ -104,7 +104,7 @@ class NavigationHelper(
 
                     newFragmentId = R.id.transactions_fragment
                     args = Bundle()
-                    args.putString(Constants.ARG_COMPANY_ID, companyId)
+                    args.putString(ViewConstants.ARG_COMPANY_ID, companyId)
                 }
             }
         }

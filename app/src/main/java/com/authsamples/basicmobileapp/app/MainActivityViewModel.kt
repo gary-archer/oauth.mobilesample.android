@@ -6,6 +6,7 @@ import androidx.databinding.Observable
 import androidx.databinding.PropertyChangeRegistry
 import androidx.lifecycle.AndroidViewModel
 import com.authsamples.basicmobileapp.R
+import com.authsamples.basicmobileapp.api.client.FetchCache
 import com.authsamples.basicmobileapp.api.client.FetchClient
 import com.authsamples.basicmobileapp.configuration.Configuration
 import com.authsamples.basicmobileapp.configuration.ConfigurationLoader
@@ -16,7 +17,6 @@ import com.authsamples.basicmobileapp.plumbing.errors.UIError
 import com.authsamples.basicmobileapp.plumbing.oauth.Authenticator
 import com.authsamples.basicmobileapp.plumbing.oauth.AuthenticatorImpl
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModelData
-import com.authsamples.basicmobileapp.views.utilities.Constants
 import com.authsamples.basicmobileapp.views.utilities.DeviceSecurity
 import com.authsamples.basicmobileapp.views.utilities.ViewModelCoordinator
 import kotlinx.coroutines.CoroutineScope
@@ -33,6 +33,7 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
     val configuration: Configuration
     val authenticator: Authenticator
     val fetchClient: FetchClient
+    val fetchCache: FetchCache
     val viewModelCoordinator: ViewModelCoordinator
     var isDeviceSecured: Boolean = false
     var isTopMost: Boolean = true
@@ -49,16 +50,15 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
         // Create global objects for OAuth and API calls
         this.authenticator = AuthenticatorImpl(this.configuration.oauth, this.app.applicationContext)
         this.fetchClient = FetchClient(this.configuration, this.authenticator)
+        this.fetchCache = FetchCache()
+
+        // Create a helper class notified by view models that call APIs
+        // This is used to trigger a login redirect only once, after all view models have tried to load
+        this.viewModelCoordinator = ViewModelCoordinator(this.fetchCache)
 
         // Initialize flags
         this.isDeviceSecured = DeviceSecurity.isDeviceSecured(this.app.applicationContext)
         this.isTopMost = true
-
-        // Create a helper class to notify us about views that make API calls
-        // This will enable us to only trigger a login redirect once, after all views have tried to load
-        this.viewModelCoordinator = ViewModelCoordinator()
-        this.viewModelCoordinator.addView(Constants.VIEW_MAIN)
-        this.viewModelCoordinator.addView(Constants.VIEW_USERINFO)
     }
 
     /*
@@ -71,8 +71,12 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
             return
         }
 
-        // Initialize state, and prevent deep links during login
+        // Reset cached state
+        this.fetchCache.clearAll()
+        this.viewModelCoordinator.resetState()
         this.updateError(null)
+
+        // Prevent deep links being processed during login
         this.isTopMost = false
 
         // Run on a background thread
@@ -167,8 +171,12 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
             return
         }
 
-        // Initialize state, and prevent deep links during logout
+        // Reset cached state
+        this.fetchCache.clearAll()
+        this.viewModelCoordinator.resetState()
         this.updateError(null)
+
+        // Prevent deep links being processed during logout
         this.isTopMost = false
 
         // Run on a background thread

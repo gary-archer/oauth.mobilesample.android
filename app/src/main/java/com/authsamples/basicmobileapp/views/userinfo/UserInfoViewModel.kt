@@ -5,6 +5,7 @@ import androidx.databinding.Observable
 import androidx.databinding.PropertyChangeRegistry
 import androidx.lifecycle.AndroidViewModel
 import com.authsamples.basicmobileapp.R
+import com.authsamples.basicmobileapp.api.client.FetchCacheKeys
 import com.authsamples.basicmobileapp.api.client.FetchClient
 import com.authsamples.basicmobileapp.api.client.FetchOptions
 import com.authsamples.basicmobileapp.api.entities.ApiUserInfo
@@ -12,7 +13,6 @@ import com.authsamples.basicmobileapp.api.entities.OAuthUserInfo
 import com.authsamples.basicmobileapp.plumbing.errors.ErrorFactory
 import com.authsamples.basicmobileapp.plumbing.errors.UIError
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModelData
-import com.authsamples.basicmobileapp.views.utilities.Constants.VIEW_USERINFO
 import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
 import com.authsamples.basicmobileapp.views.utilities.ViewModelCoordinator
 import kotlinx.coroutines.CoroutineScope
@@ -43,14 +43,20 @@ class UserInfoViewModel(
      */
     fun callApi(options: ViewLoadOptions?) {
 
-        // Return if we already have user info, unless we are doing a reload
-        if (this.isLoaded() && options?.forceReload != true) {
-            this.viewModelCoordinator.onViewLoaded(VIEW_USERINFO)
-            return
-        }
+        val oauthFetchOptions = FetchOptions(
+            FetchCacheKeys.OAUTHUSERINFO,
+            options?.forceReload ?: false,
+            options?.causeError ?: false
+        )
+
+        val apiFetchOptions = FetchOptions(
+            FetchCacheKeys.APIUSERINFO,
+            options?.forceReload ?: false,
+            options?.causeError ?: false
+        )
 
         // Initialize state
-        this.viewModelCoordinator.onViewLoading(VIEW_USERINFO)
+        this.viewModelCoordinator.onUserInfoViewModelLoading()
         this.resetError()
 
         // Make the remote call on a background thread
@@ -58,21 +64,19 @@ class UserInfoViewModel(
         CoroutineScope(Dispatchers.IO).launch {
 
             try {
-                // Initialize
-                val fetchOptions = FetchOptions(options?.causeError ?: false)
 
                 // Prevent an error on one thread causing a cancellation on the other, and hence a crash
-                // Use async in the below calls, to catch error info in this thread
+                // Also use async in the below calls, to catch error info in this calling thread
                 supervisorScope {
 
                     // Get OAuth user information from the authorization server
                     val oauthUserInfoTask = CoroutineScope(Dispatchers.IO).async {
-                        that.fetchClient.getOAuthUserInfo(fetchOptions)
+                        that.fetchClient.getOAuthUserInfo(oauthFetchOptions)
                     }
 
                     // Also get user attributes stored in the API's data
                     val apiUserInfoTask = CoroutineScope(Dispatchers.IO).async {
-                        that.fetchClient.getApiUserInfo(fetchOptions)
+                        that.fetchClient.getApiUserInfo(apiFetchOptions)
                     }
 
                     // Run tasks in parallel and wait for them both to complete
@@ -83,7 +87,7 @@ class UserInfoViewModel(
                     // Update the view model on success
                     withContext(Dispatchers.Main) {
                         that.updateData(oauthUserData, apiUserData, null)
-                        that.viewModelCoordinator.onViewLoaded(VIEW_USERINFO)
+                        that.viewModelCoordinator.onUserInfoViewModelLoaded()
                     }
                 }
 
@@ -93,7 +97,7 @@ class UserInfoViewModel(
                 val uiError = ErrorFactory().fromException(ex)
                 withContext(Dispatchers.Main) {
                     that.updateData(null, null, uiError)
-                    that.viewModelCoordinator.onViewLoadFailed(VIEW_USERINFO, uiError)
+                    that.viewModelCoordinator.onUserInfoViewModelLoaded()
                 }
             }
         }
@@ -161,12 +165,5 @@ class UserInfoViewModel(
     private fun resetError() {
         this.error = null
         this.callbacks.notifyCallbacks(this, 0, null)
-    }
-
-    /*
-     * Determine whether we need to load data
-     */
-    private fun isLoaded(): Boolean {
-        return this.oauthUserInfo != null && this.apiUserInfo != null
     }
 }
