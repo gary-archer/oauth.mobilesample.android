@@ -20,6 +20,13 @@ class NavigationHelper(
     lateinit var deepLinkBaseUrl: String
 
     /*
+     * Return the current fragment
+     */
+    fun getActiveMainFragment(): Fragment? {
+        return this.navHostFragment.childFragmentManager.primaryNavigationFragment
+    }
+
+    /*
      * A utility method to navigate and manage the back stack
      */
     fun navigateTo(fragmentId: Int, args: Bundle? = null) {

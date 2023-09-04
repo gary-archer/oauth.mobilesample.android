@@ -11,6 +11,8 @@ import androidx.navigation.fragment.NavHostFragment
 import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.databinding.ActivityMainBinding
 import com.authsamples.basicmobileapp.plumbing.events.LoginRequiredEvent
+import com.authsamples.basicmobileapp.views.companies.CompaniesFragment
+import com.authsamples.basicmobileapp.views.security.LoginRequiredFragment
 import com.authsamples.basicmobileapp.views.utilities.DeviceSecurity
 import com.authsamples.basicmobileapp.views.utilities.NavigationHelper
 import org.greenrobot.eventbus.Subscribe
@@ -149,7 +151,17 @@ class MainActivity : AppCompatActivity() {
     private fun onFinishLogin(responseIntent: Intent?) {
 
         val onSuccess = {
-            this.binding.model!!.reloadData(false)
+
+            if (this.navigationHelper.getActiveMainFragment() is LoginRequiredFragment) {
+
+                // If the user logs in after explicitly logging out, then navigate home
+                this.navigationHelper.navigateTo(R.id.companies_fragment)
+
+            } else {
+
+                // Otherwise the user is already in the right view, and data must be reloaded
+                this.binding.model!!.reloadData(false)
+            }
         }
 
         val onCancelled = {
@@ -184,14 +196,25 @@ class MainActivity : AppCompatActivity() {
      */
     fun onHome() {
 
-        // Reset the main view's own error
+        // Reset the main view's own error if required
         this.binding.model!!.updateError(null)
 
-        // Navigate to the home view unless already there
-        this.navigationHelper.navigateTo(R.id.companies_fragment)
+        // Inspect the current view
+        if (this.navigationHelper.getActiveMainFragment() is LoginRequiredFragment) {
 
-        // Force a data reload if recovering from errors
-        this.binding.model!!.reloadDataOnError()
+            // Start a new login when logged out
+            this.onLoginRequired(LoginRequiredEvent())
+
+        } else {
+
+            // Navigate to the home view unless already there
+            if (!(this.navigationHelper.getActiveMainFragment() is CompaniesFragment)) {
+                this.navigationHelper.navigateTo(R.id.companies_fragment)
+            }
+
+            // Force a data reload if recovering from errors
+            this.binding.model!!.reloadDataOnError()
+        }
     }
 
     /*
