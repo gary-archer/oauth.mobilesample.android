@@ -12,7 +12,7 @@
 ## Views
 
 The app is a simple UI with some basic navigation between views, to render fictional resources.\
-The data is returned from an API that authorizes access to resources using domain specific claims.
+The data is returned from an API that authorizes access to resources using claims from multiple sources.
 
 ![App Views](./doc/views.png)
 
@@ -41,7 +41,7 @@ After login you can test all lifecycle operations, including token refresh, expi
 ## Further Information
 
 * See the [API Journey - Client Side](https://authguidance.com/api-journey-client-side/) for further information on the app's behaviour
-* Further details about the Android app are provided, starting in the [Code Sample Overview](https://authguidance.com/android-code-sample-overview/) blog post
+* Further details specific to the Android app are provided, starting in the [Code Sample Overview](https://authguidance.com/android-code-sample-overview/) blog post
 
 ## Programming Languages
 
@@ -49,7 +49,7 @@ After login you can test all lifecycle operations, including token refresh, expi
 
 ## Infrastructure
 
-* [AppAuth-Android](https://github.com/openid/AppAuth-Android) is used to implement Authorization Code Flow (PKCE) with a Claimed HTTPS Scheme
+* [AppAuth-Android](https://github.com/openid/AppAuth-Android) is used to implement the Authorization Code Flow (PKCE) with a Claimed HTTPS Scheme
 * AWS API Gateway is used to host the back end OAuth Secured Web API
 * AWS Cognito is used as the default Authorization Server for the Mobile App and API
 * Android Shared Preferences is used for private storage of tokens on the device after login
