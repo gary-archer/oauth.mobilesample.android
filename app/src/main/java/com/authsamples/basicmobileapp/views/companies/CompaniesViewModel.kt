@@ -62,7 +62,6 @@ class CompaniesViewModel(
 
                     if (companies != null) {
                         that.updateData(companies.toList(), null)
-                        that.viewModelCoordinator.onMainViewModelLoaded(fetchOptions.cacheKey)
                     }
                 }
 
@@ -71,13 +70,13 @@ class CompaniesViewModel(
                 // Return error results on the main thread
                 withContext(Dispatchers.Main) {
                     that.updateData(ArrayList(), uiError)
-                    that.viewModelCoordinator.onMainViewModelLoaded(fetchOptions.cacheKey)
                 }
 
             } finally {
 
                 // Inform the view once complete
                 withContext(Dispatchers.Main) {
+                    that.viewModelCoordinator.onMainViewModelLoaded(fetchOptions.cacheKey)
                     onComplete()
                 }
             }

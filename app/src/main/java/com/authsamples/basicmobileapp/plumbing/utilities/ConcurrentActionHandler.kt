@@ -17,9 +17,6 @@ class ConcurrentActionHandler {
     // Queue all requests in an array of continuations
     private val continuations = Collections.synchronizedList(ArrayList<Continuation<Unit>>())
 
-    // A lock object for multiple statements
-    private val lock = Object()
-
     /*
      * Run the supplied action the first time only and return a continuation to the caller
      */

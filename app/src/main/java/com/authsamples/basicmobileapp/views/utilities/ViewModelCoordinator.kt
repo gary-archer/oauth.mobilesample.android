@@ -17,20 +17,20 @@ class ViewModelCoordinator(
     private val fetchCache: FetchCache
 ) {
 
-    private var isMainLoading = false
-    private var isUserInfoLoading = false
     private var mainCacheKey = ""
+    private var loadingCount = 0
+    private var loadedCount = 0
 
     /*
      * This is called when the companies or transactions view model start sending API requests
      */
     fun onMainViewModelLoading() {
 
+        // Update stats
+        ++this.loadingCount
+
         // Send an event so that a subscriber can show a UI effect, such as disabling header buttons
-        if (!this.isMainLoading) {
-            this.isMainLoading = true
-            this.eventBus.post(ViewModelFetchEvent(false))
-        }
+        this.eventBus.post(ViewModelFetchEvent(false))
     }
 
     /*
@@ -39,8 +39,8 @@ class ViewModelCoordinator(
     fun onMainViewModelLoaded(cacheKey: String) {
 
         // Record the cache key so that we can look up its result later
-        this.isMainLoading = false
         this.mainCacheKey = cacheKey
+        ++this.loadedCount
 
         // On success, send an event so that a subscriber can show a UI effect such as enabling header buttons
         val found = this.fetchCache.getItem(cacheKey)
@@ -56,7 +56,7 @@ class ViewModelCoordinator(
      * Called when a non-main view model begins loading
      */
     fun onUserInfoViewModelLoading() {
-        this.isUserInfoLoading = true
+        ++this.loadingCount
     }
 
     /*
@@ -64,7 +64,7 @@ class ViewModelCoordinator(
      * If all views have loaded, see if we need to trigger a login redirect
      */
     fun onUserInfoViewModelLoaded() {
-        this.isUserInfoLoading = false
+        ++this.loadedCount
         this.triggerLoginIfRequired()
     }
 
@@ -79,8 +79,8 @@ class ViewModelCoordinator(
      * Reset state when the Reload Data button is clicked
      */
     fun resetState() {
-        this.isMainLoading = false
-        this.isUserInfoLoading = false
+        this.loadingCount = 0
+        this.loadedCount = 0
         this.mainCacheKey = ""
     }
 
@@ -89,7 +89,7 @@ class ViewModelCoordinator(
      */
     private fun triggerLoginIfRequired() {
 
-        if (this.isAllViewsLoaded()) {
+        if (this.loadedCount == this.loadingCount) {
 
             val errors = this.getLoadErrors()
             val found = errors.find { e ->
@@ -100,13 +100,6 @@ class ViewModelCoordinator(
                 this.eventBus.post(LoginRequiredEvent())
             }
         }
-    }
-
-    /*
-     * See if all API requests have completed, and there are only 3 in the app
-     */
-    private fun isAllViewsLoaded(): Boolean {
-        return !this.isMainLoading && !this.isUserInfoLoading
     }
 
     /*

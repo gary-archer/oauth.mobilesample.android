@@ -96,11 +96,6 @@ class UserInfoViewModel(
                         if (apiUserData != null) {
                             that.updateApiUserInfo(apiUserData)
                         }
-
-                        // Send a notification if any data loaded
-                        if (oauthUserData != null || apiUserData != null) {
-                            that.viewModelCoordinator.onUserInfoViewModelLoaded()
-                        }
                     }
                 }
 
@@ -110,6 +105,12 @@ class UserInfoViewModel(
                 val uiError = ErrorFactory().fromException(ex)
                 withContext(Dispatchers.Main) {
                     that.updateError(uiError)
+                }
+
+            } finally {
+
+                // Indicate loaded
+                withContext(Dispatchers.Main) {
                     that.viewModelCoordinator.onUserInfoViewModelLoaded()
                 }
             }

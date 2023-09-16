@@ -64,6 +64,7 @@ class TransactionsViewModel(
         this.companyId = id
 
         // Make the remote call on a background thread
+        var isForbidden = false
         val that = this@TransactionsViewModel
         CoroutineScope(Dispatchers.IO).launch {
 
@@ -76,8 +77,6 @@ class TransactionsViewModel(
 
                     if (data != null) {
                         that.updateData(data.transactions.toList())
-                        that.viewModelCoordinator.onMainViewModelLoaded(fetchOptions.cacheKey)
-                        onComplete(false)
                     }
                 }
 
@@ -89,16 +88,22 @@ class TransactionsViewModel(
                     if (that.isForbiddenError(uiError)) {
 
                         // For expected errors, the view redirects back to the home view
-                        onComplete(true)
+                        isForbidden = true
 
                     } else {
 
                         // Report other types of errors
                         that.updateData(ArrayList())
                         that.updateError(uiError)
-                        that.viewModelCoordinator.onMainViewModelLoaded(fetchOptions.cacheKey)
-                        onComplete(false)
+
                     }
+                }
+            } finally {
+
+                // Inform the view once complete
+                withContext(Dispatchers.Main) {
+                    that.viewModelCoordinator.onMainViewModelLoaded(fetchOptions.cacheKey)
+                    onComplete(isForbidden)
                 }
             }
         }
