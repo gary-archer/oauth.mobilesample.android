@@ -1,6 +1,7 @@
 package com.authsamples.basicmobileapp.views.userinfo
 
 import android.app.Application
+import android.text.TextUtils
 import androidx.databinding.Observable
 import androidx.databinding.PropertyChangeRegistry
 import androidx.lifecycle.AndroidViewModel
@@ -126,7 +127,32 @@ class UserInfoViewModel(
             return ""
         }
 
-        return "${this.oauthUserInfo!!.givenName} ${this.oauthUserInfo!!.familyName}"
+        val givenName = this.oauthUserInfo?.givenName ?: ""
+        val familyName = this.oauthUserInfo?.familyName  ?: ""
+        if (givenName.isBlank() || familyName.isBlank()) {
+            return ""
+        }
+
+        return "${givenName} ${familyName}"
+    }
+
+    /*
+     * Markup calls this method to get the logged in user's descriptive details
+     */
+    fun getLoggedInUserDescription(): String {
+
+        if (this.apiUserInfo == null) {
+            return ""
+        }
+
+        val title = this.apiUserInfo?.title ?: ""
+        val regions = this.apiUserInfo?.regions ?: ArrayList()
+        if (title.isBlank() || regions.size ==0) {
+            return ""
+        }
+
+        val regionsText = TextUtils.join(", ", regions)
+        return "$title [$regionsText]"
     }
 
     /*
