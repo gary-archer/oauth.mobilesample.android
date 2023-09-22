@@ -28,6 +28,7 @@ import org.greenrobot.eventbus.EventBus
 /*
  * A simple view model class for the user info view
  */
+@Suppress("TooManyFunctions")
 class UserInfoViewModel(
     val fetchClient: FetchClient,
     val eventBus: EventBus,
@@ -128,12 +129,12 @@ class UserInfoViewModel(
         }
 
         val givenName = this.oauthUserInfo?.givenName ?: ""
-        val familyName = this.oauthUserInfo?.familyName  ?: ""
+        val familyName = this.oauthUserInfo?.familyName ?: ""
         if (givenName.isBlank() || familyName.isBlank()) {
             return ""
         }
 
-        return "${givenName} ${familyName}"
+        return "$givenName $familyName"
     }
 
     /*
@@ -147,7 +148,7 @@ class UserInfoViewModel(
 
         val title = this.apiUserInfo?.title ?: ""
         val regions = this.apiUserInfo?.regions ?: ArrayList()
-        if (title.isBlank() || regions.size ==0) {
+        if (title.isBlank() || regions.size == 0) {
             return ""
         }
 

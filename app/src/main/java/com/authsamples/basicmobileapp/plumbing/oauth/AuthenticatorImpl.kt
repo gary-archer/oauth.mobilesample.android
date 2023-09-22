@@ -73,6 +73,7 @@ class AuthenticatorImpl(
             // Receive the result of the metadata request
             val callback =
                 AuthorizationServiceConfiguration.RetrieveConfigurationCallback { serviceConfiguration, ex ->
+
                     when {
                         // Report errors
                         ex != null -> continuation.resumeWithException(ex)

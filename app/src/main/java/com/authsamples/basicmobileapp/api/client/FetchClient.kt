@@ -146,7 +146,7 @@ class FetchClient(
 
             try {
 
-                // Try to refresh the access token cookie
+                // Try to refresh the access token
                 accessToken = this.authenticator.synchronizedRefreshAccessToken()
 
             } catch (e2: Throwable) {
@@ -170,7 +170,6 @@ class FetchClient(
                 val error3 = ErrorFactory().fromException(e3)
                 cacheItem.setError(error3)
                 throw error3
-
             }
         }
     }
