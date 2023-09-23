@@ -218,7 +218,7 @@ class UserInfoViewModel(
     private fun updateError(error: UIError?) {
 
         this.error = error
-        if(error != null) {
+        if (error != null) {
             this.oauthUserInfo = null
             this.apiUserInfo = null
         }

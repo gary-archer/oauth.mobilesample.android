@@ -45,8 +45,6 @@
     <string name="userinfo_error_dialogtitle">User Info Error</string>
     <string name="userinfo_error_keyname">userinfo_error</string>
 
-
-
     <string name="api_session_id">API Session Id</string>
 
     <string name="error_user_action">User Action</string>
