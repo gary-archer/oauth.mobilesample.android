@@ -46,7 +46,7 @@ class CompaniesViewModel(
 
         // Initialize state
         this.viewModelCoordinator.onMainViewModelLoading()
-        this.updateData(ArrayList(), null)
+        this.updateError(null)
 
         // Make the remote call on a background thread
         val that = this@CompaniesViewModel
@@ -61,7 +61,7 @@ class CompaniesViewModel(
                 withContext(Dispatchers.Main) {
 
                     if (companies != null) {
-                        that.updateData(companies.toList(), null)
+                        that.updateData(companies.toList())
                     }
                 }
 
@@ -69,7 +69,8 @@ class CompaniesViewModel(
 
                 // Return error results on the main thread
                 withContext(Dispatchers.Main) {
-                    that.updateData(ArrayList(), uiError)
+                    that.updateData(ArrayList())
+                    that.updateError(uiError)
                 }
 
             } finally {
@@ -111,8 +112,15 @@ class CompaniesViewModel(
     /*
      * Update data and inform the binding system
      */
-    private fun updateData(companies: List<Company>, error: UIError? = null) {
+    private fun updateData(companies: List<Company>) {
         this.companiesList = companies
+        this.callbacks.notifyCallbacks(this, 0, null)
+    }
+
+    /*
+     * Update the error state and inform the binding system
+     */
+    private fun updateError(error: UIError?) {
         this.error = error
         this.callbacks.notifyCallbacks(this, 0, null)
     }

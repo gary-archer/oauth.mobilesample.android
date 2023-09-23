@@ -59,9 +59,9 @@ class TransactionsViewModel(
         this.viewModelCoordinator.onMainViewModelLoading()
         this.updateError(null)
         if (this.companyId != id) {
+            this.companyId = id
             this.updateData(ArrayList())
         }
-        this.companyId = id
 
         // Make the remote call on a background thread
         var isForbidden = false
@@ -95,7 +95,6 @@ class TransactionsViewModel(
                         // Report other types of errors
                         that.updateData(ArrayList())
                         that.updateError(uiError)
-
                     }
                 }
             } finally {
