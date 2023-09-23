@@ -154,12 +154,12 @@ class MainActivity : AppCompatActivity() {
 
             if (this.navigationHelper.getActiveMainFragment() is LoginRequiredFragment) {
 
-                // If the user logs in after explicitly logging out, then navigate home
+                // If the user logs in from the login required view, then navigate home
                 this.navigationHelper.navigateTo(R.id.companies_fragment)
 
             } else {
 
-                // Otherwise the user is already in the right view, and data must be reloaded
+                // Otherwise we are handling expiry so reload data in the current view
                 this.binding.model!!.reloadData(false)
             }
         }
