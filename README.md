@@ -1,7 +1,5 @@
 # Android OAuth Mobile Sample
 
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/0eafe484d5164e0a8ba0628c96784524)](https://www.codacy.com/gh/gary-archer/oauth.mobilesample.android/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=gary-archer/oauth.mobilesample.android&amp;utm_campaign=Badge_Grade)
-
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/78cdd39847864113a5e9fa721184e7e4)](https://app.codacy.com/gh/gary-archer/oauth.mobilesample.android?utm_source=github.com&utm_medium=referral&utm_content=gary-archer/oauth.mobilesample.android&utm_campaign=Badge_Grade)
 
 ## Overview
