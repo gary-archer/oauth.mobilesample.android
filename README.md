@@ -2,7 +2,7 @@
 
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/0eafe484d5164e0a8ba0628c96784524)](https://www.codacy.com/gh/gary-archer/oauth.mobilesample.android/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=gary-archer/oauth.mobilesample.android&amp;utm_campaign=Badge_Grade)
 
-[![Known Vulnerabilities](https://snyk.io/test/github/gary-archer/oauth.mobilesample.android/badge.svg?targetFile=app/build.gradle)](https://snyk.io/test/github/gary-archer/oauth.mobilesample.android?targetFile=app/build.gradle)
+[![Known Vulnerabilities](https://snyk.io/test/github/gary-archer/oauth.mobilesample.android/badge.svg?targetFile=app/build.gradle.kts)](https://snyk.io/test/github/gary-archer/oauth.mobilesample.android?targetFile=app/build.gradle.kts)
 
 ## Overview
 
