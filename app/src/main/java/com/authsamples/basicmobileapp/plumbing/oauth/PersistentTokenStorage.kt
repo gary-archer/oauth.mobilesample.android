@@ -15,6 +15,7 @@ class PersistentTokenStorage(val context: Context) {
     private val applicationName = "com.authsamples.basicmobileapp"
     private val key = "AUTH_STATE"
     private val sharedPrefs = context.getSharedPreferences(applicationName, MODE_PRIVATE)
+    private val lock = Object()
 
     /*
      * Load tokens
@@ -75,26 +76,30 @@ class PersistentTokenStorage(val context: Context) {
      */
     private fun loadTokenData() {
 
-        if (this.tokenData != null) {
-            return
-        }
+        // Lock, since this may be called concurrently during API requests from multiple views
+        synchronized(this.lock) {
 
-        val data = this.sharedPrefs.getString(this.key, "")
-        if (data.isNullOrBlank()) {
-            return
-        }
+            if (this.tokenData != null) {
+                return
+            }
 
-        try {
+            val data = this.sharedPrefs.getString(this.key, "")
+            if (data.isNullOrBlank()) {
+                return
+            }
 
-            // Allow recovery from deserialization errors
-            val gson = Gson()
-            this.tokenData = gson.fromJson(data, TokenData::class.java)
+            try {
 
-        } catch (ex: Throwable) {
+                // Allow recovery from deserialization errors
+                val gson = Gson()
+                this.tokenData = gson.fromJson(data, TokenData::class.java)
 
-            // Swallow this error and return null data, to force a login
-            val uiError = ErrorFactory().fromException(ex)
-            ErrorConsoleReporter.output(uiError, this.context)
+            } catch (ex: Throwable) {
+
+                // Swallow this error and return null data, to force a login
+                val uiError = ErrorFactory().fromException(ex)
+                ErrorConsoleReporter.output(uiError, this.context)
+            }
         }
     }
 
