@@ -44,7 +44,7 @@ class ViewModelCoordinator(
 
         // On success, send an event so that a subscriber can show a UI effect such as enabling header buttons
         val found = this.fetchCache.getItem(cacheKey)
-        if (found?.getError() == null) {
+        if (found?.getData() != null) {
             this.eventBus.post(ViewModelFetchEvent(true))
         }
 
