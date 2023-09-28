@@ -26,8 +26,6 @@
     <string name="transactions_title">Today\'s Transactions for Company %s</string>
     <string name="login_required_title">Login Required</string>
     <string name="logged_out_message">You are logged out - click HOME to login</string>
-    <string name="error_title">Problem Encountered</string>
-    <string name="error_dialog_close">Close Dialog</string>
 
     <string name="main_error_hyperlink">Problem Encountered in Application</string>
     <string name="main_error_dialogtitle">Application Error</string>
