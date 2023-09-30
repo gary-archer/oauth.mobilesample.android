@@ -45,7 +45,7 @@ class ErrorFactory {
     }
 
     /*
-     * Return an error to short circuit execution
+     * Indicate a metadata lookup failure
      */
     fun fromMetadataLookupError(ex: Throwable): UIError {
 
