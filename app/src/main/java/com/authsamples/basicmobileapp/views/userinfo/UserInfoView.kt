@@ -1,10 +1,17 @@
 package com.authsamples.basicmobileapp.views.userinfo
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.PlainTooltipBox
+import androidx.compose.material3.PlainTooltipState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
@@ -14,6 +21,9 @@ import com.authsamples.basicmobileapp.plumbing.events.NavigatedEvent
 import com.authsamples.basicmobileapp.plumbing.events.ReloadDataEvent
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryFragment
 import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
@@ -21,6 +31,7 @@ import org.greenrobot.eventbus.ThreadMode
  * The user info view renders logged in user information from two sources
  */
 @Composable
+@OptIn(ExperimentalMaterial3Api::class)
 fun UserInfoView(model: UserInfoViewModel, modifier: Modifier) {
 
     /*
@@ -74,17 +85,28 @@ fun UserInfoView(model: UserInfoViewModel, modifier: Modifier) {
     // Do the rendering
     if (model.errorData() == null) {
 
-        // Render the user name
-        Text(
-            text = model.getLoggedInUser(),
-            textAlign = TextAlign.Right,
-            fontWeight = FontWeight.Bold,
-            fontSize = 16.sp,
-            color = Color(0xFF727272),
-            modifier = modifier
-        )
+        val tooltipState = remember { PlainTooltipState() }
+        val scope = remember { CoroutineScope(Dispatchers.Main) }
 
-        // Also render a tooltip
+        // Render a tooltip with further information when the user name is clicked
+        PlainTooltipBox(
+            tooltip = { Text(model.getLoggedInUserDescription()) },
+            tooltipState = tooltipState,
+            containerColor = Color.Gray,
+        ) {
+
+            // Render the user name
+            Text(
+                text = AnnotatedString(model.getLoggedInUser()),
+                textAlign = TextAlign.Right,
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                color = Color(0xFF727272),
+                modifier = modifier.clickable {
+                    scope.launch { tooltipState.show() }
+                }
+            )
+        }
 
     } else {
 

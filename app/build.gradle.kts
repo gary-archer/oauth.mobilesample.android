@@ -99,7 +99,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.ui:ui-viewbinding")
-    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material3:material3:1.1.2")
 
     // Navigation for Single Activity Apps
     implementation("androidx.navigation:navigation-fragment-ktx:${VERSION.navigation}")
