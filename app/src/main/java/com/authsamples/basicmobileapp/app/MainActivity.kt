@@ -3,15 +3,18 @@ package com.authsamples.basicmobileapp.app
 import android.app.admin.DevicePolicyManager
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.NavHostFragment
 import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.databinding.ActivityMainBinding
 import com.authsamples.basicmobileapp.plumbing.events.LoginRequiredEvent
 import com.authsamples.basicmobileapp.views.companies.CompaniesFragment
+import com.authsamples.basicmobileapp.views.headings.TitleView
 import com.authsamples.basicmobileapp.views.security.LoginRequiredFragment
 import com.authsamples.basicmobileapp.views.utilities.DeviceSecurity
 import com.authsamples.basicmobileapp.views.utilities.NavigationHelper
@@ -71,6 +74,16 @@ class MainActivity : AppCompatActivity() {
 
         // Do initialization work
         this.binding.model!!.initialize(this::onLoaded)
+
+        // Render the compose part of the view
+        binding.mainComposeView.apply {
+            // Dispose of the Composition when the view's LifecycleOwner
+            // is destroyed
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                TitleView()
+            }
+        }
     }
 
     /*

@@ -65,6 +65,12 @@ android {
     buildFeatures {
         dataBinding = true
         viewBinding = true
+        compose = true
+    }
+
+    // Enable Jetpack compose
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.3"
     }
 }
 
@@ -72,7 +78,7 @@ android {
 object VERSION {
     const val coroutines = "1.7.3"
     const val lifecycle_extensions = "2.2.0"
-    const val navigation = "2.7.1"
+    const val navigation = "2.7.3"
     const val appauth = "0.11.1"
     const val browser = "1.6.0"
     const val okhttp = "4.11.0"
@@ -84,16 +90,25 @@ object VERSION {
 
 dependencies {
 
+    implementation("androidx.core:core-ktx:1.12.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+    implementation("androidx.activity:activity-compose:1.7.2")
+    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-graphics")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.material3:material3")
+
+    // Navigation for Single Activity Apps
+    implementation("androidx.navigation:navigation-fragment-ktx:${VERSION.navigation}")
+    implementation("androidx.navigation:navigation-ui-ktx:${VERSION.navigation}")
+
     // Kotlin async support
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${VERSION.coroutines}")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${VERSION.coroutines}")
 
     // View model support
     implementation("androidx.lifecycle:lifecycle-extensions:${VERSION.lifecycle_extensions}")
-
-    // Navigation for Single Activity Apps
-    implementation("androidx.navigation:navigation-fragment-ktx:${VERSION.navigation}")
-    implementation("androidx.navigation:navigation-ui-ktx:${VERSION.navigation}")
 
     // The AppAuth library manages OAuth security
     implementation ("net.openid:appauth:${VERSION.appauth}")
