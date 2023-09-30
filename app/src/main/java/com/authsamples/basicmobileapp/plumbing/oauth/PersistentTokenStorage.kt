@@ -2,8 +2,6 @@ package com.authsamples.basicmobileapp.plumbing.oauth
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
-import com.authsamples.basicmobileapp.plumbing.errors.ErrorConsoleReporter
-import com.authsamples.basicmobileapp.plumbing.errors.ErrorFactory
 import com.google.gson.Gson
 
 /*
@@ -21,31 +19,19 @@ class PersistentTokenStorage(val context: Context) {
      */
     fun loadTokens() {
 
-        if (this.tokenData != null) {
-            return
-        }
-
+        // Try the load
         val data = this.sharedPrefs.getString(this.key, "")
         if (data.isNullOrBlank()) {
             return
         }
 
-        try {
-
-            // Allow recovery from deserialization errors
-            val gson = Gson()
-            this.tokenData = gson.fromJson(data, TokenData::class.java)
-
-        } catch (ex: Throwable) {
-
-            // Swallow this error and return null data, to force a login
-            val uiError = ErrorFactory().fromException(ex)
-            ErrorConsoleReporter.output(uiError, this.context)
-        }
+        // Try to deserialize
+        val gson = Gson()
+        this.tokenData = gson.fromJson(data, TokenData::class.java)
     }
 
     /*
-     * Get tokens, which may occur after they have been loaded
+     * Get tokens if the user has logged in or they have been loaded from storage
      */
     fun getTokens(): TokenData? {
         return this.tokenData

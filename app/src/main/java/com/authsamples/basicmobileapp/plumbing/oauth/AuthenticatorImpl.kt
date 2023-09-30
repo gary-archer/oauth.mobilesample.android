@@ -233,11 +233,6 @@ class AuthenticatorImpl(
      */
     private suspend fun getMetadata() {
 
-        // Return if already loaded
-        if (this.metadata != null) {
-            return
-        }
-
         // Form the metadata URL
         val metadataAddress = "${this.configuration.authority}/.well-known/openid-configuration"
         val metadataUri = Uri.parse(metadataAddress)
