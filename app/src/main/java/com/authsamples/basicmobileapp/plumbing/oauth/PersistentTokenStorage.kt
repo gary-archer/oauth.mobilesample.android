@@ -15,18 +15,39 @@ class PersistentTokenStorage(val context: Context) {
     private val applicationName = "com.authsamples.basicmobileapp"
     private val key = "AUTH_STATE"
     private val sharedPrefs = context.getSharedPreferences(applicationName, MODE_PRIVATE)
-    private val lock = Object()
 
     /*
-     * Load tokens
+     * Load token data from storage on application startup
      */
-    fun loadTokens(): TokenData? {
+    fun loadTokens() {
 
         if (this.tokenData != null) {
-            return this.tokenData
+            return
         }
 
-        this.loadTokenData()
+        val data = this.sharedPrefs.getString(this.key, "")
+        if (data.isNullOrBlank()) {
+            return
+        }
+
+        try {
+
+            // Allow recovery from deserialization errors
+            val gson = Gson()
+            this.tokenData = gson.fromJson(data, TokenData::class.java)
+
+        } catch (ex: Throwable) {
+
+            // Swallow this error and return null data, to force a login
+            val uiError = ErrorFactory().fromException(ex)
+            ErrorConsoleReporter.output(uiError, this.context)
+        }
+    }
+
+    /*
+     * Get tokens, which may occur after they have been loaded
+     */
+    fun getTokens(): TokenData? {
         return this.tokenData
     }
 
@@ -68,38 +89,6 @@ class PersistentTokenStorage(val context: Context) {
             this.tokenData!!.accessToken = "${this.tokenData!!.accessToken}x"
             this.tokenData!!.refreshToken = "${this.tokenData!!.refreshToken}x"
             this.saveTokenData()
-        }
-    }
-
-    /*
-     * Load token data from storage private to the app
-     */
-    private fun loadTokenData() {
-
-        // Lock, since this may be called concurrently during API requests from multiple views
-        synchronized(this.lock) {
-
-            if (this.tokenData != null) {
-                return
-            }
-
-            val data = this.sharedPrefs.getString(this.key, "")
-            if (data.isNullOrBlank()) {
-                return
-            }
-
-            try {
-
-                // Allow recovery from deserialization errors
-                val gson = Gson()
-                this.tokenData = gson.fromJson(data, TokenData::class.java)
-
-            } catch (ex: Throwable) {
-
-                // Swallow this error and return null data, to force a login
-                val uiError = ErrorFactory().fromException(ex)
-                ErrorConsoleReporter.output(uiError, this.context)
-            }
         }
     }
 

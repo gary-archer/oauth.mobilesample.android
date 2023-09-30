@@ -69,11 +69,16 @@ class MainActivity : AppCompatActivity() {
         this.navigationHelper = NavigationHelper(navHostFragment) { model.isDeviceSecured }
         this.navigationHelper.deepLinkBaseUrl = this.binding.model!!.configuration.oauth.deepLinkBaseUrl
 
-        // Swap the main view based on the deep linking location or use the default
-        this.navigateStart()
+        // Do initialization work
+        this.binding.model!!.initialize(this::onLoaded)
+    }
 
-        // Start listening for events
+    /*
+     * Once loaded, register for events and do the startup navigation
+     */
+    private fun onLoaded() {
         this.binding.model!!.eventBus.register(this)
+        this.navigateStart()
     }
 
     /*
@@ -198,6 +203,12 @@ class MainActivity : AppCompatActivity() {
 
         // Reset the main view's own error if required
         this.binding.model!!.updateError(null)
+
+        // If there is a startup error then retry initializing
+        if (!this.binding.model!!.isLoaded) {
+            this.binding.model!!.initialize(this::onLoaded)
+            return
+        }
 
         // Inspect the current view
         if (this.navigationHelper.getActiveMainFragment() is LoginRequiredFragment) {

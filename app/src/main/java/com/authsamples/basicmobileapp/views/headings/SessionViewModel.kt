@@ -11,13 +11,13 @@ import org.greenrobot.eventbus.EventBus
  * A simple view model for the session view
  */
 class SessionViewModel(
+    private var isVisible: Boolean,
     private val sessionId: String,
     val eventBus: EventBus,
     val app: Application
 ) : AndroidViewModel(app), Observable {
 
     // Observable data for which the UI must be notified upon change
-    private var isVisible = true
     private val callbacks = PropertyChangeRegistry()
 
     // The text to display when visible

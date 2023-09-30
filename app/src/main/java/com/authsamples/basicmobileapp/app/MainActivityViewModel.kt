@@ -39,8 +39,9 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
     val fetchCache: FetchCache
     val eventBus: EventBus
     val viewModelCoordinator: ViewModelCoordinator
-    var isDeviceSecured: Boolean = false
-    var isTopMost: Boolean = true
+    var isLoaded: Boolean
+    var isTopMost: Boolean
+    var isDeviceSecured: Boolean
 
     // Observable data
     var error: UIError? = null
@@ -61,8 +62,35 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
         this.fetchClient = FetchClient(this.configuration, this.fetchCache, this.authenticator)
 
         // Initialize flags
-        this.isDeviceSecured = DeviceSecurity.isDeviceSecured(this.app.applicationContext)
+        this.isLoaded = false
         this.isTopMost = true
+        this.isDeviceSecured = DeviceSecurity.isDeviceSecured(this.app.applicationContext)
+    }
+
+    /*
+     * Initialization at startup, to load OpenID Connect metadata and any stored tokens
+     */
+    fun initialize(onSuccess: () -> Unit) {
+
+        CoroutineScope(Dispatchers.IO).launch {
+
+            val that = this@MainActivityViewModel
+            try {
+
+                that.authenticator.initialize()
+                withContext(Dispatchers.Main) {
+                    that.isLoaded = true
+                    onSuccess()
+                }
+
+            } catch (ex: Throwable) {
+
+                // Report errors on the main thread, but ignore expected errors
+                withContext(Dispatchers.Main) {
+                    that.updateError(ErrorFactory().fromException(ex))
+                }
+            }
+        }
     }
 
     /*
@@ -83,33 +111,20 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
         // Prevent deep links being processed during login
         this.isTopMost = false
 
-        // Run on a background thread
-        CoroutineScope(Dispatchers.IO).launch {
+        try {
 
-            val that = this@MainActivityViewModel
-            try {
+            // Run the redirect on the main thread
+            this.authenticator.startLogin(launchAction)
 
-                // First get metadata if required
-                that.authenticator.getMetadata()
+        } catch (ex: Throwable) {
 
-                // Run the redirect on the main thread
-                withContext(Dispatchers.Main) {
-                    that.authenticator.startLogin(launchAction)
-                }
-
-            } catch (ex: Throwable) {
-
-                // Report errors on the main thread, but ignore expected errors
-                withContext(Dispatchers.Main) {
-                    that.isTopMost = true
-
-                    val uiError = ErrorFactory().fromException(ex)
-                    if (uiError.errorCode == ErrorCodes.redirectCancelled) {
-                        onCancelled()
-                    } else {
-                        that.updateError(uiError)
-                    }
-                }
+            // Report errors on the main thread, and ignore expected errors
+            this.isTopMost = true
+            val uiError = ErrorFactory().fromException(ex)
+            if (uiError.errorCode == ErrorCodes.redirectCancelled) {
+                onCancelled()
+            } else {
+                this.updateError(uiError)
             }
         }
     }
@@ -183,36 +198,22 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
         // Prevent deep links being processed during logout
         this.isTopMost = false
 
-        // Run on a background thread
-        CoroutineScope(Dispatchers.IO).launch {
+        try {
 
-            val that = this@MainActivityViewModel
-            try {
+            // Run the logout redirect on the main thread
+            this.authenticator.startLogout(launchAction)
 
-                // First get metadata if required
-                that.authenticator.getMetadata()
+        } catch (ex: Throwable) {
 
-                // Run the logout redirect on the main thread
-                withContext(Dispatchers.Main) {
-                    that.authenticator.startLogout(launchAction)
-                }
-
-            } catch (ex: Throwable) {
-
-                // Report errors on the main thread
-                withContext(Dispatchers.Main) {
-
-                    // Only report logout errors to the console
-                    val uiError = ErrorFactory().fromException(ex)
-                    if (uiError.errorCode != ErrorCodes.redirectCancelled) {
-                        ErrorConsoleReporter.output(uiError, that.app)
-                    }
-
-                    // Then free resources and notify the caller
-                    that.finishLogout()
-                    onError()
-                }
+            // Only report logout errors to the console
+            val uiError = ErrorFactory().fromException(ex)
+            if (uiError.errorCode != ErrorCodes.redirectCancelled) {
+                ErrorConsoleReporter.output(uiError, this.app)
             }
+
+            // Then free resources and notify the caller
+            this.finishLogout()
+            onError()
         }
     }
 

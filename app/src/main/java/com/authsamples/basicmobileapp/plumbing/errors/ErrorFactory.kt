@@ -45,12 +45,27 @@ class ErrorFactory {
     }
 
     /*
+     * Return an error to short circuit execution
+     */
+    fun fromMetadataLookupError(ex: Throwable): UIError {
+
+        val error = UIError(
+            "Login",
+            ErrorCodes.metadataLookup,
+            "Problem encountered downloading OpenID Connect metadata"
+        )
+
+        this.updateFromException(ex, error)
+        return error
+    }
+
+    /*
      * Return an error to indicate that the Chrome custom tab window was closed
      */
     fun fromRedirectCancelled(): UIError {
 
         return UIError(
-            "Redirect",
+            "Login",
             ErrorCodes.redirectCancelled,
             "The login request was cancelled"
         )

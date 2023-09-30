@@ -8,6 +8,9 @@ object ErrorCodes {
     // Used to indicate that the API cannot be called until the user logs in
     const val loginRequired = "login_required"
 
+    // Used to indicate that metadata lookup failed
+    const val metadataLookup = "metadata_lookup"
+
     // Used to indicate that the Chrome Custom Tab was cancelled
     const val redirectCancelled = "redirect_cancelled"
 

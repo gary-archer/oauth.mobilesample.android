@@ -54,47 +54,15 @@ class AuthenticatorImpl(
     }
 
     /*
-     * Get metadata and convert the callback to a suspendable function
+     * One time initialization on application startup
      */
-    override suspend fun getMetadata() {
+    override suspend fun initialize() {
 
-        // Return if already loaded
-        if (this.metadata != null) {
-            return
-        }
+        // Load OpenID Connect metadata
+        this.getMetadata()
 
-        // Form the metadata URL
-        val metadataAddress = "${this.configuration.authority}/.well-known/openid-configuration"
-        val metadataUri = Uri.parse(metadataAddress)
-
-        // Wrap the callback in a coroutine to support cleaner async await based calls
-        return suspendCoroutine { continuation ->
-
-            // Receive the result of the metadata request
-            val callback =
-                AuthorizationServiceConfiguration.RetrieveConfigurationCallback { serviceConfiguration, ex ->
-
-                    when {
-                        // Report errors
-                        ex != null -> continuation.resumeWithException(ex)
-
-                        // Sanity check
-                        serviceConfiguration == null -> {
-                            val error = RuntimeException("Metadata request returned an empty response")
-                            continuation.resumeWithException(error)
-                        }
-
-                        // Save metadata on success
-                        else -> {
-                            this.metadata = serviceConfiguration
-                            continuation.resume(Unit)
-                        }
-                    }
-                }
-
-            // Trigger the metadata lookup
-            AuthorizationServiceConfiguration.fetchFromUrl(metadataUri, callback, DefaultConnectionBuilder.INSTANCE)
-        }
+        // Load tokens from storage
+        this.tokenStorage.loadTokens()
     }
 
     /*
@@ -103,7 +71,7 @@ class AuthenticatorImpl(
     override suspend fun getAccessToken(): String? {
 
         // See if there is a token in storage
-        val accessToken = this.tokenStorage.loadTokens()?.accessToken
+        val accessToken = this.tokenStorage.getTokens()?.accessToken
         if (!accessToken.isNullOrBlank()) {
             return accessToken
         }
@@ -117,14 +85,14 @@ class AuthenticatorImpl(
      */
     override suspend fun synchronizedRefreshAccessToken(): String {
 
-        val refreshToken = this.tokenStorage.loadTokens()?.refreshToken
+        val refreshToken = this.tokenStorage.getTokens()?.refreshToken
         if (!refreshToken.isNullOrBlank()) {
 
             // Perform token refresh and manage concurrency
             this.concurrencyHandler.execute(this::performRefreshTokenGrant)
 
             // Return the token on success
-            val accessToken = this.tokenStorage.loadTokens()?.accessToken
+            val accessToken = this.tokenStorage.getTokens()?.accessToken
             if (!accessToken.isNullOrBlank()) {
                 return accessToken
             }
@@ -206,7 +174,7 @@ class AuthenticatorImpl(
     override fun startLogout(launchAction: (i: Intent) -> Unit) {
 
         // First force removal of tokens from storage
-        val tokens = this.tokenStorage.loadTokens()
+        val tokens = this.tokenStorage.getTokens()
         val idToken = tokens?.idToken
         this.tokenStorage.removeTokens()
 
@@ -261,6 +229,53 @@ class AuthenticatorImpl(
     }
 
     /*
+     * Get metadata and convert the callback to a suspendable function
+     */
+    private suspend fun getMetadata() {
+
+        // Return if already loaded
+        if (this.metadata != null) {
+            return
+        }
+
+        // Form the metadata URL
+        val metadataAddress = "${this.configuration.authority}/.well-known/openid-configuration"
+        val metadataUri = Uri.parse(metadataAddress)
+
+        // Wrap the callback in a coroutine to support cleaner async await based calls
+        return suspendCoroutine { continuation ->
+
+            // Receive the result of the metadata request
+            val callback =
+                AuthorizationServiceConfiguration.RetrieveConfigurationCallback { serviceConfiguration, ex ->
+
+                    when {
+                        // Report errors
+                        ex != null -> {
+                            val error = ErrorFactory().fromMetadataLookupError(ex)
+                            continuation.resumeWithException(error)
+                        }
+
+                        // Sanity check
+                        serviceConfiguration == null -> {
+                            val error = RuntimeException("Metadata request returned an empty response")
+                            continuation.resumeWithException(error)
+                        }
+
+                        // Save metadata on success
+                        else -> {
+                            this.metadata = serviceConfiguration
+                            continuation.resume(Unit)
+                        }
+                    }
+                }
+
+            // Trigger the metadata lookup
+            AuthorizationServiceConfiguration.fetchFromUrl(metadataUri, callback, DefaultConnectionBuilder.INSTANCE)
+        }
+    }
+
+    /*
      * When a login succeeds, exchange the authorization code for tokens
      */
     private suspend fun exchangeAuthorizationCode(authResponse: AuthorizationResponse) {
@@ -308,13 +323,10 @@ class AuthenticatorImpl(
     private suspend fun performRefreshTokenGrant() {
 
         // Check we have a refresh token
-        val refreshToken = this.tokenStorage.loadTokens()?.refreshToken
+        val refreshToken = this.tokenStorage.getTokens()?.refreshToken
         if (refreshToken.isNullOrBlank()) {
             return
         }
-
-        // Get metadata if required
-        this.getMetadata()
 
         // Wrap the request in a coroutine
         return suspendCoroutine { continuation ->
@@ -388,7 +400,7 @@ class AuthenticatorImpl(
         if (tokenData.refreshToken.isNullOrBlank() || tokenData.idToken.isNullOrBlank()) {
 
             // See if there is any existing token data
-            val oldTokenData = this.tokenStorage.loadTokens()
+            val oldTokenData = this.tokenStorage.getTokens()
             if (oldTokenData != null) {
 
                 // Maintain the existing refresh token unless we received a new 'rolling' refresh token

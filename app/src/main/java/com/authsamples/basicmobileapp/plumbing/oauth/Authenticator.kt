@@ -7,8 +7,8 @@ import android.content.Intent
  */
 interface Authenticator {
 
-    // Load metadata
-    suspend fun getMetadata()
+    // Startup initialization
+    suspend fun initialize()
 
     // Try to get an access token
     suspend fun getAccessToken(): String?
