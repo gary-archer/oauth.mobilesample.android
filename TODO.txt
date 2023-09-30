@@ -1,16 +1,17 @@
-USERINFO
---------
-1. User info tooltip, then delete old resources
+RECYCLER VIEWS
+--------------
+1. Recycler to list basics, which will look rough, but should scroll
+   Companies rendering
+   Transactions rendering
+   Remove callbacks
 
-2. User info race condition where it does not receive the initial navigate event
-   Consider logic across all samples
+2. Use shared styles and colors
 
 TIDY UP
 -------
-1. Create a HeaderText object and share that
+1. User info race condition where it does not receive the initial navigate event
+   Consider this logic across all samples
 
 2. Reduce library dependencies
 
-3. Fix detekt errors for compose function names not capitalized
-
-4. Test on tablet, since previously I had different styles
+3. Test on tablet, since previously I had different styles

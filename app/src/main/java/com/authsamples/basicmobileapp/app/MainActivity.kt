@@ -112,7 +112,6 @@ class MainActivity : AppCompatActivity() {
         } else {
 
             // Otherwise start at the default fragment in nav_graph.xml, which is the companies view
-            println("GJA: navigate home")
             this.navigationHelper.navigateTo(R.id.companies_fragment)
         }
     }

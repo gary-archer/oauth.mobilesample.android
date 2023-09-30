@@ -1,7 +1,8 @@
 package com.authsamples.basicmobileapp.views.userinfo
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.PlainTooltipBox
 import androidx.compose.material3.PlainTooltipState
@@ -14,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import com.authsamples.basicmobileapp.databinding.FragmentErrorContainerBinding
@@ -52,7 +54,6 @@ fun UserInfoView(model: UserInfoViewModel, modifier: Modifier) {
         @Subscribe(threadMode = ThreadMode.MAIN)
         fun onMessageEvent(event: NavigatedEvent) {
 
-            println("GJA: navigated received by userinfo")
             if (event.isMainView) {
 
                 // Load user info if required after navigating to a main view
@@ -90,14 +91,29 @@ fun UserInfoView(model: UserInfoViewModel, modifier: Modifier) {
 
         // Render a tooltip with further information when the user name is clicked
         PlainTooltipBox(
-            tooltip = { Text(model.getLoggedInUserDescription()) },
+            tooltip = {
+                Column {
+                    Text(
+                        model.getUserTitle(),
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.width(150.dp)
+                    )
+                    Text(
+                        model.getUserRegions(),
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.width(150.dp)
+                    )
+                }
+            },
             tooltipState = tooltipState,
             containerColor = Color.Gray,
         ) {
 
             // Render the user name
             Text(
-                text = AnnotatedString(model.getLoggedInUser()),
+                text = AnnotatedString(model.getUserName()),
                 textAlign = TextAlign.Right,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,

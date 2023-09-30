@@ -119,9 +119,9 @@ class UserInfoViewModel(
     }
 
     /*
-     * Markup calls this method to get the logged in user's display name
+     * Get the logged in user's display name
      */
-    fun getLoggedInUser(): String {
+    fun getUserName(): String {
 
         if (this.oauthUserInfo.value == null) {
             return ""
@@ -137,22 +137,33 @@ class UserInfoViewModel(
     }
 
     /*
-     * Markup calls this method to get the logged in user's descriptive details
+     * Get the user's title
      */
-    fun getLoggedInUserDescription(): String {
+    fun getUserTitle(): String {
 
         if (this.apiUserInfo.value == null) {
             return ""
         }
 
-        val title = this.apiUserInfo.value?.title ?: ""
+        return this.apiUserInfo.value?.title ?: ""
+    }
+
+    /*
+     * Get the user's region details
+     */
+    fun getUserRegions(): String {
+
+        if (this.apiUserInfo.value == null) {
+            return ""
+        }
+
         val regions = this.apiUserInfo.value?.regions ?: ArrayList()
-        if (title.isBlank() || regions.size == 0) {
+        if (regions.size == 0) {
             return ""
         }
 
         val regionsText = TextUtils.join(", ", regions)
-        return "$title [$regionsText]"
+        return "[$regionsText]"
     }
 
     /*
