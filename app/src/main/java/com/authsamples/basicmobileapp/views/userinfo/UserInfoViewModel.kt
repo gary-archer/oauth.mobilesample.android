@@ -2,8 +2,8 @@ package com.authsamples.basicmobileapp.views.userinfo
 
 import android.app.Application
 import android.text.TextUtils
-import androidx.databinding.Observable
-import androidx.databinding.PropertyChangeRegistry
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.api.client.FetchCacheKeys
@@ -34,13 +34,12 @@ class UserInfoViewModel(
     val eventBus: EventBus,
     val viewModelCoordinator: ViewModelCoordinator,
     val app: Application
-) : AndroidViewModel(app), Observable {
+) : AndroidViewModel(app) {
 
     // Observable data for which the UI must be notified upon change
-    private var oauthUserInfo: OAuthUserInfo? = null
-    private var apiUserInfo: ApiUserInfo? = null
-    var error: UIError? = null
-    private val callbacks = PropertyChangeRegistry()
+    private var oauthUserInfo: MutableState<OAuthUserInfo?> = mutableStateOf(null)
+    private var apiUserInfo: MutableState<ApiUserInfo?> = mutableStateOf(null)
+    private var error: MutableState<UIError?> = mutableStateOf(null)
 
     /*
      * A method to do the work of calling the API
@@ -124,12 +123,12 @@ class UserInfoViewModel(
      */
     fun getLoggedInUser(): String {
 
-        if (this.oauthUserInfo == null) {
+        if (this.oauthUserInfo.value == null) {
             return ""
         }
 
-        val givenName = this.oauthUserInfo?.givenName ?: ""
-        val familyName = this.oauthUserInfo?.familyName ?: ""
+        val givenName = this.oauthUserInfo.value?.givenName ?: ""
+        val familyName = this.oauthUserInfo.value?.familyName ?: ""
         if (givenName.isBlank() || familyName.isBlank()) {
             return ""
         }
@@ -142,12 +141,12 @@ class UserInfoViewModel(
      */
     fun getLoggedInUserDescription(): String {
 
-        if (this.apiUserInfo == null) {
+        if (this.apiUserInfo.value == null) {
             return ""
         }
 
-        val title = this.apiUserInfo?.title ?: ""
-        val regions = this.apiUserInfo?.regions ?: ArrayList()
+        val title = this.apiUserInfo.value?.title ?: ""
+        val regions = this.apiUserInfo.value?.regions ?: ArrayList()
         if (title.isBlank() || regions.size == 0) {
             return ""
         }
@@ -163,7 +162,7 @@ class UserInfoViewModel(
         return ErrorSummaryViewModelData(
             hyperlinkText = app.getString(R.string.userinfo_error_hyperlink),
             dialogTitle = app.getString(R.string.userinfo_error_dialogtitle),
-            error = this.error
+            error = this.error.value
         )
     }
 
@@ -171,23 +170,15 @@ class UserInfoViewModel(
      * Clear user info when we log out and inform the binding system
      */
     fun clearUserInfo() {
-        this.oauthUserInfo = null
-        this.apiUserInfo = null
-        callbacks.notifyCallbacks(this, 0, null)
+        this.oauthUserInfo.value = null
+        this.apiUserInfo.value = null
     }
 
     /*
-     * Observable plumbing to allow XML views to register
+     * Make error details available to the view
      */
-    override fun addOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback) {
-        this.callbacks.add(callback)
-    }
-
-    /*
-     * Observable plumbing to allow XML views to unregister
-     */
-    override fun removeOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback) {
-        this.callbacks.remove(callback)
+    fun errorData(): UIError? {
+        return this.error.value
     }
 
     /*
@@ -196,8 +187,7 @@ class UserInfoViewModel(
     private fun updateOAuthUserInfo(oauthUserData: OAuthUserInfo?) {
 
         if (oauthUserData != null) {
-            this.oauthUserInfo = oauthUserData
-            this.callbacks.notifyCallbacks(this, 0, null)
+            this.oauthUserInfo.value = oauthUserData
         }
     }
 
@@ -207,8 +197,7 @@ class UserInfoViewModel(
     private fun updateApiUserInfo(apiUserData: ApiUserInfo?) {
 
         if (apiUserData != null) {
-            this.apiUserInfo = apiUserData
-            this.callbacks.notifyCallbacks(this, 0, null)
+            this.apiUserInfo.value = apiUserData
         }
     }
 
@@ -217,11 +206,10 @@ class UserInfoViewModel(
      */
     private fun updateError(error: UIError?) {
 
-        this.error = error
+        this.error.value = error
         if (error != null) {
-            this.oauthUserInfo = null
-            this.apiUserInfo = null
+            this.oauthUserInfo.value = null
+            this.apiUserInfo.value = null
         }
-        this.callbacks.notifyCallbacks(this, 0, null)
     }
 }

@@ -1,0 +1,16 @@
+USERINFO
+--------
+1. User info tooltip, then delete old resources
+
+2. User info race condition where it does not receive the initial navigate event
+   Consider logic across all samples
+
+TIDY UP
+-------
+1. Create a HeaderText object and share that
+
+2. Reduce library dependencies
+
+3. Fix detekt errors for compose function names not capitalized
+
+4. Test on tablet, since previously I had different styles

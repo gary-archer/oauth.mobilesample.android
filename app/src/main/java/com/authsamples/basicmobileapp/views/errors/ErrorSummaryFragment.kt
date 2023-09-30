@@ -30,6 +30,8 @@ class ErrorSummaryFragment : androidx.fragment.app.Fragment() {
         val keyName = typedArray.getString(R.styleable.ErrorAttributes_keyName)
         if (keyName != null) {
             this.keyName = keyName
+        } else {
+            this.keyName = "DEFAULT"
         }
 
         typedArray.recycle()

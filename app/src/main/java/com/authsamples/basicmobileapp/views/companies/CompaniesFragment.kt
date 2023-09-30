@@ -53,6 +53,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
         list.adapter = CompanyArrayAdapter(this.requireContext(), this.binding.model!!, this::onItemClick)
 
         // Notify that the main view has changed
+        println("GJA: navigated to companies")
         this.binding.model!!.eventBus.post(NavigatedEvent(true))
         return this.binding.root
     }

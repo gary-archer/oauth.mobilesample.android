@@ -29,7 +29,7 @@
             android:layout_height="wrap_content"
             tools:layout="@layout/fragment_error_summary"
             app:error="@{model.errorSummaryData}"
-            app:keyName="@string/userinfo_error_keyname" />/>
+            app:keyName="@string/userinfo_error_keyname" />
 
     </LinearLayout>
 </layout>

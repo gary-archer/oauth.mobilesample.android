@@ -18,6 +18,7 @@ import com.authsamples.basicmobileapp.plumbing.events.ReloadDataEvent
 import com.authsamples.basicmobileapp.plumbing.oauth.Authenticator
 import com.authsamples.basicmobileapp.plumbing.oauth.AuthenticatorImpl
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModelData
+import com.authsamples.basicmobileapp.views.userinfo.UserInfoViewModel
 import com.authsamples.basicmobileapp.views.utilities.DeviceSecurity
 import com.authsamples.basicmobileapp.views.utilities.ViewModelCoordinator
 import kotlinx.coroutines.CoroutineScope
@@ -36,15 +37,22 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
     val configuration: Configuration
     val authenticator: Authenticator
     val fetchClient: FetchClient
+
+    // Other infrastructure
     val fetchCache: FetchCache
     val eventBus: EventBus
     val viewModelCoordinator: ViewModelCoordinator
+
+    // State
     var isLoaded: Boolean
     var isTopMost: Boolean
     var isDeviceSecured: Boolean
 
+    // Child view models
+    private var userInfoViewModel: UserInfoViewModel?
+
     // Observable data
-    var error: UIError? = null
+    var error: UIError?
     private val callbacks = PropertyChangeRegistry()
 
     init {
@@ -61,10 +69,14 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
         this.authenticator = AuthenticatorImpl(this.configuration.oauth, this.app.applicationContext)
         this.fetchClient = FetchClient(this.configuration, this.fetchCache, this.authenticator)
 
-        // Initialize flags
+        // Initialize child view models
+        this.userInfoViewModel = null
+
+        // Initialize state
         this.isLoaded = false
         this.isTopMost = true
         this.isDeviceSecured = DeviceSecurity.isDeviceSecured(this.app.applicationContext)
+        this.error = null
     }
 
     /*
@@ -243,6 +255,21 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
         if (this.error != null || this.viewModelCoordinator.hasErrors()) {
             this.reloadData(false)
         }
+    }
+
+    fun getUserInfoViewModel(): UserInfoViewModel {
+
+        if (this.userInfoViewModel == null) {
+
+            this.userInfoViewModel = UserInfoViewModel(
+                this.fetchClient,
+                this.eventBus,
+                this.viewModelCoordinator,
+                this.app
+            )
+        }
+
+        return this.userInfoViewModel!!
     }
 
     /*

@@ -74,22 +74,22 @@ class MainActivity : AppCompatActivity() {
 
         // Do initialization work
         this.binding.model!!.initialize(this::onLoaded)
-
-        // Render the compose part of the view
-        binding.mainComposeView.apply {
-            // Dispose of the Composition when the view's LifecycleOwner
-            // is destroyed
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                TitleView()
-            }
-        }
     }
 
     /*
      * Once loaded, register for events and do the startup navigation
      */
     private fun onLoaded() {
+
+        // Render the compose part of the view
+        val that = this@MainActivity
+        this.binding.mainComposeView.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                TitleView(that.binding.model!!.getUserInfoViewModel())
+            }
+        }
+
         this.binding.model!!.eventBus.register(this)
         this.navigateStart()
     }
@@ -112,6 +112,7 @@ class MainActivity : AppCompatActivity() {
         } else {
 
             // Otherwise start at the default fragment in nav_graph.xml, which is the companies view
+            println("GJA: navigate home")
             this.navigationHelper.navigateTo(R.id.companies_fragment)
         }
     }

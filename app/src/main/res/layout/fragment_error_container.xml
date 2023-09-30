@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/error_container_fragment"
+            android:name="com.authsamples.basicmobileapp.views.errors.ErrorSummaryFragment"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_error_summary"/>
+    </LinearLayout>
+</layout>

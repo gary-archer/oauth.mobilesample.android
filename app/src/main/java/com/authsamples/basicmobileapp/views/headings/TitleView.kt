@@ -1,7 +1,5 @@
 package com.authsamples.basicmobileapp.views.headings
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
@@ -15,16 +13,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.views.userinfo.UserInfoView
+import com.authsamples.basicmobileapp.views.userinfo.UserInfoViewModel
 
 /*
  * The title bar contains the application name on the left and user info on the right
  */
 @Composable
-fun TitleView() {
+fun TitleView(userInfoViewModel: UserInfoViewModel) {
     Row(
         Modifier.padding(10.dp)
-    )
-    {
+    ) {
         Text(
             text = stringResource(R.string.app_name),
             textAlign = TextAlign.Left,
@@ -34,6 +32,7 @@ fun TitleView() {
             modifier = Modifier.weight(1f)
         )
         UserInfoView(
+            userInfoViewModel,
             Modifier.weight(1f)
         )
     }
