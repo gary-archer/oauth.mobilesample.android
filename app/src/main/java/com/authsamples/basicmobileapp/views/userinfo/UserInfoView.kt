@@ -11,17 +11,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidViewBinding
 import com.authsamples.basicmobileapp.databinding.FragmentErrorContainerBinding
 import com.authsamples.basicmobileapp.plumbing.events.NavigatedEvent
 import com.authsamples.basicmobileapp.plumbing.events.ReloadDataEvent
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryFragment
+import com.authsamples.basicmobileapp.views.utilities.CustomColors
+import com.authsamples.basicmobileapp.views.utilities.TextStyles
 import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -76,7 +75,7 @@ fun UserInfoView(model: UserInfoViewModel, modifier: Modifier) {
     }
 
     // Manage event subscriptions
-    DisposableEffect(key1 = model) {
+    DisposableEffect(key1 = null) {
         model.eventBus.register(subscriber)
         onDispose {
             model.eventBus.unregister(subscriber)
@@ -94,30 +93,26 @@ fun UserInfoView(model: UserInfoViewModel, modifier: Modifier) {
             tooltip = {
                 Column {
                     Text(
-                        model.getUserTitle(),
-                        fontSize = 14.sp,
-                        textAlign = TextAlign.Center,
+                        text = model.getUserTitle(),
+                        style = TextStyles.tooltip,
                         modifier = Modifier.width(150.dp)
                     )
                     Text(
-                        model.getUserRegions(),
-                        fontSize = 14.sp,
-                        textAlign = TextAlign.Center,
+                        text = model.getUserRegions(),
+                        style = TextStyles.tooltip,
                         modifier = Modifier.width(150.dp)
                     )
                 }
             },
             tooltipState = tooltipState,
-            containerColor = Color.Gray,
+            containerColor = CustomColors.label,
         ) {
 
             // Render the user name
             Text(
                 text = AnnotatedString(model.getUserName()),
+                style = TextStyles.label,
                 textAlign = TextAlign.Right,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
-                color = Color(0xFF727272),
                 modifier = modifier.clickable {
                     scope.launch { tooltipState.show() }
                 }

@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.fragment.NavHostFragment
@@ -14,6 +15,7 @@ import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.databinding.ActivityMainBinding
 import com.authsamples.basicmobileapp.plumbing.events.LoginRequiredEvent
 import com.authsamples.basicmobileapp.views.companies.CompaniesFragment
+import com.authsamples.basicmobileapp.views.headings.HeaderButtonsView
 import com.authsamples.basicmobileapp.views.headings.TitleView
 import com.authsamples.basicmobileapp.views.security.LoginRequiredFragment
 import com.authsamples.basicmobileapp.views.utilities.DeviceSecurity
@@ -86,7 +88,20 @@ class MainActivity : AppCompatActivity() {
         this.binding.mainComposeView.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                TitleView(that.binding.model!!.getUserInfoViewModel())
+
+                Column {
+                    TitleView(
+                        userInfoViewModel = that.binding.model!!.getUserInfoViewModel()
+                    )
+                    HeaderButtonsView(
+                        eventBus = that.binding.model!!.eventBus,
+                        onHome = that::onHome,
+                        onReload = that::onReloadData,
+                        onExpireAccessToken = that::onExpireAccessToken,
+                        onExpireRefreshToken = that::onExpireRefreshToken,
+                        onLogout = that::onStartLogout
+                    )
+                }
             }
         }
 

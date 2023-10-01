@@ -10,19 +10,11 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-        <!-- The Jetpack compose part of the view is currently the title -->
+        <!-- The Jetpack compose part of the view is in progress -->
         <androidx.compose.ui.platform.ComposeView
             android:id="@+id/main_compose_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
-
-        <!-- Next we show a row of buttons for testing data and token operations -->
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/header_buttons_fragment"
-            android:name="com.authsamples.basicmobileapp.views.headings.HeaderButtonsFragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:layout="@layout/fragment_header_buttons"/>
 
         <!-- When there is an application level error it is rendered via this fragment -->
         <androidx.fragment.app.FragmentContainerView

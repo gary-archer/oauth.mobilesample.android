@@ -1,17 +1,24 @@
-RECYCLER VIEWS
---------------
-1. Recycler to list basics, which will look rough, but should scroll
-   Companies rendering
-   Transactions rendering
-   Remove callbacks
+CURRENT
+-------
+1. Header buttons long press to get working
+   https://stackoverflow.com/questions/65835642/button-long-press-listener-in-android-jetpack-compose
 
-2. Use shared styles and colors
+NAVIGATION
+----------
+1. Understand navigation basics, perhaps by running a starter project
+
+2. Deep linking to test
+
+RECYCLER
+--------
+1. Initial rendering of companies and transactions
+
+2. Polish up and remove the old code
 
 TIDY UP
 -------
 1. User info race condition where it does not receive the initial navigate event
-   Consider this logic across all samples
 
 2. Reduce library dependencies
 
-3. Test on tablet, since previously I had different styles
+3. Test on tablet, since previously I had separate styles for that platform
