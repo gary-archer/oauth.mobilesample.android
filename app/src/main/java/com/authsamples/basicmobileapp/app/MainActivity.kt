@@ -9,9 +9,15 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.viewinterop.AndroidViewBinding
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.authsamples.basicmobileapp.R
+import com.authsamples.basicmobileapp.databinding.FragmentCompaniesBinding
+import com.authsamples.basicmobileapp.databinding.FragmentDeviceNotSecuredBinding
 import com.authsamples.basicmobileapp.databinding.FragmentErrorContainerBinding
+import com.authsamples.basicmobileapp.databinding.FragmentTransactionsBinding
 import com.authsamples.basicmobileapp.plumbing.events.LoginRequiredEvent
 import com.authsamples.basicmobileapp.views.companies.CompaniesFragment
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryFragment
@@ -111,6 +117,30 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
+                // The main view which is swapped out during navigation
+                val navController = rememberNavController()
+                NavHost(navController = navController, startDestination = "device_not_secured") {
+
+                    composable("blank") {
+                    }
+
+                    composable("device_not_secured") {
+                        AndroidViewBinding(FragmentDeviceNotSecuredBinding::inflate)
+                    }
+
+                    composable("companies") {
+
+                        // This doesn't seem to render the recycler so replace the view instead, and use a list
+                        AndroidViewBinding(FragmentCompaniesBinding::inflate)
+                    }
+
+                    composable("transactions") {
+
+                        // This doesn't seem to render the recycler so replace the view instead, and use a list
+                        AndroidViewBinding(FragmentTransactionsBinding::inflate)
+                    }
+                }
+
                 // The session view
 
                 // The nav host main view, whose content is swapped out as the user navigates
@@ -124,7 +154,7 @@ class MainActivity : ComponentActivity() {
     private fun onLoaded() {
 
         this.model.eventBus.register(this)
-        this.navigateStart()
+        //this.navigateStart()
     }
 
     /*

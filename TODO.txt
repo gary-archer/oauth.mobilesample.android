@@ -1,27 +1,20 @@
-ACTIVITY
---------
-1. Get NavHost constructed
+NEXT
+----
+1. NavHost seems basically to work but has problems with recycler views
+   Therefore get rid of those next and recreate the companies and transactions views
 
-2. Make it use existing main activities using AndroidViewBinding
+2. Navigation basics from companies to transactions
 
-NAVIGATION
-----------
-1. Understand navigation basics, perhaps by running a starter project
+3. Simpler views and vertical spacing to refine
 
-2. Deep linking to test
+4. Deep linking to test
 
-RECYCLER
---------
-1. Initial rendering of companies and transactions
-
-2. Error view to update
-
-3. Polish up and remove the old code
+5. Gradually remove all XML layout views
 
 TIDY UP
 -------
 1. User info race condition where it does not receive the initial navigate event
 
-2. Reduce library dependencies
+2. Improve use of library dependencies
 
 3. Test on tablet, since previously I had separate styles for that platform

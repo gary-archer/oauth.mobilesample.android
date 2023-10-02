@@ -35,6 +35,7 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
     ): View {
 
         // Inflate the view
+        println("GJA: companies view created")
         this.binding = FragmentCompaniesBinding.inflate(inflater, container, false)
 
         // Create the view model
@@ -64,17 +65,19 @@ class CompaniesFragment : androidx.fragment.app.Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Subscribe to events and do the initial load of data
+        println("GJA: companies created")
         this.binding.model!!.eventBus.register(this)
         this.loadData()
+        println("GJA: companies loaded")
     }
 
     /*
      * When an item is clicked, navigate to its transactions
      */
     fun onItemClick(viewModelItem: CompanyItemViewModel) {
-        val args = Bundle()
-        args.putString(ViewConstants.ARG_COMPANY_ID, viewModelItem.company.id.toString())
-        findNavController().navigate(R.id.transactions_fragment, args)
+        //val args = Bundle()
+        //args.putString(ViewConstants.ARG_COMPANY_ID, viewModelItem.company.id.toString())
+        //findNavController().navigate(R.id.transactions_fragment, args)
     }
 
     /*
