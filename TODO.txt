@@ -1,3 +1,9 @@
+ACTIVITY
+--------
+1. Get NavHost constructed
+
+2. Make it use existing main activities using AndroidViewBinding
+
 NAVIGATION
 ----------
 1. Understand navigation basics, perhaps by running a starter project
@@ -8,7 +14,9 @@ RECYCLER
 --------
 1. Initial rendering of companies and transactions
 
-2. Polish up and remove the old code
+2. Error view to update
+
+3. Polish up and remove the old code
 
 TIDY UP
 -------

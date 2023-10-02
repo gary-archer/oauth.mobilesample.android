@@ -3,18 +3,18 @@ package com.authsamples.basicmobileapp.app
 import android.app.admin.DevicePolicyManager
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Column
-import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.databinding.DataBindingUtil
+import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.navigation.fragment.NavHostFragment
 import com.authsamples.basicmobileapp.R
-import com.authsamples.basicmobileapp.databinding.ActivityMainBinding
+import com.authsamples.basicmobileapp.databinding.FragmentErrorContainerBinding
 import com.authsamples.basicmobileapp.plumbing.events.LoginRequiredEvent
 import com.authsamples.basicmobileapp.views.companies.CompaniesFragment
+import com.authsamples.basicmobileapp.views.errors.ErrorSummaryFragment
 import com.authsamples.basicmobileapp.views.headings.HeaderButtonsView
 import com.authsamples.basicmobileapp.views.headings.TitleView
 import com.authsamples.basicmobileapp.views.security.LoginRequiredFragment
@@ -24,12 +24,12 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
 /*
- * Our Single Activity App's activity
+ * The application's main activity
  */
 @Suppress("TooManyFunctions")
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
 
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var model: MainActivityViewModel
     private lateinit var navigationHelper: NavigationHelper
 
     // Handle launching the lock screen intent
@@ -64,18 +64,58 @@ class MainActivity : AppCompatActivity() {
 
         // Create the main view model the first time the view is created
         val model: MainActivityViewModel by viewModels()
+        this.model = model
 
-        // Inflate the view, which will initially render the blank fragment
-        this.binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        this.binding.model = model
+        // Do the initial render
+        this.render()
 
-        // Initialise the navigation system
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        // Then get the navhost and initialise helper objects
+        val navHostFragment = NavHostFragment()
         this.navigationHelper = NavigationHelper(navHostFragment) { model.isDeviceSecured }
-        this.navigationHelper.deepLinkBaseUrl = this.binding.model!!.configuration.oauth.deepLinkBaseUrl
+        this.navigationHelper.deepLinkBaseUrl = this.model.configuration.oauth.deepLinkBaseUrl
 
-        // Do initialization work
-        this.binding.model!!.initialize(this::onLoaded)
+        // Initialize the view model and move to a loaded state, to cause a re-render
+        this.model.initialize(this::onLoaded)
+    }
+
+    /*
+     * Lay out the tree of views for rendering
+     */
+    private fun render() {
+
+        val that = this@MainActivity
+        setContent {
+            Column {
+
+                // The title area and user info
+                TitleView(
+                    userInfoViewModel = that.model.getUserInfoViewModel()
+                )
+
+                // The top row of buttons
+                HeaderButtonsView(
+                    eventBus = that.model.eventBus,
+                    onHome = that::onHome,
+                    onReload = that::onReloadData,
+                    onExpireAccessToken = that::onExpireAccessToken,
+                    onExpireRefreshToken = that::onExpireRefreshToken,
+                    onLogout = that::onStartLogout
+                )
+
+                // Show application level errors when applicable
+                if (model.error != null) {
+
+                    AndroidViewBinding(FragmentErrorContainerBinding::inflate) {
+                        val errorSummaryFragment = errorContainerFragment.getFragment<ErrorSummaryFragment>()
+                        errorSummaryFragment.receiveErrorFromParent(model.errorSummaryData())
+                    }
+                }
+
+                // The session view
+
+                // The nav host main view, whose content is swapped out as the user navigates
+            }
+        }
     }
 
     /*
@@ -83,29 +123,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun onLoaded() {
 
-        // Render the compose part of the view
-        val that = this@MainActivity
-        this.binding.mainComposeView.apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-
-                Column {
-                    TitleView(
-                        userInfoViewModel = that.binding.model!!.getUserInfoViewModel()
-                    )
-                    HeaderButtonsView(
-                        eventBus = that.binding.model!!.eventBus,
-                        onHome = that::onHome,
-                        onReload = that::onReloadData,
-                        onExpireAccessToken = that::onExpireAccessToken,
-                        onExpireRefreshToken = that::onExpireRefreshToken,
-                        onLogout = that::onStartLogout
-                    )
-                }
-            }
-        }
-
-        this.binding.model!!.eventBus.register(this)
+        this.model.eventBus.register(this)
         this.navigateStart()
     }
 
@@ -114,7 +132,7 @@ class MainActivity : AppCompatActivity() {
      */
     private fun navigateStart() {
 
-        if (!this.binding.model!!.isDeviceSecured) {
+        if (!this.model.isDeviceSecured) {
 
             // If the device is not secured we will move to a view that prompts the user to do so
             this.navigationHelper.navigateTo(R.id.device_not_secured_fragment)
@@ -138,7 +156,7 @@ class MainActivity : AppCompatActivity() {
 
         val intent = Intent(DevicePolicyManager.ACTION_SET_NEW_PASSWORD)
         this.lockScreenLauncher.launch(intent)
-        this.binding.model!!.isTopMost = false
+        this.model.isTopMost = false
     }
 
     /*
@@ -146,8 +164,8 @@ class MainActivity : AppCompatActivity() {
      */
     private fun onLockScreenCompleted() {
 
-        this.binding.model!!.isTopMost = true
-        this.binding.model!!.isDeviceSecured = DeviceSecurity.isDeviceSecured(this)
+        this.model.isTopMost = true
+        this.model.isDeviceSecured = DeviceSecurity.isDeviceSecured(this)
         this.navigateStart()
     }
 
@@ -175,7 +193,7 @@ class MainActivity : AppCompatActivity() {
             this.navigationHelper.navigateTo(R.id.login_required_fragment)
         }
 
-        this.binding.model!!.startLogin(this.loginLauncher::launch, onCancelled)
+        this.model.startLogin(this.loginLauncher::launch, onCancelled)
     }
 
     /*
@@ -193,7 +211,7 @@ class MainActivity : AppCompatActivity() {
             } else {
 
                 // Otherwise we are handling expiry so reload data in the current view
-                this.binding.model!!.reloadData(false)
+                this.model.reloadData(false)
             }
         }
 
@@ -201,40 +219,40 @@ class MainActivity : AppCompatActivity() {
             this.navigationHelper.navigateTo(R.id.login_required_fragment)
         }
 
-        this.binding.model!!.finishLogin(responseIntent, onSuccess, onCancelled)
+        this.model.finishLogin(responseIntent, onSuccess, onCancelled)
     }
 
     /*
      * Remove tokens and redirect to remove the authorization server session cookie
      */
-    fun onStartLogout() {
+    private fun onStartLogout() {
 
         val onError = {
             this.navigationHelper.navigateTo(R.id.login_required_fragment)
         }
 
-        this.binding.model!!.startLogout(this.logoutLauncher::launch, onError)
+        this.model.startLogout(this.logoutLauncher::launch, onError)
     }
 
     /*
      * Perform post logout actions
      */
     private fun onFinishLogout() {
-        this.binding.model!!.finishLogout()
+        this.model.finishLogout()
         this.navigationHelper.navigateTo(R.id.login_required_fragment)
     }
 
     /*
      * Move to the home view, which forces a reload if already in this view
      */
-    fun onHome() {
+    private fun onHome() {
 
         // Reset the main view's own error if required
-        this.binding.model!!.updateError(null)
+        this.model.updateError(null)
 
         // If there is a startup error then retry initializing
-        if (!this.binding.model!!.isLoaded) {
-            this.binding.model!!.initialize(this::onLoaded)
+        if (!this.model.isLoaded) {
+            this.model.initialize(this::onLoaded)
             return
         }
 
@@ -252,36 +270,36 @@ class MainActivity : AppCompatActivity() {
             }
 
             // Force a data reload if recovering from errors
-            this.binding.model!!.reloadDataOnError()
+            this.model.reloadDataOnError()
         }
     }
 
     /*
      * Publish an event to update all active views
      */
-    fun onReloadData(causeError: Boolean) {
-        this.binding.model!!.reloadData(causeError)
+    private fun onReloadData(causeError: Boolean) {
+        this.model.reloadData(causeError)
     }
 
     /*
      * Update token storage to make the access token act like it is expired
      */
-    fun onExpireAccessToken() {
-        this.binding.model!!.expireAccessToken()
+    private fun onExpireAccessToken() {
+        this.model.expireAccessToken()
     }
 
     /*
      * Update token storage to make the refresh token act like it is expired
      */
-    fun onExpireRefreshToken() {
-        this.binding.model!!.expireRefreshToken()
+    private fun onExpireRefreshToken() {
+        this.model.expireRefreshToken()
     }
 
     /*
      * Deep linking is disabled unless our activity is top most
      */
     fun isTopMost(): Boolean {
-        return this.binding.model!!.isTopMost
+        return this.model.isTopMost
     }
 
     /*
@@ -289,7 +307,7 @@ class MainActivity : AppCompatActivity() {
      */
     override fun onDestroy() {
         super.onDestroy()
-        this.binding.model!!.eventBus.unregister(this)
+        this.model.eventBus.unregister(this)
         (this.application as Application).setMainActivity(null)
     }
 }
