@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 object Controls {
 
     /*
-     * The header buttons
+     * A normal header button
      */
     @Composable
     fun HeaderButton(

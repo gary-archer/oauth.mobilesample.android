@@ -1,8 +1,3 @@
-CURRENT
--------
-1. Header buttons long press to get working
-   https://stackoverflow.com/questions/65835642/button-long-press-listener-in-android-jetpack-compose
-
 NAVIGATION
 ----------
 1. Understand navigation basics, perhaps by running a starter project

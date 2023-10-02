@@ -1,5 +1,6 @@
 package com.authsamples.basicmobileapp.views.headings
 
+import ReloadHeaderButton
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -84,11 +85,11 @@ fun HeaderButtonsView(
 
         )
 
-        HeaderButton(
+        ReloadHeaderButton(
             modifier = Modifier.weight(1f).fillMaxHeight(),
             enabled = hasData.value,
             buttonTextId = R.string.reload_button,
-            onClick = { onReload(false) },
+            onReload = onReload,
         )
 
         HeaderButton(
