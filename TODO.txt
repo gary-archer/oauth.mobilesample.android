@@ -1,20 +1,45 @@
 NEXT
 ----
-1. NavHost seems basically to work but has problems with recycler views
-   Therefore get rid of those next and recreate the companies and transactions views
+0. Remove activity_main and nav_graph.xml references
 
-2. Navigation basics from companies to transactions
+1. Companies view basics, to get data and render something
+   Basic list with a text element
+   Updates to view model
+   Vertical spacing to refine
+   Also navigate from companies to transactions when list item clicked
 
-3. Simpler views and vertical spacing to refine
+2. Transactions view basics, to get data and render something
+   Basic list with a text element
+   Updates to view model
+   Vertical spacing to refine
 
-4. Deep linking to test
+3. Constants for route names
 
-5. Gradually remove all XML layout views
+4. Complete companies and transaction views, including item child views, then delete old resources
+   - fragment_blank
+   - fragment_companies
+   - fragment_transactions
+   - company_list_item
+   - transaction_list_item
+
+5. Login required view
+   login / logout navigation to get working
+  - fragment_login_required
+
+6. Session view
+   - fragment_session
+
+7. Device not secured view
+   - fragment_device_not_secured
+
+8. Error views
+
+9. Deep linking navigation
 
 TIDY UP
 -------
-1. User info race condition where it does not receive the initial navigate event
+1. Ensure no user info race condition where it does not receive the initial navigate event
 
-2. Improve use of library dependencies
+2. Improve library dependencies and see which I can remove
 
 3. Test on tablet, since previously I had separate styles for that platform

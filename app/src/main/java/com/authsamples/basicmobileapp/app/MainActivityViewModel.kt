@@ -17,7 +17,9 @@ import com.authsamples.basicmobileapp.plumbing.errors.UIError
 import com.authsamples.basicmobileapp.plumbing.events.ReloadDataEvent
 import com.authsamples.basicmobileapp.plumbing.oauth.Authenticator
 import com.authsamples.basicmobileapp.plumbing.oauth.AuthenticatorImpl
+import com.authsamples.basicmobileapp.views.companies.CompaniesViewModel
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModelData
+import com.authsamples.basicmobileapp.views.transactions.TransactionsViewModel
 import com.authsamples.basicmobileapp.views.userinfo.UserInfoViewModel
 import com.authsamples.basicmobileapp.views.utilities.DeviceSecurity
 import com.authsamples.basicmobileapp.views.utilities.ViewModelCoordinator
@@ -49,6 +51,8 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
     var isDeviceSecured: Boolean
 
     // Child view models
+    private var companiesViewModel: CompaniesViewModel?
+    private var transactionsViewModel: TransactionsViewModel?
     private var userInfoViewModel: UserInfoViewModel?
 
     // Observable data
@@ -70,6 +74,8 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
         this.fetchClient = FetchClient(this.configuration, this.fetchCache, this.authenticator)
 
         // Initialize child view models
+        this.companiesViewModel = null
+        this.transactionsViewModel = null
         this.userInfoViewModel = null
 
         // Initialize state
@@ -255,6 +261,36 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
         if (this.error != null || this.viewModelCoordinator.hasErrors()) {
             this.reloadData(false)
         }
+    }
+
+    fun getCompaniesViewModel(): CompaniesViewModel {
+
+        if (this.companiesViewModel == null) {
+
+            this.companiesViewModel = CompaniesViewModel(
+                this.fetchClient,
+                this.eventBus,
+                this.viewModelCoordinator,
+                this.app
+            )
+        }
+
+        return this.companiesViewModel!!
+    }
+
+    fun getTransactionsViewModel(): TransactionsViewModel {
+
+        if (this.transactionsViewModel == null) {
+
+            this.transactionsViewModel = TransactionsViewModel(
+                this.fetchClient,
+                this.eventBus,
+                this.viewModelCoordinator,
+                this.app
+            )
+        }
+
+        return this.transactionsViewModel!!
     }
 
     fun getUserInfoViewModel(): UserInfoViewModel {

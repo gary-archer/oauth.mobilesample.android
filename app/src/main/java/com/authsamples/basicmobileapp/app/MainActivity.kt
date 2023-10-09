@@ -9,21 +9,19 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.viewinterop.AndroidViewBinding
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.fragment.NavHostFragment
-import com.authsamples.basicmobileapp.R
-import com.authsamples.basicmobileapp.databinding.FragmentCompaniesBinding
+import androidx.navigation.navArgument
 import com.authsamples.basicmobileapp.databinding.FragmentDeviceNotSecuredBinding
 import com.authsamples.basicmobileapp.databinding.FragmentErrorContainerBinding
-import com.authsamples.basicmobileapp.databinding.FragmentTransactionsBinding
 import com.authsamples.basicmobileapp.plumbing.events.LoginRequiredEvent
-import com.authsamples.basicmobileapp.views.companies.CompaniesFragment
+import com.authsamples.basicmobileapp.views.companies.CompaniesView
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryFragment
 import com.authsamples.basicmobileapp.views.headings.HeaderButtonsView
 import com.authsamples.basicmobileapp.views.headings.TitleView
-import com.authsamples.basicmobileapp.views.security.LoginRequiredFragment
+import com.authsamples.basicmobileapp.views.transactions.TransactionsView
 import com.authsamples.basicmobileapp.views.utilities.DeviceSecurity
 import com.authsamples.basicmobileapp.views.utilities.NavigationHelper
 import org.greenrobot.eventbus.Subscribe
@@ -75,11 +73,6 @@ class MainActivity : ComponentActivity() {
         // Do the initial render
         this.render()
 
-        // Then get the navhost and initialise helper objects
-        val navHostFragment = NavHostFragment()
-        this.navigationHelper = NavigationHelper(navHostFragment) { model.isDeviceSecured }
-        this.navigationHelper.deepLinkBaseUrl = this.model.configuration.oauth.deepLinkBaseUrl
-
         // Initialize the view model and move to a loaded state, to cause a re-render
         this.model.initialize(this::onLoaded)
     }
@@ -117,9 +110,15 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                // The main view which is swapped out during navigation
-                val navController = rememberNavController()
-                NavHost(navController = navController, startDestination = "device_not_secured") {
+                // The session view
+
+                // Create navigation objects
+                val navHostController = rememberNavController()
+                that.navigationHelper = NavigationHelper(navHostController) { model.isDeviceSecured }
+                that.navigationHelper.deepLinkBaseUrl = that.model.configuration.oauth.deepLinkBaseUrl
+
+                // The main view is a navigation graph that is swapped out during navigation
+                NavHost(navController = navHostController, startDestination = "blank") {
 
                     composable("blank") {
                     }
@@ -129,21 +128,25 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable("companies") {
-
-                        // This doesn't seem to render the recycler so replace the view instead, and use a list
-                        AndroidViewBinding(FragmentCompaniesBinding::inflate)
+                        CompaniesView(model = that.model.getCompaniesViewModel(), navigationHelper = navigationHelper)
                     }
 
-                    composable("transactions") {
+                    composable(
+                        "transactions/{id}",
+                        arguments = listOf(navArgument("id") { type = NavType.StringType })
+                    ) {
 
-                        // This doesn't seem to render the recycler so replace the view instead, and use a list
-                        AndroidViewBinding(FragmentTransactionsBinding::inflate)
+                        val id = it.arguments?.getString("id") ?: ""
+                        TransactionsView(
+                            companyId = id,
+                            model = that.model.getTransactionsViewModel(),
+                            navigationHelper = navigationHelper
+                        )
+                    }
+
+                    composable("login_required") {
                     }
                 }
-
-                // The session view
-
-                // The nav host main view, whose content is swapped out as the user navigates
             }
         }
     }
@@ -154,7 +157,7 @@ class MainActivity : ComponentActivity() {
     private fun onLoaded() {
 
         this.model.eventBus.register(this)
-        //this.navigateStart()
+        this.navigateStart()
     }
 
     /*
@@ -165,7 +168,7 @@ class MainActivity : ComponentActivity() {
         if (!this.model.isDeviceSecured) {
 
             // If the device is not secured we will move to a view that prompts the user to do so
-            this.navigationHelper.navigateTo(R.id.device_not_secured_fragment)
+            this.navigationHelper.navigateTo("device_not_secured")
 
         } else if (this.navigationHelper.isDeepLinkIntent(this.intent)) {
 
@@ -175,7 +178,7 @@ class MainActivity : ComponentActivity() {
         } else {
 
             // Otherwise start at the default fragment in nav_graph.xml, which is the companies view
-            this.navigationHelper.navigateTo(R.id.companies_fragment)
+            this.navigationHelper.navigateTo("companies")
         }
     }
 
@@ -220,7 +223,7 @@ class MainActivity : ComponentActivity() {
         event.used()
 
         val onCancelled = {
-            this.navigationHelper.navigateTo(R.id.login_required_fragment)
+            this.navigationHelper.navigateTo("login_required")
         }
 
         this.model.startLogin(this.loginLauncher::launch, onCancelled)
@@ -233,10 +236,10 @@ class MainActivity : ComponentActivity() {
 
         val onSuccess = {
 
-            if (this.navigationHelper.getActiveMainFragment() is LoginRequiredFragment) {
+            if (this.navigationHelper.getActiveViewName() == "login_required") {
 
                 // If the user logs in from the login required view, then navigate home
-                this.navigationHelper.navigateTo(R.id.companies_fragment)
+                this.navigationHelper.navigateTo("companies")
 
             } else {
 
@@ -246,7 +249,7 @@ class MainActivity : ComponentActivity() {
         }
 
         val onCancelled = {
-            this.navigationHelper.navigateTo(R.id.login_required_fragment)
+            this.navigationHelper.navigateTo("login_required")
         }
 
         this.model.finishLogin(responseIntent, onSuccess, onCancelled)
@@ -258,7 +261,7 @@ class MainActivity : ComponentActivity() {
     private fun onStartLogout() {
 
         val onError = {
-            this.navigationHelper.navigateTo(R.id.login_required_fragment)
+            this.navigationHelper.navigateTo("login_required")
         }
 
         this.model.startLogout(this.logoutLauncher::launch, onError)
@@ -269,7 +272,7 @@ class MainActivity : ComponentActivity() {
      */
     private fun onFinishLogout() {
         this.model.finishLogout()
-        this.navigationHelper.navigateTo(R.id.login_required_fragment)
+        this.navigationHelper.navigateTo("login_required")
     }
 
     /*
@@ -287,7 +290,7 @@ class MainActivity : ComponentActivity() {
         }
 
         // Inspect the current view
-        if (this.navigationHelper.getActiveMainFragment() is LoginRequiredFragment) {
+        if (this.navigationHelper.getActiveViewName() == "login_required") {
 
             // Start a new login when logged out
             this.onLoginRequired(LoginRequiredEvent())
@@ -295,8 +298,8 @@ class MainActivity : ComponentActivity() {
         } else {
 
             // Navigate to the home view unless already there
-            if (!(this.navigationHelper.getActiveMainFragment() is CompaniesFragment)) {
-                this.navigationHelper.navigateTo(R.id.companies_fragment)
+            if (this.navigationHelper.getActiveViewName() != "companies") {
+                this.navigationHelper.navigateTo("companies")
             }
 
             // Force a data reload if recovering from errors
