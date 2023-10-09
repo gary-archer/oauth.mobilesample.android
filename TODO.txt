@@ -1,7 +1,5 @@
 NEXT
 ----
-0. Remove activity_main and nav_graph.xml references
-
 1. Companies view basics, to get data and render something
    Basic list with a text element
    Updates to view model

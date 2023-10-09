@@ -99,7 +99,7 @@ class TransactionsFragment : androidx.fragment.app.Fragment() {
             if (isForbidden) {
 
                 // Navigate back to the home view for expected errors such as trying to access unauthorized data
-                findNavController().navigate(R.id.companies_fragment, Bundle())
+                // findNavController().navigate(R.id.companies_fragment, Bundle())
 
             } else {
 

@@ -28,9 +28,6 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-
-            <!-- Androidx navigation -->
-            <nav-graph android:value="@navigation/nav_graph" />
         </activity>
 
         <!-- Override the AppAuth activity to use our claimed HTTPS scheme for login responses -->
