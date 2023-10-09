@@ -113,12 +113,12 @@ class TransactionsViewModel(
      */
     private fun isForbiddenError(uiError: UIError): Boolean {
 
-        if (uiError.statusCode == 404 && uiError.errorCode.equals(ErrorCodes.companyNotFound)) {
+        if (uiError.statusCode == 404 && uiError.errorCode == ErrorCodes.companyNotFound) {
 
             // A deep link could provide an id such as 3, which is unauthorized
             return true
 
-        } else if (uiError.statusCode == 400 && uiError.errorCode.equals(ErrorCodes.invalidCompanyId)) {
+        } else if (uiError.statusCode == 400 && uiError.errorCode == ErrorCodes.invalidCompanyId) {
 
             // A deep link could provide an invalid id value such as 'abc'
             return true

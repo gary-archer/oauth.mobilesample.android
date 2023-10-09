@@ -9,6 +9,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.viewinterop.AndroidViewBinding
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,6 +17,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.authsamples.basicmobileapp.databinding.FragmentDeviceNotSecuredBinding
 import com.authsamples.basicmobileapp.databinding.FragmentErrorContainerBinding
+import com.authsamples.basicmobileapp.databinding.FragmentLoginRequiredBinding
+import com.authsamples.basicmobileapp.databinding.FragmentSessionBinding
 import com.authsamples.basicmobileapp.plumbing.events.LoginRequiredEvent
 import com.authsamples.basicmobileapp.views.companies.CompaniesView
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryFragment
@@ -31,7 +34,7 @@ import org.greenrobot.eventbus.ThreadMode
  * The application's main activity
  */
 @Suppress("TooManyFunctions")
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
 
     private lateinit var model: MainActivityViewModel
     private lateinit var navigationHelper: NavigationHelper
@@ -111,6 +114,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 // The session view
+                AndroidViewBinding(FragmentSessionBinding::inflate)
 
                 // Create navigation objects
                 val navHostController = rememberNavController()
@@ -145,6 +149,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable("login_required") {
+                        AndroidViewBinding(FragmentLoginRequiredBinding::inflate)
                     }
                 }
             }

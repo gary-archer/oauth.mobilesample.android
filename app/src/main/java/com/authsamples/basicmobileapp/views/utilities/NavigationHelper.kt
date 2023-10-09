@@ -67,7 +67,7 @@ class NavigationHelper(
             return null
         }
 
-        if (receivedIntent.action.equals(Intent.ACTION_VIEW)) {
+        if (receivedIntent.action == Intent.ACTION_VIEW) {
             val url = receivedIntent.dataString
             if (!url.isNullOrBlank()) {
                 return url
@@ -88,7 +88,7 @@ class NavigationHelper(
         // Check for our deep linking URL
         val urlData = Uri.parse(url)
         val baseUrl = "${urlData.scheme}://${urlData.host}"
-        if (baseUrl.lowercase(Locale.ROOT).equals(this.deepLinkBaseUrl) &&
+        if (baseUrl.lowercase(Locale.ROOT) == this.deepLinkBaseUrl &&
             urlData.path?.lowercase(Locale.ROOT)?.startsWith("/basicmobileapp/deeplink", true)!!
         ) {
 

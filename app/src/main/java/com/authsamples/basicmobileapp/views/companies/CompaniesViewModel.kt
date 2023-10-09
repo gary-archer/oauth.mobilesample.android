@@ -1,8 +1,8 @@
 package com.authsamples.basicmobileapp.views.companies
 
 import android.app.Application
-import androidx.databinding.Observable
-import androidx.databinding.PropertyChangeRegistry
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.api.client.FetchCacheKeys
@@ -27,16 +27,15 @@ class CompaniesViewModel(
     val eventBus: EventBus,
     private val viewModelCoordinator: ViewModelCoordinator,
     val app: Application
-) : AndroidViewModel(app), Observable {
+) : AndroidViewModel(app) {
 
-    var companiesList: List<Company> = ArrayList()
-    var error: UIError? = null
-    private val callbacks = PropertyChangeRegistry()
+    var companiesList: MutableState<List<Company>?> = mutableStateOf(ArrayList())
+    var error: MutableState<UIError?> = mutableStateOf(null)
 
     /*
      * A method to do the work of calling the API
      */
-    fun callApi(options: ViewLoadOptions?, onComplete: () -> Unit) {
+    fun callApi(options: ViewLoadOptions?) {
 
         val fetchOptions = FetchOptions(
             FetchCacheKeys.COMPANIES,
@@ -78,7 +77,6 @@ class CompaniesViewModel(
                 // Inform the view once complete
                 withContext(Dispatchers.Main) {
                     that.viewModelCoordinator.onMainViewModelLoaded(fetchOptions.cacheKey)
-                    onComplete()
                 }
             }
         }
@@ -91,37 +89,28 @@ class CompaniesViewModel(
         return ErrorSummaryViewModelData(
             hyperlinkText = app.getString(R.string.companies_error_hyperlink),
             dialogTitle = app.getString(R.string.companies_error_dialogtitle),
-            error = this.error
+            error = this.error.value
         )
-    }
-
-    /*
-     * Observable plumbing to allow XML views to register
-     */
-    override fun addOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback) {
-        this.callbacks.add(callback)
-    }
-
-    /*
-     * Observable plumbing to allow XML views to unregister
-     */
-    override fun removeOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback) {
-        this.callbacks.remove(callback)
     }
 
     /*
      * Update data and inform the binding system
      */
     private fun updateData(companies: List<Company>) {
-        this.companiesList = companies
-        this.callbacks.notifyCallbacks(this, 0, null)
+        this.companiesList.value = companies
     }
 
     /*
      * Update the error state and inform the binding system
      */
     private fun updateError(error: UIError?) {
-        this.error = error
-        this.callbacks.notifyCallbacks(this, 0, null)
+        this.error.value = error
+    }
+
+    /*
+     * Make error details available to the view
+     */
+    fun errorData(): UIError? {
+        return this.error.value
     }
 }

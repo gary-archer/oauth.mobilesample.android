@@ -15,7 +15,6 @@ import com.authsamples.basicmobileapp.plumbing.errors.UIError
 class ErrorSummaryFragment : androidx.fragment.app.Fragment() {
 
     private lateinit var binding: FragmentErrorSummaryBinding
-    private lateinit var keyName: String
 
     /*
      * Initialise the view
@@ -31,7 +30,7 @@ class ErrorSummaryFragment : androidx.fragment.app.Fragment() {
 
         // Create the view model with default settings
         val factory = ErrorSummaryViewModelFactory(this::showDetailsDialog)
-        this.binding.model = ViewModelProvider(this, factory)[this.keyName, ErrorSummaryViewModel::class.java]
+        this.binding.model = ViewModelProvider(this, factory)[ErrorSummaryViewModel::class.java]
         return binding.root
     }
 
@@ -48,7 +47,7 @@ class ErrorSummaryFragment : androidx.fragment.app.Fragment() {
         } else {
 
             // Populate any error details but ignore expected errors
-            if (!data.error.errorCode.equals(ErrorCodes.loginRequired)) {
+            if (data.error.errorCode != ErrorCodes.loginRequired) {
 
                 this.binding.model!!.setErrorDetails(
                     data.hyperlinkText,

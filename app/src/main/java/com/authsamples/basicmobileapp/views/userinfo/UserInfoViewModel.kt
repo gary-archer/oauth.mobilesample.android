@@ -30,10 +30,10 @@ import org.greenrobot.eventbus.EventBus
  */
 @Suppress("TooManyFunctions")
 class UserInfoViewModel(
-    val fetchClient: FetchClient,
+    private val fetchClient: FetchClient,
     val eventBus: EventBus,
-    val viewModelCoordinator: ViewModelCoordinator,
-    val app: Application
+    private val viewModelCoordinator: ViewModelCoordinator,
+    private val app: Application
 ) : AndroidViewModel(app) {
 
     // Observable data for which the UI must be notified upon change
