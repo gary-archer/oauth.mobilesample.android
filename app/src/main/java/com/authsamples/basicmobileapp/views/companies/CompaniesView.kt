@@ -51,20 +51,26 @@ fun CompaniesView(model: CompaniesViewModel, navigationHelper: NavigationHelper)
         }
     }
 
-    // Manage event subscriptions
+    // Manage view loads and unloads
     DisposableEffect(key1 = null) {
+
+        // Register for events and notify that the main view has changed
         model.eventBus.register(subscriber)
+        model.eventBus.post(NavigatedEvent(true))
+
+        // Do the initial data load
+        loadData()
+
+        // Unregister for events on disposal
         onDispose {
             model.eventBus.unregister(subscriber)
         }
     }
 
-    // Do the initial data load and notify that the main view has changed
-    loadData()
-    model.eventBus.post(NavigatedEvent(true))
-
-    // Render based on the view model data
+    // Render based on the current view model data
     Column {
+
+        // Render the header
         Text(
             text = "Companies List",
             style = TextStyles.header,
@@ -72,9 +78,9 @@ fun CompaniesView(model: CompaniesViewModel, navigationHelper: NavigationHelper)
             modifier = Modifier.weight(1f)
         )
 
-        // Do the rendering
         if (model.errorData() == null) {
 
+            // Render the list view on load success
             Text(
                 text = "Companies success",
                 style = TextStyles.label,

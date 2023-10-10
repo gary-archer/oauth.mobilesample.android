@@ -74,7 +74,7 @@ fun UserInfoView(model: UserInfoViewModel, modifier: Modifier) {
         }
     }
 
-    // Manage event subscriptions
+    // Manage event subscriptions during view loads and unloads
     DisposableEffect(key1 = null) {
         model.eventBus.register(subscriber)
         onDispose {
@@ -82,7 +82,7 @@ fun UserInfoView(model: UserInfoViewModel, modifier: Modifier) {
         }
     }
 
-    // Do the rendering
+    // Render based on the current view model data
     if (model.errorData() == null) {
 
         val tooltipState = remember { PlainTooltipState() }
