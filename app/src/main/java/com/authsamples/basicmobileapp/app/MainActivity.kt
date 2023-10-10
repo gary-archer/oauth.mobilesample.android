@@ -3,7 +3,6 @@ package com.authsamples.basicmobileapp.app
 import android.app.admin.DevicePolicyManager
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -12,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidViewBinding
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -35,7 +35,7 @@ import org.greenrobot.eventbus.ThreadMode
  * The application's main activity
  */
 @Suppress("TooManyFunctions")
-class MainActivity : ComponentActivity() {
+class MainActivity : FragmentActivity() {
 
     private lateinit var model: MainActivityViewModel
     private lateinit var navigationHelper: NavigationHelper
@@ -163,7 +163,7 @@ class MainActivity : ComponentActivity() {
     private fun onLoaded() {
 
         this.model.eventBus.register(this)
-        this.navigateStart()
+        //this.navigateStart()
     }
 
     /*

@@ -30,6 +30,7 @@ class SessionFragment : androidx.fragment.app.Fragment() {
     ): View {
 
         // Inflate the view
+        println("GJA: here")
         this.binding = FragmentSessionBinding.inflate(inflater, container, false)
 
         // Create our view model using data from the main view model

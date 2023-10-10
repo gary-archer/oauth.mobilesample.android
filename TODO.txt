@@ -9,17 +9,19 @@ NEXT
       - fragment_transactions
       - transaction_list_item
 
-3. Error dialog to get working
+3. Session view
+   Not working currently - see if an update to a compose view fixes it
+   - fragment_session
 
 4. Login required view
    login / logout navigation to get working
   - fragment_login_required
 
-5. Session view
-   - fragment_session
-
-6. Device not secured view
+5. Device not secured view
    - fragment_device_not_secured
+
+6. Error details fragment to compose
+   Change back to a ComponentActivity once I've got rid of all fragments
 
 7. Constants for route names
 
@@ -28,6 +30,8 @@ NEXT
 9. Rendering to finish, including item child views
    Vertical spacing to refine
    Delete old styles
+
+10. Tablet view size
 
 TIDY UP
 -------
