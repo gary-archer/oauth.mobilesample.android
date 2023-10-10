@@ -163,7 +163,7 @@ class MainActivity : FragmentActivity() {
     private fun onLoaded() {
 
         this.model.eventBus.register(this)
-        //this.navigateStart()
+        this.navigateStart()
     }
 
     /*

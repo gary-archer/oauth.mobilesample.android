@@ -29,7 +29,7 @@ class CompaniesViewModel(
     val app: Application
 ) : AndroidViewModel(app) {
 
-    var companiesList: MutableState<List<Company>?> = mutableStateOf(ArrayList())
+    var companiesList: MutableState<List<Company>> = mutableStateOf(ArrayList())
     var error: MutableState<UIError?> = mutableStateOf(null)
 
     /*

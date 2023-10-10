@@ -83,13 +83,16 @@ fun CompaniesView(model: CompaniesViewModel, navigationHelper: NavigationHelper)
 
         if (model.errorData() == null) {
 
-            // Render the list view on load success
-            Text(
-                text = "Companies success",
-                style = TextStyles.label,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth().wrapContentSize()
-            )
+            // Render a list on success
+            model.companiesList.value.forEach { company ->
+
+                Text(
+                    text = company.name,
+                    style = TextStyles.label,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth().wrapContentSize()
+                )
+            }
 
         } else {
 
