@@ -12,4 +12,7 @@ object CustomColors {
 
     // Black values and headings
     val value = Color(0xFF212121)
+
+    // Errors in red
+    val error = Color(0xFFFF0000)
 }

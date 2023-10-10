@@ -22,6 +22,12 @@ object TextStyles {
         color = CustomColors.label,
     )
 
+    val error = TextStyle(
+        fontWeight = FontWeight.Bold,
+        fontSize = 16.sp,
+        color = CustomColors.error,
+    )
+
     val tooltip = TextStyle(
         fontSize = 14.sp,
         textAlign = TextAlign.Center

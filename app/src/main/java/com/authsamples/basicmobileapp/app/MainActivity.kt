@@ -3,24 +3,26 @@ package com.authsamples.basicmobileapp.app
 import android.app.admin.DevicePolicyManager
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidViewBinding
-import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.authsamples.basicmobileapp.databinding.FragmentDeviceNotSecuredBinding
-import com.authsamples.basicmobileapp.databinding.FragmentErrorContainerBinding
 import com.authsamples.basicmobileapp.databinding.FragmentLoginRequiredBinding
 import com.authsamples.basicmobileapp.databinding.FragmentSessionBinding
 import com.authsamples.basicmobileapp.plumbing.events.LoginRequiredEvent
 import com.authsamples.basicmobileapp.views.companies.CompaniesView
-import com.authsamples.basicmobileapp.views.errors.ErrorSummaryFragment
+import com.authsamples.basicmobileapp.views.errors.ErrorSummaryView
 import com.authsamples.basicmobileapp.views.headings.HeaderButtonsView
 import com.authsamples.basicmobileapp.views.headings.TitleView
 import com.authsamples.basicmobileapp.views.transactions.TransactionsView
@@ -33,7 +35,7 @@ import org.greenrobot.eventbus.ThreadMode
  * The application's main activity
  */
 @Suppress("TooManyFunctions")
-class MainActivity : FragmentActivity() {
+class MainActivity : ComponentActivity() {
 
     private lateinit var model: MainActivityViewModel
     private lateinit var navigationHelper: NavigationHelper
@@ -106,10 +108,10 @@ class MainActivity : FragmentActivity() {
                 // Show application level errors when applicable
                 if (model.error != null) {
 
-                    AndroidViewBinding(FragmentErrorContainerBinding::inflate) {
-                        val errorSummaryFragment = errorContainerFragment.getFragment<ErrorSummaryFragment>()
-                        errorSummaryFragment.receiveErrorFromParent(model.errorSummaryData())
-                    }
+                    ErrorSummaryView(
+                        model.errorSummaryData(),
+                        modifier = Modifier.fillMaxWidth().wrapContentSize()
+                    )
                 }
 
                 // The session view

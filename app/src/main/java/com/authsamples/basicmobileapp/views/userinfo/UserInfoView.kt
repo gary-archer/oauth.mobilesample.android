@@ -14,11 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidViewBinding
-import com.authsamples.basicmobileapp.databinding.FragmentErrorContainerBinding
 import com.authsamples.basicmobileapp.plumbing.events.NavigatedEvent
 import com.authsamples.basicmobileapp.plumbing.events.ReloadDataEvent
-import com.authsamples.basicmobileapp.views.errors.ErrorSummaryFragment
+import com.authsamples.basicmobileapp.views.errors.ErrorSummaryView
 import com.authsamples.basicmobileapp.views.utilities.CustomColors
 import com.authsamples.basicmobileapp.views.utilities.TextStyles
 import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
@@ -122,9 +120,6 @@ fun UserInfoView(model: UserInfoViewModel, modifier: Modifier) {
     } else {
 
         // Otherwise render error details
-        AndroidViewBinding(FragmentErrorContainerBinding::inflate) {
-            val errorSummaryFragment = errorContainerFragment.getFragment<ErrorSummaryFragment>()
-            errorSummaryFragment.receiveErrorFromParent(model.errorSummaryData())
-        }
+        ErrorSummaryView(model.errorSummaryData(), modifier = Modifier)
     }
 }

@@ -1,17 +1,15 @@
 NEXT
 ----
-1. Move error summary view to a compose view, for simplicity
-   Get concurrent failures rendering correctly, for productivity
-   Then change back to a ComponentActivity
-
-2. Companies list view basics
+1. Companies list view basics
    Also navigate from companies to transactions when list item clicked
 
-3. Transactions list view basics
+2. Transactions list view basics
    Updates to view model and view to get data
    Then delete old resources:
       - fragment_transactions
       - transaction_list_item
+
+3. Error dialog to get working
 
 4. Login required view
    login / logout navigation to get working

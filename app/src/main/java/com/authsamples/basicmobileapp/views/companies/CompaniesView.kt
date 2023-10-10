@@ -1,16 +1,17 @@
 package com.authsamples.basicmobileapp.views.companies
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.viewinterop.AndroidViewBinding
-import com.authsamples.basicmobileapp.databinding.FragmentErrorContainerBinding
 import com.authsamples.basicmobileapp.plumbing.events.NavigatedEvent
 import com.authsamples.basicmobileapp.plumbing.events.ReloadDataEvent
-import com.authsamples.basicmobileapp.views.errors.ErrorSummaryFragment
+import com.authsamples.basicmobileapp.views.errors.ErrorSummaryView
 import com.authsamples.basicmobileapp.views.utilities.NavigationHelper
 import com.authsamples.basicmobileapp.views.utilities.TextStyles
 import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
@@ -68,14 +69,16 @@ fun CompaniesView(model: CompaniesViewModel, navigationHelper: NavigationHelper)
     }
 
     // Render based on the current view model data
-    Column {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
 
         // Render the header
         Text(
             text = "Companies List",
             style = TextStyles.header,
-            textAlign = TextAlign.Left,
-            modifier = Modifier.weight(1f)
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth().wrapContentSize()
         )
 
         if (model.errorData() == null) {
@@ -84,17 +87,17 @@ fun CompaniesView(model: CompaniesViewModel, navigationHelper: NavigationHelper)
             Text(
                 text = "Companies success",
                 style = TextStyles.label,
-                textAlign = TextAlign.Left,
-                modifier = Modifier.weight(1f)
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth().wrapContentSize()
             )
 
         } else {
 
             // Otherwise render error details
-            AndroidViewBinding(FragmentErrorContainerBinding::inflate) {
-                val errorSummaryFragment = errorContainerFragment.getFragment<ErrorSummaryFragment>()
-                errorSummaryFragment.receiveErrorFromParent(model.errorSummaryData())
-            }
+            ErrorSummaryView(
+                model.errorSummaryData(),
+                modifier = Modifier.fillMaxWidth().wrapContentSize()
+            )
         }
     }
 }
