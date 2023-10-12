@@ -8,7 +8,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.plumbing.events.NavigatedEvent
 import com.authsamples.basicmobileapp.plumbing.events.ReloadDataEvent
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryView
@@ -29,16 +31,6 @@ fun CompaniesView(model: CompaniesViewModel, navigationHelper: NavigationHelper)
      */
     fun loadData(options: ViewLoadOptions? = null) {
         model.callApi(options)
-    }
-
-    /*
-     * Handle navigation when an item is clicked
-     */
-    fun onItemClick() {
-
-        // val args = Bundle()
-        // args.putString(ViewConstants.ARG_COMPANY_ID, viewModelItem.company.id.toString())
-        // findNavController().navigate(R.id.transactions_fragment, args)
     }
 
     /*
@@ -75,31 +67,29 @@ fun CompaniesView(model: CompaniesViewModel, navigationHelper: NavigationHelper)
 
         // Render the header
         Text(
-            text = "Companies List",
+            text = stringResource(R.string.company_list_title),
             style = TextStyles.header,
             textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth().wrapContentSize()
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentSize()
         )
 
-        if (model.errorData() == null) {
-
-            // Render a list on success
+        // Render a list on success
+        if (model.companiesList.value.isNotEmpty()) {
             model.companiesList.value.forEach { company ->
-
-                Text(
-                    text = company.name,
-                    style = TextStyles.label,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth().wrapContentSize()
-                )
+                CompaniesItemView(company = company, navigationHelper = navigationHelper)
             }
+        }
 
-        } else {
+        // Render error details on failure
+        if (model.errorData() != null) {
 
-            // Otherwise render error details
             ErrorSummaryView(
                 model.errorSummaryData(),
-                modifier = Modifier.fillMaxWidth().wrapContentSize()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentSize()
             )
         }
     }

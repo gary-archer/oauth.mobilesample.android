@@ -1,35 +1,29 @@
 NEXT
 ----
-1. Companies list view
-   Make each list item an object with an ID and its own view
-   On click navigate with that ID to the transactions list
-   Use a child CompaniesItemView
-
-2. Transactions list view equivalent updates
+1. Transactions list view equivalent updates
    Then delete old resources:
       - fragment_transactions
       - transaction_list_item
 
-3. Session view to update to a compose view (not working currently)
+2. Session view to update to a compose view (not working currently)
    - Delete fragment_session
 
-4. Login required view to update to a compose view
+3. Login required view to update to a compose view
    Logout does not disable header buttons
    - Delete fragment_login_required
 
-5. Device not secured view to update to a compose view
+4. Device not secured view to update to a compose view
    - Delete fragment_device_not_secured
 
-6. Error details fragment to update to a compose view
+5. Error details fragment to update to a compose view
    Change back to a ComponentActivity once I've got rid of all fragments
 
 7. Constants for route names
+   Clean up styles and minimize use of XML resources
 
 8. Deep linking navigation
 
-9. Tablet view size
-
-10. Clean up styles and minimize use of XML resources
+9. Tablet testing
 
 TIDY UP
 -------

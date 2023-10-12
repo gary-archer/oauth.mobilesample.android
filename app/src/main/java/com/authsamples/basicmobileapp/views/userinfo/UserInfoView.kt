@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.authsamples.basicmobileapp.plumbing.events.NavigatedEvent
@@ -108,7 +107,7 @@ fun UserInfoView(model: UserInfoViewModel, modifier: Modifier) {
 
             // Render the user name
             Text(
-                text = AnnotatedString(model.getUserName()),
+                text = model.getUserName(),
                 style = TextStyles.label,
                 textAlign = TextAlign.Right,
                 modifier = modifier.clickable {
