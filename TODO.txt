@@ -18,8 +18,9 @@ NEXT
 5. Error details fragment to update to a compose view
    Change back to a ComponentActivity once I've got rid of all fragments
 
-7. Constants for route names
-   Clean up styles and minimize use of XML resources
+7. Clean up styles and minimize use of XML resources
+   Constants for route names
+   Final appearance improvements
 
 8. Deep linking navigation
 

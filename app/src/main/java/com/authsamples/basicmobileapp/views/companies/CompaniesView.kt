@@ -3,6 +3,8 @@ package com.authsamples.basicmobileapp.views.companies
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -75,10 +77,16 @@ fun CompaniesView(model: CompaniesViewModel, navigationHelper: NavigationHelper)
                 .wrapContentSize()
         )
 
-        // Render a list on success
+        // Render a scrollable list on success
         if (model.companiesList.value.isNotEmpty()) {
-            model.companiesList.value.forEach { company ->
-                CompaniesItemView(company = company, navigationHelper = navigationHelper)
+
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+            ) {
+                model.companiesList.value.forEach { company ->
+                    CompaniesItemView(company = company, navigationHelper = navigationHelper)
+                }
             }
         }
 
