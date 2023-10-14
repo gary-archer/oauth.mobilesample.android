@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.plumbing.events.NavigatedEvent
 import com.authsamples.basicmobileapp.plumbing.events.ViewModelFetchEvent
-import com.authsamples.basicmobileapp.views.utilities.Controls.HeaderButton
+import com.authsamples.basicmobileapp.views.utilities.HeaderButton
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode

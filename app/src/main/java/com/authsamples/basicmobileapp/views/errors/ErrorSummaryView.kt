@@ -3,17 +3,17 @@ package com.authsamples.basicmobileapp.views.errors
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import com.authsamples.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authsamples.basicmobileapp.views.utilities.TextStyles
 
@@ -23,12 +23,12 @@ import com.authsamples.basicmobileapp.views.utilities.TextStyles
 @Composable
 fun ErrorSummaryView(model: ErrorViewModel, modifier: Modifier) {
 
+    val showDialog = remember { mutableStateOf(false) }
+
     // Ignore non errors
     if (model.error.errorCode == ErrorCodes.loginRequired) {
         return
     }
-
-    val showDialog = remember { mutableStateOf(false) }
 
     // Render the hyperlink
     Text(
@@ -40,18 +40,21 @@ fun ErrorSummaryView(model: ErrorViewModel, modifier: Modifier) {
         }
     )
 
-    val onDismiss = { showDialog.value = false }
-
     // Show the modal dialog when the hyperlink is clicked
     if (showDialog.value) {
 
-        Dialog(onDismissRequest = onDismiss) {
+        val onDismiss = { showDialog.value = false }
+        Dialog(
+            onDismissRequest = onDismiss,
+            properties = DialogProperties(usePlatformDefaultWidth = false),
+        ) {
             Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.White,
+                ),
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-                    .padding(5.dp),
-                shape = RoundedCornerShape(10),
+                    .fillMaxHeight(0.95f)
+                    .fillMaxWidth(1f)
             ) {
                 ErrorDetailsView(model, onDismiss)
             }
