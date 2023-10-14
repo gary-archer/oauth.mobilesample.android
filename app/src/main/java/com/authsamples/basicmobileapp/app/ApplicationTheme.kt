@@ -2,6 +2,7 @@ package com.authsamples.basicmobileapp.app
 
 import android.app.Activity
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.toArgb
@@ -9,7 +10,7 @@ import androidx.compose.ui.platform.LocalView
 import com.authsamples.basicmobileapp.views.utilities.CustomColors
 
 /*
- * Set the status and navigation bar to match the app's colors
+ * Set the theme in code and use color objects
  */
 @Composable
 fun ApplicationTheme(
@@ -23,7 +24,12 @@ fun ApplicationTheme(
         window.navigationBarColor = CustomColors.primary.toArgb()
     }
 
+    val colorScheme = lightColorScheme(
+        primary = CustomColors.primary
+    )
+
     MaterialTheme(
+        colorScheme = colorScheme,
         content = content
     )
 }

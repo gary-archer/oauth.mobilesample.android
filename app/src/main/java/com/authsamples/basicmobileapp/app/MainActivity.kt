@@ -72,6 +72,7 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
         (this.application as Application).setMainActivity(this)
+        actionBar?.hide()
 
         // Create the main view model the first time the view is created
         val model: MainActivityViewModel by viewModels()
