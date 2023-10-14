@@ -22,7 +22,7 @@ class ErrorFormatter(private val context: Context) {
         val result = ArrayList<ErrorLine>()
 
         val valueColor = CustomColors.value
-        val userActionValueColor = CustomColors.paleGreen
+        val userActionValueColor = CustomColors.green
         val errorIdValueColor = CustomColors.error
 
         /* FIELDS FOR THE END USER */
@@ -43,7 +43,7 @@ class ErrorFormatter(private val context: Context) {
             result.add(
                 this.createErrorLine(
                     R.string.error_info,
-                    error.message,
+                    error.message ?: "",
                     valueColor
                 )
             )
@@ -157,7 +157,7 @@ class ErrorFormatter(private val context: Context) {
     /*
      * Return an error line as an object
      */
-    private fun createErrorLine(labelId: Int, value: String?, color: Color): ErrorLine {
+    private fun createErrorLine(labelId: Int, value: String, color: Color): ErrorLine {
 
         return ErrorLine(
             context.getString(labelId),

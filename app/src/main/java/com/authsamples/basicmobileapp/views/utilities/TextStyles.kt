@@ -37,7 +37,7 @@ object TextStyles {
     val money = TextStyle(
         fontWeight = FontWeight.Bold,
         fontSize = 16.sp,
-        color = CustomColors.money,
+        color = CustomColors.green,
     )
 
     val error = TextStyle(

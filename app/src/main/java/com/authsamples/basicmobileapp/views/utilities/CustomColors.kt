@@ -14,11 +14,8 @@ object CustomColors {
     val value = Color(0xFF212121)
 
     // Green money values
-    val money = Color(0xFF228b22)
+    val green = Color(0xFF228b22)
 
     // Errors in red
     val error = Color(0xFFFF0000)
-
-    // The device not secured button color
-    val paleGreen = Color(0xFF32CD32)
 }

@@ -1,16 +1,23 @@
 package com.authsamples.basicmobileapp.views.errors
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
@@ -20,14 +27,18 @@ import com.authsamples.basicmobileapp.plumbing.errors.ErrorLine
 import com.authsamples.basicmobileapp.views.utilities.CustomColors
 import com.authsamples.basicmobileapp.views.utilities.TextStyles
 
+@SuppressLint("MutableCollectionMutableState")
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun ErrorDetailsView(model: ErrorViewModel, onDismiss: () -> Unit) {
 
-    var lines: ArrayList<ErrorLine>
+    // Rendered state
+    val lines: MutableState<List<ErrorLine>> = remember { mutableStateOf(ArrayList()) }
+
+    // When the view loads, process the error to create error line objects
     val context = LocalContext.current
     LaunchedEffect(Unit) {
-        lines = ErrorFormatter(context).getErrorLines(model.error)
+        lines.value = ErrorFormatter(context).getErrorLines(model.error)
     }
 
     Column(
@@ -63,5 +74,18 @@ fun ErrorDetailsView(model: ErrorViewModel, onDismiss: () -> Unit) {
                 }
             }
         )
+
+        // Next render a scrollable list of error lines
+        if (lines.value.isNotEmpty()) {
+
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+            ) {
+                lines.value.forEach { errorLine ->
+                    ErrorDetailsItemView(errorLine)
+                }
+            }
+        }
     }
 }
