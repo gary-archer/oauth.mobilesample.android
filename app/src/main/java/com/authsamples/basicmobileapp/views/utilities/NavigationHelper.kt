@@ -2,11 +2,7 @@ package com.authsamples.basicmobileapp.views.utilities
 
 import android.content.Intent
 import android.net.Uri
-import android.os.Bundle
-import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.NavHostFragment
-import com.authsamples.basicmobileapp.R
-import com.authsamples.basicmobileapp.views.security.LoginRequiredFragment
+import androidx.navigation.NavHostController
 import java.util.Locale
 import java.util.regex.Pattern
 
@@ -14,26 +10,25 @@ import java.util.regex.Pattern
  * A view helper class for dealing with navigation and deep linking, including the back stack
  */
 class NavigationHelper(
-    val navHostFragment: NavHostFragment,
-    val isDeviceSecured: () -> Boolean
+    private val navHostController: NavHostController,
+    private val isDeviceSecured: () -> Boolean
 ) {
     lateinit var deepLinkBaseUrl: String
 
     /*
-     * Return the current fragment
+     * Return the current view
      */
-    fun getActiveMainFragment(): Fragment? {
-        return this.navHostFragment.childFragmentManager.primaryNavigationFragment
+    fun getActiveViewName(): String? {
+        return this.navHostController.currentDestination?.route
     }
 
     /*
      * A utility method to navigate and manage the back stack
      */
-    fun navigateTo(fragmentId: Int, args: Bundle? = null) {
+    fun navigateTo(viewName: String) {
 
-        val activeFragment = this.navHostFragment.childFragmentManager.primaryNavigationFragment
-        if (this.preNavigate(activeFragment, fragmentId)) {
-            this.navHostFragment.navController.navigate(fragmentId, args)
+        if (this.preNavigate(this.getActiveViewName(), viewName)) {
+            this.navHostController.navigate(viewName)
         }
     }
 
@@ -52,8 +47,8 @@ class NavigationHelper(
         if (intent != null) {
             val url = this.getDeepLinkUrl(intent)
             if (url != null) {
-                val activeFragment = this.navHostFragment.childFragmentManager.primaryNavigationFragment
-                if (this.deepLinkDoNavigate(url, activeFragment)) {
+                val activeView = getActiveViewName()
+                if (this.deepLinkDoNavigate(url, activeView)) {
                     return true
                 }
             }
@@ -66,13 +61,13 @@ class NavigationHelper(
      * Try to return a deep link URL from an intent
      */
     @Suppress("ReturnCount")
-    fun getDeepLinkUrl(receivedIntent: Intent?): String? {
+    private fun getDeepLinkUrl(receivedIntent: Intent?): String? {
 
         if (receivedIntent == null) {
             return null
         }
 
-        if (receivedIntent.action.equals(Intent.ACTION_VIEW)) {
+        if (receivedIntent.action == Intent.ACTION_VIEW) {
             val url = receivedIntent.dataString
             if (!url.isNullOrBlank()) {
                 return url
@@ -86,20 +81,19 @@ class NavigationHelper(
      * Navigate to a deep linking URL such as 'https://mobile.authsamples.com#company=2'
      * Our example is simplistic since we only have a couple of screens
      */
-    private fun deepLinkDoNavigate(url: String, activeFragment: Fragment?): Boolean {
+    private fun deepLinkDoNavigate(url: String, activeViewName: String?): Boolean {
 
-        var newFragmentId: Int? = null
-        var args: Bundle? = null
+        var newViewName: String? = null
 
         // Check for our deep linking URL
         val urlData = Uri.parse(url)
         val baseUrl = "${urlData.scheme}://${urlData.host}"
-        if (baseUrl.lowercase(Locale.ROOT).equals(this.deepLinkBaseUrl) &&
+        if (baseUrl.lowercase(Locale.ROOT) == this.deepLinkBaseUrl &&
             urlData.path?.lowercase(Locale.ROOT)?.startsWith("/basicmobileapp/deeplink", true)!!
         ) {
 
             // The default action is to move to the company list
-            newFragmentId = R.id.companies_fragment
+            newViewName = MainView.Companies
 
             // Check for a hash fragment
             val hash = urlData.fragment
@@ -108,18 +102,15 @@ class NavigationHelper(
                 // If we have a company id then move to the transactions view
                 val companyId = this.getDeepLinkedCompanyId(hash)
                 if (companyId != null) {
-
-                    newFragmentId = R.id.transactions_fragment
-                    args = Bundle()
-                    args.putString(ViewConstants.ARG_COMPANY_ID, companyId)
+                    newViewName = "${MainView.Transactions}/$companyId"
                 }
             }
         }
 
         // Navigate if required
-        if (newFragmentId != null) {
-            if (this.preNavigate(activeFragment, newFragmentId)) {
-                this.navHostFragment.navController.navigate(newFragmentId, args)
+        if (newViewName != null) {
+            if (this.preNavigate(activeViewName, newViewName)) {
+                this.navHostController.navigate(newViewName)
             }
             return true
         }
@@ -145,17 +136,17 @@ class NavigationHelper(
     /*
      * Return true to allow navigation to proceed
      */
-    private fun preNavigate(activeFragment: Fragment?, newFragmentId: Int): Boolean {
+    private fun preNavigate(activeViewName: String?, newViewName: String): Boolean {
 
         // When the device is not secured, only allow navigation to the Device Not Secured view
-        if (!this.isDeviceSecured() && newFragmentId != R.id.device_not_secured_fragment) {
+        if (!this.isDeviceSecured() && newViewName != MainView.DeviceNotSecured) {
             return false
         }
 
         // When navigating from the below pages, remove them from the back stack first
-        // Note that the active fragment is null at application startup
-        if (activeFragment == null || activeFragment is LoginRequiredFragment) {
-            this.navHostFragment.navController.popBackStack()
+        // Note that the active view is null at application startup
+        if (activeViewName == null || activeViewName == MainView.LoginRequired) {
+            this.navHostController.popBackStack()
         }
 
         return true

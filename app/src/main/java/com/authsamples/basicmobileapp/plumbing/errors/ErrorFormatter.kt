@@ -1,8 +1,10 @@
 package com.authsamples.basicmobileapp.plumbing.errors
 
 import android.content.Context
+import androidx.compose.ui.graphics.Color
 import com.authsamples.basicmobileapp.BuildConfig
 import com.authsamples.basicmobileapp.R
+import com.authsamples.basicmobileapp.views.utilities.CustomColors
 import java.lang.StringBuilder
 import kotlin.collections.ArrayList
 
@@ -19,9 +21,9 @@ class ErrorFormatter(private val context: Context) {
 
         val result = ArrayList<ErrorLine>()
 
-        val valueColour = context.getColor(R.color.text_value)
-        val userActionValueColour = context.getColor(R.color.text_green)
-        val errorIdValueColour = context.getColor(R.color.text_error)
+        val valueColor = CustomColors.value
+        val userActionValueColor = CustomColors.paleGreen
+        val errorIdValueColor = CustomColors.error
 
         /* FIELDS FOR THE END USER */
 
@@ -31,7 +33,7 @@ class ErrorFormatter(private val context: Context) {
                 this.createErrorLine(
                     R.string.error_user_action,
                     "Please retry the operation",
-                    userActionValueColour
+                    userActionValueColor
                 )
             )
         }
@@ -42,7 +44,7 @@ class ErrorFormatter(private val context: Context) {
                 this.createErrorLine(
                     R.string.error_info,
                     error.message,
-                    valueColour
+                    valueColor
                 )
             )
         }
@@ -54,7 +56,7 @@ class ErrorFormatter(private val context: Context) {
             this.createErrorLine(
                 R.string.error_utc_time,
                 error.utcTime,
-                valueColour
+                valueColor
             )
         )
 
@@ -64,7 +66,7 @@ class ErrorFormatter(private val context: Context) {
                 this.createErrorLine(
                     R.string.error_area,
                     error.area,
-                    valueColour
+                    valueColor
                 )
             )
         }
@@ -75,7 +77,7 @@ class ErrorFormatter(private val context: Context) {
                 this.createErrorLine(
                     R.string.error_code,
                     error.errorCode,
-                    valueColour
+                    valueColor
                 )
             )
         }
@@ -86,7 +88,7 @@ class ErrorFormatter(private val context: Context) {
                 this.createErrorLine(
                     R.string.error_appauth_code,
                     error.appAuthCode,
-                    valueColour
+                    valueColor
                 )
             )
         }
@@ -97,7 +99,7 @@ class ErrorFormatter(private val context: Context) {
                 this.createErrorLine(
                     R.string.error_instance_id,
                     error.instanceId.toString(),
-                    errorIdValueColour
+                    errorIdValueColor
                 )
             )
         }
@@ -108,7 +110,7 @@ class ErrorFormatter(private val context: Context) {
                 this.createErrorLine(
                     R.string.error_status,
                     error.statusCode.toString(),
-                    valueColour
+                    valueColor
                 )
             )
         }
@@ -122,7 +124,7 @@ class ErrorFormatter(private val context: Context) {
                 this.createErrorLine(
                     R.string.error_details,
                     errorDetails,
-                    valueColour
+                    valueColor
                 )
             )
         }
@@ -133,7 +135,7 @@ class ErrorFormatter(private val context: Context) {
                 this.createErrorLine(
                     R.string.error_url,
                     error.url,
-                    valueColour
+                    valueColor
                 )
             )
         }
@@ -144,7 +146,7 @@ class ErrorFormatter(private val context: Context) {
                 this.createErrorLine(
                     R.string.error_stack,
                     this.getFormattedStackTrace(error),
-                    valueColour
+                    valueColor
                 )
             )
         }
@@ -155,12 +157,12 @@ class ErrorFormatter(private val context: Context) {
     /*
      * Return an error line as an object
      */
-    private fun createErrorLine(labelId: Int, value: String?, colourId: Int): ErrorLine {
+    private fun createErrorLine(labelId: Int, value: String?, color: Color): ErrorLine {
 
         return ErrorLine(
             context.getString(labelId),
             value,
-            colourId
+            color
         )
     }
 

@@ -3,28 +3,44 @@ package com.authsamples.basicmobileapp.app
 import android.app.admin.DevicePolicyManager
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.appcompat.app.AppCompatActivity
-import androidx.databinding.DataBindingUtil
-import androidx.navigation.fragment.NavHostFragment
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.authsamples.basicmobileapp.R
-import com.authsamples.basicmobileapp.databinding.ActivityMainBinding
 import com.authsamples.basicmobileapp.plumbing.events.LoginRequiredEvent
-import com.authsamples.basicmobileapp.views.companies.CompaniesFragment
-import com.authsamples.basicmobileapp.views.security.LoginRequiredFragment
+import com.authsamples.basicmobileapp.views.companies.CompaniesView
+import com.authsamples.basicmobileapp.views.errors.ErrorSummaryView
+import com.authsamples.basicmobileapp.views.errors.ErrorViewModel
+import com.authsamples.basicmobileapp.views.headings.HeaderButtonsView
+import com.authsamples.basicmobileapp.views.headings.SessionView
+import com.authsamples.basicmobileapp.views.headings.TitleView
+import com.authsamples.basicmobileapp.views.security.DeviceNotSecuredView
+import com.authsamples.basicmobileapp.views.security.LoginRequiredView
+import com.authsamples.basicmobileapp.views.transactions.TransactionsView
 import com.authsamples.basicmobileapp.views.utilities.DeviceSecurity
+import com.authsamples.basicmobileapp.views.utilities.MainView
 import com.authsamples.basicmobileapp.views.utilities.NavigationHelper
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
 /*
- * Our Single Activity App's activity
+ * The application's main activity
  */
 @Suppress("TooManyFunctions")
-class MainActivity : AppCompatActivity() {
+class MainActivity : ComponentActivity() {
 
-    private lateinit var binding: ActivityMainBinding
+    private lateinit var model: MainActivityViewModel
     private lateinit var navigationHelper: NavigationHelper
 
     // Handle launching the lock screen intent
@@ -56,28 +72,110 @@ class MainActivity : AppCompatActivity() {
 
         super.onCreate(savedInstanceState)
         (this.application as Application).setMainActivity(this)
+        actionBar?.hide()
 
         // Create the main view model the first time the view is created
         val model: MainActivityViewModel by viewModels()
+        this.model = model
 
-        // Inflate the view, which will initially render the blank fragment
-        this.binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-        this.binding.model = model
+        // Do the view creation
+        this.createViews()
 
-        // Initialise the navigation system
-        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        this.navigationHelper = NavigationHelper(navHostFragment) { model.isDeviceSecured }
-        this.navigationHelper.deepLinkBaseUrl = this.binding.model!!.configuration.oauth.deepLinkBaseUrl
+        // Initialize the view model and move to a loaded state, to cause a re-render
+        this.model.initialize(this::onLoaded)
+    }
 
-        // Do initialization work
-        this.binding.model!!.initialize(this::onLoaded)
+    /*
+     * Lay out the tree of views for rendering
+     */
+    @Suppress("LongMethod")
+    private fun createViews() {
+
+        val that = this@MainActivity
+        setContent {
+            ApplicationTheme {
+                Column {
+
+                    // The title area and user info
+                    TitleView(that.model.getUserInfoViewModel())
+
+                    // The top row of buttons
+                    HeaderButtonsView(
+                        that.model.eventBus,
+                        that::onHome,
+                        that::onReloadData,
+                        that::onExpireAccessToken,
+                        that::onExpireRefreshToken,
+                        that::onStartLogout
+                    )
+
+                    // Show application level errors when applicable
+                    if (model.error.value != null) {
+
+                        ErrorSummaryView(
+                            ErrorViewModel(
+                                model.error.value!!,
+                                stringResource(R.string.main_error_hyperlink),
+                                stringResource(R.string.main_error_dialogtitle)
+                            ),
+                            Modifier
+                                .fillMaxWidth()
+                                .wrapContentSize()
+                        )
+                    }
+
+                    // The session view
+                    SessionView(that.model.eventBus, that.model.fetchClient.sessionId)
+
+                    // Create navigation objects
+                    val navHostController = rememberNavController()
+                    that.navigationHelper =
+                        NavigationHelper(navHostController) { model.isDeviceSecured }
+                    that.navigationHelper.deepLinkBaseUrl =
+                        that.model.configuration.oauth.deepLinkBaseUrl
+
+                    // The main view is a navigation graph that is swapped out during navigation
+                    NavHost(navHostController, MainView.Blank) {
+
+                        composable(MainView.Blank) {
+                        }
+
+                        composable(MainView.DeviceNotSecured) {
+                            DeviceNotSecuredView(that.model.eventBus, that::openLockScreenSettings)
+                        }
+
+                        composable(MainView.Companies) {
+                            CompaniesView(that.model.getCompaniesViewModel(), navigationHelper)
+                        }
+
+                        composable(
+                            "${MainView.Transactions}/{id}",
+                            listOf(navArgument("id") { type = NavType.StringType })
+                        ) {
+
+                            val id = it.arguments?.getString("id") ?: ""
+                            TransactionsView(
+                                id,
+                                that.model.getTransactionsViewModel(),
+                                navigationHelper
+                            )
+                        }
+
+                        composable(MainView.LoginRequired) {
+                            LoginRequiredView(that.model.eventBus)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /*
      * Once loaded, register for events and do the startup navigation
      */
     private fun onLoaded() {
-        this.binding.model!!.eventBus.register(this)
+
+        this.model.eventBus.register(this)
         this.navigateStart()
     }
 
@@ -86,10 +184,10 @@ class MainActivity : AppCompatActivity() {
      */
     private fun navigateStart() {
 
-        if (!this.binding.model!!.isDeviceSecured) {
+        if (!this.model.isDeviceSecured) {
 
             // If the device is not secured we will move to a view that prompts the user to do so
-            this.navigationHelper.navigateTo(R.id.device_not_secured_fragment)
+            this.navigationHelper.navigateTo(MainView.DeviceNotSecured)
 
         } else if (this.navigationHelper.isDeepLinkIntent(this.intent)) {
 
@@ -99,18 +197,18 @@ class MainActivity : AppCompatActivity() {
         } else {
 
             // Otherwise start at the default fragment in nav_graph.xml, which is the companies view
-            this.navigationHelper.navigateTo(R.id.companies_fragment)
+            this.navigationHelper.navigateTo(MainView.Companies)
         }
     }
 
     /*
      * Called from the device not secured fragment to prompt the user to set a PIN or password
      */
-    fun openLockScreenSettings() {
+    private fun openLockScreenSettings() {
 
         val intent = Intent(DevicePolicyManager.ACTION_SET_NEW_PASSWORD)
         this.lockScreenLauncher.launch(intent)
-        this.binding.model!!.isTopMost = false
+        this.model.isTopMost = false
     }
 
     /*
@@ -118,8 +216,8 @@ class MainActivity : AppCompatActivity() {
      */
     private fun onLockScreenCompleted() {
 
-        this.binding.model!!.isTopMost = true
-        this.binding.model!!.isDeviceSecured = DeviceSecurity.isDeviceSecured(this)
+        this.model.isTopMost = true
+        this.model.isDeviceSecured = DeviceSecurity.isDeviceSecured(this)
         this.navigateStart()
     }
 
@@ -144,10 +242,10 @@ class MainActivity : AppCompatActivity() {
         event.used()
 
         val onCancelled = {
-            this.navigationHelper.navigateTo(R.id.login_required_fragment)
+            this.navigationHelper.navigateTo(MainView.LoginRequired)
         }
 
-        this.binding.model!!.startLogin(this.loginLauncher::launch, onCancelled)
+        this.model.startLogin(this.loginLauncher::launch, onCancelled)
     }
 
     /*
@@ -157,61 +255,61 @@ class MainActivity : AppCompatActivity() {
 
         val onSuccess = {
 
-            if (this.navigationHelper.getActiveMainFragment() is LoginRequiredFragment) {
+            if (this.navigationHelper.getActiveViewName() == MainView.LoginRequired) {
 
                 // If the user logs in from the login required view, then navigate home
-                this.navigationHelper.navigateTo(R.id.companies_fragment)
+                this.navigationHelper.navigateTo(MainView.Companies)
 
             } else {
 
                 // Otherwise we are handling expiry so reload data in the current view
-                this.binding.model!!.reloadData(false)
+                this.model.reloadData(false)
             }
         }
 
         val onCancelled = {
-            this.navigationHelper.navigateTo(R.id.login_required_fragment)
+            this.navigationHelper.navigateTo(MainView.LoginRequired)
         }
 
-        this.binding.model!!.finishLogin(responseIntent, onSuccess, onCancelled)
+        this.model.finishLogin(responseIntent, onSuccess, onCancelled)
     }
 
     /*
      * Remove tokens and redirect to remove the authorization server session cookie
      */
-    fun onStartLogout() {
+    private fun onStartLogout() {
 
         val onError = {
-            this.navigationHelper.navigateTo(R.id.login_required_fragment)
+            this.navigationHelper.navigateTo(MainView.LoginRequired)
         }
 
-        this.binding.model!!.startLogout(this.logoutLauncher::launch, onError)
+        this.model.startLogout(this.logoutLauncher::launch, onError)
     }
 
     /*
      * Perform post logout actions
      */
     private fun onFinishLogout() {
-        this.binding.model!!.finishLogout()
-        this.navigationHelper.navigateTo(R.id.login_required_fragment)
+        this.model.finishLogout()
+        this.navigationHelper.navigateTo(MainView.LoginRequired)
     }
 
     /*
      * Move to the home view, which forces a reload if already in this view
      */
-    fun onHome() {
+    private fun onHome() {
 
         // Reset the main view's own error if required
-        this.binding.model!!.updateError(null)
+        this.model.updateError(null)
 
         // If there is a startup error then retry initializing
-        if (!this.binding.model!!.isLoaded) {
-            this.binding.model!!.initialize(this::onLoaded)
+        if (!this.model.isLoaded) {
+            this.model.initialize(this::onLoaded)
             return
         }
 
         // Inspect the current view
-        if (this.navigationHelper.getActiveMainFragment() is LoginRequiredFragment) {
+        if (this.navigationHelper.getActiveViewName() == MainView.LoginRequired) {
 
             // Start a new login when logged out
             this.onLoginRequired(LoginRequiredEvent())
@@ -219,41 +317,41 @@ class MainActivity : AppCompatActivity() {
         } else {
 
             // Navigate to the home view unless already there
-            if (!(this.navigationHelper.getActiveMainFragment() is CompaniesFragment)) {
-                this.navigationHelper.navigateTo(R.id.companies_fragment)
+            if (this.navigationHelper.getActiveViewName() != MainView.Companies) {
+                this.navigationHelper.navigateTo(MainView.Companies)
             }
 
             // Force a data reload if recovering from errors
-            this.binding.model!!.reloadDataOnError()
+            this.model.reloadDataOnError()
         }
     }
 
     /*
      * Publish an event to update all active views
      */
-    fun onReloadData(causeError: Boolean) {
-        this.binding.model!!.reloadData(causeError)
+    private fun onReloadData(causeError: Boolean) {
+        this.model.reloadData(causeError)
     }
 
     /*
      * Update token storage to make the access token act like it is expired
      */
-    fun onExpireAccessToken() {
-        this.binding.model!!.expireAccessToken()
+    private fun onExpireAccessToken() {
+        this.model.expireAccessToken()
     }
 
     /*
      * Update token storage to make the refresh token act like it is expired
      */
-    fun onExpireRefreshToken() {
-        this.binding.model!!.expireRefreshToken()
+    private fun onExpireRefreshToken() {
+        this.model.expireRefreshToken()
     }
 
     /*
      * Deep linking is disabled unless our activity is top most
      */
     fun isTopMost(): Boolean {
-        return this.binding.model!!.isTopMost
+        return this.model.isTopMost
     }
 
     /*
@@ -261,7 +359,7 @@ class MainActivity : AppCompatActivity() {
      */
     override fun onDestroy() {
         super.onDestroy()
-        this.binding.model!!.eventBus.unregister(this)
+        this.model.eventBus.unregister(this)
         (this.application as Application).setMainActivity(null)
     }
 }

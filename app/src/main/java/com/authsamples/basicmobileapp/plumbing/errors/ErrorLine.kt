@@ -1,5 +1,7 @@
 package com.authsamples.basicmobileapp.plumbing.errors
 
+import androidx.compose.ui.graphics.Color
+
 /*
  * A simple field value pair to be shown on a line
  */
@@ -11,6 +13,6 @@ data class ErrorLine(
     // The formatted value
     val value: String?,
 
-    // The colour for the value
-    val valueColour: Int
+    // The color for the value
+    val valueColor: Color
 )

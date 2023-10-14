@@ -1,0 +1,17 @@
+CODE
+----
+1. Error view to complete
+   Needs to be wider and fill most of the screen, and also be less rounded
+   Needs a blue title bar and an X to close
+
+2. Deep linking navigation testing, including when the Custom Tab is topmost
+   Can I simplify navigationHelper further
+
+3. Remove strange UI effects from list rendering
+
+OTHER
+-----
+1. Blog updates
+
+2. Update iOS and desktop app to use path based routes
+   Update blog references, including API client journey

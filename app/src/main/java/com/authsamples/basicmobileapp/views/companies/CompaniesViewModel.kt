@@ -1,16 +1,13 @@
 package com.authsamples.basicmobileapp.views.companies
 
-import android.app.Application
-import androidx.databinding.Observable
-import androidx.databinding.PropertyChangeRegistry
-import androidx.lifecycle.AndroidViewModel
-import com.authsamples.basicmobileapp.R
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
 import com.authsamples.basicmobileapp.api.client.FetchCacheKeys
 import com.authsamples.basicmobileapp.api.client.FetchClient
 import com.authsamples.basicmobileapp.api.client.FetchOptions
 import com.authsamples.basicmobileapp.api.entities.Company
 import com.authsamples.basicmobileapp.plumbing.errors.UIError
-import com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModelData
 import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
 import com.authsamples.basicmobileapp.views.utilities.ViewModelCoordinator
 import kotlinx.coroutines.CoroutineScope
@@ -25,18 +22,16 @@ import org.greenrobot.eventbus.EventBus
 class CompaniesViewModel(
     private val fetchClient: FetchClient,
     val eventBus: EventBus,
-    private val viewModelCoordinator: ViewModelCoordinator,
-    val app: Application
-) : AndroidViewModel(app), Observable {
+    private val viewModelCoordinator: ViewModelCoordinator
+) : ViewModel() {
 
-    var companiesList: List<Company> = ArrayList()
-    var error: UIError? = null
-    private val callbacks = PropertyChangeRegistry()
+    var companiesList: MutableState<List<Company>> = mutableStateOf(ArrayList())
+    var error: MutableState<UIError?> = mutableStateOf(null)
 
     /*
      * A method to do the work of calling the API
      */
-    fun callApi(options: ViewLoadOptions?, onComplete: () -> Unit) {
+    fun callApi(options: ViewLoadOptions?) {
 
         val fetchOptions = FetchOptions(
             FetchCacheKeys.COMPANIES,
@@ -78,50 +73,22 @@ class CompaniesViewModel(
                 // Inform the view once complete
                 withContext(Dispatchers.Main) {
                     that.viewModelCoordinator.onMainViewModelLoaded(fetchOptions.cacheKey)
-                    onComplete()
                 }
             }
         }
     }
 
     /*
-     * Data to pass when invoking the child error summary view
-     */
-    fun errorSummaryData(): ErrorSummaryViewModelData {
-        return ErrorSummaryViewModelData(
-            hyperlinkText = app.getString(R.string.companies_error_hyperlink),
-            dialogTitle = app.getString(R.string.companies_error_dialogtitle),
-            error = this.error
-        )
-    }
-
-    /*
-     * Observable plumbing to allow XML views to register
-     */
-    override fun addOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback) {
-        this.callbacks.add(callback)
-    }
-
-    /*
-     * Observable plumbing to allow XML views to unregister
-     */
-    override fun removeOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback) {
-        this.callbacks.remove(callback)
-    }
-
-    /*
-     * Update data and inform the binding system
+     * Update data used by the binding system
      */
     private fun updateData(companies: List<Company>) {
-        this.companiesList = companies
-        this.callbacks.notifyCallbacks(this, 0, null)
+        this.companiesList.value = companies
     }
 
     /*
-     * Update the error state and inform the binding system
+     * Update error state used by the binding system
      */
     private fun updateError(error: UIError?) {
-        this.error = error
-        this.callbacks.notifyCallbacks(this, 0, null)
+        this.error.value = error
     }
 }

@@ -61,18 +61,23 @@ android {
         }
     }
 
-    // Enable newer Jetpack binding features
+    // Enable features needed to build Jetpack compose
     buildFeatures {
-        dataBinding = true
-        viewBinding = true
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.3"
     }
 }
 
 // Dependency versions
 object VERSION {
-    const val coroutines = "1.7.3"
-    const val lifecycle_extensions = "2.2.0"
-    const val navigation = "2.7.1"
+    const val kotlin_extensions = "1.12.0"
+    const val compose = "1.8.0"
+    const val compose_bom = "2023.09.02"
+    const val compose_ui = "1.5.3"
+    const val material3 = "1.1.2"
+    const val navigation = "2.7.4"
     const val appauth = "0.11.1"
     const val browser = "1.6.0"
     const val okhttp = "4.11.0"
@@ -84,27 +89,30 @@ object VERSION {
 
 dependencies {
 
-    // Kotlin async support
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${VERSION.coroutines}")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${VERSION.coroutines}")
+    // Kotlin extensions
+    implementation("androidx.core:core-ktx:${VERSION.kotlin_extensions}")
 
-    // View model support
-    implementation("androidx.lifecycle:lifecycle-extensions:${VERSION.lifecycle_extensions}")
+    // Jetpack compose
+    implementation("androidx.activity:activity-compose:${VERSION.compose}")
+    implementation(platform("androidx.compose:compose-bom:${VERSION.compose_bom}"))
 
-    // Navigation for Single Activity Apps
-    implementation("androidx.navigation:navigation-fragment-ktx:${VERSION.navigation}")
+    // Lifecycle and navigation
     implementation("androidx.navigation:navigation-ui-ktx:${VERSION.navigation}")
+    implementation("androidx.navigation:navigation-compose:${VERSION.navigation}")
+
+    // UI elements
+    implementation("androidx.compose.ui:ui:${VERSION.compose_ui}")
+    implementation("androidx.compose.ui:ui-graphics:${VERSION.compose_ui}")
+    implementation("androidx.compose.material3:material3:${VERSION.material3}")
 
     // The AppAuth library manages OAuth security
     implementation ("net.openid:appauth:${VERSION.appauth}")
 
-    // Include Chrome Custom tabs for the login window
+    // Chrome Custom tabs for the login window
     implementation ("androidx.browser:browser:${VERSION.browser}")
 
-    // API requests
+    // API requests and JSON
     implementation ("com.squareup.okhttp3:okhttp:${VERSION.okhttp}")
-
-    // JSON serialization
     implementation ("com.google.code.gson:gson:${VERSION.gson}")
 
     // Resource file reading
@@ -112,6 +120,7 @@ dependencies {
 
     // Event messages
     implementation ("org.greenrobot:eventbus:${VERSION.eventbus}")
+    implementation("androidx.privacysandbox.tools:tools-core:1.0.0-alpha06")
 
     // The plugin to enable code quality checks
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${VERSION.detekt}")

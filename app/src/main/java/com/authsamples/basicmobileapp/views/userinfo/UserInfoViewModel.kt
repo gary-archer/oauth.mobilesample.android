@@ -1,11 +1,9 @@
 package com.authsamples.basicmobileapp.views.userinfo
 
-import android.app.Application
 import android.text.TextUtils
-import androidx.databinding.Observable
-import androidx.databinding.PropertyChangeRegistry
-import androidx.lifecycle.AndroidViewModel
-import com.authsamples.basicmobileapp.R
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
 import com.authsamples.basicmobileapp.api.client.FetchCacheKeys
 import com.authsamples.basicmobileapp.api.client.FetchClient
 import com.authsamples.basicmobileapp.api.client.FetchOptions
@@ -13,7 +11,6 @@ import com.authsamples.basicmobileapp.api.entities.ApiUserInfo
 import com.authsamples.basicmobileapp.api.entities.OAuthUserInfo
 import com.authsamples.basicmobileapp.plumbing.errors.ErrorFactory
 import com.authsamples.basicmobileapp.plumbing.errors.UIError
-import com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModelData
 import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
 import com.authsamples.basicmobileapp.views.utilities.ViewModelCoordinator
 import kotlinx.coroutines.CoroutineScope
@@ -30,17 +27,15 @@ import org.greenrobot.eventbus.EventBus
  */
 @Suppress("TooManyFunctions")
 class UserInfoViewModel(
-    val fetchClient: FetchClient,
+    private val fetchClient: FetchClient,
     val eventBus: EventBus,
-    val viewModelCoordinator: ViewModelCoordinator,
-    val app: Application
-) : AndroidViewModel(app), Observable {
+    private val viewModelCoordinator: ViewModelCoordinator
+) : ViewModel() {
 
     // Observable data for which the UI must be notified upon change
-    private var oauthUserInfo: OAuthUserInfo? = null
-    private var apiUserInfo: ApiUserInfo? = null
-    var error: UIError? = null
-    private val callbacks = PropertyChangeRegistry()
+    private var oauthUserInfo: MutableState<OAuthUserInfo?> = mutableStateOf(null)
+    private var apiUserInfo: MutableState<ApiUserInfo?> = mutableStateOf(null)
+    var error: MutableState<UIError?> = mutableStateOf(null)
 
     /*
      * A method to do the work of calling the API
@@ -120,16 +115,16 @@ class UserInfoViewModel(
     }
 
     /*
-     * Markup calls this method to get the logged in user's display name
+     * Get the logged in user's display name
      */
-    fun getLoggedInUser(): String {
+    fun getUserName(): String {
 
-        if (this.oauthUserInfo == null) {
+        if (this.oauthUserInfo.value == null) {
             return ""
         }
 
-        val givenName = this.oauthUserInfo?.givenName ?: ""
-        val familyName = this.oauthUserInfo?.familyName ?: ""
+        val givenName = this.oauthUserInfo.value?.givenName ?: ""
+        val familyName = this.oauthUserInfo.value?.familyName ?: ""
         if (givenName.isBlank() || familyName.isBlank()) {
             return ""
         }
@@ -138,90 +133,72 @@ class UserInfoViewModel(
     }
 
     /*
-     * Markup calls this method to get the logged in user's descriptive details
+     * Get the user's title
      */
-    fun getLoggedInUserDescription(): String {
+    fun getUserTitle(): String {
 
-        if (this.apiUserInfo == null) {
+        if (this.apiUserInfo.value == null) {
             return ""
         }
 
-        val title = this.apiUserInfo?.title ?: ""
-        val regions = this.apiUserInfo?.regions ?: ArrayList()
-        if (title.isBlank() || regions.size == 0) {
+        return this.apiUserInfo.value?.title ?: ""
+    }
+
+    /*
+     * Get the user's region details
+     */
+    fun getUserRegions(): String {
+
+        if (this.apiUserInfo.value == null) {
+            return ""
+        }
+
+        val regions = this.apiUserInfo.value?.regions ?: ArrayList()
+        if (regions.size == 0) {
             return ""
         }
 
         val regionsText = TextUtils.join(", ", regions)
-        return "$title [$regionsText]"
-    }
-
-    /*
-     * Data to pass when invoking the child error summary view
-     */
-    fun errorSummaryData(): ErrorSummaryViewModelData {
-        return ErrorSummaryViewModelData(
-            hyperlinkText = app.getString(R.string.userinfo_error_hyperlink),
-            dialogTitle = app.getString(R.string.userinfo_error_dialogtitle),
-            error = this.error
-        )
+        return "[$regionsText]"
     }
 
     /*
      * Clear user info when we log out and inform the binding system
      */
     fun clearUserInfo() {
-        this.oauthUserInfo = null
-        this.apiUserInfo = null
-        callbacks.notifyCallbacks(this, 0, null)
+        this.oauthUserInfo.value = null
+        this.apiUserInfo.value = null
     }
 
     /*
-     * Observable plumbing to allow XML views to register
-     */
-    override fun addOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback) {
-        this.callbacks.add(callback)
-    }
-
-    /*
-     * Observable plumbing to allow XML views to unregister
-     */
-    override fun removeOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback) {
-        this.callbacks.remove(callback)
-    }
-
-    /*
-     * Set user info and inform the binding system
+     * Set user info used by the binding system
      */
     private fun updateOAuthUserInfo(oauthUserData: OAuthUserInfo?) {
 
         if (oauthUserData != null) {
-            this.oauthUserInfo = oauthUserData
-            this.callbacks.notifyCallbacks(this, 0, null)
+            this.oauthUserInfo.value = oauthUserData
         }
     }
 
     /*
-     * Set user info and inform the binding system
+     * Set user info used by the binding system
      */
     private fun updateApiUserInfo(apiUserData: ApiUserInfo?) {
 
         if (apiUserData != null) {
-            this.apiUserInfo = apiUserData
-            this.callbacks.notifyCallbacks(this, 0, null)
+            this.apiUserInfo.value = apiUserData
         }
     }
 
     /*
-     * Set an error state and blank out data
+     * Set error state and blank out data
      */
     private fun updateError(error: UIError?) {
 
-        this.error = error
+        this.error.value = error
         if (error != null) {
-            this.oauthUserInfo = null
-            this.apiUserInfo = null
+            this.oauthUserInfo.value = null
+            this.apiUserInfo.value = null
         }
-        this.callbacks.notifyCallbacks(this, 0, null)
     }
 }

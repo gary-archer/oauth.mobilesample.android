@@ -1,17 +1,14 @@
 package com.authsamples.basicmobileapp.views.transactions
 
-import android.app.Application
-import androidx.databinding.Observable
-import androidx.databinding.PropertyChangeRegistry
-import androidx.lifecycle.AndroidViewModel
-import com.authsamples.basicmobileapp.R
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
 import com.authsamples.basicmobileapp.api.client.FetchCacheKeys
 import com.authsamples.basicmobileapp.api.client.FetchClient
 import com.authsamples.basicmobileapp.api.client.FetchOptions
 import com.authsamples.basicmobileapp.api.entities.Transaction
 import com.authsamples.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authsamples.basicmobileapp.plumbing.errors.UIError
-import com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModelData
 import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
 import com.authsamples.basicmobileapp.views.utilities.ViewModelCoordinator
 import kotlinx.coroutines.CoroutineScope
@@ -26,28 +23,18 @@ import org.greenrobot.eventbus.EventBus
 class TransactionsViewModel(
     private val fetchClient: FetchClient,
     val eventBus: EventBus,
-    private val viewModelCoordinator: ViewModelCoordinator,
-    val app: Application
-) : AndroidViewModel(app), Observable {
+    private val viewModelCoordinator: ViewModelCoordinator
+) : ViewModel() {
 
     // Data once retrieved
     var companyId: String? = null
-    var transactionsList: List<Transaction> = ArrayList()
-    var error: UIError? = null
-    val titleFormat = app.getString(R.string.transactions_title)
-    private val callbacks = PropertyChangeRegistry()
-
-    /*
-     * Markup calls this method to get the title including the company id
-     */
-    fun getTitle(): String {
-        return String.format(this.titleFormat, this.companyId)
-    }
+    var transactionsList: MutableState<List<Transaction>> = mutableStateOf(ArrayList())
+    var error: MutableState<UIError?> = mutableStateOf(null)
 
     /*
      * A method to do the work of calling the API
      */
-    fun callApi(id: String, options: ViewLoadOptions?, onComplete: (isForbidden: Boolean) -> Unit) {
+    fun callApi(id: String, options: ViewLoadOptions?, onForbidden: () -> Unit) {
 
         val fetchOptions = FetchOptions(
             "${FetchCacheKeys.TRANSACTIONS}-$id",
@@ -64,7 +51,6 @@ class TransactionsViewModel(
         }
 
         // Make the remote call on a background thread
-        var isForbidden = false
         val that = this@TransactionsViewModel
         CoroutineScope(Dispatchers.IO).launch {
 
@@ -88,7 +74,7 @@ class TransactionsViewModel(
                     if (that.isForbiddenError(uiError)) {
 
                         // For expected errors, the view redirects back to the home view
-                        isForbidden = true
+                        onForbidden()
 
                     } else {
 
@@ -102,7 +88,6 @@ class TransactionsViewModel(
                 // Inform the view once complete
                 withContext(Dispatchers.Main) {
                     that.viewModelCoordinator.onMainViewModelLoaded(fetchOptions.cacheKey)
-                    onComplete(isForbidden)
                 }
             }
         }
@@ -113,12 +98,12 @@ class TransactionsViewModel(
      */
     private fun isForbiddenError(uiError: UIError): Boolean {
 
-        if (uiError.statusCode == 404 && uiError.errorCode.equals(ErrorCodes.companyNotFound)) {
+        if (uiError.statusCode == 404 && uiError.errorCode == ErrorCodes.companyNotFound) {
 
             // A deep link could provide an id such as 3, which is unauthorized
             return true
 
-        } else if (uiError.statusCode == 400 && uiError.errorCode.equals(ErrorCodes.invalidCompanyId)) {
+        } else if (uiError.statusCode == 400 && uiError.errorCode == ErrorCodes.invalidCompanyId) {
 
             // A deep link could provide an invalid id value such as 'abc'
             return true
@@ -128,44 +113,16 @@ class TransactionsViewModel(
     }
 
     /*
-     * Data to pass when invoking the child error summary view
-     */
-    fun errorSummaryData(): ErrorSummaryViewModelData {
-
-        return ErrorSummaryViewModelData(
-            hyperlinkText = app.getString(R.string.transactions_error_hyperlink),
-            dialogTitle = app.getString(R.string.transactions_error_dialogtitle),
-            error = this.error
-        )
-    }
-
-    /*
-     * Observable plumbing to allow XML views to register
-     */
-    override fun addOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback) {
-        this.callbacks.add(callback)
-    }
-
-    /*
-     * Observable plumbing to allow XML views to unregister
-     */
-    override fun removeOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback) {
-        this.callbacks.remove(callback)
-    }
-
-    /*
-     * Update data and inform the binding system
+     * Update the data used by the binding system
      */
     private fun updateData(transactions: List<Transaction>) {
-        this.transactionsList = transactions
-        this.callbacks.notifyCallbacks(this, 0, null)
+        this.transactionsList.value = transactions
     }
 
     /*
-     * Update the error state and inform the binding system
+     * Update the error state used  by the binding system
      */
     private fun updateError(error: UIError?) {
-        this.error = error
-        this.callbacks.notifyCallbacks(this, 0, null)
+        this.error.value = error
     }
 }
