@@ -1,8 +1,10 @@
 package com.authsamples.basicmobileapp.plumbing.errors
 
 import android.content.Context
+import androidx.compose.ui.graphics.Color
 import com.authsamples.basicmobileapp.BuildConfig
 import com.authsamples.basicmobileapp.R
+import com.authsamples.basicmobileapp.views.utilities.CustomColors
 import java.lang.StringBuilder
 import kotlin.collections.ArrayList
 
@@ -19,9 +21,9 @@ class ErrorFormatter(private val context: Context) {
 
         val result = ArrayList<ErrorLine>()
 
-        val valueColour = context.getColor(R.color.text_value)
-        val userActionValueColour = context.getColor(R.color.text_green)
-        val errorIdValueColour = context.getColor(R.color.text_error)
+        val valueColour = CustomColors.value
+        val userActionValueColour = CustomColors.paleGreen
+        val errorIdValueColour = CustomColors.error
 
         /* FIELDS FOR THE END USER */
 
@@ -155,12 +157,12 @@ class ErrorFormatter(private val context: Context) {
     /*
      * Return an error line as an object
      */
-    private fun createErrorLine(labelId: Int, value: String?, colourId: Int): ErrorLine {
+    private fun createErrorLine(labelId: Int, value: String?, color: Color): ErrorLine {
 
         return ErrorLine(
             context.getString(labelId),
             value,
-            colourId
+            color
         )
     }
 

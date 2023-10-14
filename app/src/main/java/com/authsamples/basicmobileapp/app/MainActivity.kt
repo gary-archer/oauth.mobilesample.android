@@ -29,6 +29,7 @@ import com.authsamples.basicmobileapp.views.security.DeviceNotSecuredView
 import com.authsamples.basicmobileapp.views.security.LoginRequiredView
 import com.authsamples.basicmobileapp.views.transactions.TransactionsView
 import com.authsamples.basicmobileapp.views.utilities.DeviceSecurity
+import com.authsamples.basicmobileapp.views.utilities.MainView
 import com.authsamples.basicmobileapp.views.utilities.NavigationHelper
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -129,21 +130,21 @@ class MainActivity : ComponentActivity() {
                 that.navigationHelper.deepLinkBaseUrl = that.model.configuration.oauth.deepLinkBaseUrl
 
                 // The main view is a navigation graph that is swapped out during navigation
-                NavHost(navHostController, "blank") {
+                NavHost(navHostController, MainView.Blank) {
 
-                    composable("blank") {
+                    composable(MainView.Blank) {
                     }
 
-                    composable("device_not_secured") {
+                    composable(MainView.DeviceNotSecured) {
                         DeviceNotSecuredView(that.model.eventBus, that::openLockScreenSettings)
                     }
 
-                    composable("companies") {
+                    composable(MainView.Companies) {
                         CompaniesView(that.model.getCompaniesViewModel(), navigationHelper)
                     }
 
                     composable(
-                        "transactions/{id}",
+                        "${MainView.Transactions}/{id}",
                         listOf(navArgument("id") { type = NavType.StringType })
                     ) {
 
@@ -155,7 +156,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
-                    composable("login_required") {
+                    composable(MainView.LoginRequired) {
                         LoginRequiredView(that.model.eventBus)
                     }
                 }
@@ -180,7 +181,7 @@ class MainActivity : ComponentActivity() {
         if (!this.model.isDeviceSecured) {
 
             // If the device is not secured we will move to a view that prompts the user to do so
-            this.navigationHelper.navigateTo("device_not_secured")
+            this.navigationHelper.navigateTo(MainView.DeviceNotSecured)
 
         } else if (this.navigationHelper.isDeepLinkIntent(this.intent)) {
 
@@ -190,7 +191,7 @@ class MainActivity : ComponentActivity() {
         } else {
 
             // Otherwise start at the default fragment in nav_graph.xml, which is the companies view
-            this.navigationHelper.navigateTo("companies")
+            this.navigationHelper.navigateTo(MainView.Companies)
         }
     }
 
@@ -235,7 +236,7 @@ class MainActivity : ComponentActivity() {
         event.used()
 
         val onCancelled = {
-            this.navigationHelper.navigateTo("login_required")
+            this.navigationHelper.navigateTo(MainView.LoginRequired)
         }
 
         this.model.startLogin(this.loginLauncher::launch, onCancelled)
@@ -248,10 +249,10 @@ class MainActivity : ComponentActivity() {
 
         val onSuccess = {
 
-            if (this.navigationHelper.getActiveViewName() == "login_required") {
+            if (this.navigationHelper.getActiveViewName() == MainView.LoginRequired) {
 
                 // If the user logs in from the login required view, then navigate home
-                this.navigationHelper.navigateTo("companies")
+                this.navigationHelper.navigateTo(MainView.Companies)
 
             } else {
 
@@ -261,7 +262,7 @@ class MainActivity : ComponentActivity() {
         }
 
         val onCancelled = {
-            this.navigationHelper.navigateTo("login_required")
+            this.navigationHelper.navigateTo(MainView.LoginRequired)
         }
 
         this.model.finishLogin(responseIntent, onSuccess, onCancelled)
@@ -273,7 +274,7 @@ class MainActivity : ComponentActivity() {
     private fun onStartLogout() {
 
         val onError = {
-            this.navigationHelper.navigateTo("login_required")
+            this.navigationHelper.navigateTo(MainView.LoginRequired)
         }
 
         this.model.startLogout(this.logoutLauncher::launch, onError)
@@ -284,7 +285,7 @@ class MainActivity : ComponentActivity() {
      */
     private fun onFinishLogout() {
         this.model.finishLogout()
-        this.navigationHelper.navigateTo("login_required")
+        this.navigationHelper.navigateTo(MainView.LoginRequired)
     }
 
     /*
@@ -302,7 +303,7 @@ class MainActivity : ComponentActivity() {
         }
 
         // Inspect the current view
-        if (this.navigationHelper.getActiveViewName() == "login_required") {
+        if (this.navigationHelper.getActiveViewName() == MainView.LoginRequired) {
 
             // Start a new login when logged out
             this.onLoginRequired(LoginRequiredEvent())
@@ -310,8 +311,8 @@ class MainActivity : ComponentActivity() {
         } else {
 
             // Navigate to the home view unless already there
-            if (this.navigationHelper.getActiveViewName() != "companies") {
-                this.navigationHelper.navigateTo("companies")
+            if (this.navigationHelper.getActiveViewName() != MainView.Companies) {
+                this.navigationHelper.navigateTo(MainView.Companies)
             }
 
             // Force a data reload if recovering from errors

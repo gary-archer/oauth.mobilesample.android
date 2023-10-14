@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.api.entities.Company
+import com.authsamples.basicmobileapp.views.utilities.MainView
 import com.authsamples.basicmobileapp.views.utilities.NavigationHelper
 import com.authsamples.basicmobileapp.views.utilities.TextStyles
 import com.authsamples.basicmobileapp.views.utilities.pxToDp
@@ -32,7 +33,7 @@ fun CompaniesItemView(company: Company, navigationHelper: NavigationHelper) {
      * Handle navigation when an item is clicked
      */
     fun moveToTransactions() {
-        navigationHelper.navigateTo("transactions/${company.id}")
+        navigationHelper.navigateTo("${MainView.Transactions}/${company.id}")
     }
 
     val size = remember { mutableStateOf(IntSize.Zero) }

@@ -23,6 +23,7 @@ import com.authsamples.basicmobileapp.plumbing.events.ReloadDataEvent
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryView
 import com.authsamples.basicmobileapp.views.errors.ErrorViewModel
 import com.authsamples.basicmobileapp.views.utilities.CustomColors
+import com.authsamples.basicmobileapp.views.utilities.MainView
 import com.authsamples.basicmobileapp.views.utilities.NavigationHelper
 import com.authsamples.basicmobileapp.views.utilities.TextStyles
 import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
@@ -47,7 +48,7 @@ fun TransactionsView(
 
         // Navigate back to the home view if a deep link tries to access unauthorized data
         val onForbidden = {
-            navigationHelper.navigateTo("companies")
+            navigationHelper.navigateTo(MainView.Companies)
         }
 
         // Ask the model class to do the work

@@ -31,7 +31,7 @@ import org.greenrobot.eventbus.EventBus
  * Global data is stored in the view model class for the main activity, which is created only once
  */
 @Suppress("TooManyFunctions")
-class MainActivityViewModel(val app: Application) : AndroidViewModel(app) {
+class MainActivityViewModel(private val app: Application) : AndroidViewModel(app) {
 
     // Global objects
     val configuration: Configuration
@@ -222,7 +222,7 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app) {
             // Only report logout errors to the console
             val uiError = ErrorFactory().fromException(ex)
             if (uiError.errorCode != ErrorCodes.redirectCancelled) {
-                ErrorConsoleReporter.output(uiError, this.app)
+                ErrorConsoleReporter.output(uiError, app)
             }
 
             // Then free resources and notify the caller

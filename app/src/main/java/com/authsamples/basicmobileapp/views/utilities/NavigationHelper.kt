@@ -93,7 +93,7 @@ class NavigationHelper(
         ) {
 
             // The default action is to move to the company list
-            newViewName = "companies"
+            newViewName = MainView.Companies
 
             // Check for a hash fragment
             val hash = urlData.fragment
@@ -102,7 +102,7 @@ class NavigationHelper(
                 // If we have a company id then move to the transactions view
                 val companyId = this.getDeepLinkedCompanyId(hash)
                 if (companyId != null) {
-                    newViewName = "transactions/$companyId"
+                    newViewName = "${MainView.Transactions}/$companyId"
                 }
             }
         }
@@ -139,13 +139,13 @@ class NavigationHelper(
     private fun preNavigate(activeViewName: String?, newViewName: String): Boolean {
 
         // When the device is not secured, only allow navigation to the Device Not Secured view
-        if (!this.isDeviceSecured() && newViewName != "device_not_secured") {
+        if (!this.isDeviceSecured() && newViewName != MainView.DeviceNotSecured) {
             return false
         }
 
         // When navigating from the below pages, remove them from the back stack first
         // Note that the active view is null at application startup
-        if (activeViewName == null || activeViewName == "login_required") {
+        if (activeViewName == null || activeViewName == MainView.LoginRequired) {
             this.navHostController.popBackStack()
         }
 

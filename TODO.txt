@@ -1,22 +1,14 @@
 CODE
 ----
-1. Error data to improve
-   Use an errorviewmodel
-   Pass it to summary and then to details
-   Simplify consuming views
-   Render something basic
-   Remove ViewConstants
+1. Understand theme basics
+   Delete old styles and minimize use of XML resources
 
 2. Error view to complete
-   Change main activity back to a ComponentActivity
-   Clean up styles and minimize use of XML resources
-   Use constants for route names
 
 3. Deep linking navigation testing, including when the Custom Tab is topmost
    Can I simplify navigationHelper further
 
-4. Tablet layout testing
-   Device testing
+4. Device testing
 
 5. Improve library dependencies and see which I can remove
    Remove older binding references there
