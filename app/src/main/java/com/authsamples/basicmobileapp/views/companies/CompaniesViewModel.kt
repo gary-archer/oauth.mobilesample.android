@@ -94,14 +94,14 @@ class CompaniesViewModel(
     }
 
     /*
-     * Update data and inform the binding system
+     * Update data used by the binding system
      */
     private fun updateData(companies: List<Company>) {
         this.companiesList.value = companies
     }
 
     /*
-     * Update the error state and inform the binding system
+     * Update error state used by the binding system
      */
     private fun updateError(error: UIError?) {
         this.error.value = error

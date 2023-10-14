@@ -193,7 +193,7 @@ class UserInfoViewModel(
     }
 
     /*
-     * Set user info and inform the binding system
+     * Set user info used by the binding system
      */
     private fun updateOAuthUserInfo(oauthUserData: OAuthUserInfo?) {
 
@@ -203,7 +203,7 @@ class UserInfoViewModel(
     }
 
     /*
-     * Set user info and inform the binding system
+     * Set user info used by the binding system
      */
     private fun updateApiUserInfo(apiUserData: ApiUserInfo?) {
 
@@ -213,7 +213,7 @@ class UserInfoViewModel(
     }
 
     /*
-     * Set an error state and blank out data
+     * Set error state and blank out data
      */
     private fun updateError(error: UIError?) {
 
