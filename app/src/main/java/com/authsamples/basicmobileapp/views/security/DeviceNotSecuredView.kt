@@ -50,7 +50,7 @@ fun DeviceNotSecuredView(eventBus: EventBus, onOpenLockSettings: () -> Unit) {
             onClick = { onOpenLockSettings() },
             shape = RoundedCornerShape(10),
             colors = ButtonDefaults.textButtonColors(
-                containerColor = CustomColors.paleGreen,
+                containerColor = CustomColors.green,
                 contentColor = CustomColors.value
             ),
             modifier = Modifier.padding(10.dp)
