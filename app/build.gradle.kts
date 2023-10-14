@@ -120,7 +120,6 @@ dependencies {
 
     // Event messages
     implementation ("org.greenrobot:eventbus:${VERSION.eventbus}")
-    implementation("androidx.privacysandbox.tools:tools-core:1.0.0-alpha06")
 
     // The plugin to enable code quality checks
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${VERSION.detekt}")
