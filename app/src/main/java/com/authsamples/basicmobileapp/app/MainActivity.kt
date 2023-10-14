@@ -88,6 +88,7 @@ class MainActivity : ComponentActivity() {
     /*
      * Lay out the tree of views for rendering
      */
+    @Suppress("LongMethod")
     private fun createViews() {
 
         val that = this@MainActivity
