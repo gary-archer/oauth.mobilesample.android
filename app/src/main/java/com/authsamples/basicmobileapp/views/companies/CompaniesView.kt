@@ -5,7 +5,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
@@ -16,9 +20,11 @@ import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.plumbing.events.NavigatedEvent
 import com.authsamples.basicmobileapp.plumbing.events.ReloadDataEvent
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryView
+import com.authsamples.basicmobileapp.views.utilities.CustomColors
 import com.authsamples.basicmobileapp.views.utilities.NavigationHelper
 import com.authsamples.basicmobileapp.views.utilities.TextStyles
 import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
+import kotlinx.coroutines.flow.callbackFlow
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
@@ -26,6 +32,7 @@ import org.greenrobot.eventbus.ThreadMode
  * The companies view renders summary information per company
  */
 @Composable
+@OptIn(ExperimentalMaterial3Api::class)
 fun CompaniesView(model: CompaniesViewModel, navigationHelper: NavigationHelper) {
 
     /*
@@ -67,14 +74,21 @@ fun CompaniesView(model: CompaniesViewModel, navigationHelper: NavigationHelper)
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        // Render the header
-        Text(
-            text = stringResource(R.string.company_list_title),
-            style = TextStyles.header,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentSize()
+        // Render the header in an app bar
+        TopAppBar(
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = CustomColors.primary
+            ),
+            title = {
+                Text(
+                    text = stringResource(R.string.company_list_title),
+                    style = TextStyles.header,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentSize()
+                )
+            }
         )
 
         // Render a scrollable list on success
@@ -85,7 +99,7 @@ fun CompaniesView(model: CompaniesViewModel, navigationHelper: NavigationHelper)
                     .verticalScroll(rememberScrollState())
             ) {
                 model.companiesList.value.forEach { company ->
-                    CompaniesItemView(company = company, navigationHelper = navigationHelper)
+                    CompaniesItemView(company, navigationHelper)
                 }
             }
         }
@@ -95,7 +109,7 @@ fun CompaniesView(model: CompaniesViewModel, navigationHelper: NavigationHelper)
 
             ErrorSummaryView(
                 model.errorSummaryData(),
-                modifier = Modifier
+                Modifier
                     .fillMaxWidth()
                     .wrapContentSize()
             )

@@ -22,6 +22,18 @@ object TextStyles {
         color = CustomColors.label,
     )
 
+    val value = TextStyle(
+        fontWeight = FontWeight.Bold,
+        fontSize = 16.sp,
+        color = CustomColors.value,
+    )
+
+    val money = TextStyle(
+        fontWeight = FontWeight.Bold,
+        fontSize = 16.sp,
+        color = CustomColors.money,
+    )
+
     val error = TextStyle(
         fontWeight = FontWeight.Bold,
         fontSize = 16.sp,

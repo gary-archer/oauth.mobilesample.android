@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
@@ -12,7 +13,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
@@ -21,10 +21,8 @@ import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.api.entities.Company
 import com.authsamples.basicmobileapp.views.utilities.NavigationHelper
 import com.authsamples.basicmobileapp.views.utilities.TextStyles
+import com.authsamples.basicmobileapp.views.utilities.pxToDp
 import java.util.Locale
-
-@Composable
-fun Int.pxToDp() = with(LocalDensity.current) { this@pxToDp.toDp() }
 
 @Composable
 @Suppress("LongMethod")
@@ -41,7 +39,7 @@ fun CompaniesItemView(company: Company, navigationHelper: NavigationHelper) {
 
     Column(
         modifier = Modifier
-            .padding(top = 20.dp)
+            .padding(top = 10.dp)
             .clickable {
                 moveToTransactions()
             }
@@ -56,7 +54,7 @@ fun CompaniesItemView(company: Company, navigationHelper: NavigationHelper) {
 
             Text(
                 text = company.name,
-                style = TextStyles.label,
+                style = TextStyles.header,
                 textAlign = TextAlign.Left,
                 modifier = Modifier
                     .weight(1f)
@@ -64,9 +62,10 @@ fun CompaniesItemView(company: Company, navigationHelper: NavigationHelper) {
                     .fillMaxWidth(fraction = 0.5f)
             )
 
+            // ItemHeaderRowLabelStyle
             Text(
                 text = company.region,
-                style = TextStyles.label,
+                style = TextStyles.header,
                 textAlign = TextAlign.Left,
                 modifier = Modifier
                     .weight(1f)
@@ -85,13 +84,15 @@ fun CompaniesItemView(company: Company, navigationHelper: NavigationHelper) {
                 textAlign = TextAlign.Left,
                 modifier = Modifier
                     .weight(1f)
+                    .height(18.dp)
                     .padding(start = (size.value.width / 12).pxToDp())
                     .fillMaxWidth(fraction = 0.5f)
             )
 
+            // TextViewMoneyStyle
             Text(
                 text = String.format(Locale.getDefault(), "%,d", company.targetUsd),
-                style = TextStyles.label,
+                style = TextStyles.money,
                 textAlign = TextAlign.Left,
                 modifier = Modifier
                     .weight(1f)
@@ -114,9 +115,10 @@ fun CompaniesItemView(company: Company, navigationHelper: NavigationHelper) {
                     .fillMaxWidth(fraction = 0.5f)
             )
 
+            // TextViewMoneyStyle
             Text(
                 text = String.format(Locale.getDefault(), "%,d", company.investmentUsd),
-                style = TextStyles.label,
+                style = TextStyles.money,
                 textAlign = TextAlign.Left,
                 modifier = Modifier
                     .weight(1f)
@@ -140,7 +142,7 @@ fun CompaniesItemView(company: Company, navigationHelper: NavigationHelper) {
 
             Text(
                 text = String.format(Locale.getDefault(), "%d", company.noInvestors),
-                style = TextStyles.label,
+                style = TextStyles.value,
                 textAlign = TextAlign.Left,
                 modifier = Modifier
                     .weight(1f)
@@ -149,6 +151,6 @@ fun CompaniesItemView(company: Company, navigationHelper: NavigationHelper) {
             )
         }
 
-        Divider(thickness = 1.dp)
+        Divider(thickness = 1.dp, modifier = Modifier.padding(10.dp))
     }
 }

@@ -149,4 +149,11 @@ class TransactionsViewModel(
     private fun updateError(error: UIError?) {
         this.error.value = error
     }
+
+    /*
+     * Make error details available to the view
+     */
+    fun errorData(): UIError? {
+        return this.error.value
+    }
 }

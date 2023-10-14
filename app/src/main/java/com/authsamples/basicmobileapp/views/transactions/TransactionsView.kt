@@ -1,13 +1,25 @@
 package com.authsamples.basicmobileapp.views.transactions
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.plumbing.events.NavigatedEvent
 import com.authsamples.basicmobileapp.plumbing.events.ReloadDataEvent
+import com.authsamples.basicmobileapp.views.errors.ErrorSummaryView
+import com.authsamples.basicmobileapp.views.utilities.CustomColors
 import com.authsamples.basicmobileapp.views.utilities.NavigationHelper
 import com.authsamples.basicmobileapp.views.utilities.TextStyles
 import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
@@ -18,6 +30,7 @@ import org.greenrobot.eventbus.ThreadMode
  * The transactions view renders detailed information per company
  */
 @Composable
+@OptIn(ExperimentalMaterial3Api::class)
 fun TransactionsView(
     companyId: String,
     model: TransactionsViewModel,
@@ -35,9 +48,7 @@ fun TransactionsView(
         }
 
         // Ask the model class to do the work
-        println("GJA: calling API")
         model.callApi(companyId, options, onForbidden)
-        println("GJA: called API")
     }
 
     /*
@@ -67,12 +78,49 @@ fun TransactionsView(
         }
     }
 
-    Column {
-        Text(
-            text = "Today's Transactions for Company $companyId",
-            style = TextStyles.header,
-            textAlign = TextAlign.Left,
-            modifier = Modifier.weight(1f)
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
+        // Render the header in an app bar
+        TopAppBar(
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = CustomColors.primary
+            ),
+            title = {
+                Text(
+                    text = stringResource(R.string.transactions_title),
+                    style = TextStyles.header,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentSize()
+                )
+            }
         )
+
+        // Render a scrollable list on success
+        if (model.transactionsList.value.isNotEmpty()) {
+
+            Column(
+                modifier = Modifier
+                    .verticalScroll(rememberScrollState())
+            ) {
+                model.transactionsList.value.forEach { transaction ->
+                    TransactionsItemView(transaction)
+                }
+            }
+        }
+
+        // Render error details on failure
+        if (model.errorData() != null) {
+
+            ErrorSummaryView(
+                model.errorSummaryData(),
+                Modifier
+                    .fillMaxWidth()
+                    .wrapContentSize()
+            )
+        }
     }
 }
