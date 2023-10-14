@@ -11,11 +11,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.plumbing.events.NavigatedEvent
 import com.authsamples.basicmobileapp.plumbing.events.ReloadDataEvent
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryView
+import com.authsamples.basicmobileapp.views.errors.ErrorViewModel
 import com.authsamples.basicmobileapp.views.utilities.CustomColors
 import com.authsamples.basicmobileapp.views.utilities.TextStyles
 import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
@@ -80,7 +83,7 @@ fun UserInfoView(model: UserInfoViewModel, modifier: Modifier) {
     }
 
     // Render based on the current view model data
-    if (model.errorData() == null) {
+    if (model.error.value == null) {
 
         val tooltipState = remember { PlainTooltipState() }
         val scope = remember { CoroutineScope(Dispatchers.Main) }
@@ -119,6 +122,13 @@ fun UserInfoView(model: UserInfoViewModel, modifier: Modifier) {
     } else {
 
         // Otherwise render error details
-        ErrorSummaryView(model.errorSummaryData(), modifier = Modifier)
+        ErrorSummaryView(
+            ErrorViewModel(
+                model.error.value!!,
+                stringResource(R.string.userinfo_error_hyperlink),
+                stringResource(R.string.userinfo_error_dialogtitle)
+            ),
+            Modifier
+        )
     }
 }

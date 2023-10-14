@@ -1,17 +1,14 @@
 package com.authsamples.basicmobileapp.views.transactions
 
-import android.app.Application
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.AndroidViewModel
-import com.authsamples.basicmobileapp.R
+import androidx.lifecycle.ViewModel
 import com.authsamples.basicmobileapp.api.client.FetchCacheKeys
 import com.authsamples.basicmobileapp.api.client.FetchClient
 import com.authsamples.basicmobileapp.api.client.FetchOptions
 import com.authsamples.basicmobileapp.api.entities.Transaction
 import com.authsamples.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authsamples.basicmobileapp.plumbing.errors.UIError
-import com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModelData
 import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
 import com.authsamples.basicmobileapp.views.utilities.ViewModelCoordinator
 import kotlinx.coroutines.CoroutineScope
@@ -26,22 +23,13 @@ import org.greenrobot.eventbus.EventBus
 class TransactionsViewModel(
     private val fetchClient: FetchClient,
     val eventBus: EventBus,
-    private val viewModelCoordinator: ViewModelCoordinator,
-    val app: Application
-) : AndroidViewModel(app) {
+    private val viewModelCoordinator: ViewModelCoordinator
+) : ViewModel() {
 
     // Data once retrieved
     var companyId: String? = null
     var transactionsList: MutableState<List<Transaction>> = mutableStateOf(ArrayList())
     var error: MutableState<UIError?> = mutableStateOf(null)
-    val titleFormat = app.getString(R.string.transactions_title)
-
-    /*
-     * Markup calls this method to get the title including the company id
-     */
-    fun getTitle(): String {
-        return String.format(this.titleFormat, this.companyId)
-    }
 
     /*
      * A method to do the work of calling the API
@@ -125,18 +113,6 @@ class TransactionsViewModel(
     }
 
     /*
-     * Data to pass when invoking the child error summary view
-     */
-    fun errorSummaryData(): ErrorSummaryViewModelData {
-
-        return ErrorSummaryViewModelData(
-            hyperlinkText = app.getString(R.string.transactions_error_hyperlink),
-            dialogTitle = app.getString(R.string.transactions_error_dialogtitle),
-            error = this.error.value
-        )
-    }
-
-    /*
      * Update the data used by the binding system
      */
     private fun updateData(transactions: List<Transaction>) {
@@ -148,12 +124,5 @@ class TransactionsViewModel(
      */
     private fun updateError(error: UIError?) {
         this.error.value = error
-    }
-
-    /*
-     * Make error details available to the view
-     */
-    fun errorData(): UIError? {
-        return this.error.value
     }
 }

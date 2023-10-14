@@ -21,6 +21,7 @@ import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.plumbing.events.NavigatedEvent
 import com.authsamples.basicmobileapp.plumbing.events.ReloadDataEvent
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryView
+import com.authsamples.basicmobileapp.views.errors.ErrorViewModel
 import com.authsamples.basicmobileapp.views.utilities.CustomColors
 import com.authsamples.basicmobileapp.views.utilities.NavigationHelper
 import com.authsamples.basicmobileapp.views.utilities.TextStyles
@@ -115,10 +116,14 @@ fun TransactionsView(
         }
 
         // Render error details on failure
-        if (model.errorData() != null) {
+        if (model.error.value != null) {
 
             ErrorSummaryView(
-                model.errorSummaryData(),
+                ErrorViewModel(
+                    model.error.value!!,
+                    stringResource(R.string.transactions_error_hyperlink),
+                    stringResource(R.string.transactions_error_dialogtitle)
+                ),
                 Modifier
                     .fillMaxWidth()
                     .wrapContentSize()

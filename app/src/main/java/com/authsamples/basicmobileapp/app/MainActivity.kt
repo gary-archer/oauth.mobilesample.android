@@ -3,6 +3,7 @@ package com.authsamples.basicmobileapp.app
 import android.app.admin.DevicePolicyManager
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -10,15 +11,17 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.ui.Modifier
-import androidx.fragment.app.FragmentActivity
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.plumbing.events.LoginRequiredEvent
 import com.authsamples.basicmobileapp.views.companies.CompaniesView
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryView
+import com.authsamples.basicmobileapp.views.errors.ErrorViewModel
 import com.authsamples.basicmobileapp.views.headings.HeaderButtonsView
 import com.authsamples.basicmobileapp.views.headings.SessionView
 import com.authsamples.basicmobileapp.views.headings.TitleView
@@ -34,7 +37,7 @@ import org.greenrobot.eventbus.ThreadMode
  * The application's main activity
  */
 @Suppress("TooManyFunctions")
-class MainActivity : FragmentActivity() {
+class MainActivity : ComponentActivity() {
 
     private lateinit var model: MainActivityViewModel
     private lateinit var navigationHelper: NavigationHelper
@@ -103,10 +106,14 @@ class MainActivity : FragmentActivity() {
                 )
 
                 // Show application level errors when applicable
-                if (model.error != null) {
+                if (model.error.value != null) {
 
                     ErrorSummaryView(
-                        model.errorSummaryData(),
+                        ErrorViewModel(
+                            model.error.value!!,
+                            stringResource(R.string.main_error_hyperlink),
+                            stringResource(R.string.main_error_dialogtitle)
+                        ),
                         Modifier
                             .fillMaxWidth()
                             .wrapContentSize()

@@ -11,10 +11,10 @@ import androidx.compose.ui.unit.dp
 import com.authsamples.basicmobileapp.views.utilities.TextStyles
 
 @Composable
-fun ErrorDetailsView(onDismiss: () -> Unit) {
+fun ErrorDetailsView(model: ErrorViewModel, onDismiss: () -> Unit) {
 
     Text(
-        text = "ERROR DETAILS INNIT",
+        text = model.dialogTitle,
         style = TextStyles.value,
         textAlign = TextAlign.Left,
         modifier = Modifier.fillMaxWidth().padding(10.dp).clickable { onDismiss() }

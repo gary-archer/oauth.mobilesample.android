@@ -1,11 +1,9 @@
 package com.authsamples.basicmobileapp.views.userinfo
 
-import android.app.Application
 import android.text.TextUtils
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.AndroidViewModel
-import com.authsamples.basicmobileapp.R
+import androidx.lifecycle.ViewModel
 import com.authsamples.basicmobileapp.api.client.FetchCacheKeys
 import com.authsamples.basicmobileapp.api.client.FetchClient
 import com.authsamples.basicmobileapp.api.client.FetchOptions
@@ -13,7 +11,6 @@ import com.authsamples.basicmobileapp.api.entities.ApiUserInfo
 import com.authsamples.basicmobileapp.api.entities.OAuthUserInfo
 import com.authsamples.basicmobileapp.plumbing.errors.ErrorFactory
 import com.authsamples.basicmobileapp.plumbing.errors.UIError
-import com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModelData
 import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
 import com.authsamples.basicmobileapp.views.utilities.ViewModelCoordinator
 import kotlinx.coroutines.CoroutineScope
@@ -32,14 +29,13 @@ import org.greenrobot.eventbus.EventBus
 class UserInfoViewModel(
     private val fetchClient: FetchClient,
     val eventBus: EventBus,
-    private val viewModelCoordinator: ViewModelCoordinator,
-    private val app: Application
-) : AndroidViewModel(app) {
+    private val viewModelCoordinator: ViewModelCoordinator
+) : ViewModel() {
 
     // Observable data for which the UI must be notified upon change
     private var oauthUserInfo: MutableState<OAuthUserInfo?> = mutableStateOf(null)
     private var apiUserInfo: MutableState<ApiUserInfo?> = mutableStateOf(null)
-    private var error: MutableState<UIError?> = mutableStateOf(null)
+    var error: MutableState<UIError?> = mutableStateOf(null)
 
     /*
      * A method to do the work of calling the API
@@ -167,29 +163,11 @@ class UserInfoViewModel(
     }
 
     /*
-     * Data to pass when invoking the child error summary view
-     */
-    fun errorSummaryData(): ErrorSummaryViewModelData {
-        return ErrorSummaryViewModelData(
-            hyperlinkText = app.getString(R.string.userinfo_error_hyperlink),
-            dialogTitle = app.getString(R.string.userinfo_error_dialogtitle),
-            error = this.error.value
-        )
-    }
-
-    /*
      * Clear user info when we log out and inform the binding system
      */
     fun clearUserInfo() {
         this.oauthUserInfo.value = null
         this.apiUserInfo.value = null
-    }
-
-    /*
-     * Make error details available to the view
-     */
-    fun errorData(): UIError? {
-        return this.error.value
     }
 
     /*

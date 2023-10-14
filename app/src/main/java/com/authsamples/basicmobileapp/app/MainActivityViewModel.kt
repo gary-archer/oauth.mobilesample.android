@@ -2,10 +2,9 @@ package com.authsamples.basicmobileapp.app
 
 import android.app.Application
 import android.content.Intent
-import androidx.databinding.Observable
-import androidx.databinding.PropertyChangeRegistry
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
-import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.api.client.FetchCache
 import com.authsamples.basicmobileapp.api.client.FetchClient
 import com.authsamples.basicmobileapp.configuration.Configuration
@@ -18,7 +17,6 @@ import com.authsamples.basicmobileapp.plumbing.events.ReloadDataEvent
 import com.authsamples.basicmobileapp.plumbing.oauth.Authenticator
 import com.authsamples.basicmobileapp.plumbing.oauth.AuthenticatorImpl
 import com.authsamples.basicmobileapp.views.companies.CompaniesViewModel
-import com.authsamples.basicmobileapp.views.errors.ErrorSummaryViewModelData
 import com.authsamples.basicmobileapp.views.transactions.TransactionsViewModel
 import com.authsamples.basicmobileapp.views.userinfo.UserInfoViewModel
 import com.authsamples.basicmobileapp.views.utilities.DeviceSecurity
@@ -33,7 +31,7 @@ import org.greenrobot.eventbus.EventBus
  * Global data is stored in the view model class for the main activity, which is created only once
  */
 @Suppress("TooManyFunctions")
-class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Observable {
+class MainActivityViewModel(val app: Application) : AndroidViewModel(app) {
 
     // Global objects
     val configuration: Configuration
@@ -56,8 +54,7 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
     private var userInfoViewModel: UserInfoViewModel?
 
     // Observable data
-    var error: UIError?
-    private val callbacks = PropertyChangeRegistry()
+    var error: MutableState<UIError?> = mutableStateOf(null)
 
     init {
 
@@ -82,7 +79,6 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
         this.isLoaded = false
         this.isTopMost = true
         this.isDeviceSecured = DeviceSecurity.isDeviceSecured(this.app.applicationContext)
-        this.error = null
     }
 
     /*
@@ -258,7 +254,7 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
      */
     fun reloadDataOnError() {
 
-        if (this.error != null || this.viewModelCoordinator.hasErrors()) {
+        if (this.error.value != null || this.viewModelCoordinator.hasErrors()) {
             this.reloadData(false)
         }
     }
@@ -270,8 +266,7 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
             this.companiesViewModel = CompaniesViewModel(
                 this.fetchClient,
                 this.eventBus,
-                this.viewModelCoordinator,
-                this.app
+                this.viewModelCoordinator
             )
         }
 
@@ -285,8 +280,7 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
             this.transactionsViewModel = TransactionsViewModel(
                 this.fetchClient,
                 this.eventBus,
-                this.viewModelCoordinator,
-                this.app
+                this.viewModelCoordinator
             )
         }
 
@@ -300,8 +294,7 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
             this.userInfoViewModel = UserInfoViewModel(
                 this.fetchClient,
                 this.eventBus,
-                this.viewModelCoordinator,
-                this.app
+                this.viewModelCoordinator
             )
         }
 
@@ -343,36 +336,9 @@ class MainActivityViewModel(val app: Application) : AndroidViewModel(app), Obser
     }
 
     /*
-     * Data to pass when invoking the child error summary view
-     */
-    fun errorSummaryData(): ErrorSummaryViewModelData {
-
-        return ErrorSummaryViewModelData(
-            hyperlinkText = app.getString(R.string.main_error_hyperlink),
-            dialogTitle = app.getString(R.string.main_error_dialogtitle),
-            error = this.error
-        )
-    }
-
-    /*
-     * Observable plumbing to allow XML views to register
-     */
-    override fun addOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback) {
-        this.callbacks.add(callback)
-    }
-
-    /*
-     * Observable plumbing to allow XML views to unregister
-     */
-    override fun removeOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback) {
-        this.callbacks.remove(callback)
-    }
-
-    /*
      * Update data and inform the binding system
      */
     fun updateError(error: UIError?) {
-        this.error = error
-        this.callbacks.notifyCallbacks(this, 0, null)
+        this.error.value = error
     }
 }
