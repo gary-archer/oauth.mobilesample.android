@@ -1,11 +1,16 @@
 CODE
 ----
-1. Error details fragment to update to a compose view
-   Change back to a ComponentActivity once I've got rid of all fragments
+1. Error data to improve
+   Use an errorviewmodel
+   Pass it to summary and then to details
+   Simplify consuming views
+   Render something basic
    Remove ViewConstants
 
-2. Clean up styles and minimize use of XML resources
-   Constants for route names
+2. Error view to complete
+   Change main activity back to a ComponentActivity
+   Clean up styles and minimize use of XML resources
+   Use constants for route names
 
 3. Deep linking navigation testing, including when the Custom Tab is topmost
    Can I simplify navigationHelper further

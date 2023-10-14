@@ -170,7 +170,7 @@ class MainActivity : FragmentActivity() {
      */
     private fun navigateStart() {
 
-        if (this.model.isDeviceSecured) {
+        if (!this.model.isDeviceSecured) {
 
             // If the device is not secured we will move to a view that prompts the user to do so
             this.navigationHelper.navigateTo("device_not_secured")
