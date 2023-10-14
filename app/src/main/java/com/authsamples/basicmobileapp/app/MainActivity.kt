@@ -10,21 +10,20 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.viewinterop.AndroidViewBinding
 import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.authsamples.basicmobileapp.databinding.FragmentDeviceNotSecuredBinding
-import com.authsamples.basicmobileapp.databinding.FragmentLoginRequiredBinding
-import com.authsamples.basicmobileapp.databinding.FragmentSessionBinding
 import com.authsamples.basicmobileapp.plumbing.events.LoginRequiredEvent
 import com.authsamples.basicmobileapp.views.companies.CompaniesView
 import com.authsamples.basicmobileapp.views.errors.ErrorSummaryView
 import com.authsamples.basicmobileapp.views.headings.HeaderButtonsView
+import com.authsamples.basicmobileapp.views.headings.SessionView
 import com.authsamples.basicmobileapp.views.headings.TitleView
+import com.authsamples.basicmobileapp.views.security.DeviceNotSecuredView
+import com.authsamples.basicmobileapp.views.security.LoginRequiredView
 import com.authsamples.basicmobileapp.views.transactions.TransactionsView
 import com.authsamples.basicmobileapp.views.utilities.DeviceSecurity
 import com.authsamples.basicmobileapp.views.utilities.NavigationHelper
@@ -91,18 +90,16 @@ class MainActivity : FragmentActivity() {
             Column {
 
                 // The title area and user info
-                TitleView(
-                    userInfoViewModel = that.model.getUserInfoViewModel()
-                )
+                TitleView(that.model.getUserInfoViewModel())
 
                 // The top row of buttons
                 HeaderButtonsView(
-                    eventBus = that.model.eventBus,
-                    onHome = that::onHome,
-                    onReload = that::onReloadData,
-                    onExpireAccessToken = that::onExpireAccessToken,
-                    onExpireRefreshToken = that::onExpireRefreshToken,
-                    onLogout = that::onStartLogout
+                    that.model.eventBus,
+                    that::onHome,
+                    that::onReloadData,
+                    that::onExpireAccessToken,
+                    that::onExpireRefreshToken,
+                    that::onStartLogout
                 )
 
                 // Show application level errors when applicable
@@ -110,12 +107,14 @@ class MainActivity : FragmentActivity() {
 
                     ErrorSummaryView(
                         model.errorSummaryData(),
-                        modifier = Modifier.fillMaxWidth().wrapContentSize()
+                        Modifier
+                            .fillMaxWidth()
+                            .wrapContentSize()
                     )
                 }
 
                 // The session view
-                AndroidViewBinding(FragmentSessionBinding::inflate)
+                SessionView(that.model.eventBus, that.model.fetchClient.sessionId)
 
                 // Create navigation objects
                 val navHostController = rememberNavController()
@@ -123,34 +122,34 @@ class MainActivity : FragmentActivity() {
                 that.navigationHelper.deepLinkBaseUrl = that.model.configuration.oauth.deepLinkBaseUrl
 
                 // The main view is a navigation graph that is swapped out during navigation
-                NavHost(navController = navHostController, startDestination = "blank") {
+                NavHost(navHostController, "blank") {
 
                     composable("blank") {
                     }
 
                     composable("device_not_secured") {
-                        AndroidViewBinding(FragmentDeviceNotSecuredBinding::inflate)
+                        DeviceNotSecuredView(that.model.eventBus, that::openLockScreenSettings)
                     }
 
                     composable("companies") {
-                        CompaniesView(model = that.model.getCompaniesViewModel(), navigationHelper = navigationHelper)
+                        CompaniesView(that.model.getCompaniesViewModel(), navigationHelper)
                     }
 
                     composable(
                         "transactions/{id}",
-                        arguments = listOf(navArgument("id") { type = NavType.StringType })
+                        listOf(navArgument("id") { type = NavType.StringType })
                     ) {
 
                         val id = it.arguments?.getString("id") ?: ""
                         TransactionsView(
-                            companyId = id,
-                            model = that.model.getTransactionsViewModel(),
-                            navigationHelper = navigationHelper
+                            id,
+                            that.model.getTransactionsViewModel(),
+                            navigationHelper
                         )
                     }
 
                     composable("login_required") {
-                        AndroidViewBinding(FragmentLoginRequiredBinding::inflate)
+                        LoginRequiredView(that.model.eventBus)
                     }
                 }
             }
@@ -171,7 +170,7 @@ class MainActivity : FragmentActivity() {
      */
     private fun navigateStart() {
 
-        if (!this.model.isDeviceSecured) {
+        if (this.model.isDeviceSecured) {
 
             // If the device is not secured we will move to a view that prompts the user to do so
             this.navigationHelper.navigateTo("device_not_secured")
@@ -191,7 +190,7 @@ class MainActivity : FragmentActivity() {
     /*
      * Called from the device not secured fragment to prompt the user to set a PIN or password
      */
-    fun openLockScreenSettings() {
+    private fun openLockScreenSettings() {
 
         val intent = Intent(DevicePolicyManager.ACTION_SET_NEW_PASSWORD)
         this.lockScreenLauncher.launch(intent)

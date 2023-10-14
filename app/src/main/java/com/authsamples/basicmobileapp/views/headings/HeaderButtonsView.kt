@@ -59,7 +59,6 @@ fun HeaderButtonsView(
                 hasData.value = false
             }
         }
-
     }
 
     // Manage event subscriptions

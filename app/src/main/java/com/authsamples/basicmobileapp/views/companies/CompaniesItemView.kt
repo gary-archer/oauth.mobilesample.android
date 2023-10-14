@@ -62,7 +62,6 @@ fun CompaniesItemView(company: Company, navigationHelper: NavigationHelper) {
                     .fillMaxWidth(fraction = 0.5f)
             )
 
-            // ItemHeaderRowLabelStyle
             Text(
                 text = company.region,
                 style = TextStyles.header,
@@ -89,7 +88,6 @@ fun CompaniesItemView(company: Company, navigationHelper: NavigationHelper) {
                     .fillMaxWidth(fraction = 0.5f)
             )
 
-            // TextViewMoneyStyle
             Text(
                 text = String.format(Locale.getDefault(), "%,d", company.targetUsd),
                 style = TextStyles.money,
@@ -115,7 +113,6 @@ fun CompaniesItemView(company: Company, navigationHelper: NavigationHelper) {
                     .fillMaxWidth(fraction = 0.5f)
             )
 
-            // TextViewMoneyStyle
             Text(
                 text = String.format(Locale.getDefault(), "%,d", company.investmentUsd),
                 style = TextStyles.money,

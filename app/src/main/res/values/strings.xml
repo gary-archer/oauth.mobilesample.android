@@ -24,7 +24,6 @@
 
     <string name="company_list_title">Company List</string>
     <string name="transactions_title">Today\'s Transactions for Company %s</string>
-    <string name="login_required_title">Login Required</string>
     <string name="logged_out_message">You are logged out - click HOME to login</string>
 
     <string name="main_error_hyperlink">Problem Encountered in Application</string>

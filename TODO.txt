@@ -1,35 +1,25 @@
-NEXT
+CODE
 ----
-1. Transactions list view equivalent updates
-   Then delete old resources:
-      - fragment_transactions
-      - transaction_list_item
-
-2. Session view to update to a compose view (not working currently)
-   - Delete fragment_session
-
-3. Login required view to update to a compose view
-   Logout does not disable header buttons
-   - Delete fragment_login_required
-
-4. Device not secured view to update to a compose view
-   - Delete fragment_device_not_secured
-
-5. Error details fragment to update to a compose view
+1. Error details fragment to update to a compose view
    Change back to a ComponentActivity once I've got rid of all fragments
+   Remove ViewConstants
 
-7. Clean up styles and minimize use of XML resources
+2. Clean up styles and minimize use of XML resources
    Constants for route names
-   Final appearance improvements
 
-8. Deep linking navigation
+3. Deep linking navigation testing, including when the Custom Tab is topmost
+   Can I simplify navigationHelper further
 
-9. Tablet testing
+4. Tablet layout testing
+   Device testing
 
-TIDY UP
--------
-1. Ensure no user info race condition where it does not receive the initial navigate event
+5. Improve library dependencies and see which I can remove
+   Remove older binding references there
+   Make build.gradle look simpler
 
-2. Improve library dependencies and see which I can remove
+OTHER
+-----
+1. Blog updates
 
-3. Test on tablet, since previously I had separate styles for that platform
+2. Update iOS and desktop app to use path based routes
+   Update blog references, including API client journey

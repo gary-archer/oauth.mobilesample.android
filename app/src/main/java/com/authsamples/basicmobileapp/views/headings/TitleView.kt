@@ -23,7 +23,7 @@ fun TitleView(userInfoViewModel: UserInfoViewModel) {
     ) {
         Text(
             text = stringResource(R.string.app_name),
-            style = TextStyles.header,
+            style = TextStyles.value,
             textAlign = TextAlign.Left,
             modifier = Modifier.weight(1f)
         )

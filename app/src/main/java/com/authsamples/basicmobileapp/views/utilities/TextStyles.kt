@@ -16,6 +16,12 @@ object TextStyles {
         color = CustomColors.value,
     )
 
+    val sessionId = TextStyle(
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp,
+        color = CustomColors.label,
+    )
+
     val label = TextStyle(
         fontWeight = FontWeight.Bold,
         fontSize = 16.sp,

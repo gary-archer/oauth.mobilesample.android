@@ -2,11 +2,11 @@ package com.authsamples.basicmobileapp.views.companies
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import com.authsamples.basicmobileapp.R
 import com.authsamples.basicmobileapp.plumbing.events.NavigatedEvent
 import com.authsamples.basicmobileapp.plumbing.events.ReloadDataEvent
@@ -24,7 +25,6 @@ import com.authsamples.basicmobileapp.views.utilities.CustomColors
 import com.authsamples.basicmobileapp.views.utilities.NavigationHelper
 import com.authsamples.basicmobileapp.views.utilities.TextStyles
 import com.authsamples.basicmobileapp.views.utilities.ViewLoadOptions
-import kotlinx.coroutines.flow.callbackFlow
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
@@ -112,6 +112,7 @@ fun CompaniesView(model: CompaniesViewModel, navigationHelper: NavigationHelper)
                 Modifier
                     .fillMaxWidth()
                     .wrapContentSize()
+                    .padding(top = 10.dp)
             )
         }
     }
