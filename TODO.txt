@@ -1,18 +1,22 @@
 CODE
 ----
-1. Understand theme basics
-   Delete old styles and minimize use of XML resources
-
-2. Error view to complete
-
-3. Deep linking navigation testing, including when the Custom Tab is topmost
-   Can I simplify navigationHelper further
-
-4. Device testing
-
-5. Improve library dependencies and see which I can remove
+1. Improve library dependencies and see which I can remove
    Remove older binding references there
    Make build.gradle look simpler
+
+2. Understand theme basics
+   Delete old styles and minimize use of XML resources
+
+3. Device testing
+
+4. Error view to complete
+   Needs to be wider and fill most of the screen, and also be less rounded
+   Needs a blue title bar and an X to close
+
+5. Deep linking navigation testing, including when the Custom Tab is topmost
+   Can I simplify navigationHelper further
+
+6. Remove strange UI effects from list rendering
 
 OTHER
 -----
