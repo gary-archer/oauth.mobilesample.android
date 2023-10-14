@@ -10,15 +10,25 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.authsamples.basicmobileapp.plumbing.errors.ErrorFormatter
+import com.authsamples.basicmobileapp.plumbing.errors.ErrorLine
 import com.authsamples.basicmobileapp.views.utilities.CustomColors
 import com.authsamples.basicmobileapp.views.utilities.TextStyles
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun ErrorDetailsView(model: ErrorViewModel, onDismiss: () -> Unit) {
+
+    var lines: ArrayList<ErrorLine>
+    val context = LocalContext.current
+    LaunchedEffect(Unit) {
+        lines = ErrorFormatter(context).getErrorLines(model.error)
+    }
 
     Column(
 

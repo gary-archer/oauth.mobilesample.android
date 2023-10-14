@@ -67,7 +67,7 @@ fun TransactionsView(
     }
 
     // Manage view loads and unloads
-    DisposableEffect(key1 = null) {
+    DisposableEffect(Unit) {
 
         // Register for events and notify that the main view has changed
         model.eventBus.register(subscriber)

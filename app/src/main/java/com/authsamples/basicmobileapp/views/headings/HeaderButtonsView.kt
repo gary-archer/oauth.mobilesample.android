@@ -62,7 +62,7 @@ fun HeaderButtonsView(
     }
 
     // Manage event subscriptions
-    DisposableEffect(key1 = null) {
+    DisposableEffect(Unit) {
         eventBus.register(subscriber)
         onDispose {
             eventBus.unregister(subscriber)

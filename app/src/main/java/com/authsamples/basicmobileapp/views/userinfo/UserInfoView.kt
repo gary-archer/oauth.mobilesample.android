@@ -75,7 +75,7 @@ fun UserInfoView(model: UserInfoViewModel, modifier: Modifier) {
     }
 
     // Manage event subscriptions during view loads and unloads
-    DisposableEffect(key1 = null) {
+    DisposableEffect(Unit) {
         model.eventBus.register(subscriber)
         onDispose {
             model.eventBus.unregister(subscriber)
