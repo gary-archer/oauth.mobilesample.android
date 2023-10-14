@@ -77,8 +77,8 @@ class MainActivity : ComponentActivity() {
         val model: MainActivityViewModel by viewModels()
         this.model = model
 
-        // Do the initial render
-        this.render()
+        // Do the view creation
+        this.createViews()
 
         // Initialize the view model and move to a loaded state, to cause a re-render
         this.model.initialize(this::onLoaded)
@@ -87,77 +87,81 @@ class MainActivity : ComponentActivity() {
     /*
      * Lay out the tree of views for rendering
      */
-    private fun render() {
+    private fun createViews() {
 
         val that = this@MainActivity
         setContent {
-            Column {
+            ApplicationTheme {
+                Column {
 
-                // The title area and user info
-                TitleView(that.model.getUserInfoViewModel())
+                    // The title area and user info
+                    TitleView(that.model.getUserInfoViewModel())
 
-                // The top row of buttons
-                HeaderButtonsView(
-                    that.model.eventBus,
-                    that::onHome,
-                    that::onReloadData,
-                    that::onExpireAccessToken,
-                    that::onExpireRefreshToken,
-                    that::onStartLogout
-                )
-
-                // Show application level errors when applicable
-                if (model.error.value != null) {
-
-                    ErrorSummaryView(
-                        ErrorViewModel(
-                            model.error.value!!,
-                            stringResource(R.string.main_error_hyperlink),
-                            stringResource(R.string.main_error_dialogtitle)
-                        ),
-                        Modifier
-                            .fillMaxWidth()
-                            .wrapContentSize()
+                    // The top row of buttons
+                    HeaderButtonsView(
+                        that.model.eventBus,
+                        that::onHome,
+                        that::onReloadData,
+                        that::onExpireAccessToken,
+                        that::onExpireRefreshToken,
+                        that::onStartLogout
                     )
-                }
 
-                // The session view
-                SessionView(that.model.eventBus, that.model.fetchClient.sessionId)
+                    // Show application level errors when applicable
+                    if (model.error.value != null) {
 
-                // Create navigation objects
-                val navHostController = rememberNavController()
-                that.navigationHelper = NavigationHelper(navHostController) { model.isDeviceSecured }
-                that.navigationHelper.deepLinkBaseUrl = that.model.configuration.oauth.deepLinkBaseUrl
-
-                // The main view is a navigation graph that is swapped out during navigation
-                NavHost(navHostController, MainView.Blank) {
-
-                    composable(MainView.Blank) {
-                    }
-
-                    composable(MainView.DeviceNotSecured) {
-                        DeviceNotSecuredView(that.model.eventBus, that::openLockScreenSettings)
-                    }
-
-                    composable(MainView.Companies) {
-                        CompaniesView(that.model.getCompaniesViewModel(), navigationHelper)
-                    }
-
-                    composable(
-                        "${MainView.Transactions}/{id}",
-                        listOf(navArgument("id") { type = NavType.StringType })
-                    ) {
-
-                        val id = it.arguments?.getString("id") ?: ""
-                        TransactionsView(
-                            id,
-                            that.model.getTransactionsViewModel(),
-                            navigationHelper
+                        ErrorSummaryView(
+                            ErrorViewModel(
+                                model.error.value!!,
+                                stringResource(R.string.main_error_hyperlink),
+                                stringResource(R.string.main_error_dialogtitle)
+                            ),
+                            Modifier
+                                .fillMaxWidth()
+                                .wrapContentSize()
                         )
                     }
 
-                    composable(MainView.LoginRequired) {
-                        LoginRequiredView(that.model.eventBus)
+                    // The session view
+                    SessionView(that.model.eventBus, that.model.fetchClient.sessionId)
+
+                    // Create navigation objects
+                    val navHostController = rememberNavController()
+                    that.navigationHelper =
+                        NavigationHelper(navHostController) { model.isDeviceSecured }
+                    that.navigationHelper.deepLinkBaseUrl =
+                        that.model.configuration.oauth.deepLinkBaseUrl
+
+                    // The main view is a navigation graph that is swapped out during navigation
+                    NavHost(navHostController, MainView.Blank) {
+
+                        composable(MainView.Blank) {
+                        }
+
+                        composable(MainView.DeviceNotSecured) {
+                            DeviceNotSecuredView(that.model.eventBus, that::openLockScreenSettings)
+                        }
+
+                        composable(MainView.Companies) {
+                            CompaniesView(that.model.getCompaniesViewModel(), navigationHelper)
+                        }
+
+                        composable(
+                            "${MainView.Transactions}/{id}",
+                            listOf(navArgument("id") { type = NavType.StringType })
+                        ) {
+
+                            val id = it.arguments?.getString("id") ?: ""
+                            TransactionsView(
+                                id,
+                                that.model.getTransactionsViewModel(),
+                                navigationHelper
+                            )
+                        }
+
+                        composable(MainView.LoginRequired) {
+                            LoginRequiredView(that.model.eventBus)
+                        }
                     }
                 }
             }

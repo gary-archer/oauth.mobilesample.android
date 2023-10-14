@@ -43,7 +43,7 @@ After login you can test all lifecycle operations, including token refresh, expi
 
 ## Programming Languages
 
-* Kotlin and Jetpack are used to develop an app that connects to a Cloud API and Authorization Server
+* Kotlin and Jetpack Compose are used to develop an app that connects to a Cloud API and Authorization Server
 
 ## Infrastructure
 

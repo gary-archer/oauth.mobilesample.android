@@ -61,14 +61,10 @@ android {
         }
     }
 
-    // Enable newer Jetpack binding features
+    // Enable features needed to build Jetpack compose
     buildFeatures {
-        dataBinding = true
-        viewBinding = true
         compose = true
     }
-
-    // Enable Jetpack compose
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.3"
     }
@@ -76,9 +72,12 @@ android {
 
 // Dependency versions
 object VERSION {
-    const val coroutines = "1.7.3"
-    const val lifecycle_extensions = "2.2.0"
-    const val navigation = "2.7.3"
+    const val kotlin_extensions = "1.12.0"
+    const val compose = "1.8.0"
+    const val compose_bom = "2023.09.02"
+    const val compose_ui = "1.5.3"
+    const val material3 = "1.1.2"
+    const val navigation = "2.7.4"
     const val appauth = "0.11.1"
     const val browser = "1.6.0"
     const val okhttp = "4.11.0"
@@ -90,39 +89,30 @@ object VERSION {
 
 dependencies {
 
-    // Jetpack compose libraries
-    implementation("androidx.core:core-ktx:1.12.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
-    implementation("androidx.activity:activity-compose:1.7.2")
-    implementation(platform("androidx.compose:compose-bom:2023.03.00"))
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-graphics")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.compose.ui:ui-viewbinding")
-    implementation("androidx.compose.material3:material3:1.1.2")
-    implementation ("androidx.navigation:navigation-compose")
+    // Kotlin extensions
+    implementation("androidx.core:core-ktx:${VERSION.kotlin_extensions}")
 
-    // Navigation for Single Activity Apps
-    implementation("androidx.navigation:navigation-fragment-ktx:${VERSION.navigation}")
+    // Jetpack compose
+    implementation("androidx.activity:activity-compose:${VERSION.compose}")
+    implementation(platform("androidx.compose:compose-bom:${VERSION.compose_bom}"))
+
+    // Lifecycle and navigation
     implementation("androidx.navigation:navigation-ui-ktx:${VERSION.navigation}")
+    implementation("androidx.navigation:navigation-compose:${VERSION.navigation}")
 
-    // Kotlin async support
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${VERSION.coroutines}")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${VERSION.coroutines}")
-
-    // View model support
-    implementation("androidx.lifecycle:lifecycle-extensions:${VERSION.lifecycle_extensions}")
+    // UI elements
+    implementation("androidx.compose.ui:ui:${VERSION.compose_ui}")
+    implementation("androidx.compose.ui:ui-graphics:${VERSION.compose_ui}")
+    implementation("androidx.compose.material3:material3:${VERSION.material3}")
 
     // The AppAuth library manages OAuth security
     implementation ("net.openid:appauth:${VERSION.appauth}")
 
-    // Include Chrome Custom tabs for the login window
+    // Chrome Custom tabs for the login window
     implementation ("androidx.browser:browser:${VERSION.browser}")
 
-    // API requests
+    // API requests and JSON
     implementation ("com.squareup.okhttp3:okhttp:${VERSION.okhttp}")
-
-    // JSON serialization
     implementation ("com.google.code.gson:gson:${VERSION.gson}")
 
     // Resource file reading

@@ -13,6 +13,6 @@ data class ErrorLine(
     // The formatted value
     val value: String?,
 
-    // The colour for the value
+    // The color for the value
     val valueColor: Color
 )
