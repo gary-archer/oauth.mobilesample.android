@@ -138,6 +138,11 @@ class NavigationHelper(
      */
     private fun preNavigate(activeViewName: String?, newViewName: String): Boolean {
 
+        // Do not allow navigating back to the initial blank view
+        if (activeViewName == MainView.Blank) {
+            this.navHostController.popBackStack()
+        }
+
         // When the device is not secured, only allow navigation to the Device Not Secured view
         if (!this.isDeviceSecured() && newViewName != MainView.DeviceNotSecured) {
             return false
