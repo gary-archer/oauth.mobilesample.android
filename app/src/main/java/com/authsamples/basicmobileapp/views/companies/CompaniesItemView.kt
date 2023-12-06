@@ -84,7 +84,6 @@ fun CompaniesItemView(company: Company, navigationHelper: NavigationHelper) {
                 textAlign = TextAlign.Left,
                 modifier = Modifier
                     .weight(1f)
-                    .height(18.dp)
                     .padding(start = (size.value.width / 12).pxToDp())
                     .fillMaxWidth(fraction = 0.5f)
             )
