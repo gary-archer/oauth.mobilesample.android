@@ -1,6 +1,5 @@
 package com.authsamples.basicmobileapp.views.errors
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,9 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.authsamples.basicmobileapp.plumbing.errors.ErrorLine
-import com.authsamples.basicmobileapp.views.utilities.CustomColors
 import com.authsamples.basicmobileapp.views.utilities.TextStyles
-import com.authsamples.basicmobileapp.views.utilities.pxToDp
 
 /*
  * Render a label and value for an error field
