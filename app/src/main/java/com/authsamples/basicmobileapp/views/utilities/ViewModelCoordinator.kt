@@ -106,9 +106,8 @@ class ViewModelCoordinator(
             // In normal conditions the following errors are likely to be OAuth configuration errors
             @Suppress("Indentation")
             val oauthConfigurationError = errors.find { e ->
-                e.errorCode == ErrorCodes.invalidToken ||
-                e.errorCode == ErrorCodes.insufficientScope ||
-                e.errorCode == ErrorCodes.claimsFailure
+                (e.statusCode == 401 && e.errorCode == ErrorCodes.invalidToken) ||
+                (e.statusCode == 403 && e.errorCode == ErrorCodes.insufficientScope)
             }
 
             // The sample's user behavior is to present an error, after which clicking Home runs a new login redirect
