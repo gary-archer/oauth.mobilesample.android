@@ -37,11 +37,11 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
     val configuration: Configuration
     val authenticator: Authenticator
     val fetchClient: FetchClient
+    val viewModelCoordinator: ViewModelCoordinator
 
     // Other infrastructure
     val fetchCache: FetchCache
     val eventBus: EventBus
-    val viewModelCoordinator: ViewModelCoordinator
 
     // State
     var isLoaded: Boolean
@@ -64,11 +64,11 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
         // Create objects used for coordination
         this.fetchCache = FetchCache()
         this.eventBus = EventBus.getDefault()
-        this.viewModelCoordinator = ViewModelCoordinator(this.eventBus, this.fetchCache)
 
         // Create global objects for OAuth and API calls
         this.authenticator = AuthenticatorImpl(this.configuration.oauth, this.app.applicationContext)
         this.fetchClient = FetchClient(this.configuration, this.fetchCache, this.authenticator)
+        this.viewModelCoordinator = ViewModelCoordinator(this.eventBus, this.fetchCache, this.authenticator)
 
         // Initialize child view models
         this.companiesViewModel = null

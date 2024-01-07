@@ -6,6 +6,7 @@ import com.authsamples.basicmobileapp.plumbing.errors.ErrorCodes
 import com.authsamples.basicmobileapp.plumbing.errors.UIError
 import com.authsamples.basicmobileapp.plumbing.events.LoginRequiredEvent
 import com.authsamples.basicmobileapp.plumbing.events.ViewModelFetchEvent
+import com.authsamples.basicmobileapp.plumbing.oauth.Authenticator
 import org.greenrobot.eventbus.EventBus
 
 /*
@@ -14,7 +15,8 @@ import org.greenrobot.eventbus.EventBus
  */
 class ViewModelCoordinator(
     private val eventBus: EventBus,
-    private val fetchCache: FetchCache
+    private val fetchCache: FetchCache,
+    private val authenticator: Authenticator
 ) {
 
     private var mainCacheKey = ""
@@ -48,8 +50,8 @@ class ViewModelCoordinator(
             this.eventBus.post(ViewModelFetchEvent(true))
         }
 
-        // If all views have loaded, see if we need to trigger a login redirect
-        this.triggerLoginIfRequired()
+        // Perform error logic after all views have loaded
+        this.handleErrorsAfterLoad()
     }
 
     /*
@@ -65,7 +67,7 @@ class ViewModelCoordinator(
      */
     fun onUserInfoViewModelLoaded() {
         ++this.loadedCount
-        this.triggerLoginIfRequired()
+        this.handleErrorsAfterLoad()
     }
 
     /*
@@ -87,17 +89,32 @@ class ViewModelCoordinator(
     /*
      * If all views are loaded and one or more has reported login required, then trigger a redirect
      */
-    private fun triggerLoginIfRequired() {
+    private fun handleErrorsAfterLoad() {
 
         if (this.loadedCount == this.loadingCount) {
 
             val errors = this.getLoadErrors()
-            val found = errors.find { e ->
-                e.errorCode == ErrorCodes.loginRequired
+
+            // Login required errors occur when there are no tokens yet or when token refresh fails
+            // The sample's user behavior is to automatically redirect the user to login
+            val loginRequired = errors.find { e -> e.errorCode == ErrorCodes.loginRequired }
+            if (loginRequired != null) {
+                this.eventBus.post(LoginRequiredEvent())
+                return
             }
 
-            if (found != null) {
-                this.eventBus.post(LoginRequiredEvent())
+            // In normal conditions the following errors are likely to be OAuth configuration errors
+            @Suppress("Indentation")
+            val oauthConfigurationError = errors.find { e ->
+                e.errorCode == ErrorCodes.invalidToken ||
+                e.errorCode == ErrorCodes.insufficientScope ||
+                e.errorCode == ErrorCodes.claimsFailure
+            }
+
+            // The sample's user behavior is to present an error, after which clicking Home runs a new login redirect
+            // This allows the frontend application to get new tokens, which may fix the problem in some cases
+            if (oauthConfigurationError != null) {
+                this.authenticator.clearLoginState()
             }
         }
     }

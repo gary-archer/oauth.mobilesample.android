@@ -32,6 +32,15 @@ object ErrorCodes {
     // An error starting a logout request, such as contacting the metadata endpoint
     const val logoutRequestFailed = "logout_request_failed"
 
+    // Returned from APIs when an access token is rejected
+    const val invalidToken = "invalid_token"
+
+    // Returned from APIs when an access token does not have the required scope
+    const val insufficientScope = "insufficient_scope"
+
+    // Returned from APIs when it cannot find the claims it needs in access tokens
+    const val claimsFailure = "claims_failure"
+
     // A general exception in the UI
     const val generalUIError = "ui_error"
 

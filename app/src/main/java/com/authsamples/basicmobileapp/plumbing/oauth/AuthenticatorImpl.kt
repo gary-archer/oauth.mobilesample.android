@@ -176,7 +176,7 @@ class AuthenticatorImpl(
         // First force removal of tokens from storage
         val tokens = this.tokenStorage.getTokens()
         val idToken = tokens?.idToken
-        this.tokenStorage.removeTokens()
+        this.clearLoginState()
 
         try {
             // Fail if there is no id token
@@ -212,6 +212,13 @@ class AuthenticatorImpl(
             this.logoutAuthService?.dispose()
             this.logoutAuthService = null
         }
+    }
+
+    /*
+     * Allow the login state to be cleared when required
+     */
+    override fun clearLoginState() {
+        this.tokenStorage.removeTokens()
     }
 
     /*
@@ -340,7 +347,7 @@ class AuthenticatorImpl(
                             ) {
                                 // Remove tokens and indicate success, since this is an expected error
                                 // The caller will throw a login required error to redirect the user to login again
-                                this.tokenStorage.removeTokens()
+                                this.clearLoginState()
                                 continuation.resume(Unit)
 
                             } else {

@@ -63,6 +63,7 @@ android {
     // Enable features needed to build Jetpack compose
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.6"

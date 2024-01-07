@@ -22,15 +22,18 @@ interface Authenticator {
     // Complete a login
     suspend fun finishLogin(intent: Intent)
 
-    // For testing, make the access token act expired
-    fun expireAccessToken()
-
-    // For testing, make the refresh token act expired
-    fun expireRefreshToken()
-
     // Start a logout redirect
     fun startLogout(launchAction: (i: Intent) -> Unit)
 
     // Complete a logout
     fun finishLogout()
+
+    // Allow the app to clear its login state after certain errors
+    fun clearLoginState()
+
+    // For testing, make the access token act expired
+    fun expireAccessToken()
+
+    // For testing, make the refresh token act expired
+    fun expireRefreshToken()
 }
