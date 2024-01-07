@@ -87,7 +87,7 @@ class ViewModelCoordinator(
     }
 
     /*
-     * If all views are loaded and one or more has reported login required, then trigger a redirect
+     * Handle OAuth related errors
      */
     private fun handleErrorsAfterLoad() {
 
