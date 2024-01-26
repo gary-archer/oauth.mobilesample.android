@@ -3,9 +3,9 @@
     "apiBaseUrl":             "https://api.authsamples.com/investments"
   },
   "oauth": {
-    "authority":              "https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_qqJgVeuTn",
+    "authority":              "https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_CuhLeqiE9",
     "userInfoEndpoint":       "https://login.authsamples.com/oauth2/userInfo",
-    "clientId":               "3pj7bd0ff8h1klhok774303dq8",
+    "clientId":               "2vshs4gidsbpnjmsprhh607ege",
     "webBaseUrl":             "https://authsamples.com",
     "loginRedirectPath":      "/apps/basicmobileapp/postlogin.html",
     "postLogoutRedirectPath": "/apps/basicmobileapp/postlogout.html",
