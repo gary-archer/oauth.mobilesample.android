@@ -66,7 +66,7 @@ android {
         buildConfig = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.6"
+        kotlinCompilerExtensionVersion = "1.5.10"
     }
 }
 
@@ -75,7 +75,7 @@ object VERSION {
     const val kotlin_extensions = "1.12.0"
     const val compose = "1.8.2"
     const val compose_bom = "2023.09.02"
-    const val compose_ui = "1.5.4"
+    const val compose_ui = "1.6.2"
     const val material3 = "1.1.2"
     const val navigation = "2.7.7"
     const val appauth = "0.11.1"
