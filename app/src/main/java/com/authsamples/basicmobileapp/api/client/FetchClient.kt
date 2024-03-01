@@ -39,10 +39,8 @@ class FetchClient(
      */
     suspend fun getCompanyList(options: FetchOptions): Array<Company>? {
 
-        return this.callApi(
+        return this.getDataFromApi(
             "${this.configuration.app.apiBaseUrl}/companies",
-            "GET",
-            null,
             Array<Company>::class.java,
             options
         )
@@ -53,10 +51,8 @@ class FetchClient(
      */
     suspend fun getCompanyTransactions(companyId: String, options: FetchOptions): CompanyTransactions? {
 
-        return this.callApi(
+        return this.getDataFromApi(
             "${this.configuration.app.apiBaseUrl}/companies/$companyId/transactions",
-            "GET",
-            null,
             CompanyTransactions::class.java,
             options
         )
@@ -67,10 +63,8 @@ class FetchClient(
      */
     suspend fun getOAuthUserInfo(options: FetchOptions): OAuthUserInfo? {
 
-        return this.callApi(
+        return this.getDataFromApi(
             this.configuration.oauth.userInfoEndpoint,
-            "GET",
-            null,
             OAuthUserInfo::class.java,
             options
         )
@@ -81,10 +75,8 @@ class FetchClient(
      */
     suspend fun getApiUserInfo(options: FetchOptions): ApiUserInfo? {
 
-        return this.callApi(
+        return this.getDataFromApi(
             "${this.configuration.app.apiBaseUrl}/userinfo",
-            "GET",
-            null,
             ApiUserInfo::class.java,
             options
         )
@@ -94,10 +86,8 @@ class FetchClient(
      * The entry point for calling an API in a parameterised manner
      */
     @Suppress("ThrowsCount")
-    private suspend fun <T> callApi(
+    private suspend fun <T> getDataFromApi(
         url: String,
-        method: String,
-        requestData: Any?,
         responseType: Class<T>,
         options: FetchOptions
     ): T? {
@@ -130,7 +120,7 @@ class FetchClient(
         try {
 
             // Call the API and return data on success
-            val data1 = this.callApiWithToken(method, url, requestData, accessToken, responseType, options)
+            val data1 = this.callApiWithToken("GET", url, null, accessToken, responseType, options)
             cacheItem.setData(data1)
             return data1
 
@@ -160,7 +150,7 @@ class FetchClient(
             try {
 
                 // Call the API and return data on success
-                val data3 = this.callApiWithToken(method, url, requestData, accessToken, responseType, options)
+                val data3 = this.callApiWithToken("GET", url, null, accessToken, responseType, options)
                 cacheItem.setData(data3)
                 return data3
 
