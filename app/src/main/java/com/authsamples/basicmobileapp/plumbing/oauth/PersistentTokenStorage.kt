@@ -2,12 +2,14 @@ package com.authsamples.basicmobileapp.plumbing.oauth
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
+import com.authsamples.basicmobileapp.plumbing.errors.ErrorConsoleReporter
+import com.authsamples.basicmobileapp.plumbing.errors.ErrorFactory
 import com.google.gson.Gson
 
 /*
  * Tokens are stored in shared preferences which is not accessible by other apps on the device
  */
-class PersistentTokenStorage(val context: Context) {
+class PersistentTokenStorage(private val context: Context) {
 
     private var tokenData: TokenData? = null
     private val applicationName = "com.authsamples.basicmobileapp"
@@ -19,15 +21,24 @@ class PersistentTokenStorage(val context: Context) {
      */
     fun loadTokens() {
 
-        // Try the load
-        val data = this.sharedPrefs.getString(this.key, "")
-        if (data.isNullOrBlank()) {
-            return
-        }
+        try {
 
-        // Try to deserialize
-        val gson = Gson()
-        this.tokenData = gson.fromJson(data, TokenData::class.java)
+            // Try the load
+            val data = this.sharedPrefs.getString(this.key, "")
+            if (data.isNullOrBlank()) {
+                return
+            }
+
+            // Try to deserialize
+            val gson = Gson()
+            this.tokenData = gson.fromJson(data, TokenData::class.java)
+
+        } catch (ex: Throwable) {
+
+            // Require a new login if there are problems loading tokens
+            val uiError = ErrorFactory().fromException(ex)
+            ErrorConsoleReporter.output(uiError, context)
+        }
     }
 
     /*
