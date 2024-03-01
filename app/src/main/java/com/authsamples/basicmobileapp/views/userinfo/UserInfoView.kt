@@ -4,9 +4,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.PlainTooltipBox
-import androidx.compose.material3.PlainTooltipState
+import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipBox
+import androidx.compose.material3.TooltipDefaults
+import androidx.compose.material3.rememberTooltipState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
@@ -85,27 +87,31 @@ fun UserInfoView(model: UserInfoViewModel, modifier: Modifier) {
     // Render based on the current view model data
     if (model.error.value == null) {
 
-        val tooltipState = remember { PlainTooltipState() }
+        val tooltipState = rememberTooltipState()
         val scope = remember { CoroutineScope(Dispatchers.Main) }
 
         // Render a tooltip with further information when the user name is clicked
-        PlainTooltipBox(
+        TooltipBox(
+            positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+            state = tooltipState,
             tooltip = {
-                Column {
-                    Text(
-                        text = model.getUserTitle(),
-                        style = TextStyles.tooltip,
-                        modifier = Modifier.width(150.dp)
-                    )
-                    Text(
-                        text = model.getUserRegions(),
-                        style = TextStyles.tooltip,
-                        modifier = Modifier.width(150.dp)
-                    )
+                PlainTooltip(
+                    containerColor = CustomColors.label,
+                ) {
+                    Column {
+                        Text(
+                            text = model.getUserTitle(),
+                            style = TextStyles.tooltip,
+                            modifier = Modifier.width(150.dp)
+                        )
+                        Text(
+                            text = model.getUserRegions(),
+                            style = TextStyles.tooltip,
+                            modifier = Modifier.width(150.dp)
+                        )
+                    }
                 }
-            },
-            tooltipState = tooltipState,
-            containerColor = CustomColors.label,
+            }
         ) {
 
             // Render the user name
