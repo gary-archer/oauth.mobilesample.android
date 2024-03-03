@@ -11,6 +11,7 @@ cd "$(dirname "${BASH_SOURCE[0]}")"
 # Point to the Android Java location
 #
 APP_PACKAGE_ID='com.authsamples.basicmobileapp'
+UNINSTALL='false'
 
 #
 # Do a clean
@@ -33,14 +34,15 @@ fi
 #
 # Uninstall if required
 #
-FOUND=$(adb shell pm list packages | grep $APP_PACKAGE_ID)
-if [ "$FOUND" != '' ]; then
-
+if [ $UNINSTALL == 'true' ]; then
+  FOUND=$(adb shell pm list packages | grep $APP_PACKAGE_ID)
+  if [ "$FOUND" != '' ]; then
     adb uninstall $APP_PACKAGE_ID
     if [ $? -ne 0 ]; then
-        echo 'Problem encountered uninstalling the existing Android app'
-        exit
+      echo 'Problem encountered uninstalling the existing Android app'
+      exit
     fi
+  fi
 fi
 
 #
