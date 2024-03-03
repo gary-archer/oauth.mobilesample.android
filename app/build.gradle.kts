@@ -80,7 +80,7 @@ object VERSION {
     const val navigation = "2.7.7"
     const val appauth = "0.11.1"
     const val browser = "1.7.0"
-    const val okhttp = "4.11.0"
+    const val okhttp = "4.12.0"
     const val gson = "2.10.1"
     const val okio = "3.4.0"
     const val eventbus = "3.3.1"

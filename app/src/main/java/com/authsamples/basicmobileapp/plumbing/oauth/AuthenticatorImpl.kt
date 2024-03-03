@@ -44,14 +44,7 @@ class AuthenticatorImpl(
     private var loginAuthService: AuthorizationService? = null
     private var logoutAuthService: AuthorizationService? = null
     private val concurrencyHandler = ConcurrentActionHandler()
-    private val tokenStorage: PersistentTokenStorage
-
-    /*
-     * Create child objects once
-     */
-    init {
-        this.tokenStorage = PersistentTokenStorage(this.applicationContext)
-    }
+    private val tokenStorage = TokenStorage(this.applicationContext)
 
     /*
      * One time initialization on application startup

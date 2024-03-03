@@ -9,7 +9,7 @@ import com.google.gson.Gson
 /*
  * Tokens are stored in shared preferences which is not accessible by other apps on the device
  */
-class PersistentTokenStorage(private val context: Context) {
+class TokenStorage(private val context: Context) {
 
     private var tokenData: TokenData? = null
     private val applicationName = "com.authsamples.basicmobileapp"
