@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -58,6 +58,6 @@ fun ErrorDetailsItemView(errorLine: ErrorLine) {
             )
         }
 
-        Divider(thickness = 1.dp, modifier = Modifier.padding(10.dp))
+        HorizontalDivider(thickness = 1.dp, modifier = Modifier.padding(10.dp))
     }
 }
