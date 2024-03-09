@@ -78,7 +78,7 @@ class NavigationHelper(
     }
 
     /*
-     * Navigate to a deep linking URL such as 'https://mobile.authsamples.com#company=2'
+     * Navigate to a deep linking URL such as 'https://mobile.authsamples.com/basicmobileapp/deeplink/company/2'
      * Our example is simplistic since we only have a couple of screens
      */
     private fun deepLinkDoNavigate(url: String, activeViewName: String?): Boolean {
@@ -88,22 +88,18 @@ class NavigationHelper(
         // Check for our deep linking URL
         val urlData = Uri.parse(url)
         val baseUrl = "${urlData.scheme}://${urlData.host}"
-        if (baseUrl.lowercase(Locale.ROOT) == this.deepLinkBaseUrl &&
-            urlData.path?.lowercase(Locale.ROOT)?.startsWith("/basicmobileapp/deeplink", true)!!
-        ) {
+        val deepLinkBasePath = "/basicmobileapp/deeplink/"
+        val lowerCasePath = urlData.path?.lowercase(Locale.ROOT)
+        if (baseUrl.lowercase(Locale.ROOT) == this.deepLinkBaseUrl && lowerCasePath?.startsWith(deepLinkBasePath, true)!!) {
 
             // The default action is to move to the company list
             newViewName = MainView.Companies
 
-            // Check for a hash fragment
-            val hash = urlData.fragment
-            if (hash != null) {
-
-                // If we have a company id then move to the transactions view
-                val companyId = this.getDeepLinkedCompanyId(hash)
-                if (companyId != null) {
-                    newViewName = "${MainView.Transactions}/$companyId"
-                }
+            // If we have a transactions view path of the form /companies/2 then move to the transactions view
+            val relativePath = lowerCasePath.replace(deepLinkBasePath, "")
+            val companyId = this.getDeepLinkedCompanyId(relativePath)
+            if (companyId != null) {
+                newViewName = "${MainView.Transactions}/$companyId"
             }
         }
 
@@ -120,12 +116,12 @@ class NavigationHelper(
     }
 
     /*
-     * See if the hash fragment is of the form '#company=2' and if so return the id
+     * See if the relative path is of the form 'company/2' and if so return the id
      */
-    private fun getDeepLinkedCompanyId(hashFragment: String): String? {
+    private fun getDeepLinkedCompanyId(relativePath: String): String? {
 
-        val pattern = Pattern.compile("^company=(.+)")
-        val matcher = pattern.matcher(hashFragment)
+        val pattern = Pattern.compile("^company/(.+)")
+        val matcher = pattern.matcher(relativePath)
         if (matcher.find() && matcher.groupCount() >= 1) {
             return matcher.group(1)
         }
