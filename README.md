@@ -4,7 +4,7 @@
 
 ## Overview
 
-* A mobile sample using AppAuth and OpenID Connect, referenced in my blog at https://authguidance.com
+* A mobile sample using AppAuth and OpenID Connect
 * **The goal is to implement OpenID Connect mobile logins with best usability and reliability**
 
 ## Views
@@ -38,8 +38,8 @@ After login you can test all lifecycle operations, including token refresh, expi
 
 ## Further Information
 
-* See the [API Journey - Client Side](https://authguidance.com/api-journey-client-side/) for further information on the app's behaviour
-* Further details specific to the Android app are provided, starting in the [Code Sample Overview](https://authguidance.com/android-code-sample-overview/) blog post
+* See the [API Journey - Client Side](https://apisandclients.com/posts/api-journey-client-side) for further information on the app's behaviour
+* Further details specific to the Android app are provided, starting in the [Code Sample Overview](https://apisandclients.com/posts/android-code-sample-overview) blog post
 
 ## Programming Languages
 
