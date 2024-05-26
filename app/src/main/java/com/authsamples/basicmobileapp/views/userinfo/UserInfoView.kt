@@ -55,7 +55,7 @@ fun UserInfoView(model: UserInfoViewModel, modifier: Modifier) {
         @Subscribe(threadMode = ThreadMode.MAIN)
         fun onMessageEvent(event: NavigatedEvent) {
 
-            if (event.isMainView) {
+            if (event.isAuthenticatedView) {
 
                 // Load user info if required after navigating to a main view
                 loadData()

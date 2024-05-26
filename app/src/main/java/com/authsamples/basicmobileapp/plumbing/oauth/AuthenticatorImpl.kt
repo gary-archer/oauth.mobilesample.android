@@ -34,7 +34,6 @@ import kotlin.coroutines.suspendCoroutine
 /*
  * The authenticator class manages integration with the AppAuth libraries
  */
-@Suppress("TooManyFunctions")
 class AuthenticatorImpl(
     private val configuration: OAuthConfiguration,
     private val applicationContext: Context
@@ -93,6 +92,11 @@ class AuthenticatorImpl(
 
         // Otherwise abort the API call via a known exception
         throw ErrorFactory().fromLoginRequired()
+    }
+
+    // Return true if there are tokens
+    override fun isLoggedIn(): Boolean {
+        return this.tokenStorage.getTokens() != null
     }
 
     /*

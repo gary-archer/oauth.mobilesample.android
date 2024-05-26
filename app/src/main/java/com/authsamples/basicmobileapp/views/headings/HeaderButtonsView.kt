@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -35,6 +36,7 @@ fun HeaderButtonsView(
     onLogout: () -> Unit,
 ) {
     val hasData = remember { mutableStateOf(false) }
+    val homeTitleId = remember { mutableIntStateOf(R.string.home_button) }
 
     /*
      * Create an event subscriber
@@ -55,7 +57,13 @@ fun HeaderButtonsView(
         @Subscribe(threadMode = ThreadMode.MAIN)
         fun onMessageEvent(event: NavigatedEvent) {
 
-            if (!event.isMainView) {
+            if (event.isAuthenticatedView) {
+
+                homeTitleId.intValue = R.string.home_button
+
+            } else {
+
+                homeTitleId.intValue = R.string.login_button
                 hasData.value = false
             }
         }
@@ -79,7 +87,7 @@ fun HeaderButtonsView(
         HeaderButton(
             modifier = Modifier.weight(1f).fillMaxHeight(),
             enabled = true,
-            buttonTextId = R.string.home_button,
+            buttonTextId = homeTitleId.intValue,
             onClick = { onHome() },
 
         )

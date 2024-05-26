@@ -16,6 +16,9 @@ interface Authenticator {
     // Try to refresh an access token
     suspend fun synchronizedRefreshAccessToken(): String
 
+    // Return true if there are tokens
+    fun isLoggedIn(): Boolean
+
     // Start a login redirect
     fun startLogin(launchAction: (i: Intent) -> Unit)
 

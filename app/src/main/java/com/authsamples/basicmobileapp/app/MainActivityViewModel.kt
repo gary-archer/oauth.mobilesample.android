@@ -30,7 +30,6 @@ import org.greenrobot.eventbus.EventBus
 /*
  * Global data is stored in the view model class for the main activity, which is created only once
  */
-@Suppress("TooManyFunctions")
 class MainActivityViewModel(private val app: Application) : AndroidViewModel(app) {
 
     // Global objects
@@ -110,7 +109,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
     /*
      * Start a login operation to run the authorization redirect
      */
-    fun startLogin(launchAction: (i: Intent) -> Unit, onCancelled: () -> Unit) {
+    fun startLogin(launchAction: (i: Intent) -> Unit) {
 
         // Prevent re-entrancy
         if (!this.isTopMost) {
@@ -135,9 +134,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
             // Report errors on the main thread, and ignore expected errors
             this.isTopMost = true
             val uiError = ErrorFactory().fromException(ex)
-            if (uiError.errorCode == ErrorCodes.redirectCancelled) {
-                onCancelled()
-            } else {
+            if (uiError.errorCode != ErrorCodes.redirectCancelled) {
                 this.updateError(uiError)
             }
         }

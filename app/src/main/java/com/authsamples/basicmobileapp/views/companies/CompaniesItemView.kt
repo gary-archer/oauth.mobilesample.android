@@ -32,7 +32,7 @@ fun CompaniesItemView(company: Company, navigationHelper: NavigationHelper) {
      * Handle navigation when an item is clicked
      */
     fun moveToTransactions() {
-        navigationHelper.navigateTo("${MainView.Transactions}/${company.id}")
+        navigationHelper.navigateToPath("${MainView.Transactions}/${company.id}")
     }
 
     val size = remember { mutableStateOf(IntSize.Zero) }
