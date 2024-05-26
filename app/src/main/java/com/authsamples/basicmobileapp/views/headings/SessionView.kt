@@ -33,7 +33,7 @@ fun SessionView(eventBus: EventBus, apiSessionId: String) {
 
         @Subscribe(threadMode = ThreadMode.MAIN)
         fun onMessageEvent(event: NavigatedEvent) {
-            isVisible.value = event.isMainView
+            isVisible.value = event.isAuthenticatedView
         }
     }
 

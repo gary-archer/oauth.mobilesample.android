@@ -10,10 +10,11 @@
     <string name="open_device_settings">Open Settings / Security</string>
 
     <string name="home_button">Home</string>
+    <string name="login_button">Sign In</string>
     <string name="reload_button">Reload</string>
     <string name="expire_access_token_button">Expire Access Token</string>
     <string name="expire_refresh_token_button">Expire Refresh Token</string>
-    <string name="logout_button">Logout</string>
+    <string name="logout_button">Sign Out</string>
 
     <string name="target_usd">Target USD</string>
     <string name="investment_usd">Investment USD</string>
@@ -24,7 +25,7 @@
 
     <string name="company_list_title">Company List</string>
     <string name="transactions_title">Today\'s Transactions for Company %s</string>
-    <string name="logged_out_message">You are logged out - click HOME to login</string>
+    <string name="logged_out_message">You are signed out - click sign in to access the app</string>
 
     <string name="main_error_hyperlink">Problem Encountered in Application</string>
     <string name="main_error_dialogtitle">Application Error</string>

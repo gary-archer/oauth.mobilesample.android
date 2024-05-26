@@ -90,7 +90,9 @@ class NavigationHelper(
         val baseUrl = "${urlData.scheme}://${urlData.host}"
         val deepLinkBasePath = "/basicmobileapp/deeplink/"
         val lowerCasePath = urlData.path?.lowercase(Locale.ROOT)
-        if (baseUrl.lowercase(Locale.ROOT) == this.deepLinkBaseUrl && lowerCasePath?.startsWith(deepLinkBasePath, true)!!) {
+        if (baseUrl.lowercase(Locale.ROOT) == this.deepLinkBaseUrl &&
+            lowerCasePath?.startsWith(deepLinkBasePath, true)!!
+        ) {
 
             // The default action is to move to the company list
             newViewName = MainView.Companies

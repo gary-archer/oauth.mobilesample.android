@@ -95,6 +95,11 @@ class AuthenticatorImpl(
         throw ErrorFactory().fromLoginRequired()
     }
 
+    // Return true if there are tokens
+    override suspend fun isLoggedIn(): Boolean {
+        return this.tokenStorage.getTokens() != null
+    }
+
     /*
      * Do the work to perform an authorization redirect
      */

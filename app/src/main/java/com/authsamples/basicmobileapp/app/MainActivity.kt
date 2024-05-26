@@ -224,22 +224,28 @@ class MainActivity : ComponentActivity() {
     /*
      * Handle deep links while the app is running
      */
-    override fun onNewIntent(receivedIntent: Intent?) {
+    override fun onNewIntent(intent: Intent) {
 
-        super.onNewIntent(receivedIntent)
+        super.onNewIntent(intent)
 
-        if (this.navigationHelper.isDeepLinkIntent(receivedIntent)) {
-            this.navigationHelper.navigateToDeepLink(receivedIntent)
+        if (this.navigationHelper.isDeepLinkIntent(intent)) {
+            this.navigationHelper.navigateToDeepLink(intent)
         }
     }
 
     /*
-     * Start a login redirect when we are notified that we cannot call APIs
+     * Move to the login required view when the user needs to be prompted to sign in
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onLoginRequired(event: LoginRequiredEvent) {
-
         event.used()
+        this.navigationHelper.navigateTo(MainView.LoginRequired)
+    }
+
+    /*
+     * Start a login redirect when required
+     */
+    private fun onStartLogin() {
 
         val onCancelled = {
             this.navigationHelper.navigateTo(MainView.LoginRequired)
@@ -254,17 +260,7 @@ class MainActivity : ComponentActivity() {
     private fun onFinishLogin(responseIntent: Intent?) {
 
         val onSuccess = {
-
-            if (this.navigationHelper.getActiveViewName() == MainView.LoginRequired) {
-
-                // If the user logs in from the login required view, then navigate home
-                this.navigationHelper.navigateTo(MainView.Companies)
-
-            } else {
-
-                // Otherwise we are handling expiry so reload data in the current view
-                this.model.reloadData(false)
-            }
+            this.navigationHelper.navigateTo(MainView.Companies)
         }
 
         val onCancelled = {
@@ -311,8 +307,8 @@ class MainActivity : ComponentActivity() {
         // Inspect the current view
         if (this.navigationHelper.getActiveViewName() == MainView.LoginRequired) {
 
-            // Start a new login when logged out
-            this.onLoginRequired(LoginRequiredEvent())
+            // Start a new login when required
+            this.onStartLogin()
 
         } else {
 
