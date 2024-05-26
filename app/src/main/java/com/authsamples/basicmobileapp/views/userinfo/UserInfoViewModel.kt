@@ -25,7 +25,6 @@ import org.greenrobot.eventbus.EventBus
 /*
  * A simple view model class for the user info view
  */
-@Suppress("TooManyFunctions")
 class UserInfoViewModel(
     private val fetchClient: FetchClient,
     val eventBus: EventBus,

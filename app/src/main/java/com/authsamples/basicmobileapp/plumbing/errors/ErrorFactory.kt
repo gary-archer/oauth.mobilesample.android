@@ -9,7 +9,6 @@ import java.util.Locale
 /*
  * A class to manage processing errors and translation to a presentation format
  */
-@Suppress("TooManyFunctions")
 class ErrorFactory {
 
     /*

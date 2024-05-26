@@ -14,6 +14,7 @@ class NavigationHelper(
     private val isDeviceSecured: () -> Boolean
 ) {
     lateinit var deepLinkBaseUrl: String
+    private var currentViewPath: String = MainView.Companies
 
     /*
      * Return the current view
@@ -23,13 +24,50 @@ class NavigationHelper(
     }
 
     /*
-     * A utility method to navigate and manage the back stack
+     * Move to the device not secured view
      */
-    fun navigateTo(viewName: String) {
+    fun navigateToDeviceNotSecured() {
 
-        if (this.preNavigate(this.getActiveViewName(), viewName)) {
-            this.navHostController.navigate(viewName)
+        if (this.preNavigate(MainView.DeviceNotSecured)) {
+            this.navHostController.navigate(MainView.DeviceNotSecured)
         }
+    }
+
+    /*
+     * Move to the login required view while maintaining the current view path to move to afterwards
+     */
+    fun navigateToLoginRequired() {
+
+        if (this.preNavigate(MainView.LoginRequired)) {
+            this.navHostController.navigate(MainView.LoginRequired)
+        }
+    }
+
+    /*
+     * After an explicit logout, move to the login required view and reset the current view path
+     */
+    fun navigateToLoggedOut() {
+
+        this.currentViewPath = MainView.Companies
+        this.navigateToLoginRequired()
+    }
+
+    /*
+     * Navigate to an application path
+     */
+    fun navigateToPath(viewPath: String) {
+
+        if (this.preNavigate(viewPath)) {
+            currentViewPath = viewPath
+            this.navHostController.navigate(viewPath)
+        }
+    }
+
+    /*
+     * Navigation after login
+     */
+    fun navigateAfterLogin() {
+        this.navHostController.navigate(currentViewPath)
     }
 
     /*
@@ -47,8 +85,7 @@ class NavigationHelper(
         if (intent != null) {
             val url = this.getDeepLinkUrl(intent)
             if (url != null) {
-                val activeView = getActiveViewName()
-                if (this.deepLinkDoNavigate(url, activeView)) {
+                if (this.deepLinkDoNavigate(url)) {
                     return true
                 }
             }
@@ -79,42 +116,46 @@ class NavigationHelper(
 
     /*
      * Navigate to a deep linking URL such as 'https://mobile.authsamples.com/basicmobileapp/deeplink/company/2'
-     * Our example is simplistic since we only have a couple of screens
      */
-    private fun deepLinkDoNavigate(url: String, activeViewName: String?): Boolean {
+    private fun deepLinkDoNavigate(url: String): Boolean {
 
-        var newViewName: String? = null
+        val newViewPath = calculateDeepLinkViewPath(url)
+        if (newViewPath != null) {
+            this.navigateToPath(newViewPath)
+            return true
+        }
+
+        return false
+    }
+
+    /*
+     * Get a view path from a deep link path
+     */
+    private fun calculateDeepLinkViewPath(url: String): String? {
+
+        var newViewPath: String? = null
 
         // Check for our deep linking URL
         val urlData = Uri.parse(url)
         val baseUrl = "${urlData.scheme}://${urlData.host}"
-        val deepLinkBasePath = "/basicmobileapp/deeplink/"
+        val deepLinkBasePath = "/basicmobileapp/deeplink"
         val lowerCasePath = urlData.path?.lowercase(Locale.ROOT)
         if (baseUrl.lowercase(Locale.ROOT) == this.deepLinkBaseUrl &&
             lowerCasePath?.startsWith(deepLinkBasePath, true)!!
         ) {
 
             // The default action is to move to the company list
-            newViewName = MainView.Companies
+            newViewPath = MainView.Companies
 
             // If we have a transactions view path of the form /companies/2 then move to the transactions view
-            val relativePath = lowerCasePath.replace(deepLinkBasePath, "")
+            val relativePath = lowerCasePath.replace("$deepLinkBasePath/", "")
             val companyId = this.getDeepLinkedCompanyId(relativePath)
             if (companyId != null) {
-                newViewName = "${MainView.Transactions}/$companyId"
+                newViewPath = "${MainView.Transactions}/$companyId"
             }
         }
 
-        // Navigate if required
-        if (newViewName != null) {
-            if (this.preNavigate(activeViewName, newViewName)) {
-                this.navHostController.navigate(newViewName)
-            }
-            return true
-        }
-
-        // Otherwise indicate that the deep link was not found
-        return false
+        return newViewPath
     }
 
     /*
@@ -134,9 +175,10 @@ class NavigationHelper(
     /*
      * Return true to allow navigation to proceed
      */
-    private fun preNavigate(activeViewName: String?, newViewName: String): Boolean {
+    private fun preNavigate(newViewName: String): Boolean {
 
         // Do not allow navigating back to the initial blank view
+        val activeViewName = this.getActiveViewName()
         if (activeViewName == MainView.Blank) {
             this.navHostController.popBackStack()
         }

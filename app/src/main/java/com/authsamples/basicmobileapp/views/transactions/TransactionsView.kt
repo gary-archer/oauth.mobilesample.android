@@ -48,7 +48,7 @@ fun TransactionsView(
 
         // Navigate back to the home view if a deep link tries to access unauthorized data
         val onForbidden = {
-            navigationHelper.navigateTo(MainView.Companies)
+            navigationHelper.navigateToPath(MainView.Companies)
         }
 
         // Ask the model class to do the work

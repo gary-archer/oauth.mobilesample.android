@@ -37,7 +37,6 @@ import org.greenrobot.eventbus.ThreadMode
 /*
  * The application's main activity
  */
-@Suppress("TooManyFunctions")
 class MainActivity : ComponentActivity() {
 
     private lateinit var model: MainActivityViewModel
@@ -187,17 +186,17 @@ class MainActivity : ComponentActivity() {
         if (!this.model.isDeviceSecured) {
 
             // If the device is not secured we will move to a view that prompts the user to do so
-            this.navigationHelper.navigateTo(MainView.DeviceNotSecured)
+            this.navigationHelper.navigateToDeviceNotSecured()
 
         } else if (this.navigationHelper.isDeepLinkIntent(this.intent)) {
 
-            // If there was a deep link then follow it
+            // If there was a startup deep link then follow it
             this.navigationHelper.navigateToDeepLink(this.intent)
 
         } else {
 
-            // Otherwise start at the default fragment in nav_graph.xml, which is the companies view
-            this.navigationHelper.navigateTo(MainView.Companies)
+            // Otherwise start at the default companies view
+            this.navigationHelper.navigateToPath(MainView.Companies)
         }
     }
 
@@ -239,19 +238,14 @@ class MainActivity : ComponentActivity() {
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onLoginRequired(event: LoginRequiredEvent) {
         event.used()
-        this.navigationHelper.navigateTo(MainView.LoginRequired)
+        this.navigationHelper.navigateToLoginRequired()
     }
 
     /*
      * Start a login redirect when required
      */
     private fun onStartLogin() {
-
-        val onCancelled = {
-            this.navigationHelper.navigateTo(MainView.LoginRequired)
-        }
-
-        this.model.startLogin(this.loginLauncher::launch, onCancelled)
+        this.model.startLogin(this.loginLauncher::launch)
     }
 
     /*
@@ -260,11 +254,11 @@ class MainActivity : ComponentActivity() {
     private fun onFinishLogin(responseIntent: Intent?) {
 
         val onSuccess = {
-            this.navigationHelper.navigateTo(MainView.Companies)
+            this.navigationHelper.navigateAfterLogin()
         }
 
         val onCancelled = {
-            this.navigationHelper.navigateTo(MainView.LoginRequired)
+            this.navigationHelper.navigateToLoginRequired()
         }
 
         this.model.finishLogin(responseIntent, onSuccess, onCancelled)
@@ -276,7 +270,7 @@ class MainActivity : ComponentActivity() {
     private fun onStartLogout() {
 
         val onError = {
-            this.navigationHelper.navigateTo(MainView.LoginRequired)
+            this.navigationHelper.navigateToLoggedOut()
         }
 
         this.model.startLogout(this.logoutLauncher::launch, onError)
@@ -287,7 +281,7 @@ class MainActivity : ComponentActivity() {
      */
     private fun onFinishLogout() {
         this.model.finishLogout()
-        this.navigationHelper.navigateTo(MainView.LoginRequired)
+        this.navigationHelper.navigateToLoggedOut()
     }
 
     /*
@@ -304,17 +298,16 @@ class MainActivity : ComponentActivity() {
             return
         }
 
-        // Inspect the current view
-        if (this.navigationHelper.getActiveViewName() == MainView.LoginRequired) {
+        if (!this.model.authenticator.isLoggedIn()) {
 
             // Start a new login when required
             this.onStartLogin()
 
         } else {
 
-            // Navigate to the home view unless already there
+            // Otherwise navigate to the home view unless we are already there
             if (this.navigationHelper.getActiveViewName() != MainView.Companies) {
-                this.navigationHelper.navigateTo(MainView.Companies)
+                this.navigationHelper.navigateToPath(MainView.Companies)
             }
 
             // Force a data reload if recovering from errors

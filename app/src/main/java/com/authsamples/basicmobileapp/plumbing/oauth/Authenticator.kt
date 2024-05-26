@@ -5,7 +5,6 @@ import android.content.Intent
 /*
  * An interface to make authentication related operations explicit
  */
-@Suppress("TooManyFunctions")
 interface Authenticator {
 
     // Startup initialization
@@ -18,7 +17,7 @@ interface Authenticator {
     suspend fun synchronizedRefreshAccessToken(): String
 
     // Return true if there are tokens
-    suspend fun isLoggedIn(): Boolean
+    fun isLoggedIn(): Boolean
 
     // Start a login redirect
     fun startLogin(launchAction: (i: Intent) -> Unit)
