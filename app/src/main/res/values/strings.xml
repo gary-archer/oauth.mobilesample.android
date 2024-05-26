@@ -25,7 +25,7 @@
 
     <string name="company_list_title">Company List</string>
     <string name="transactions_title">Today\'s Transactions for Company %s</string>
-    <string name="logged_out_message">You are signed out - click sign in to access the app</string>
+    <string name="logged_out_message">You are signed out - sign in to access the app</string>
 
     <string name="main_error_hyperlink">Problem Encountered in Application</string>
     <string name="main_error_dialogtitle">Application Error</string>
