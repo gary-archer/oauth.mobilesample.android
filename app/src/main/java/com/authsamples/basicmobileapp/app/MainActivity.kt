@@ -285,7 +285,7 @@ class MainActivity : ComponentActivity() {
     }
 
     /*
-     * Move to the home view, which forces a reload if already in this view
+     * The home button either initiates a login or navigates home
      */
     private fun onHome() {
 
