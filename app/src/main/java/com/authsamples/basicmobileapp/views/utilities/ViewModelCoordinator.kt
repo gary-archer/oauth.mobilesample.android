@@ -84,6 +84,7 @@ class ViewModelCoordinator(
         this.loadingCount = 0
         this.loadedCount = 0
         this.mainCacheKey = ""
+        this.fetchCache.clearAll()
     }
 
     /*
@@ -99,6 +100,7 @@ class ViewModelCoordinator(
             // The sample's user behavior is to automatically redirect the user to login
             val loginRequired = errors.find { e -> e.errorCode == ErrorCodes.loginRequired }
             if (loginRequired != null) {
+                this.resetState()
                 this.eventBus.post(LoginRequiredEvent())
                 return
             }

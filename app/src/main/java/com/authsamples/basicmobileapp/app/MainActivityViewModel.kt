@@ -117,7 +117,6 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
         }
 
         // Reset cached state
-        this.fetchCache.clearAll()
         this.viewModelCoordinator.resetState()
         this.updateError(null)
 
@@ -202,7 +201,6 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
         }
 
         // Reset cached state
-        this.fetchCache.clearAll()
         this.viewModelCoordinator.resetState()
         this.updateError(null)
 
