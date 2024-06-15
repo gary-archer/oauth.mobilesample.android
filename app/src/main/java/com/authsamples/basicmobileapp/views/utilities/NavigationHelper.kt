@@ -115,7 +115,7 @@ class NavigationHelper(
     }
 
     /*
-     * Navigate to a deep linking URL such as 'https://mobile.authsamples.com/basicmobileapp/deeplink/company/2'
+     * Navigate to a deep linking URL such as 'https://mobile.authsamples.com/basicmobileapp/deeplink/companies/2'
      */
     private fun deepLinkDoNavigate(url: String): Boolean {
 
@@ -159,11 +159,11 @@ class NavigationHelper(
     }
 
     /*
-     * See if the relative path is of the form 'company/2' and if so return the id
+     * See if the relative path is of the form 'companies/2' and if so return the id
      */
     private fun getDeepLinkedCompanyId(relativePath: String): String? {
 
-        val pattern = Pattern.compile("^company/(.+)")
+        val pattern = Pattern.compile("^companies/(.+)")
         val matcher = pattern.matcher(relativePath)
         if (matcher.find() && matcher.groupCount() >= 1) {
             return matcher.group(1)

@@ -4,6 +4,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose")
     id("io.gitlab.arturbosch.detekt")
 }
 
@@ -65,17 +66,14 @@ android {
         compose = true
         buildConfig = true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14"
-    }
 }
 
 // Dependency versions
 object VERSION {
     const val KOTLIN_EXTENSIONS = "1.13.1"
     const val COMPOSE = "1.9.0"
-    const val COMPOSE_BOM = "2024.05.00"
-    const val COMPOSE_UI = "1.6.7"
+    const val COMPOSE_BOM = "2024.06.00"
+    const val COMPOSE_UI = "1.6.8"
     const val MATERIAL3 = "1.2.1"
     const val NAVIGATION = "2.7.7"
     const val APPAUTH = "0.11.1"
