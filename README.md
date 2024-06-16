@@ -26,7 +26,7 @@ This ensures that the app cannot access the user's credentials:
 You can login to the app using my AWS Cognito test account:
 
 ```text
-- User: guestuser@mycompany.com
+- User: guestuser@example.com
 - Password: GuestPassword1
 ```
 
