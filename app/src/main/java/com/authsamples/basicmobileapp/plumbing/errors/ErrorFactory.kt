@@ -190,7 +190,7 @@ class ErrorFactory {
         error.url = url
 
         val contentType = response.headers["content-type"]?.lowercase(Locale.ROOT)
-        if (contentType == "application/json") {
+        if (contentType != null && contentType.contains("application/json")) {
             if (response.body != null) {
                 this.updateFromErrorResponseBody(error, response.body!!.string())
             }
