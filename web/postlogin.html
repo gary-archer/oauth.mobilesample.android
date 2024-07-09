@@ -15,9 +15,6 @@
                 if (window.location.search) {
                     redirectUri += window.location.search;
                 }
-                if (window.location.hash) {
-                    redirectUri += window.location.hash;
-                }
 
                 document.getElementById('continueButton').onclick = () => {
                     window.location.href = redirectUri;
