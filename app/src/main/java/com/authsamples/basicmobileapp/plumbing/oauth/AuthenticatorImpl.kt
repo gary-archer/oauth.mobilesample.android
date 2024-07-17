@@ -115,7 +115,7 @@ class AuthenticatorImpl(
                 this.metadata!!,
                 this.configuration.clientId,
                 ResponseTypeValues.CODE,
-                Uri.parse(this.getLoginRedirectUri())
+                Uri.parse(this.configuration.redirectUri)
             )
                 .setScope(this.configuration.scope)
             val request = builder.build()
@@ -187,7 +187,7 @@ class AuthenticatorImpl(
             val logoutUrlBuilder = this.createLogoutUrlBuilder()
             val logoutUrl = logoutUrlBuilder.getEndSessionRequestUrl(
                 this.metadata!!,
-                this.getPostLogoutRedirectUri(),
+                this.configuration.postLogoutRedirectUri,
                 idToken
             )
 
@@ -415,22 +415,6 @@ class AuthenticatorImpl(
         }
 
         this.tokenStorage.saveTokens(tokenData)
-    }
-
-    /*
-     * Return the URL to the interstitial page used for login redirects
-     * https://mobile.authsamples.com/mobile/postlogin.html
-     */
-    private fun getLoginRedirectUri(): String {
-        return "${this.configuration.webBaseUrl}${this.configuration.loginRedirectPath}"
-    }
-
-    /*
-     * Return the URL to the interstitial page used for logout redirects
-     * https://web.mobile.authsamples.com/mobile/postlogout.html
-     */
-    private fun getPostLogoutRedirectUri(): String {
-        return "${this.configuration.webBaseUrl}${this.configuration.postLogoutRedirectPath}"
     }
 
     /*
