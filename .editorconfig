@@ -1,0 +1,7 @@
+#
+# ktlint rules
+#
+
+# This makes code less readable so I've disabled it
+[*.kt]
+disabled_rules = no-blank-line-before-rbrace
