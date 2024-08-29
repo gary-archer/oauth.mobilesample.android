@@ -8,9 +8,9 @@ A mobile sample using AppAuth and OpenID Connect, which aims for the best usabil
 
 ## Views
 
-The app is a simple UI with some basic navigation between views, to render fictional resources.\
-Thge data is returned from an OAuth-secured API that uses claims-based authorization.\
-The API authorization uses both access token claims and finer-grained business permissions.
+The app is a simple UI with some basic navigation between views, to render fictional investment resources.\
+Its data is returned from an OAuth-secured API that uses claims-based authorization.\
+The app uses user attributes from both the OpenID Connect userinfo endpoint and its API. 
 
 ![App Views](./doc/views.png)
 
