@@ -31,7 +31,7 @@ You can login to the app using my AWS Cognito test account:
 
 The app receives the login response using a claimed HTTPS scheme redirect URI, in the most secure way.\
 Android App Links enables the claimed HTTPS scheme redirect URI and requires a cloud hosted deep linking assets file.\
-Interstitial web pages ensure a user gesture after login and logout, so that return to the app is reliable.\
+Interstitial web pages ensure a user gesture after login and logout, so that login responses return to the app reliably.\
 After login you can test all lifecycle operations, including token refresh, expiry events and logout.
 
 ## Further Information
