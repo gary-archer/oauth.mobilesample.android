@@ -4,7 +4,7 @@
 
 ## Overview
 
-A demo mobile app using AppAuth and OpenID Connect, which aims for the best usability and reliability.
+A demo mobile app using OpenID Connect, which aims for the best usability and reliability.
 
 ## Views
 
