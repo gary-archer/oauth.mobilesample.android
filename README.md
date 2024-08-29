@@ -4,7 +4,7 @@
 
 ## Overview
 
-A mobile sample using AppAuth and OpenID Connect, which aims for the best usability and reliability.
+A mobile code sample using AppAuth and OpenID Connect, which aims for the best usability and reliability.
 
 ## Views
 
