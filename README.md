@@ -4,22 +4,21 @@
 
 ## Overview
 
-* A mobile sample using AppAuth and OpenID Connect
-* **The goal is to implement OpenID Connect mobile logins with best usability and reliability**
+A mobile sample using AppAuth and OpenID Connect, which aims for the best usability and reliability.
 
 ## Views
 
 The app is a simple UI with some basic navigation between views, to render fictional resources.\
-The data is returned from an API that authorizes access to resources using claims from multiple sources.
+Thge data is returned from an OAuth-secured API that uses claims-based authorization.\
+The API authorization uses both access token claims and finer-grained business permissions.
 
 ![App Views](./doc/views.png)
 
 ## Local Development Quick Start
 
 Open the app in Android Studio and run the app on an emulator or device.\
-This will trigger an OpenID Connect login flow using the AppAuth pattern.\
-The login runs in the system browser using a `Chrome Custom Tab`.\
-This ensures that the app cannot access the user's credentials:
+This triggers an OpenID Connect code flow to authenticate the user with the AppAuth pattern.\
+The login runs in the system browser using a `Chrome Custom Tab` and the app cannot access the user's credentials:
 
 ![App Login](./doc/login.png)
 
@@ -30,25 +29,24 @@ You can login to the app using my AWS Cognito test account:
 - Password: GuestPassword1
 ```
 
-An HTTPS redirect URI of `https://mobile.authsamples.com/finalmobileapp/oauth/callback` is used.\
-Deep links are then used to receive the login response, in the most secure way.\
-A deep linking assets file is hosted at https://mobile.authsamples.com/.well-known/assetlinks.json. \
+The app receives the login response using a claimed HTTPS scheme redirect URI, in the most secure way.\
+Android App Links enables the claimed HTTPS scheme redirect URI and requires a hosted deep linking assets file.
 Interstitial web pages ensure a user gesture after login and logout, so that return to the app is reliable.\
 After login you can test all lifecycle operations, including token refresh, expiry events and logout.
 
 ## Further Information
 
-* See the [API Journey - Client Side](https://apisandclients.com/posts/api-journey-client-side) for further information on the app's behaviour
-* Further details specific to the Android app are provided, starting in the [Code Sample Overview](https://apisandclients.com/posts/android-code-sample-overview) blog post
+* See the [API Journey - Client Side](https://apisandclients.com/posts/api-journey-client-side) for further information on the app's behaviour.
+* See blog posts for further details specific to the Android app, starting in the [Code Sample Overview](https://apisandclients.com/posts/android-code-sample-overview).
 
 ## Programming Languages
 
-* Kotlin and Jetpack Compose are used to develop an app that connects to a Cloud API and Authorization Server
+* The app's code uses Kotlin and its views use Jetpack Compose.
 
 ## Infrastructure
 
-* [AppAuth-Android](https://github.com/openid/AppAuth-Android) is used to implement the Authorization Code Flow (PKCE) with a Claimed HTTPS Scheme
-* [AWS Serverless](https://github.com/gary-archer/oauth.apisample.serverless) or Kubernetes is used to host remote API endpoints used by the app
-* AWS Cognito is used as the default Authorization Server for the Mobile App and API
-* Android Shared Preferences is used for private storage of tokens on the device after login
-* AWS S3 and Cloudfront are used to serve mobile deep linking asset files and interstitial web pages
+* [AppAuth-Android](https://github.com/openid/AppAuth-Android) implements the code flow with PKCE.
+* [AWS Serverless](https://github.com/gary-archer/oauth.apisample.serverless) or Kubernetes host remote API endpoints that the app calls.
+* AWS Cognito is the default authorization server for the mobile app and API.
+* Android shared preferences stores tokens on the device and isolates this data from other apps.
+* AWS S3 and Cloudfront serve mobile deep linking asset files and interstitial web pages.
