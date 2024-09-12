@@ -71,18 +71,18 @@ android {
 // Dependency versions
 object VERSION {
     const val KOTLIN_EXTENSIONS = "1.13.1"
-    const val COMPOSE = "1.9.0"
-    const val COMPOSE_BOM = "2024.06.00"
-    const val COMPOSE_UI = "1.6.8"
-    const val MATERIAL3 = "1.2.1"
-    const val NAVIGATION = "2.7.7"
+    const val COMPOSE = "1.9.2"
+    const val COMPOSE_BOM = "2024.09.01"
+    const val COMPOSE_UI = "1.7.1"
+    const val MATERIAL3 = "1.3.0"
+    const val NAVIGATION = "2.8.0"
     const val APPAUTH = "0.11.1"
     const val BROWSER = "1.8.0"
     const val OKHTTP = "4.12.0"
-    const val GSON = "2.10.1"
-    const val OKIO = "3.6.0"
+    const val GSON = "2.11.0"
+    const val OKIO = "3.9.0"
     const val EVENTBUS = "3.3.1"
-    const val DETEKT = "1.23.1"
+    const val DETEKT = "1.23.7"
 }
 
 dependencies {
