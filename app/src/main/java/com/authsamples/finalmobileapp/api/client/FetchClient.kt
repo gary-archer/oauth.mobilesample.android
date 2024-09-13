@@ -198,7 +198,7 @@ class FetchClient(
 
         // A special header can be sent to the API to cause a simulated exception
         if (options != null && options.causeError) {
-            builder.header("x-authsamples-test-exception", "SampleApi")
+            builder.header("x-authsamples-test-exception", "FinalApi")
         }
 
         val request = builder.build()

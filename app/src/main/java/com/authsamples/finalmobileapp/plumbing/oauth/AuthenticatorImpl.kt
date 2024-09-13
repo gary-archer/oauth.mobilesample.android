@@ -358,7 +358,7 @@ class AuthenticatorImpl(
                         // Sanity check
                         tokenResponse == null -> {
                             val error = RuntimeException("Refresh token grant returned an empty response")
-                            continuation.resumeWithException(error)
+                           continuation.resumeWithException(error)
                         }
 
                         // Process the response by saving tokens to secure storage
@@ -372,9 +372,9 @@ class AuthenticatorImpl(
             // Create the refresh token grant request
             val tokenRequest = TokenRequest.Builder(
                 this.metadata!!,
-                this.configuration.clientId
+                this.configuration.clientId + "X"
             )
-                .setGrantType(GrantTypeValues.REFRESH_TOKEN)
+                .setGrantType(GrantTypeValues.REFRESH_TOKEN + "X")
                 .setRefreshToken(refreshToken)
                 .build()
 
