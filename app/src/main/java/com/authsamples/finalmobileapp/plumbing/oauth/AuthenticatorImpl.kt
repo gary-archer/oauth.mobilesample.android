@@ -372,9 +372,9 @@ class AuthenticatorImpl(
             // Create the refresh token grant request
             val tokenRequest = TokenRequest.Builder(
                 this.metadata!!,
-                this.configuration.clientId + "X"
+                this.configuration.clientId
             )
-                .setGrantType(GrantTypeValues.REFRESH_TOKEN + "X")
+                .setGrantType(GrantTypeValues.REFRESH_TOKEN)
                 .setRefreshToken(refreshToken)
                 .build()
 
