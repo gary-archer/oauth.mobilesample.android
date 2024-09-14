@@ -1,15 +1,15 @@
 {
   "app": {
-    "apiBaseUrl":             "https://api.authsamples-k8s-dev.com/investments"
+    "apiBaseUrl":             "https://api.authsamples.com/investments"
   },
   "oauth": {
-    "authority":              "https://login.authsamples-k8s-dev.com/oauth/v2/oauth-anonymous",
-    "clientId":               "mobile_client",
+    "authority":              "https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_CuhLeqiE9",
+    "clientId":               "2vshs4gidsbpnjmsprhh607ege",
     "redirectUri":            "https://www.authsamples.com/apps/finalmobileapp/postlogin.html",
     "postLogoutRedirectUri":  "https://www.authsamples.com/apps/finalmobileapp/postlogout.html",
-    "scope":                  "openid profile investments",
-    "userInfoEndpoint":       "https://login.authsamples-k8s-dev.com/oauth/v2/oauth-userinfo",
-    "customLogoutEndpoint":   "",
+    "scope":                  "openid profile https://api.authsamples.com/investments",
+    "userInfoEndpoint":       "https://login.authsamples.com/oauth2/userInfo",
+    "customLogoutEndpoint":   "https://login.authsamples.com/logout",
     "deepLinkBaseUrl":        "https://mobile.authsamples.com"
   }
 }
