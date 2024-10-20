@@ -36,8 +36,8 @@ After login you can test all lifecycle operations, including token refresh, expi
 
 ## Further Information
 
-* See the [API Journey - Client Side](https://github.com/gary-archer/oauth.blog/tree/master/public/posts/api-journey-client-side) for further information on the app's behaviour.
-* See blog posts for further details specific to the Android app, starting in the [Code Sample Overview](https://github.com/gary-archer/oauth.blog/tree/master/public/posts/android-code-sample-overview).
+* See the [API Journey - Client Side](https://github.com/gary-archer/oauth.blog/tree/master/public/posts/api-journey-client-side.mdx) for further information on the app's behaviour.
+* See blog posts for further details specific to the Android app, starting in the [Code Sample Overview](https://github.com/gary-archer/oauth.blog/tree/master/public/posts/android-code-sample-overview.mdx).
 
 ## Programming Languages
 
