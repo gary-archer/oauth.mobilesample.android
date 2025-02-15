@@ -1,6 +1,6 @@
 {
   "app": {
-    "apiBaseUrl":             "https://api.authsamples-dev.com/investments"
+    "apiBaseUrl":             "https://api.authsamples.com/investments"
   },
   "oauth": {
     "authority":              "https://cognito-idp.eu-west-2.amazonaws.com/eu-west-2_CuhLeqiE9",
