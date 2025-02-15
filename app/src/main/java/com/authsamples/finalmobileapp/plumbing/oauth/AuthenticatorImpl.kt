@@ -358,7 +358,7 @@ class AuthenticatorImpl(
                         // Sanity check
                         tokenResponse == null -> {
                             val error = RuntimeException("Refresh token grant returned an empty response")
-                           continuation.resumeWithException(error)
+                            continuation.resumeWithException(error)
                         }
 
                         // Process the response by saving tokens to secure storage
