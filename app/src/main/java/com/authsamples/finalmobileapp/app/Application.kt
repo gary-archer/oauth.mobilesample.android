@@ -8,7 +8,6 @@ class Application : android.app.Application() {
     // Store a reference to the main activity
     private var mainActivity: MainActivity? = null
 
-
     /*
      * Store a reference to the main activity or null
      */
