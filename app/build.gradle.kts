@@ -10,7 +10,7 @@ plugins {
 
 android {
     // Build with the latest non beta SDK
-    compileSdk = 34
+    compileSdk = 35
     namespace = "com.authsamples.finalmobileapp"
 
     // Support devices from Android 8.0+
@@ -70,12 +70,12 @@ android {
 
 // Dependency versions
 object VERSION {
-    const val KOTLIN_EXTENSIONS = "1.13.1"
-    const val COMPOSE = "1.9.2"
-    const val COMPOSE_BOM = "2024.09.01"
-    const val COMPOSE_UI = "1.7.1"
-    const val MATERIAL3 = "1.3.0"
-    const val NAVIGATION = "2.8.0"
+    const val KOTLIN_EXTENSIONS = "1.15.0"
+    const val COMPOSE = "1.10.0"
+    const val COMPOSE_BOM = "2025.02.00"
+    const val COMPOSE_UI = "1.7.8"
+    const val MATERIAL3 = "1.3.1"
+    const val NAVIGATION = "2.8.7"
     const val APPAUTH = "0.11.1"
     const val BROWSER = "1.8.0"
     const val OKHTTP = "4.12.0"
