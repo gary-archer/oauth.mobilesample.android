@@ -2,10 +2,10 @@
  * Apply these plugins to build our Kotlin app
  */
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("org.jetbrains.kotlin.plugin.compose")
-    id("io.gitlab.arturbosch.detekt")
+    alias(libs.plugins.application)
+    alias(libs.plugins.kotlin)
+    alias(libs.plugins.compose)
+    alias(libs.plugins.detekt)
 }
 
 android {
@@ -17,7 +17,7 @@ android {
     defaultConfig {
         applicationId = "com.authsamples.finalmobileapp"
         minSdk = 26
-        targetSdk = 35
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -68,59 +68,42 @@ android {
     }
 }
 
-// Dependency versions
-object VERSION {
-    const val KOTLIN_EXTENSIONS = "1.15.0"
-    const val COMPOSE = "1.10.0"
-    const val COMPOSE_BOM = "2025.02.00"
-    const val COMPOSE_UI = "1.7.8"
-    const val MATERIAL3 = "1.3.1"
-    const val NAVIGATION = "2.8.7"
-    const val APPAUTH = "0.11.1"
-    const val BROWSER = "1.8.0"
-    const val OKHTTP = "4.12.0"
-    const val GSON = "2.11.0"
-    const val OKIO = "3.9.0"
-    const val EVENTBUS = "3.3.1"
-    const val DETEKT = "1.23.7"
-}
-
 dependencies {
 
     // Kotlin extensions
-    implementation("androidx.core:core-ktx:${VERSION.KOTLIN_EXTENSIONS}")
+    implementation(libs.androidx.core.ktx)
 
     // Jetpack compose
-    implementation("androidx.activity:activity-compose:${VERSION.COMPOSE}")
-    implementation(platform("androidx.compose:compose-bom:${VERSION.COMPOSE_BOM}"))
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
 
     // Lifecycle and navigation
-    implementation("androidx.navigation:navigation-ui-ktx:${VERSION.NAVIGATION}")
-    implementation("androidx.navigation:navigation-compose:${VERSION.NAVIGATION}")
+    implementation(libs.navigation.ui.ktx)
+    implementation(libs.navigation.compose)
 
     // UI elements
-    implementation("androidx.compose.ui:ui:${VERSION.COMPOSE_UI}")
-    implementation("androidx.compose.ui:ui-graphics:${VERSION.COMPOSE_UI}")
-    implementation("androidx.compose.material3:material3:${VERSION.MATERIAL3}")
+    implementation(libs.compose.ui)
+    implementation(libs.compose.ui.graphics)
+    implementation(libs.material3)
 
     // The AppAuth library manages OAuth security
-    implementation ("net.openid:appauth:${VERSION.APPAUTH}")
+    implementation (libs.appauth)
 
     // Chrome Custom tabs for the login window
-    implementation ("androidx.browser:browser:${VERSION.BROWSER}")
+    implementation (libs.browser)
 
     // API requests and JSON
-    implementation ("com.squareup.okhttp3:okhttp:${VERSION.OKHTTP}")
-    implementation ("com.google.code.gson:gson:${VERSION.GSON}")
+    implementation (libs.okhttp)
+    implementation (libs.gson)
 
     // Resource file reading
-    implementation ("com.squareup.okio:okio:${VERSION.OKIO}")
+    implementation (libs.okio)
 
     // Event messages
-    implementation ("org.greenrobot:eventbus:${VERSION.EVENTBUS}")
+    implementation (libs.eventbus)
 
     // The plugin to enable code quality checks
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:${VERSION.DETEKT}")
+    detektPlugins(libs.detekt.formatting)
 }
 
 // Code quality configuration
