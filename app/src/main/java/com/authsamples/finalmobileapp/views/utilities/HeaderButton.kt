@@ -27,7 +27,7 @@ fun HeaderButton(
         onClick = { onClick() },
         shape = RoundedCornerShape(10),
         enabled = enabled,
-        contentPadding = PaddingValues(2.dp, 4.dp),
+        contentPadding = PaddingValues(5.dp, 5.dp),
         colors = ButtonDefaults.textButtonColors(
             containerColor = CustomColors.primary,
             contentColor = CustomColors.value,

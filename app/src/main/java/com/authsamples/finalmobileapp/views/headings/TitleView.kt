@@ -15,11 +15,13 @@ import com.authsamples.finalmobileapp.views.utilities.TextStyles
 
 /*
  * The title bar contains the application name on the left and user info on the right
+ * Top padding allows space for edge to edge rendering in Android 15+
  */
 @Composable
 fun TitleView(userInfoViewModel: UserInfoViewModel) {
+
     Row(
-        Modifier.padding(10.dp)
+        Modifier.padding(start = 10.dp, top = 50.dp, end = 10.dp, bottom = 10.dp)
     ) {
         Text(
             text = stringResource(R.string.app_name),
