@@ -6,7 +6,7 @@ import com.authsamples.finalmobileapp.plumbing.errors.ErrorCodes
 import com.authsamples.finalmobileapp.plumbing.errors.UIError
 import com.authsamples.finalmobileapp.plumbing.events.LoginRequiredEvent
 import com.authsamples.finalmobileapp.plumbing.events.ViewModelFetchEvent
-import com.authsamples.finalmobileapp.plumbing.oauth.Authenticator
+import com.authsamples.finalmobileapp.plumbing.oauth.OAuthClient
 import org.greenrobot.eventbus.EventBus
 
 /*
@@ -16,7 +16,7 @@ import org.greenrobot.eventbus.EventBus
 class ViewModelCoordinator(
     private val eventBus: EventBus,
     private val fetchCache: FetchCache,
-    private val authenticator: Authenticator
+    private val oauthClient: OAuthClient
 ) {
 
     private var mainCacheKey = ""
@@ -115,7 +115,7 @@ class ViewModelCoordinator(
             // The sample's user behavior is to present an error, after which clicking Home runs a new login redirect
             // This allows the frontend application to get new tokens, which may fix the problem in some cases
             if (oauthConfigurationError != null) {
-                this.authenticator.clearLoginState()
+                this.oauthClient.clearLoginState()
             }
         }
     }

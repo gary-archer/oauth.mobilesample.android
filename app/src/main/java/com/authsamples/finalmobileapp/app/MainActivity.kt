@@ -301,7 +301,7 @@ class MainActivity : ComponentActivity() {
             return
         }
 
-        if (!this.model.authenticator.isLoggedIn()) {
+        if (!this.model.oauthClient.isLoggedIn()) {
 
             // Start a new login when required
             this.onStartLogin()

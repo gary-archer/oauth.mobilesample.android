@@ -6,7 +6,7 @@ import com.authsamples.finalmobileapp.api.entities.CompanyTransactions
 import com.authsamples.finalmobileapp.api.entities.OAuthUserInfo
 import com.authsamples.finalmobileapp.configuration.Configuration
 import com.authsamples.finalmobileapp.plumbing.errors.ErrorFactory
-import com.authsamples.finalmobileapp.plumbing.oauth.Authenticator
+import com.authsamples.finalmobileapp.plumbing.oauth.OAuthClient
 import com.google.gson.Gson
 import okhttp3.Call
 import okhttp3.Callback
@@ -28,7 +28,7 @@ import kotlin.coroutines.suspendCoroutine
 class FetchClient(
     private val configuration: Configuration,
     private val fetchCache: FetchCache,
-    private val authenticator: Authenticator
+    private val oauthClient: OAuthClient
 ) {
 
     // Create a session id for API logs
@@ -109,7 +109,7 @@ class FetchClient(
         cacheItem = this.fetchCache.createItem(options.cacheKey)
 
         // Avoid API requests when there is no access token, and instead trigger a login redirect
-        var accessToken = this.authenticator.getAccessToken()
+        var accessToken = this.oauthClient.getAccessToken()
         if (accessToken.isNullOrBlank()) {
 
             val loginRequiredError = ErrorFactory().fromLoginRequired()
@@ -137,7 +137,7 @@ class FetchClient(
             try {
 
                 // Try to refresh the access token
-                accessToken = this.authenticator.synchronizedRefreshAccessToken()
+                accessToken = this.oauthClient.synchronizedRefreshAccessToken()
 
             } catch (e2: Throwable) {
 

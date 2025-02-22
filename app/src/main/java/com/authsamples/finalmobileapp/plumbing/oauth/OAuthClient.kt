@@ -5,7 +5,7 @@ import android.content.Intent
 /*
  * An interface to make authentication related operations explicit
  */
-interface Authenticator {
+interface OAuthClient {
 
     // Startup initialization
     suspend fun initialize()

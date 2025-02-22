@@ -14,8 +14,8 @@ import com.authsamples.finalmobileapp.plumbing.errors.ErrorConsoleReporter
 import com.authsamples.finalmobileapp.plumbing.errors.ErrorFactory
 import com.authsamples.finalmobileapp.plumbing.errors.UIError
 import com.authsamples.finalmobileapp.plumbing.events.ReloadDataEvent
-import com.authsamples.finalmobileapp.plumbing.oauth.Authenticator
-import com.authsamples.finalmobileapp.plumbing.oauth.AuthenticatorImpl
+import com.authsamples.finalmobileapp.plumbing.oauth.OAuthClient
+import com.authsamples.finalmobileapp.plumbing.oauth.OAuthClientImpl
 import com.authsamples.finalmobileapp.views.companies.CompaniesViewModel
 import com.authsamples.finalmobileapp.views.transactions.TransactionsViewModel
 import com.authsamples.finalmobileapp.views.userinfo.UserInfoViewModel
@@ -34,7 +34,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
 
     // Global objects
     val configuration: Configuration
-    val authenticator: Authenticator
+    val oauthClient: OAuthClient
     val fetchClient: FetchClient
     val viewModelCoordinator: ViewModelCoordinator
 
@@ -65,9 +65,9 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
         this.eventBus = EventBus.getDefault()
 
         // Create global objects for OAuth and API calls
-        this.authenticator = AuthenticatorImpl(this.configuration.oauth, this.app.applicationContext)
-        this.fetchClient = FetchClient(this.configuration, this.fetchCache, this.authenticator)
-        this.viewModelCoordinator = ViewModelCoordinator(this.eventBus, this.fetchCache, this.authenticator)
+        this.oauthClient = OAuthClientImpl(this.configuration.oauth, this.app.applicationContext)
+        this.fetchClient = FetchClient(this.configuration, this.fetchCache, this.oauthClient)
+        this.viewModelCoordinator = ViewModelCoordinator(this.eventBus, this.fetchCache, this.oauthClient)
 
         // Initialize child view models
         this.companiesViewModel = null
@@ -90,7 +90,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
             val that = this@MainActivityViewModel
             try {
 
-                that.authenticator.initialize()
+                that.oauthClient.initialize()
                 withContext(Dispatchers.Main) {
                     that.isLoaded = true
                     onSuccess()
@@ -126,7 +126,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
         try {
 
             // Run the redirect on the main thread
-            this.authenticator.startLogin(launchAction)
+            this.oauthClient.startLogin(launchAction)
 
         } catch (ex: Throwable) {
 
@@ -160,7 +160,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
             try {
 
                 // Handle completion after login success, which will exchange the authorization code for tokens
-                that.authenticator.finishLogin(responseIntent)
+                that.oauthClient.finishLogin(responseIntent)
 
                 // Reload data after logging in
                 withContext(Dispatchers.Main) {
@@ -210,7 +210,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
         try {
 
             // Run the logout redirect on the main thread
-            this.authenticator.startLogout(launchAction)
+            this.oauthClient.startLogout(launchAction)
 
         } catch (ex: Throwable) {
 
@@ -230,7 +230,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
      * Update state when a logout completes
      */
     fun finishLogout() {
-        this.authenticator.finishLogout()
+        this.oauthClient.finishLogout()
         this.isTopMost = true
     }
 
@@ -304,7 +304,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
         try {
 
             this.updateError(null)
-            this.authenticator.expireAccessToken()
+            this.oauthClient.expireAccessToken()
 
         } catch (ex: Throwable) {
 
@@ -321,7 +321,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
         try {
 
             this.updateError(null)
-            this.authenticator.expireRefreshToken()
+            this.oauthClient.expireRefreshToken()
 
         } catch (ex: Throwable) {
 

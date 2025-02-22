@@ -32,12 +32,12 @@ import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 /*
- * The authenticator class manages integration with the AppAuth libraries
+ * A class to manage integration with the AppAuth libraries
  */
-class AuthenticatorImpl(
+class OAuthClientImpl(
     private val configuration: OAuthConfiguration,
     private val applicationContext: Context
-) : Authenticator {
+) : OAuthClient {
 
     private var metadata: AuthorizationServiceConfiguration? = null
     private var loginAuthService: AuthorizationService? = null
