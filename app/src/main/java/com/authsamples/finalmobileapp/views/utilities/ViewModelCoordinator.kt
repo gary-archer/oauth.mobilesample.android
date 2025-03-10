@@ -51,7 +51,7 @@ class ViewModelCoordinator(
         }
 
         // Perform error logic after all views have loaded
-        this.handleErrorsAfterLoad()
+        this.handleAllViewsLoaded()
     }
 
     /*
@@ -67,7 +67,7 @@ class ViewModelCoordinator(
      */
     fun onUserInfoViewModelLoaded() {
         ++this.loadedCount
-        this.handleErrorsAfterLoad()
+        this.handleAllViewsLoaded()
     }
 
     /*
@@ -88,16 +88,19 @@ class ViewModelCoordinator(
     }
 
     /*
-     * Handle OAuth related errors
+     * Handle OAuth related errors once all views finish loading
      */
-    private fun handleErrorsAfterLoad() {
+    private fun handleAllViewsLoaded() {
 
         if (this.loadedCount == this.loadingCount) {
 
-            val errors = this.getLoadErrors()
+            // Reset counts, which include extra calls triggered by React strict mode
+            this.loadingCount = 0
+            this.loadedCount = 0
 
             // Login required errors occur when there are no tokens yet or when token refresh fails
             // The sample's user behavior is to automatically redirect the user to login
+            val errors = this.getLoadErrors()
             val loginRequired = errors.find { e -> e.errorCode == ErrorCodes.loginRequired }
             if (loginRequired != null) {
                 this.resetState()
