@@ -6,7 +6,6 @@ import com.authsamples.finalmobileapp.plumbing.errors.ErrorCodes
 import com.authsamples.finalmobileapp.plumbing.errors.UIError
 import com.authsamples.finalmobileapp.plumbing.events.LoginRequiredEvent
 import com.authsamples.finalmobileapp.plumbing.events.ViewModelFetchEvent
-import com.authsamples.finalmobileapp.plumbing.oauth.OAuthClient
 import org.greenrobot.eventbus.EventBus
 
 /*
@@ -15,8 +14,7 @@ import org.greenrobot.eventbus.EventBus
  */
 class ViewModelCoordinator(
     private val eventBus: EventBus,
-    private val fetchCache: FetchCache,
-    private val oauthClient: OAuthClient
+    private val fetchCache: FetchCache
 ) {
 
     private var mainCacheKey = ""
@@ -106,19 +104,6 @@ class ViewModelCoordinator(
                 this.resetState()
                 this.eventBus.post(LoginRequiredEvent())
                 return
-            }
-
-            // In normal conditions the following errors are likely to be OAuth configuration errors
-            @Suppress("Indentation")
-            val oauthConfigurationError = errors.find { e ->
-                (e.statusCode == 401 && e.errorCode == ErrorCodes.invalidToken) ||
-                (e.statusCode == 403 && e.errorCode == ErrorCodes.insufficientScope)
-            }
-
-            // The sample's user behavior is to present an error, after which clicking Home runs a new login redirect
-            // This allows the frontend application to get new tokens, which may fix the problem in some cases
-            if (oauthConfigurationError != null) {
-                this.oauthClient.clearLoginState()
             }
         }
     }

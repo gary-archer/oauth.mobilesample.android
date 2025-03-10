@@ -67,7 +67,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
         // Create global objects for OAuth and API calls
         this.oauthClient = OAuthClientImpl(this.configuration.oauth, this.app.applicationContext)
         this.fetchClient = FetchClient(this.configuration, this.fetchCache, this.oauthClient)
-        this.viewModelCoordinator = ViewModelCoordinator(this.eventBus, this.fetchCache, this.oauthClient)
+        this.viewModelCoordinator = ViewModelCoordinator(this.eventBus, this.fetchCache)
 
         // Initialize child view models
         this.companiesViewModel = null

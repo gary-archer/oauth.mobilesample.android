@@ -35,9 +35,6 @@ object ErrorCodes {
     // Returned from APIs when an access token is rejected
     const val invalidToken = "invalid_token"
 
-    // Returned from APIs when an access token does not have the required scope
-    const val insufficientScope = "insufficient_scope"
-
     // Returned from APIs when it cannot find the claims it needs in access tokens
     const val claimsFailure = "claims_failure"
 
