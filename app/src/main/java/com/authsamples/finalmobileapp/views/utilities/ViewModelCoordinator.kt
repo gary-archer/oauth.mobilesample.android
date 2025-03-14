@@ -92,7 +92,7 @@ class ViewModelCoordinator(
 
         if (this.loadedCount == this.loadingCount) {
 
-            // Reset counts, which include extra calls triggered by React strict mode
+            // Reset counts
             this.loadingCount = 0
             this.loadedCount = 0
 
