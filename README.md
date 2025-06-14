@@ -49,4 +49,4 @@ After login you can test all lifecycle operations, including token refresh, expi
 * [AWS Serverless](https://github.com/gary-archer/oauth.apisample.serverless) or Kubernetes host remote API endpoints that the app calls.
 * AWS Cognito is the default authorization server for the mobile app and API.
 * Android shared preferences stores tokens on the device and isolates this data from other apps.
-* AWS S3 and Cloudfront serve mobile deep linking asset files and interstitial web pages.
+* AWS S3 and Cloudfront serve mobile deep linking asset files and external web pages that receive login responses.
