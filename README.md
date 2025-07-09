@@ -22,7 +22,7 @@ Logins run in a `Chrome Custom Tab` browser and the app cannot access the user's
 
 ![App Login](./doc/login.png)
 
-You can login to the app using my AWS Cognito test account:
+You can sign in to the app using my AWS Cognito test account:
 
 ```text
 - User: guestuser@example.com
@@ -31,7 +31,7 @@ You can login to the app using my AWS Cognito test account:
 
 The app receives the login response using a claimed HTTPS scheme redirect URI, in the most secure way.\
 Android App Links enables an HTTPS redirect URI and requires a cloud hosted deep linking assets file.\
-Interstitial web pages ensure a user gesture after login and logout, to reliably return responsesto the app.\
+External web pages ensure a user gesture after login and logout, to reliably return responses to the app.\
 After login you can test all lifecycle operations, including token refresh, expiry events and logout.
 
 ## Further Information
