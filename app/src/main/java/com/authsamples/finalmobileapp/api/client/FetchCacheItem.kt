@@ -22,8 +22,9 @@ class FetchCacheItem {
     }
 
     fun setData(value: Any?) {
-        this.data = value
         this.isLoading = false
+        this.data = value
+        this.error = null
     }
 
     fun getError(): UIError? {
@@ -31,7 +32,8 @@ class FetchCacheItem {
     }
 
     fun setError(value: UIError?) {
-        this.error = value
         this.isLoading = false
+        this.error = value
+        this.data = null
     }
 }

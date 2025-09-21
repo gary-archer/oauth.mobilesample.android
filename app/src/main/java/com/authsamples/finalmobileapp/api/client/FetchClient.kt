@@ -85,7 +85,6 @@ class FetchClient(
     /*
      * The entry point for calling an API in a parameterised manner
      */
-    @Suppress("ThrowsCount")
     private suspend fun <T> getDataFromApi(
         url: String,
         responseType: Class<T>,
@@ -105,61 +104,74 @@ class FetchClient(
             return cacheItem.getData() as T?
         }
 
-        // Ensure that the cache item exists, to avoid a redundant API request on every view recreation
+        // Ensure that the cache item exists for any re-entrant requests that fire after this one
         cacheItem = this.fetchCache.createItem(options.cacheKey)
+
+        try {
+
+            // Get the data and update the cache item for this request
+            val data = this.getDataFromApiWithTokenRefresh(url, responseType, options)
+            cacheItem.setData(data)
+            return data
+
+        } catch (e: Throwable) {
+
+            // Get the error and update the cache item for this request
+            val error = ErrorFactory().fromException(e)
+            cacheItem.setError(error)
+            throw error
+        }
+    }
+
+    /*
+     * A standard algorithm for token refresh
+     */
+    @Suppress("ThrowsCount")
+    private suspend fun <T> getDataFromApiWithTokenRefresh(
+        url: String,
+        responseType: Class<T>,
+        options: FetchOptions
+    ): T? {
 
         // Avoid API requests when there is no access token, and instead trigger a login redirect
         var accessToken = this.oauthClient.getAccessToken()
         if (accessToken.isNullOrBlank()) {
-
-            val loginRequiredError = ErrorFactory().fromLoginRequired()
-            cacheItem.setError(loginRequiredError)
-            throw loginRequiredError
+            throw ErrorFactory().fromLoginRequired()
         }
 
         try {
 
             // Call the API and return data on success
-            val data1 = this.callApiWithToken("GET", url, null, accessToken, responseType, options)
-            cacheItem.setData(data1)
-            return data1
+            return this.callApiWithToken("GET", url, null, accessToken, responseType, options)
 
         } catch (e1: Throwable) {
 
+            // Report errors if this is not a 401
             val error1 = ErrorFactory().fromException(e1)
             if (error1.statusCode != 401) {
-
-                // Report errors if this is not a 401
-                cacheItem.setError(error1)
                 throw error1
             }
 
+            // Try to refresh the access token
+            accessToken = this.oauthClient.synchronizedRefreshAccessToken()
+
             try {
 
-                // Try to refresh the access token
-                accessToken = this.oauthClient.synchronizedRefreshAccessToken()
+                // Call the API with the new access token
+                return this.callApiWithToken("GET", url, null, accessToken, responseType, options)
 
             } catch (e2: Throwable) {
 
-                // Save refresh errors
-                val error2 = ErrorFactory().fromException(e2)
-                cacheItem.setError(error2)
-                throw error2
-            }
-
-            try {
-
-                // Call the API and return data on success
-                val data3 = this.callApiWithToken("GET", url, null, accessToken, responseType, options)
-                cacheItem.setData(data3)
-                return data3
-
-            } catch (e3: Throwable) {
-
                 // Save retry errors
-                val error3 = ErrorFactory().fromException(e3)
-                cacheItem.setError(error3)
-                throw error3
+                val error2 = ErrorFactory().fromException(e2)
+                if (error2.statusCode != 401) {
+                    throw error2
+                }
+
+                // A permanent API 401 error triggers a new login.
+                // This could be caused by an invalid API configuration.
+                this.oauthClient.clearLoginState();
+                throw ErrorFactory().fromLoginRequired()
             }
         }
     }
