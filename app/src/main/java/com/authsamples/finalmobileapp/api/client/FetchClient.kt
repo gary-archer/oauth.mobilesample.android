@@ -204,13 +204,13 @@ class FetchClient(
             .url(url)
 
         // Add headers used for API logging
-        builder.header("x-authsamples-api-client", "BasicAndroidApp")
-        builder.header("x-authsamples-session-id", this.sessionId)
-        builder.header("x-authsamples-correlation-id", UUID.randomUUID().toString())
+        builder.header("authsamples-api-client", "BasicAndroidApp")
+        builder.header("authsamples-session-id", this.sessionId)
+        builder.header("authsamples-correlation-id", UUID.randomUUID().toString())
 
         // A special header can be sent to the API to cause a simulated exception
         if (options != null && options.causeError) {
-            builder.header("x-authsamples-test-exception", "FinalApi")
+            builder.header("authsamples-test-exception", "FinalApi")
         }
 
         val request = builder.build()
