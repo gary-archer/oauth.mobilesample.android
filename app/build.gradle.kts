@@ -1,6 +1,4 @@
-/*
- * Apply these plugins to build our Kotlin app
- */
+// Apply these plugins to build our Kotlin app
 plugins {
     alias(libs.plugins.application)
     alias(libs.plugins.kotlin)
@@ -29,10 +27,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_21.toString()
     }
 
     // All builds of the app are signed with a self signed key to identify the app for app links
@@ -110,4 +104,3 @@ dependencies {
 detekt {
     config.setFrom(files("$rootDir/detekt.yml"))
 }
-
