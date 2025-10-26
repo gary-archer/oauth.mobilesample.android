@@ -23,7 +23,7 @@ android {
         manifestPlaceholders["appAuthRedirectScheme"] = "https"
     }
 
-    // Be explicit about the JVM version to avoid certain types of warning or error
+    // Be explicit about the JVM version
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
