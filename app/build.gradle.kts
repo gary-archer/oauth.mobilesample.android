@@ -11,10 +11,10 @@ android {
     compileSdk = 36
     namespace = "com.authsamples.finalmobileapp"
 
-    // Support devices from Android 8.0+
+    // Support devices from Android 10+
     defaultConfig {
         applicationId = "com.authsamples.finalmobileapp"
-        minSdk = 26
+        minSdk = 29
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"

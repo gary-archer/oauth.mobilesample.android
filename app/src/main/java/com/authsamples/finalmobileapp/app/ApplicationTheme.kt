@@ -1,8 +1,6 @@
 package com.authsamples.finalmobileapp.app
 
 import android.app.Activity
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
@@ -14,7 +12,6 @@ import com.authsamples.finalmobileapp.views.utilities.CustomColors
 /*
  * Set the theme in code and use color objects
  */
-@RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun ApplicationTheme(
     content: @Composable () -> Unit,
