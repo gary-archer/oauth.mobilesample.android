@@ -28,7 +28,7 @@ import org.greenrobot.eventbus.EventBus
 class UserInfoViewModel(
     private val fetchClient: FetchClient,
     val eventBus: EventBus,
-    private val viewModelCoordinator: ViewModelCoordinator
+    private val viewModelCoordinator: ViewModelCoordinator,
 ) : ViewModel() {
 
     // Observable data for which the UI must be notified upon change
@@ -44,13 +44,13 @@ class UserInfoViewModel(
         val oauthFetchOptions = FetchOptions(
             FetchCacheKeys.OAUTHUSERINFO,
             options?.forceReload ?: false,
-            options?.causeError ?: false
+            options?.causeError ?: false,
         )
 
         val apiFetchOptions = FetchOptions(
             FetchCacheKeys.APIUSERINFO,
             options?.forceReload ?: false,
-            options?.causeError ?: false
+            options?.causeError ?: false,
         )
 
         // Initialize state

@@ -38,7 +38,7 @@ import org.greenrobot.eventbus.ThreadMode
 fun TransactionsView(
     companyId: String,
     model: TransactionsViewModel,
-    navigationHelper: NavigationHelper
+    navigationHelper: NavigationHelper,
 ) {
 
     /*
@@ -48,7 +48,7 @@ fun TransactionsView(
 
         // Navigate back to the home view if a deep link tries to access unauthorized data
         val onForbidden = {
-            navigationHelper.navigateToPath(MainView.Companies)
+            navigationHelper.navigateToPath(MainView.COMPANIES)
         }
 
         // Ask the model class to do the work
@@ -83,13 +83,13 @@ fun TransactionsView(
     }
 
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
         // Render the header in an app bar
         TopAppBar(
             colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = CustomColors.primary
+                containerColor = CustomColors.primary,
             ),
             title = {
                 Text(
@@ -98,9 +98,9 @@ fun TransactionsView(
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .wrapContentSize()
+                        .wrapContentSize(),
                 )
-            }
+            },
         )
 
         // Render a scrollable list on success
@@ -108,7 +108,7 @@ fun TransactionsView(
 
             Column(
                 modifier = Modifier
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(rememberScrollState()),
             ) {
                 model.transactionsList.value.forEach { transaction ->
                     TransactionsItemView(transaction)
@@ -123,12 +123,12 @@ fun TransactionsView(
                 ErrorViewModel(
                     model.error.value!!,
                     stringResource(R.string.transactions_error_hyperlink),
-                    stringResource(R.string.transactions_error_dialogtitle)
+                    stringResource(R.string.transactions_error_dialogtitle),
                 ),
                 Modifier
                     .fillMaxWidth()
                     .wrapContentSize()
-                    .padding(top = 10.dp)
+                    .padding(top = 10.dp),
             )
         }
     }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TooltipAnchorPosition
 import androidx.compose.material3.TooltipBox
 import androidx.compose.material3.TooltipDefaults
 import androidx.compose.material3.rememberTooltipState
@@ -91,8 +92,11 @@ fun UserInfoView(model: UserInfoViewModel, modifier: Modifier) {
         val scope = remember { CoroutineScope(Dispatchers.Main) }
 
         // Render a tooltip with further information when the user name is clicked
+        val spacingBetweenTooltipAndAnchor = 10.dp
         TooltipBox(
-            positionProvider = TooltipDefaults.rememberPlainTooltipPositionProvider(),
+            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Below,
+                spacingBetweenTooltipAndAnchor
+            ),
             state = tooltipState,
             tooltip = {
                 PlainTooltip(
@@ -102,16 +106,16 @@ fun UserInfoView(model: UserInfoViewModel, modifier: Modifier) {
                         Text(
                             text = model.getUserTitle(),
                             style = TextStyles.tooltip,
-                            modifier = Modifier.width(150.dp)
+                            modifier = Modifier.width(150.dp),
                         )
                         Text(
                             text = model.getUserRegions(),
                             style = TextStyles.tooltip,
-                            modifier = Modifier.width(150.dp)
+                            modifier = Modifier.width(150.dp),
                         )
                     }
                 }
-            }
+            },
         ) {
 
             // Render the user name
@@ -121,7 +125,7 @@ fun UserInfoView(model: UserInfoViewModel, modifier: Modifier) {
                 textAlign = TextAlign.Right,
                 modifier = modifier.clickable {
                     scope.launch { tooltipState.show() }
-                }
+                },
             )
         }
 
@@ -132,9 +136,9 @@ fun UserInfoView(model: UserInfoViewModel, modifier: Modifier) {
             ErrorViewModel(
                 model.error.value!!,
                 stringResource(R.string.userinfo_error_hyperlink),
-                stringResource(R.string.userinfo_error_dialogtitle)
+                stringResource(R.string.userinfo_error_dialogtitle),
             ),
-            Modifier
+            Modifier,
         )
     }
 }

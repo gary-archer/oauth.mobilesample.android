@@ -14,5 +14,5 @@ data class ErrorLine(
     val value: String,
 
     // The color for the value
-    val valueColor: Color
+    val valueColor: Color,
 )

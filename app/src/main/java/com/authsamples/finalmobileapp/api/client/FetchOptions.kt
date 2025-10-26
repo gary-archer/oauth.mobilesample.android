@@ -6,5 +6,5 @@ package com.authsamples.finalmobileapp.api.client
 data class FetchOptions(
     val cacheKey: String,
     val forceReload: Boolean,
-    val causeError: Boolean
+    val causeError: Boolean,
 )

@@ -5,5 +5,5 @@ package com.authsamples.finalmobileapp.views.utilities
  */
 data class ViewLoadOptions(
     val forceReload: Boolean,
-    val causeError: Boolean
+    val causeError: Boolean,
 )

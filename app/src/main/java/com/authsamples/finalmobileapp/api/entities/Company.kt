@@ -15,5 +15,5 @@ data class Company(
 
     val investmentUsd: Int,
 
-    val noInvestors: Int
+    val noInvestors: Int,
 )

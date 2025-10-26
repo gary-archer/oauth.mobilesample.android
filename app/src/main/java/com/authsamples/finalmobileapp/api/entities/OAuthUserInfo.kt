@@ -10,5 +10,5 @@ data class OAuthUserInfo(
     val givenName: String,
 
     @SerializedName("family_name")
-    val familyName: String
+    val familyName: String,
 )

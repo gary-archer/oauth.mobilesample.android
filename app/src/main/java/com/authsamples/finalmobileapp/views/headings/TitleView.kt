@@ -21,17 +21,17 @@ import com.authsamples.finalmobileapp.views.utilities.TextStyles
 fun TitleView(userInfoViewModel: UserInfoViewModel) {
 
     Row(
-        Modifier.padding(start = 10.dp, top = 50.dp, end = 10.dp, bottom = 10.dp)
+        Modifier.padding(start = 10.dp, top = 50.dp, end = 10.dp, bottom = 10.dp),
     ) {
         Text(
             text = stringResource(R.string.app_name),
             style = TextStyles.value,
             textAlign = TextAlign.Left,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
         UserInfoView(
             model = userInfoViewModel,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f),
         )
     }
 }

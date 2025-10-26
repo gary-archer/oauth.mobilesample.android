@@ -48,12 +48,12 @@ object TextStyles {
 
     val tooltip = TextStyle(
         fontSize = 14.sp,
-        textAlign = TextAlign.Center
+        textAlign = TextAlign.Center,
     )
 
     val headerButton = TextStyle(
         fontWeight = FontWeight.Bold,
         fontSize = 12.sp,
-        textAlign = TextAlign.Center
+        textAlign = TextAlign.Center,
     )
 }

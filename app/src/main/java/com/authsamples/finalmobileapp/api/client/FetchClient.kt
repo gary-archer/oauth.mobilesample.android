@@ -28,7 +28,7 @@ import kotlin.coroutines.suspendCoroutine
 class FetchClient(
     private val configuration: Configuration,
     private val fetchCache: FetchCache,
-    private val oauthClient: OAuthClient
+    private val oauthClient: OAuthClient,
 ) {
 
     // Create a session id for API logs
@@ -42,7 +42,7 @@ class FetchClient(
         return this.getDataFromApi(
             "${this.configuration.app.apiBaseUrl}/companies",
             Array<Company>::class.java,
-            options
+            options,
         )
     }
 
@@ -54,7 +54,7 @@ class FetchClient(
         return this.getDataFromApi(
             "${this.configuration.app.apiBaseUrl}/companies/$companyId/transactions",
             CompanyTransactions::class.java,
-            options
+            options,
         )
     }
 
@@ -66,7 +66,7 @@ class FetchClient(
         return this.getDataFromApi(
             this.configuration.oauth.userInfoEndpoint,
             OAuthUserInfo::class.java,
-            options
+            options,
         )
     }
 
@@ -78,7 +78,7 @@ class FetchClient(
         return this.getDataFromApi(
             "${this.configuration.app.apiBaseUrl}/userinfo",
             ApiUserInfo::class.java,
-            options
+            options,
         )
     }
 
@@ -88,7 +88,7 @@ class FetchClient(
     private suspend fun <T> getDataFromApi(
         url: String,
         responseType: Class<T>,
-        options: FetchOptions
+        options: FetchOptions,
     ): T? {
 
         // Remove the item from the cache when a reload is requested
@@ -130,7 +130,7 @@ class FetchClient(
     private suspend fun <T> getDataFromApiWithTokenRefresh(
         url: String,
         responseType: Class<T>,
-        options: FetchOptions
+        options: FetchOptions,
     ): T? {
 
         // Avoid API requests when there is no access token, and instead trigger a login redirect
@@ -170,7 +170,7 @@ class FetchClient(
 
                 // A permanent API 401 error triggers a new login.
                 // This could be caused by an invalid API configuration.
-                this.oauthClient.clearLoginState();
+                this.oauthClient.clearLoginState()
                 throw ErrorFactory().fromLoginRequired()
             }
         }
@@ -186,7 +186,7 @@ class FetchClient(
         data: Any?,
         accessToken: String,
         responseType: Class<T>,
-        options: FetchOptions? = null
+        options: FetchOptions? = null,
     ): T {
 
         // Configure the request body
@@ -197,7 +197,8 @@ class FetchClient(
         }
 
         // Build the full request
-        val builder = Request.Builder()
+        val builder = Request
+            .Builder()
             .header("Accept", "application/json")
             .header("Authorization", "Bearer $accessToken")
             .method(method, body)
@@ -216,7 +217,8 @@ class FetchClient(
         val request = builder.build()
 
         // Create an HTTP client
-        val client = OkHttpClient.Builder()
+        val client = OkHttpClient
+            .Builder()
             .callTimeout(10, TimeUnit.SECONDS)
             .build()
 

@@ -10,7 +10,7 @@ import java.net.URLEncoder
  */
 class StandardLogoutUrlBuilder(
     val configuration: OAuthConfiguration,
-    val metadata: AuthorizationServiceConfiguration
+    val metadata: AuthorizationServiceConfiguration,
 ) : LogoutUrlBuilder {
 
     /*
@@ -19,7 +19,7 @@ class StandardLogoutUrlBuilder(
     override fun getEndSessionRequestUrl(
         metadata: AuthorizationServiceConfiguration,
         postLogoutRedirectUri: String,
-        idTokenHint: String
+        idTokenHint: String,
     ): String {
 
         val endSessionUrl = this.getEndSessionEndpoint()

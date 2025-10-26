@@ -30,6 +30,7 @@ import org.greenrobot.eventbus.EventBus
 /*
  * Global data is stored in the view model class for the main activity, which is created only once
  */
+@Suppress("TooManyFunctions")
 class MainActivityViewModel(private val app: Application) : AndroidViewModel(app) {
 
     // Global objects
@@ -133,7 +134,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
             // Report errors on the main thread, and ignore expected errors
             this.isTopMost = true
             val uiError = ErrorFactory().fromException(ex)
-            if (uiError.errorCode != ErrorCodes.redirectCancelled) {
+            if (uiError.errorCode != ErrorCodes.REDIRECT_CANCELLED) {
                 this.updateError(uiError)
             }
         }
@@ -145,7 +146,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
     fun finishLogin(
         responseIntent: Intent?,
         onSuccess: () -> Unit,
-        onCancelled: () -> Unit
+        onCancelled: () -> Unit,
     ) {
 
         if (responseIntent == null) {
@@ -173,7 +174,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
                 withContext(Dispatchers.Main) {
 
                     val uiError = ErrorFactory().fromException(ex)
-                    if (uiError.errorCode == ErrorCodes.redirectCancelled) {
+                    if (uiError.errorCode == ErrorCodes.REDIRECT_CANCELLED) {
                         onCancelled()
                     } else {
                         that.updateError(uiError)
@@ -216,7 +217,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
 
             // Only report logout errors to the console
             val uiError = ErrorFactory().fromException(ex)
-            if (uiError.errorCode != ErrorCodes.redirectCancelled) {
+            if (uiError.errorCode != ErrorCodes.REDIRECT_CANCELLED) {
                 ErrorConsoleReporter.output(uiError, app)
             }
 
@@ -261,7 +262,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
             this.companiesViewModel = CompaniesViewModel(
                 this.fetchClient,
                 this.eventBus,
-                this.viewModelCoordinator
+                this.viewModelCoordinator,
             )
         }
 
@@ -275,7 +276,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
             this.transactionsViewModel = TransactionsViewModel(
                 this.fetchClient,
                 this.eventBus,
-                this.viewModelCoordinator
+                this.viewModelCoordinator,
             )
         }
 
@@ -289,7 +290,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
             this.userInfoViewModel = UserInfoViewModel(
                 this.fetchClient,
                 this.eventBus,
-                this.viewModelCoordinator
+                this.viewModelCoordinator,
             )
         }
 

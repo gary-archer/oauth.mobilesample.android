@@ -36,14 +36,14 @@ fun DeviceNotSecuredView(eventBus: EventBus, onOpenLockSettings: () -> Unit) {
     // Render the layout
     Column(
         Modifier.height(IntrinsicSize.Min).padding(10.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
         Text(
             text = stringResource(R.string.device_not_secured_message),
             style = TextStyles.value,
             textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth().padding(10.dp)
+            modifier = Modifier.fillMaxWidth().padding(10.dp),
         )
 
         Button(
@@ -51,16 +51,16 @@ fun DeviceNotSecuredView(eventBus: EventBus, onOpenLockSettings: () -> Unit) {
             shape = RoundedCornerShape(10),
             colors = ButtonDefaults.textButtonColors(
                 containerColor = CustomColors.green,
-                contentColor = CustomColors.value
+                contentColor = CustomColors.value,
             ),
-            modifier = Modifier.padding(10.dp)
+            modifier = Modifier.padding(10.dp),
 
         ) {
 
             Text(
                 stringResource(R.string.open_device_settings),
                 style = TextStyles.headerButton,
-                modifier = Modifier.padding(2.dp)
+                modifier = Modifier.padding(2.dp),
             )
         }
     }

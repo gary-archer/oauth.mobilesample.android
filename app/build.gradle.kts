@@ -1,6 +1,4 @@
-/*
- * Apply these plugins to build our Kotlin app
- */
+// Apply these plugins to build our Kotlin app
 plugins {
     alias(libs.plugins.application)
     alias(libs.plugins.kotlin)
@@ -13,10 +11,10 @@ android {
     compileSdk = 36
     namespace = "com.authsamples.finalmobileapp"
 
-    // Support devices from Android 8.0+
+    // Support devices from Android 10+
     defaultConfig {
         applicationId = "com.authsamples.finalmobileapp"
-        minSdk = 26
+        minSdk = 29
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -25,14 +23,10 @@ android {
         manifestPlaceholders["appAuthRedirectScheme"] = "https"
     }
 
-    // Be explicit about the JVM version to avoid certain types of warning or error
+    // Be explicit about the JVM version
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_21.toString()
     }
 
     // All builds of the app are signed with a self signed key to identify the app for app links
@@ -103,11 +97,10 @@ dependencies {
     implementation (libs.eventbus)
 
     // The plugin to enable code quality checks
-    detektPlugins(libs.detekt.formatting)
+    detektPlugins(libs.detekt.rules.ktlint.wrapper)
 }
 
 // Code quality configuration
 detekt {
     config.setFrom(files("$rootDir/detekt.yml"))
 }
-

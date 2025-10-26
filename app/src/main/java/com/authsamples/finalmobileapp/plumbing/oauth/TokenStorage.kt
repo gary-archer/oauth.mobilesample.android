@@ -63,7 +63,10 @@ class TokenStorage(private val context: Context) {
     fun removeTokens() {
 
         this.tokenData = null
-        this.sharedPrefs.edit().remove(this.key).apply()
+        this.sharedPrefs
+            .edit()
+            .remove(this.key)
+            .apply()
     }
 
     /*
@@ -95,6 +98,9 @@ class TokenStorage(private val context: Context) {
     private fun saveTokenData() {
         val gson = Gson()
         val data = gson.toJson(this.tokenData!!)
-        this.sharedPrefs.edit().putString(this.key, data).apply()
+        this.sharedPrefs
+            .edit()
+            .putString(this.key, data)
+            .apply()
     }
 }

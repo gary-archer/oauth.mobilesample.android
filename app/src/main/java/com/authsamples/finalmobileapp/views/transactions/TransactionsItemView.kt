@@ -32,11 +32,10 @@ fun TransactionsItemView(transaction: Transaction) {
             .padding(top = 10.dp)
             .onGloballyPositioned { coordinates ->
                 size.value = coordinates.size
-            }
-
+            },
     ) {
         Row(
-            modifier = Modifier.padding(10.dp)
+            modifier = Modifier.padding(10.dp),
         ) {
 
             Text(
@@ -46,7 +45,7 @@ fun TransactionsItemView(transaction: Transaction) {
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = (size.value.width / 12).pxToDp())
-                    .fillMaxWidth(fraction = 0.5f)
+                    .fillMaxWidth(fraction = 0.5f),
             )
 
             Text(
@@ -56,12 +55,12 @@ fun TransactionsItemView(transaction: Transaction) {
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = (size.value.width / 12).pxToDp())
-                    .fillMaxWidth(fraction = 0.5f)
+                    .fillMaxWidth(fraction = 0.5f),
             )
         }
 
         Row(
-            modifier = Modifier.padding(10.dp)
+            modifier = Modifier.padding(10.dp),
         ) {
 
             Text(
@@ -71,7 +70,7 @@ fun TransactionsItemView(transaction: Transaction) {
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = (size.value.width / 12).pxToDp())
-                    .fillMaxWidth(fraction = 0.5f)
+                    .fillMaxWidth(fraction = 0.5f),
             )
 
             Text(
@@ -81,12 +80,12 @@ fun TransactionsItemView(transaction: Transaction) {
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = (size.value.width / 12).pxToDp())
-                    .fillMaxWidth(fraction = 0.5f)
+                    .fillMaxWidth(fraction = 0.5f),
             )
         }
 
         Row(
-            modifier = Modifier.padding(10.dp)
+            modifier = Modifier.padding(10.dp),
         ) {
 
             Text(
@@ -96,7 +95,7 @@ fun TransactionsItemView(transaction: Transaction) {
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = (size.value.width / 12).pxToDp())
-                    .fillMaxWidth(fraction = 0.5f)
+                    .fillMaxWidth(fraction = 0.5f),
             )
 
             Text(
@@ -106,7 +105,7 @@ fun TransactionsItemView(transaction: Transaction) {
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = (size.value.width / 12).pxToDp())
-                    .fillMaxWidth(fraction = 0.5f)
+                    .fillMaxWidth(fraction = 0.5f),
             )
         }
 

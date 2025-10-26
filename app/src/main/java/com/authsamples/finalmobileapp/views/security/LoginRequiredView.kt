@@ -24,7 +24,7 @@ fun LoginRequiredView(eventBus: EventBus) {
         text = stringResource(R.string.logged_out_message),
         style = TextStyles.value,
         textAlign = TextAlign.Center,
-        modifier = Modifier.fillMaxWidth().padding(10.dp)
+        modifier = Modifier.fillMaxWidth().padding(10.dp),
     )
 
     LaunchedEffect(Unit) {

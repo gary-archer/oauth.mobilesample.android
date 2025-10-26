@@ -23,7 +23,7 @@ fun ReloadHeaderButton(
     modifier: Modifier,
     enabled: Boolean,
     buttonTextId: Int,
-    onReload: (Boolean) -> Unit
+    onReload: (Boolean) -> Unit,
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed = interactionSource.collectIsPressedAsState()
@@ -69,14 +69,14 @@ fun ReloadHeaderButton(
             containerColor = CustomColors.primary,
             contentColor = CustomColors.value,
             disabledContainerColor = CustomColors.primary,
-            disabledContentColor = CustomColors.label
+            disabledContentColor = CustomColors.label,
         ),
-        interactionSource = interactionSource
+        interactionSource = interactionSource,
     ) {
         Text(
             stringResource(buttonTextId),
             style = TextStyles.headerButton,
-            modifier = Modifier.padding(2.dp)
+            modifier = Modifier.padding(2.dp),
         )
     }
 }

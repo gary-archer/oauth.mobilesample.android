@@ -5,5 +5,5 @@ package com.authsamples.finalmobileapp.api.entities
  */
 data class ApiUserInfo(
     val title: String,
-    val regions: ArrayList<String>
+    val regions: ArrayList<String>,
 )

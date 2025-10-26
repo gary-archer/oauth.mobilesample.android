@@ -9,5 +9,5 @@ data class CompanyTransactions(
 
     val company: Company,
 
-    val transactions: Array<Transaction>
+    val transactions: Array<Transaction>,
 )

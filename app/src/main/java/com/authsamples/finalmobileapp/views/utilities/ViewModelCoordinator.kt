@@ -14,7 +14,7 @@ import org.greenrobot.eventbus.EventBus
  */
 class ViewModelCoordinator(
     private val eventBus: EventBus,
-    private val fetchCache: FetchCache
+    private val fetchCache: FetchCache,
 ) {
 
     private var mainCacheKey = ""
@@ -99,7 +99,7 @@ class ViewModelCoordinator(
             // Login required errors occur when there are no tokens yet or when token refresh fails
             // The sample's user behavior is to automatically redirect the user to login
             val errors = this.getLoadErrors()
-            val loginRequired = errors.find { e -> e.errorCode == ErrorCodes.loginRequired }
+            val loginRequired = errors.find { e -> e.errorCode == ErrorCodes.LOGIN_REQUIRED }
             if (loginRequired != null) {
                 this.resetState()
                 this.eventBus.post(LoginRequiredEvent())

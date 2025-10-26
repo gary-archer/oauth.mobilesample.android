@@ -44,12 +44,12 @@ fun ErrorDetailsView(model: ErrorViewModel, onDismiss: () -> Unit) {
         // First show the title and an X button to close
         TopAppBar(
             colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = CustomColors.primary
+                containerColor = CustomColors.primary,
             ),
             title = {
 
                 Row(
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
 
                     Text(
@@ -57,7 +57,7 @@ fun ErrorDetailsView(model: ErrorViewModel, onDismiss: () -> Unit) {
                         style = TextStyles.header,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
-                            .weight(20f)
+                            .weight(20f),
                     )
 
                     Text(
@@ -66,10 +66,10 @@ fun ErrorDetailsView(model: ErrorViewModel, onDismiss: () -> Unit) {
                         modifier = Modifier
                             .weight(1f)
                             .padding(end = 10.dp)
-                            .clickable { onDismiss() }
+                            .clickable { onDismiss() },
                     )
                 }
-            }
+            },
         )
 
         // Next render a scrollable list of error lines
@@ -77,7 +77,7 @@ fun ErrorDetailsView(model: ErrorViewModel, onDismiss: () -> Unit) {
 
             Column(
                 modifier = Modifier
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(rememberScrollState()),
             ) {
                 lines.value.forEach { errorLine ->
                     ErrorDetailsItemView(errorLine)

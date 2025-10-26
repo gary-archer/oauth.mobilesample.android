@@ -9,5 +9,5 @@ data class Transaction(
 
     val investorId: String,
 
-    val amountUsd: Int
+    val amountUsd: Int,
 )
