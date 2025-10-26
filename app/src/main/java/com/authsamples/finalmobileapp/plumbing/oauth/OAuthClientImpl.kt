@@ -34,9 +34,10 @@ import kotlin.coroutines.suspendCoroutine
 /*
  * A class to manage integration with the AppAuth libraries
  */
+@Suppress("TooManyFunctions")
 class OAuthClientImpl(
     private val configuration: OAuthConfiguration,
-    private val applicationContext: Context
+    private val applicationContext: Context,
 ) : OAuthClient {
 
     private var metadata: AuthorizationServiceConfiguration? = null
@@ -111,12 +112,13 @@ class OAuthClientImpl(
 
             // Create the AppAuth request object and use Authorization Code Flow (PKCE)
             // If required, call builder.setAdditionalParameters to supply details such as acr_values
-            val builder = AuthorizationRequest.Builder(
-                this.metadata!!,
-                this.configuration.clientId,
-                ResponseTypeValues.CODE,
-                Uri.parse(this.configuration.redirectUri)
-            )
+            val builder = AuthorizationRequest
+                .Builder(
+                    this.metadata!!,
+                    this.configuration.clientId,
+                    ResponseTypeValues.CODE,
+                    Uri.parse(this.configuration.redirectUri),
+                )
                 .setScope(this.configuration.scope)
             val request = builder.build()
 
@@ -125,7 +127,7 @@ class OAuthClientImpl(
             launchAction(authIntent)
 
         } catch (ex: Throwable) {
-            throw ErrorFactory().fromLoginOperationError(ex, ErrorCodes.loginRequestFailed)
+            throw ErrorFactory().fromLoginOperationError(ex, ErrorCodes.LOGIN_REQUEST_FAILED)
         }
     }
 
@@ -155,7 +157,7 @@ class OAuthClientImpl(
                 }
 
                 // Translate AppAuth errors to the display format
-                throw ErrorFactory().fromLoginOperationError(ex, ErrorCodes.loginResponseFailed)
+                throw ErrorFactory().fromLoginOperationError(ex, ErrorCodes.LOGIN_RESPONSE_FAILED)
             }
             authorizationResponse != null -> {
 
@@ -188,7 +190,7 @@ class OAuthClientImpl(
             val logoutUrl = logoutUrlBuilder.getEndSessionRequestUrl(
                 this.metadata!!,
                 this.configuration.postLogoutRedirectUri,
-                idToken
+                idToken,
             )
 
             // Launch the intent to sign the user out
@@ -289,7 +291,7 @@ class OAuthClientImpl(
                     when {
                         // Translate AppAuth errors to the display format
                         ex != null -> {
-                            val error = ErrorFactory().fromTokenError(ex, ErrorCodes.authorizationCodeGrantFailed)
+                            val error = ErrorFactory().fromTokenError(ex, ErrorCodes.AUTHORIZATION_CODE_GRANT_FAILED)
                             continuation.resumeWithException(error)
                         }
 
@@ -350,7 +352,7 @@ class OAuthClientImpl(
                             } else {
 
                                 // Process real errors
-                                val error = ErrorFactory().fromTokenError(ex, ErrorCodes.tokenRenewalError)
+                                val error = ErrorFactory().fromTokenError(ex, ErrorCodes.TOKEN_RENEWAL_ERROR)
                                 continuation.resumeWithException(error)
                             }
                         }
@@ -370,10 +372,11 @@ class OAuthClientImpl(
                 }
 
             // Create the refresh token grant request
-            val tokenRequest = TokenRequest.Builder(
-                this.metadata!!,
-                this.configuration.clientId
-            )
+            val tokenRequest = TokenRequest
+                .Builder(
+                    this.metadata!!,
+                    this.configuration.clientId,
+                )
                 .setGrantType(GrantTypeValues.REFRESH_TOKEN)
                 .setRefreshToken(refreshToken)
                 .build()

@@ -102,16 +102,16 @@ fun UserInfoView(model: UserInfoViewModel, modifier: Modifier) {
                         Text(
                             text = model.getUserTitle(),
                             style = TextStyles.tooltip,
-                            modifier = Modifier.width(150.dp)
+                            modifier = Modifier.width(150.dp),
                         )
                         Text(
                             text = model.getUserRegions(),
                             style = TextStyles.tooltip,
-                            modifier = Modifier.width(150.dp)
+                            modifier = Modifier.width(150.dp),
                         )
                     }
                 }
-            }
+            },
         ) {
 
             // Render the user name
@@ -121,7 +121,7 @@ fun UserInfoView(model: UserInfoViewModel, modifier: Modifier) {
                 textAlign = TextAlign.Right,
                 modifier = modifier.clickable {
                     scope.launch { tooltipState.show() }
-                }
+                },
             )
         }
 
@@ -132,9 +132,9 @@ fun UserInfoView(model: UserInfoViewModel, modifier: Modifier) {
             ErrorViewModel(
                 model.error.value!!,
                 stringResource(R.string.userinfo_error_hyperlink),
-                stringResource(R.string.userinfo_error_dialogtitle)
+                stringResource(R.string.userinfo_error_dialogtitle),
             ),
-            Modifier
+            Modifier,
         )
     }
 }

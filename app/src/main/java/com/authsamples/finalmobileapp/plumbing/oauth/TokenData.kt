@@ -12,5 +12,5 @@ data class TokenData(
     var refreshToken: String? = null,
 
     // The id token as proof of authentication, also used for logout
-    var idToken: String? = null
+    var idToken: String? = null,
 )

@@ -26,7 +26,7 @@ fun ErrorSummaryView(model: ErrorViewModel, modifier: Modifier) {
     val showDialog = remember { mutableStateOf(false) }
 
     // Ignore non errors
-    if (model.error.errorCode == ErrorCodes.loginRequired) {
+    if (model.error.errorCode == ErrorCodes.LOGIN_REQUIRED) {
         return
     }
 
@@ -37,7 +37,7 @@ fun ErrorSummaryView(model: ErrorViewModel, modifier: Modifier) {
         textAlign = TextAlign.Center,
         modifier = modifier.clickable {
             showDialog.value = true
-        }
+        },
     )
 
     // Show the modal dialog when the hyperlink is clicked
@@ -54,7 +54,7 @@ fun ErrorSummaryView(model: ErrorViewModel, modifier: Modifier) {
                 ),
                 modifier = Modifier
                     .fillMaxHeight(0.95f)
-                    .fillMaxWidth(1f)
+                    .fillMaxWidth(1f),
             ) {
                 ErrorDetailsView(model, onDismiss)
             }

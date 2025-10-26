@@ -17,7 +17,7 @@ import com.authsamples.finalmobileapp.views.utilities.CustomColors
 @RequiresApi(Build.VERSION_CODES.Q)
 @Composable
 fun ApplicationTheme(
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
 
     val view = LocalView.current
@@ -30,11 +30,11 @@ fun ApplicationTheme(
     }
 
     val colorScheme = lightColorScheme(
-        primary = CustomColors.primary
+        primary = CustomColors.primary,
     )
 
     MaterialTheme(
         colorScheme = colorScheme,
-        content = content
+        content = content,
     )
 }

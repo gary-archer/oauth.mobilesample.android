@@ -9,6 +9,7 @@ import java.util.Locale
 /*
  * A class to manage processing errors and translation to a presentation format
  */
+@Suppress("TooManyFunctions")
 class ErrorFactory {
 
     /*
@@ -23,8 +24,8 @@ class ErrorFactory {
 
         val error = UIError(
             "Mobile UI",
-            ErrorCodes.generalUIError,
-            "A technical problem was encountered in the UI"
+            ErrorCodes.GENERAL_UI_ERROR,
+            "A technical problem was encountered in the UI",
         )
 
         this.updateFromException(ex, error)
@@ -38,8 +39,8 @@ class ErrorFactory {
 
         return UIError(
             "Login",
-            ErrorCodes.loginRequired,
-            "A login is required so the API call was aborted"
+            ErrorCodes.LOGIN_REQUIRED,
+            "A login is required so the API call was aborted",
         )
     }
 
@@ -50,8 +51,8 @@ class ErrorFactory {
 
         val error = UIError(
             "Login",
-            ErrorCodes.metadataLookup,
-            "Problem encountered downloading OpenID Connect metadata"
+            ErrorCodes.METADATA_LOOKUP,
+            "Problem encountered downloading OpenID Connect metadata",
         )
 
         this.updateFromException(ex, error)
@@ -65,8 +66,8 @@ class ErrorFactory {
 
         return UIError(
             "Login",
-            ErrorCodes.redirectCancelled,
-            "The login request was cancelled"
+            ErrorCodes.REDIRECT_CANCELLED,
+            "The login request was cancelled",
         )
     }
 
@@ -83,7 +84,7 @@ class ErrorFactory {
         val error = UIError(
             "Login",
             errorCode,
-            "A technical problem occurred during login processing"
+            "A technical problem occurred during login processing",
         )
 
         if (ex is AuthorizationException) {
@@ -102,8 +103,8 @@ class ErrorFactory {
 
         return UIError(
             "Logout",
-            ErrorCodes.logoutNotSupported,
-            "Logout cannot be invoked because there is no end session endpoint"
+            ErrorCodes.LOGOUT_NOT_SUPPORTED,
+            "Logout cannot be invoked because there is no end session endpoint",
         )
     }
 
@@ -119,8 +120,8 @@ class ErrorFactory {
 
         val error = UIError(
             "Logout",
-            ErrorCodes.logoutRequestFailed,
-            "A technical problem occurred during logout processing"
+            ErrorCodes.LOGOUT_REQUEST_FAILED,
+            "A technical problem occurred during logout processing",
         )
 
         this.updateFromException(ex, error)
@@ -140,7 +141,7 @@ class ErrorFactory {
         val error = UIError(
             "Token",
             errorCode,
-            "A technical problem occurred during token processing"
+            "A technical problem occurred during token processing",
         )
 
         if (ex is AuthorizationException) {
@@ -159,8 +160,8 @@ class ErrorFactory {
 
         val error = UIError(
             "Network",
-            ErrorCodes.apiNetworkError,
-            "A network problem occurred when the UI called the $source"
+            ErrorCodes.API_NETWORK_ERROR,
+            "A network problem occurred when the UI called the $source",
         )
 
         // Set other details
@@ -182,8 +183,8 @@ class ErrorFactory {
 
         val error = UIError(
             "API",
-            ErrorCodes.apiResponseError,
-            "A technical problem occurred when the UI called the $source"
+            ErrorCodes.API_RESPONSE_ERROR,
+            "A technical problem occurred when the UI called the $source",
         )
 
         error.statusCode = response.code

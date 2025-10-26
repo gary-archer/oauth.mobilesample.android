@@ -19,7 +19,7 @@ fun HeaderButton(
     modifier: Modifier,
     enabled: Boolean,
     buttonTextId: Int,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
 
     Button(
@@ -32,13 +32,13 @@ fun HeaderButton(
             containerColor = CustomColors.primary,
             contentColor = CustomColors.value,
             disabledContainerColor = CustomColors.primary,
-            disabledContentColor = CustomColors.label
-        )
+            disabledContentColor = CustomColors.label,
+        ),
     ) {
         Text(
             stringResource(buttonTextId),
             style = TextStyles.headerButton,
-            modifier = Modifier.padding(2.dp)
+            modifier = Modifier.padding(2.dp),
         )
     }
 }

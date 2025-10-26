@@ -2,7 +2,7 @@
 application = "8.13.0"
 kotlin = "2.2.21"
 compose = "2.2.21"
-detekt = "1.23.8"
+detekt = "2.0.0-alpha.1"
 core-ktx = "1.17.0"
 activity-compose = "1.11.0"
 compose-bom = "2025.10.01"
@@ -20,7 +20,7 @@ eventbus = "3.3.1"
 application = { id = "com.android.application", version.ref = "application" }
 kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "compose" }
-detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+detekt = { id = "dev.detekt", version.ref = "detekt" }
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -37,4 +37,4 @@ okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhtt
 gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 okio = { group = "com.squareup.okio", name = "okio", version.ref = "okio" }
 eventbus = { group = "org.greenrobot", name = "eventbus", version.ref = "eventbus" }
-detekt-formatting = { group = "io.gitlab.arturbosch.detekt", name = "detekt-formatting", version.ref = "detekt" }
+detekt-rules-ktlint-wrapper = { group = "dev.detekt", name = "detekt-rules-ktlint-wrapper", version.ref = "detekt" }

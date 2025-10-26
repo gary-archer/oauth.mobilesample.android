@@ -11,6 +11,6 @@ interface LogoutUrlBuilder {
     fun getEndSessionRequestUrl(
         metadata: AuthorizationServiceConfiguration,
         postLogoutRedirectUri: String,
-        idTokenHint: String
+        idTokenHint: String,
     ): String
 }

@@ -32,7 +32,7 @@ fun CompaniesItemView(company: Company, navigationHelper: NavigationHelper) {
      * Handle navigation when an item is clicked
      */
     fun moveToTransactions() {
-        navigationHelper.navigateToPath("${MainView.Transactions}/${company.id}")
+        navigationHelper.navigateToPath("${MainView.TRANSACTIONS}/${company.id}")
     }
 
     val size = remember { mutableStateOf(IntSize.Zero) }
@@ -45,11 +45,11 @@ fun CompaniesItemView(company: Company, navigationHelper: NavigationHelper) {
             }
             .onGloballyPositioned { coordinates ->
                 size.value = coordinates.size
-            }
+            },
 
     ) {
         Row(
-            modifier = Modifier.padding(10.dp)
+            modifier = Modifier.padding(10.dp),
         ) {
 
             Text(
@@ -59,7 +59,7 @@ fun CompaniesItemView(company: Company, navigationHelper: NavigationHelper) {
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = (size.value.width / 12).pxToDp())
-                    .fillMaxWidth(fraction = 0.5f)
+                    .fillMaxWidth(fraction = 0.5f),
             )
 
             Text(
@@ -69,12 +69,12 @@ fun CompaniesItemView(company: Company, navigationHelper: NavigationHelper) {
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = (size.value.width / 12).pxToDp())
-                    .fillMaxWidth(fraction = 0.5f)
+                    .fillMaxWidth(fraction = 0.5f),
             )
         }
 
         Row(
-            modifier = Modifier.padding(10.dp)
+            modifier = Modifier.padding(10.dp),
         ) {
 
             Text(
@@ -84,7 +84,7 @@ fun CompaniesItemView(company: Company, navigationHelper: NavigationHelper) {
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = (size.value.width / 12).pxToDp())
-                    .fillMaxWidth(fraction = 0.5f)
+                    .fillMaxWidth(fraction = 0.5f),
             )
 
             Text(
@@ -94,12 +94,12 @@ fun CompaniesItemView(company: Company, navigationHelper: NavigationHelper) {
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = (size.value.width / 12).pxToDp())
-                    .fillMaxWidth(fraction = 0.5f)
+                    .fillMaxWidth(fraction = 0.5f),
             )
         }
 
         Row(
-            modifier = Modifier.padding(10.dp)
+            modifier = Modifier.padding(10.dp),
         ) {
 
             Text(
@@ -109,7 +109,7 @@ fun CompaniesItemView(company: Company, navigationHelper: NavigationHelper) {
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = (size.value.width / 12).pxToDp())
-                    .fillMaxWidth(fraction = 0.5f)
+                    .fillMaxWidth(fraction = 0.5f),
             )
 
             Text(
@@ -119,11 +119,11 @@ fun CompaniesItemView(company: Company, navigationHelper: NavigationHelper) {
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = (size.value.width / 12).pxToDp())
-                    .fillMaxWidth(fraction = 0.5f)
+                    .fillMaxWidth(fraction = 0.5f),
             )
         }
         Row(
-            modifier = Modifier.padding(10.dp)
+            modifier = Modifier.padding(10.dp),
         ) {
 
             Text(
@@ -133,7 +133,7 @@ fun CompaniesItemView(company: Company, navigationHelper: NavigationHelper) {
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = (size.value.width / 12).pxToDp())
-                    .fillMaxWidth(fraction = 0.5f)
+                    .fillMaxWidth(fraction = 0.5f),
             )
 
             Text(
@@ -143,7 +143,7 @@ fun CompaniesItemView(company: Company, navigationHelper: NavigationHelper) {
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = (size.value.width / 12).pxToDp())
-                    .fillMaxWidth(fraction = 0.5f)
+                    .fillMaxWidth(fraction = 0.5f),
             )
         }
 

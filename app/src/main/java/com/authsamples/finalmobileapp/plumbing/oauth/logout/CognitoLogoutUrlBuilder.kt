@@ -16,7 +16,7 @@ class CognitoLogoutUrlBuilder(val configuration: OAuthConfiguration) : LogoutUrl
     override fun getEndSessionRequestUrl(
         metadata: AuthorizationServiceConfiguration,
         postLogoutRedirectUri: String,
-        idTokenHint: String
+        idTokenHint: String,
     ): String {
 
         val logoutReturnUrl = URLEncoder.encode(postLogoutRedirectUri, "UTF-8")

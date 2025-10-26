@@ -22,7 +22,7 @@ import org.greenrobot.eventbus.EventBus
 class CompaniesViewModel(
     private val fetchClient: FetchClient,
     val eventBus: EventBus,
-    private val viewModelCoordinator: ViewModelCoordinator
+    private val viewModelCoordinator: ViewModelCoordinator,
 ) : ViewModel() {
 
     var companiesList: MutableState<List<Company>> = mutableStateOf(ArrayList())
@@ -36,7 +36,7 @@ class CompaniesViewModel(
         val fetchOptions = FetchOptions(
             FetchCacheKeys.COMPANIES,
             options?.forceReload ?: false,
-            options?.causeError ?: false
+            options?.causeError ?: false,
         )
 
         // Initialize state

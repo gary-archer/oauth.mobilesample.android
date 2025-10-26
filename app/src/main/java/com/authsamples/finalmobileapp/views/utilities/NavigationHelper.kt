@@ -9,12 +9,13 @@ import java.util.regex.Pattern
 /*
  * A view helper class for dealing with navigation and deep linking, including the back stack
  */
+@Suppress("TooManyFunctions")
 class NavigationHelper(
     private val navHostController: NavHostController,
-    private val isDeviceSecured: () -> Boolean
+    private val isDeviceSecured: () -> Boolean,
 ) {
     lateinit var deepLinkBaseUrl: String
-    private var currentViewPath: String = MainView.Companies
+    private var currentViewPath: String = MainView.COMPANIES
 
     /*
      * Return the current view
@@ -28,8 +29,8 @@ class NavigationHelper(
      */
     fun navigateToDeviceNotSecured() {
 
-        if (this.preNavigate(MainView.DeviceNotSecured)) {
-            this.navHostController.navigate(MainView.DeviceNotSecured)
+        if (this.preNavigate(MainView.DEVICE_NOT_SECURED)) {
+            this.navHostController.navigate(MainView.DEVICE_NOT_SECURED)
         }
     }
 
@@ -38,8 +39,8 @@ class NavigationHelper(
      */
     fun navigateToLoginRequired() {
 
-        if (this.preNavigate(MainView.LoginRequired)) {
-            this.navHostController.navigate(MainView.LoginRequired)
+        if (this.preNavigate(MainView.LOGIN_REQUIRED)) {
+            this.navHostController.navigate(MainView.LOGIN_REQUIRED)
         }
     }
 
@@ -48,7 +49,7 @@ class NavigationHelper(
      */
     fun navigateToLoggedOut() {
 
-        this.currentViewPath = MainView.Companies
+        this.currentViewPath = MainView.COMPANIES
         this.navigateToLoginRequired()
     }
 
@@ -145,13 +146,13 @@ class NavigationHelper(
         ) {
 
             // The default action is to move to the company list
-            newViewPath = MainView.Companies
+            newViewPath = MainView.COMPANIES
 
             // If we have a transactions view path of the form /companies/2 then move to the transactions view
             val relativePath = lowerCasePath.replace("$deepLinkBasePath/", "")
             val companyId = this.getDeepLinkedCompanyId(relativePath)
             if (companyId != null) {
-                newViewPath = "${MainView.Transactions}/$companyId"
+                newViewPath = "${MainView.TRANSACTIONS}/$companyId"
             }
         }
 
@@ -179,18 +180,18 @@ class NavigationHelper(
 
         // Do not allow navigating back to the initial blank view
         val activeViewName = this.getActiveViewName()
-        if (activeViewName == MainView.Blank) {
+        if (activeViewName == MainView.BLANK) {
             this.navHostController.popBackStack()
         }
 
         // When the device is not secured, only allow navigation to the Device Not Secured view
-        if (!this.isDeviceSecured() && newViewName != MainView.DeviceNotSecured) {
+        if (!this.isDeviceSecured() && newViewName != MainView.DEVICE_NOT_SECURED) {
             return false
         }
 
         // When navigating from the below pages, remove them from the back stack first
         // Note that the active view is null at application startup
-        if (activeViewName == null || activeViewName == MainView.LoginRequired) {
+        if (activeViewName == null || activeViewName == MainView.LOGIN_REQUIRED) {
             this.navHostController.popBackStack()
         }
 

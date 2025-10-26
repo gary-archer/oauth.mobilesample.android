@@ -97,7 +97,7 @@ dependencies {
     implementation (libs.eventbus)
 
     // The plugin to enable code quality checks
-    detektPlugins(libs.detekt.formatting)
+    detektPlugins(libs.detekt.rules.ktlint.wrapper)
 }
 
 // Code quality configuration

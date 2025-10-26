@@ -72,13 +72,13 @@ fun CompaniesView(model: CompaniesViewModel, navigationHelper: NavigationHelper)
 
     // Render based on the current view model data
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
         // Render the header in an app bar
         TopAppBar(
             colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = CustomColors.primary
+                containerColor = CustomColors.primary,
             ),
             title = {
                 Text(
@@ -87,9 +87,9 @@ fun CompaniesView(model: CompaniesViewModel, navigationHelper: NavigationHelper)
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .wrapContentSize()
+                        .wrapContentSize(),
                 )
-            }
+            },
         )
 
         // Render a scrollable list on success
@@ -97,7 +97,7 @@ fun CompaniesView(model: CompaniesViewModel, navigationHelper: NavigationHelper)
 
             Column(
                 modifier = Modifier
-                    .verticalScroll(rememberScrollState())
+                    .verticalScroll(rememberScrollState()),
             ) {
                 model.companiesList.value.forEach { company ->
                     CompaniesItemView(company, navigationHelper)
@@ -112,12 +112,12 @@ fun CompaniesView(model: CompaniesViewModel, navigationHelper: NavigationHelper)
                 ErrorViewModel(
                     model.error.value!!,
                     stringResource(R.string.companies_error_hyperlink),
-                    stringResource(R.string.companies_error_dialogtitle)
+                    stringResource(R.string.companies_error_dialogtitle),
                 ),
                 Modifier
                     .fillMaxWidth()
                     .wrapContentSize()
-                    .padding(top = 10.dp)
+                    .padding(top = 10.dp),
             )
         }
     }

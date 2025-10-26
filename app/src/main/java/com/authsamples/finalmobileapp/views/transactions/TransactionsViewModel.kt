@@ -23,7 +23,7 @@ import org.greenrobot.eventbus.EventBus
 class TransactionsViewModel(
     private val fetchClient: FetchClient,
     val eventBus: EventBus,
-    private val viewModelCoordinator: ViewModelCoordinator
+    private val viewModelCoordinator: ViewModelCoordinator,
 ) : ViewModel() {
 
     // Data once retrieved
@@ -39,7 +39,7 @@ class TransactionsViewModel(
         val fetchOptions = FetchOptions(
             "${FetchCacheKeys.TRANSACTIONS}-$id",
             options?.forceReload ?: false,
-            options?.causeError ?: false
+            options?.causeError ?: false,
         )
 
         // Initialize state
@@ -98,12 +98,12 @@ class TransactionsViewModel(
      */
     private fun isForbiddenError(uiError: UIError): Boolean {
 
-        if (uiError.statusCode == 404 && uiError.errorCode == ErrorCodes.companyNotFound) {
+        if (uiError.statusCode == 404 && uiError.errorCode == ErrorCodes.COMPANY_NOT_FOUND) {
 
             // A deep link could provide an id such as 3, which is unauthorized
             return true
 
-        } else if (uiError.statusCode == 400 && uiError.errorCode == ErrorCodes.invalidCompanyId) {
+        } else if (uiError.statusCode == 400 && uiError.errorCode == ErrorCodes.INVALID_COMPANY_ID) {
 
             // A deep link could provide an invalid id value such as 'abc'
             return true

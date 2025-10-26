@@ -80,7 +80,7 @@ fun HeaderButtonsView(
     // Do the rendering
     Row(
         horizontalArrangement = Arrangement.spacedBy(2.dp),
-        modifier = Modifier.height(IntrinsicSize.Max).padding(2.dp)
+        modifier = Modifier.height(IntrinsicSize.Max).padding(2.dp),
 
     ) {
 
@@ -103,21 +103,21 @@ fun HeaderButtonsView(
             modifier = Modifier.weight(1f).fillMaxHeight(),
             enabled = hasData.value,
             buttonTextId = R.string.expire_access_token_button,
-            onClick = { onExpireAccessToken() }
+            onClick = { onExpireAccessToken() },
         )
 
         HeaderButton(
             modifier = Modifier.weight(1f).fillMaxHeight(),
             enabled = hasData.value,
             buttonTextId = R.string.expire_refresh_token_button,
-            onClick = { onExpireRefreshToken() }
+            onClick = { onExpireRefreshToken() },
         )
 
         HeaderButton(
             modifier = Modifier.weight(1f).fillMaxHeight(),
             enabled = hasData.value,
             buttonTextId = R.string.logout_button,
-            onClick = { onLogout() }
+            onClick = { onLogout() },
         )
     }
 }

@@ -51,7 +51,7 @@ fun SessionView(eventBus: EventBus, apiSessionId: String) {
             text = "${stringResource(R.string.api_session_id)} : $apiSessionId",
             style = TextStyles.sessionId,
             textAlign = TextAlign.Right,
-            modifier = Modifier.fillMaxWidth().padding(10.dp)
+            modifier = Modifier.fillMaxWidth().padding(10.dp),
         )
     }
 }

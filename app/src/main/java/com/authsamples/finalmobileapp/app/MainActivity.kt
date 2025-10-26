@@ -38,6 +38,7 @@ import org.greenrobot.eventbus.ThreadMode
 /*
  * The application's main activity
  */
+@Suppress("TooManyFunctions")
 class MainActivity : ComponentActivity() {
 
     private lateinit var model: MainActivityViewModel
@@ -45,14 +46,14 @@ class MainActivity : ComponentActivity() {
 
     // Handle launching the lock screen intent
     private val lockScreenLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
+        ActivityResultContracts.StartActivityForResult(),
     ) {
         this.onLockScreenCompleted()
     }
 
     // Handle launching the login intent
     private val loginLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
+        ActivityResultContracts.StartActivityForResult(),
     ) { result ->
 
         this.onFinishLogin(result.data!!)
@@ -60,7 +61,7 @@ class MainActivity : ComponentActivity() {
 
     // Handle launching the logout intent
     private val logoutLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
+        ActivityResultContracts.StartActivityForResult(),
     ) {
         this.onFinishLogout()
     }
@@ -108,7 +109,7 @@ class MainActivity : ComponentActivity() {
                         that::onReloadData,
                         that::onExpireAccessToken,
                         that::onExpireRefreshToken,
-                        that::onStartLogout
+                        that::onStartLogout,
                     )
 
                     // Show application level errors when applicable
@@ -118,11 +119,11 @@ class MainActivity : ComponentActivity() {
                             ErrorViewModel(
                                 model.error.value!!,
                                 stringResource(R.string.main_error_hyperlink),
-                                stringResource(R.string.main_error_dialogtitle)
+                                stringResource(R.string.main_error_dialogtitle),
                             ),
                             Modifier
                                 .fillMaxWidth()
-                                .wrapContentSize()
+                                .wrapContentSize(),
                         )
                     }
 
@@ -137,33 +138,33 @@ class MainActivity : ComponentActivity() {
                         that.model.configuration.oauth.deepLinkBaseUrl
 
                     // The main view is a navigation graph that is swapped out during navigation
-                    NavHost(navHostController, MainView.Blank) {
+                    NavHost(navHostController, MainView.BLANK) {
 
-                        composable(MainView.Blank) {
+                        composable(MainView.BLANK) {
                         }
 
-                        composable(MainView.DeviceNotSecured) {
+                        composable(MainView.DEVICE_NOT_SECURED) {
                             DeviceNotSecuredView(that.model.eventBus, that::openLockScreenSettings)
                         }
 
-                        composable(MainView.Companies) {
+                        composable(MainView.COMPANIES) {
                             CompaniesView(that.model.getCompaniesViewModel(), navigationHelper)
                         }
 
                         composable(
-                            "${MainView.Transactions}/{id}",
-                            listOf(navArgument("id") { type = NavType.StringType })
+                            "${MainView.TRANSACTIONS}/{id}",
+                            listOf(navArgument("id") { type = NavType.StringType }),
                         ) {
 
                             val id = it.arguments?.getString("id") ?: ""
                             TransactionsView(
                                 id,
                                 that.model.getTransactionsViewModel(),
-                                navigationHelper
+                                navigationHelper,
                             )
                         }
 
-                        composable(MainView.LoginRequired) {
+                        composable(MainView.LOGIN_REQUIRED) {
                             LoginRequiredView(that.model.eventBus)
                         }
                     }
@@ -199,7 +200,7 @@ class MainActivity : ComponentActivity() {
         } else {
 
             // Otherwise start at the default companies view
-            this.navigationHelper.navigateToPath(MainView.Companies)
+            this.navigationHelper.navigateToPath(MainView.COMPANIES)
         }
     }
 
@@ -309,8 +310,8 @@ class MainActivity : ComponentActivity() {
         } else {
 
             // Otherwise navigate to the home view unless we are already there
-            if (this.navigationHelper.getActiveViewName() != MainView.Companies) {
-                this.navigationHelper.navigateToPath(MainView.Companies)
+            if (this.navigationHelper.getActiveViewName() != MainView.COMPANIES) {
+                this.navigationHelper.navigateToPath(MainView.COMPANIES)
             }
 
             // Force a data reload if recovering from errors
