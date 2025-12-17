@@ -94,8 +94,9 @@ fun UserInfoView(model: UserInfoViewModel, modifier: Modifier) {
         // Render a tooltip with further information when the user name is clicked
         val spacingBetweenTooltipAndAnchor = 10.dp
         TooltipBox(
-            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(TooltipAnchorPosition.Below,
-                spacingBetweenTooltipAndAnchor
+            positionProvider = TooltipDefaults.rememberTooltipPositionProvider(
+                TooltipAnchorPosition.Below,
+                spacingBetweenTooltipAndAnchor,
             ),
             state = tooltipState,
             tooltip = {

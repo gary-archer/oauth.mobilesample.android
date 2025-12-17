@@ -231,7 +231,7 @@ class FetchClient(
                     if (response.isSuccessful) {
 
                         // Return deserialized data if the call succeeded
-                        val responseData = Gson().fromJson(response.body?.string(), responseType)
+                        val responseData = Gson().fromJson(response.body.string(), responseType)
                         continuation.resumeWith(Result.success(responseData))
 
                     } else {
