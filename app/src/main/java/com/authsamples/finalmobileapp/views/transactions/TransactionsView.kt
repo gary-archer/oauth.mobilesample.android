@@ -1,15 +1,17 @@
 package com.authsamples.finalmobileapp.views.transactions
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
@@ -86,22 +88,22 @@ fun TransactionsView(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
 
-        // Render the header in an app bar
-        TopAppBar(
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = CustomColors.primary,
-            ),
-            title = {
-                Text(
-                    text = String.format(stringResource(R.string.transactions_title), companyId),
-                    style = TextStyles.header,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentSize(),
-                )
-            },
-        )
+        // Render the header
+        Box(
+            modifier = Modifier
+                .background(CustomColors.primary)
+                .height(56.dp)
+                .wrapContentHeight(align = Alignment.CenterVertically),
+        ) {
+            Text(
+                text = String.format(stringResource(R.string.transactions_title), companyId),
+                style = TextStyles.header,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentSize(),
+            )
+        }
 
         // Render a scrollable list on success
         if (model.transactionsList.value.isNotEmpty()) {

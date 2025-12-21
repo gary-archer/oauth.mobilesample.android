@@ -1,22 +1,25 @@
 package com.authsamples.finalmobileapp.views.errors
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
@@ -41,36 +44,36 @@ fun ErrorDetailsView(model: ErrorViewModel, onDismiss: () -> Unit) {
     }
 
     Column {
-        // First show the title and an X button to close
-        TopAppBar(
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = CustomColors.primary,
-            ),
-            title = {
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
+        // Render the title and an X button to close
+        Box(
+            modifier = Modifier
+                .background(CustomColors.primary)
+                .height(56.dp)
+                .wrapContentHeight(align = Alignment.CenterVertically),
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+            ) {
 
-                    Text(
-                        text = model.dialogTitle,
-                        style = TextStyles.header,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .weight(20f),
-                    )
+                Text(
+                    text = model.dialogTitle,
+                    style = TextStyles.header,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .weight(20f),
+                )
 
-                    Text(
-                        text = "X",
-                        textAlign = TextAlign.Right,
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(end = 10.dp)
-                            .clickable { onDismiss() },
-                    )
-                }
-            },
-        )
+                Text(
+                    text = "X",
+                    textAlign = TextAlign.Right,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(end = 10.dp)
+                        .clickable { onDismiss() },
+                )
+            }
+        }
 
         // Next render a scrollable list of error lines
         if (lines.value.isNotEmpty()) {
