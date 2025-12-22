@@ -10,6 +10,7 @@
     "scope":                  "openid profile https://api.authsamples.com/investments",
     "userInfoEndpoint":       "https://login.authsamples.com/oauth2/userInfo",
     "customLogoutEndpoint":   "https://login.authsamples.com/logout",
-    "deepLinkBaseUrl":        "https://mobile.authsamples.com"
+    "deepLinkBaseUrl":        "https://mobile.authsamples.com",
+    "delegationIdClaimName":  "origin_jti"
   }
 }

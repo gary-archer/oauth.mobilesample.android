@@ -19,7 +19,7 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
 /*
- * The session view shows the session value written to API logs during API requests from the app
+ * The session view shows the session value written to API logs during API requests from the current user
  */
 @Composable
 fun SessionView(eventBus: EventBus, apiSessionId: String) {

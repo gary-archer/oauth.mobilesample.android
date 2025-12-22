@@ -5,10 +5,11 @@ import android.content.Intent
 /*
  * An interface to make authentication related operations explicit
  */
+@Suppress("TooManyFunctions")
 interface OAuthClient {
 
-    // Startup initialization
-    suspend fun initialize()
+    // See if logged in and load tokens
+    suspend fun getSession()
 
     // Try to get an access token
     suspend fun getAccessToken(): String?
@@ -24,6 +25,9 @@ interface OAuthClient {
 
     // Complete a login
     suspend fun finishLogin(intent: Intent)
+
+    // Get the delegation ID claim
+    fun getDelegationId(): String
 
     // Start a logout redirect
     fun startLogout(launchAction: (i: Intent) -> Unit)

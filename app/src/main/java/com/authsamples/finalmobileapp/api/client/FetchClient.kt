@@ -31,9 +31,6 @@ class FetchClient(
     private val oauthClient: OAuthClient,
 ) {
 
-    // Create a session id for API logs
-    val sessionId = UUID.randomUUID().toString()
-
     /*
      * Get the list of companies
      */
@@ -204,14 +201,12 @@ class FetchClient(
             .method(method, body)
             .url(url)
 
-        // Add headers used for API logging
-        builder.header("authsamples-api-client", "BasicAndroidApp")
-        builder.header("authsamples-session-id", this.sessionId)
-        builder.header("authsamples-correlation-id", UUID.randomUUID().toString())
+        // Add a correlation ID for API logging
+        builder.header("correlation-id", UUID.randomUUID().toString())
 
-        // A special header can be sent to the API to cause a simulated exception
+        // If required, add a header to request that an API simulates a 500 exception
         if (options != null && options.causeError) {
-            builder.header("authsamples-test-exception", "FinalApi")
+            builder.header("api-exception-simulation", "FinalApi")
         }
 
         val request = builder.build()

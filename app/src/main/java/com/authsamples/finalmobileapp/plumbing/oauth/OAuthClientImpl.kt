@@ -11,6 +11,8 @@ import com.authsamples.finalmobileapp.plumbing.oauth.logout.CognitoLogoutUrlBuil
 import com.authsamples.finalmobileapp.plumbing.oauth.logout.LogoutUrlBuilder
 import com.authsamples.finalmobileapp.plumbing.oauth.logout.StandardLogoutUrlBuilder
 import com.authsamples.finalmobileapp.plumbing.utilities.ConcurrentActionHandler
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import net.openid.appauth.AppAuthConfiguration
 import net.openid.appauth.AuthorizationException
 import net.openid.appauth.AuthorizationRequest
@@ -30,6 +32,7 @@ import java.util.Locale
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
+import kotlin.io.encoding.Base64
 
 /*
  * A class to manage integration with the AppAuth libraries
@@ -49,7 +52,7 @@ class OAuthClientImpl(
     /*
      * One time initialization on application startup
      */
-    override suspend fun initialize() {
+    override suspend fun getSession() {
 
         // Load OpenID Connect metadata
         this.getMetadata()
@@ -168,6 +171,31 @@ class OAuthClientImpl(
     }
 
     /*
+     * Return the delegation ID claim from the ID token, if present
+     */
+    override fun getDelegationId(): String {
+
+        // See if we have an ID token
+        val idToken = this.tokenStorage.getTokens()?.idToken
+        if (idToken != null) {
+
+            // Get the payload and Base64URL decode it
+            val parts = idToken.split(".")
+            val base64 = Base64.UrlSafe.withPadding(Base64.PaddingOption.PRESENT_OPTIONAL)
+            val decodedBytes = base64.decode(parts[1].toByteArray(charset("UTF-8")))
+
+            // Deserialize to JSON and return the delegation ID claim
+            val jsonText = String(decodedBytes, charset("UTF-8"))
+            val claims = Gson().fromJson(jsonText, JsonObject::class.java)
+            if (claims != null && claims.has(this.configuration.delegationIdClaimName)) {
+                return claims.get(this.configuration.delegationIdClaimName).asString
+            }
+        }
+
+        return ""
+    }
+
+    /*
      * Remove local state and start the logout redirect to remove the OAuth session cookie
      */
     override fun startLogout(launchAction: (i: Intent) -> Unit) {
@@ -178,7 +206,7 @@ class OAuthClientImpl(
         this.clearLoginState()
 
         try {
-            // Fail if there is no id token
+            // Fail if there is no ID token
             if (idToken == null) {
 
                 val message = "Logout is not possible because tokens have already been removed"

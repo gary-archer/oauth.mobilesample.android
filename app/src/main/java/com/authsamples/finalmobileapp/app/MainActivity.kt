@@ -128,7 +128,7 @@ class MainActivity : ComponentActivity() {
                     }
 
                     // The session view
-                    SessionView(that.model.eventBus, that.model.fetchClient.sessionId)
+                    SessionView(that.model.eventBus, that.model.sessionId.value)
 
                     // Create navigation objects
                     val navHostController = rememberNavController()

@@ -55,6 +55,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
 
     // Observable data
     var error: MutableState<UIError?> = mutableStateOf(null)
+    var sessionId: MutableState<String> = mutableStateOf("")
 
     init {
 
@@ -91,9 +92,10 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
             val that = this@MainActivityViewModel
             try {
 
-                that.oauthClient.initialize()
+                that.oauthClient.getSession()
                 withContext(Dispatchers.Main) {
                     that.isLoaded = true
+                    that.updateSessionId()
                     onSuccess()
                 }
 
@@ -165,6 +167,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
 
                 // Reload data after logging in
                 withContext(Dispatchers.Main) {
+                    that.updateSessionId()
                     onSuccess()
                 }
 
@@ -231,6 +234,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
      * Update state when a logout completes
      */
     fun finishLogout() {
+        this.updateSessionId()
         this.oauthClient.finishLogout()
         this.isTopMost = true
     }
@@ -329,6 +333,13 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
             val uiError = ErrorFactory().fromException(ex)
             this.updateError(uiError)
         }
+    }
+
+    /*
+     * Update data and inform the binding system
+     */
+    fun updateSessionId() {
+        this.sessionId.value = this.oauthClient.getDelegationId()
     }
 
     /*
