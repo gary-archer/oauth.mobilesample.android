@@ -29,6 +29,6 @@ class OAuthConfiguration {
     // The base URL for deep linking
     lateinit var deepLinkBaseUrl: String
 
-    // The name of the ID token claim that contains the ID token
+    // The name of the ID token claim for the delegation ID
     lateinit var delegationIdClaimName: String
 }
