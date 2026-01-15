@@ -323,7 +323,7 @@ class MainActivity : ComponentActivity() {
      * Publish an event to update all active views
      */
     private fun onReloadData(causeError: Boolean) {
-        this.model.reloadData(causeError)
+        this.model.triggerDataReload(causeError)
     }
 
     /*

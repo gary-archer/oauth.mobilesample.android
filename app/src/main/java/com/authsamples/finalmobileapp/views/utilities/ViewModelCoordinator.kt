@@ -71,7 +71,7 @@ class ViewModelCoordinator(
     /*
      * Return true if there were any load errors
      */
-    fun hasErrors(): Boolean {
+    fun hasApiError(): Boolean {
         return this.getLoadErrors().isNotEmpty()
     }
 

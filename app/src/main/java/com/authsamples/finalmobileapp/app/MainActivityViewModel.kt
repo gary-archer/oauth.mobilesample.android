@@ -242,7 +242,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
     /*
      * Publish an event to update all active views
      */
-    fun reloadData(causeError: Boolean) {
+    fun triggerDataReload(causeError: Boolean) {
 
         this.updateError(null)
         this.viewModelCoordinator.resetState()
@@ -254,8 +254,8 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
      */
     fun reloadDataOnError() {
 
-        if (this.error.value != null || this.viewModelCoordinator.hasErrors()) {
-            this.reloadData(false)
+        if (this.error.value != null || this.viewModelCoordinator.hasApiError()) {
+            this.triggerDataReload(false)
         }
     }
 
