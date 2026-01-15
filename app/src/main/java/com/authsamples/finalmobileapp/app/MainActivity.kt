@@ -106,9 +106,9 @@ class MainActivity : ComponentActivity() {
                     HeaderButtonsView(
                         that.model.eventBus,
                         that::onHome,
-                        that::onReloadData,
-                        that::onExpireAccessToken,
-                        that::onExpireRefreshToken,
+                        that.model::triggerDataReload,
+                        that.model::expireAccessToken,
+                        that.model::expireRefreshToken,
                         that::onStartLogout,
                     )
 
@@ -319,27 +319,6 @@ class MainActivity : ComponentActivity() {
                 this.model.triggerDataReload(false)
             }
         }
-    }
-
-    /*
-     * Publish an event to update all active views
-     */
-    private fun onReloadData(causeError: Boolean) {
-        this.model.triggerDataReload(causeError)
-    }
-
-    /*
-     * Update token storage to make the access token act like it is expired
-     */
-    private fun onExpireAccessToken() {
-        this.model.expireAccessToken()
-    }
-
-    /*
-     * Update token storage to make the refresh token act like it is expired
-     */
-    private fun onExpireRefreshToken() {
-        this.model.expireRefreshToken()
     }
 
     /*
