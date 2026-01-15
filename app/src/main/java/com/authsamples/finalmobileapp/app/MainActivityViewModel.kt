@@ -250,13 +250,10 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
     }
 
     /*
-     * If there were load errors, try to reload data when Home is pressed
+     * See if there are any API errors
      */
-    fun reloadDataOnError() {
-
-        if (this.error.value != null || this.viewModelCoordinator.hasApiError()) {
-            this.triggerDataReload(false)
-        }
+    fun hasApiError(): Boolean {
+        return (this.error.value != null) || this.viewModelCoordinator.hasErrors()
     }
 
     fun getCompaniesViewModel(): CompaniesViewModel {

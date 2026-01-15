@@ -309,13 +309,15 @@ class MainActivity : ComponentActivity() {
 
         } else {
 
-            // Otherwise navigate to the home view unless we are already there
+            // Navigate home unless we are already there
             if (this.navigationHelper.getActiveViewName() != MainView.COMPANIES) {
                 this.navigationHelper.navigateToPath(MainView.COMPANIES)
             }
 
             // Force a data reload if recovering from errors
-            this.model.reloadDataOnError()
+            if (this.model.hasApiError()) {
+                this.model.triggerDataReload(false);
+            }
         }
     }
 
