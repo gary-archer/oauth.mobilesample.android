@@ -1,7 +1,7 @@
 package com.authsamples.finalmobileapp.views.utilities
 
 import android.content.Intent
-import android.net.Uri
+import androidx.core.net.toUri
 import androidx.navigation.NavHostController
 import java.util.Locale
 import java.util.regex.Pattern
@@ -137,7 +137,7 @@ class NavigationHelper(
         var newViewPath: String? = null
 
         // Check for our deep linking URL
-        val urlData = Uri.parse(url)
+        val urlData = url.toUri()
         val baseUrl = "${urlData.scheme}://${urlData.host}"
         val deepLinkBasePath = "/finalmobileapp/deeplink"
         val lowerCasePath = urlData.path?.lowercase(Locale.ROOT)

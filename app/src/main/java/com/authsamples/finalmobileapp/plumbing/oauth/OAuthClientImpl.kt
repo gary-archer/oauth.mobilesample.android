@@ -2,8 +2,8 @@ package com.authsamples.finalmobileapp.plumbing.oauth
 
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Build
+import androidx.core.net.toUri
 import com.authsamples.finalmobileapp.configuration.OAuthConfiguration
 import com.authsamples.finalmobileapp.plumbing.errors.ErrorCodes
 import com.authsamples.finalmobileapp.plumbing.errors.ErrorFactory
@@ -120,7 +120,7 @@ class OAuthClientImpl(
                     this.metadata!!,
                     this.configuration.clientId,
                     ResponseTypeValues.CODE,
-                    Uri.parse(this.configuration.redirectUri),
+                    this.configuration.redirectUri.toUri(),
                 )
                 .setScope(this.configuration.scope)
             val request = builder.build()
@@ -269,7 +269,7 @@ class OAuthClientImpl(
 
         // Form the metadata URL
         val metadataAddress = "${this.configuration.authority}/.well-known/openid-configuration"
-        val metadataUri = Uri.parse(metadataAddress)
+        val metadataUri = metadataAddress.toUri()
 
         // Wrap the callback in a coroutine to support cleaner async await based calls
         return suspendCoroutine { continuation ->
@@ -475,14 +475,14 @@ class OAuthClientImpl(
             val customTabsIntent = authService.customTabManager.createTabBuilder().build()
             val logoutIntent = customTabsIntent.intent
             logoutIntent.setPackage(authService.browserDescriptor.packageName)
-            logoutIntent.data = Uri.parse(logoutUrl)
+            logoutIntent.data = logoutUrl.toUri()
             return logoutIntent
 
         } else {
 
             // Start a logout intent in the Chrome browser
             val logoutIntent = Intent(Intent.ACTION_VIEW)
-            logoutIntent.data = Uri.parse(logoutUrl)
+            logoutIntent.data = logoutUrl.toUri()
             return logoutIntent
         }
     }
