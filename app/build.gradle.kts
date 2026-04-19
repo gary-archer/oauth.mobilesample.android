@@ -1,15 +1,18 @@
 // Apply these plugins to build our Kotlin app
 plugins {
     alias(libs.plugins.application)
-    alias(libs.plugins.kotlin)
     alias(libs.plugins.compose)
     alias(libs.plugins.detekt)
 }
 
 android {
     // Build with the latest released Android version
-    compileSdk = 36
     namespace = "com.authsamples.finalmobileapp"
+    compileSdk {
+        version = release(36) {
+            minorApiLevel = 1
+        }
+    }
 
     // Support devices from Android 10+
     defaultConfig {
@@ -33,6 +36,11 @@ android {
         jvmToolchain {
             languageVersion.set(JavaLanguageVersion.of(25))
         }
+    }
+
+    buildFeatures {
+        compose = true
+        buildConfig = true
     }
 
     // All builds of the app are signed with a self signed key to identify the app for app links
@@ -59,12 +67,6 @@ android {
                 "proguard-rules.pro"
             )
         }
-    }
-
-    // Enable features needed to build Jetpack compose
-    buildFeatures {
-        compose = true
-        buildConfig = true
     }
 }
 

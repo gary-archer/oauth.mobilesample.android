@@ -1,6 +1,5 @@
 [versions]
-application = "8.13.2"
-kotlin = "2.3.20"
+application = "9.1.1"
 compose = "2.3.20"
 detekt = "2.0.0-alpha.2"
 core-ktx = "1.18.0"
@@ -18,7 +17,6 @@ eventbus = "3.3.1"
 
 [plugins]
 application = { id = "com.android.application", version.ref = "application" }
-kotlin = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "compose" }
 detekt = { id = "dev.detekt", version.ref = "detekt" }
 
