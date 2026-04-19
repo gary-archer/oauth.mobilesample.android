@@ -1,7 +1,6 @@
 // Apply these plugins to build our Kotlin app
 plugins {
     alias(libs.plugins.application)
-    alias(libs.plugins.kotlin)
     alias(libs.plugins.compose)
     alias(libs.plugins.detekt)
 }
@@ -15,7 +14,6 @@ android {
     defaultConfig {
         applicationId = "com.authsamples.finalmobileapp"
         minSdk = 29
-        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -35,7 +33,7 @@ android {
         }
     }
 
-    // All builds of the app are signed with a self signed key to identify the app for app links
+    // All builds of the app are signed with a self-signed key to identify the app for app links
     signingConfigs {
         create("release") {
             storeFile = file("${rootDir}/security/app-keystore.jks")
