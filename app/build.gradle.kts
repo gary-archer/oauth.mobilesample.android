@@ -5,6 +5,13 @@ plugins {
     alias(libs.plugins.detekt)
 }
 
+// Be explicit about the Kotlin JVM version
+kotlin {
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(25))
+    }
+}
+
 android {
     // Build with the latest released Android version
     compileSdk = 36
@@ -14,6 +21,7 @@ android {
     defaultConfig {
         applicationId = "com.authsamples.finalmobileapp"
         minSdk = 29
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
@@ -21,16 +29,10 @@ android {
         manifestPlaceholders["appAuthRedirectScheme"] = "https"
     }
 
-    // Be explicit about the JVM version
+    // Be explicit about the compile JVM version
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_25
         targetCompatibility = JavaVersion.VERSION_25
-    }
-
-    kotlin {
-        jvmToolchain {
-            languageVersion.set(JavaLanguageVersion.of(25))
-        }
     }
 
     // All builds of the app are signed with a self-signed key to identify the app for app links
