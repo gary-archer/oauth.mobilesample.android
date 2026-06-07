@@ -4,7 +4,7 @@
 
 ## Overview
 
-A demo mobile app using OpenID Connect, which aims for the best usability and reliability.
+A demo mobile app using OAuth and OpenID Connect, which aims for the best usability and reliability.
 
 ## Views
 
@@ -17,7 +17,7 @@ The app uses user attributes from both the OpenID Connect userinfo endpoint and 
 ## Local Development Quick Start
 
 Open the app in Android Studio and run the app on an emulator or device.\
-This triggers an OpenID Connect code flow to authenticate the user with the AppAuth pattern.\
+This triggers a code flow to authenticate the user with the AppAuth pattern.\
 Logins run in a `Chrome Custom Tab` browser and the app cannot access the user's credentials:
 
 ![App Login](./doc/login.png)
