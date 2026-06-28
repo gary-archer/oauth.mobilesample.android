@@ -12,8 +12,8 @@ object ErrorConsoleReporter {
      */
     fun output(error: UIError, context: Context) {
 
-        val lines = ErrorFormatter(context).getErrorLines(error)
-        lines.forEach {
+        val fields = ErrorFormatter(context).getErrorFields(error)
+        fields.forEach {
             println("finalmobileapp Error: ${it.name} = ${it.value}")
         }
     }

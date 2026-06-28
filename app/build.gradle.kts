@@ -14,14 +14,14 @@ kotlin {
 
 android {
     // Build with the latest released Android version
-    compileSdk = 36
+    compileSdk = 37
     namespace = "com.authsamples.finalmobileapp"
 
     // Support devices from Android 10+
     defaultConfig {
         applicationId = "com.authsamples.finalmobileapp"
         minSdk = 29
-        targetSdk = 36
+        targetSdk = 37
         versionCode = 1
         versionName = "1.0"
 

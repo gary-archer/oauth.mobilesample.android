@@ -25,7 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.authsamples.finalmobileapp.plumbing.errors.ErrorFormatter
-import com.authsamples.finalmobileapp.plumbing.errors.ErrorLine
+import com.authsamples.finalmobileapp.plumbing.errors.ErrorField
 import com.authsamples.finalmobileapp.views.utilities.CustomColors
 import com.authsamples.finalmobileapp.views.utilities.TextStyles
 
@@ -35,12 +35,12 @@ import com.authsamples.finalmobileapp.views.utilities.TextStyles
 fun ErrorDetailsView(model: ErrorViewModel, onDismiss: () -> Unit) {
 
     // Rendered state
-    val lines: MutableState<List<ErrorLine>> = remember { mutableStateOf(ArrayList()) }
+    val fields: MutableState<List<ErrorField>> = remember { mutableStateOf(ArrayList()) }
 
     // When the view loads, process the error to create error line objects
     val context = LocalContext.current
     LaunchedEffect(Unit) {
-        lines.value = ErrorFormatter(context).getErrorLines(model.error)
+        fields.value = ErrorFormatter(context).getErrorFields(model.error)
     }
 
     Column {
@@ -76,13 +76,13 @@ fun ErrorDetailsView(model: ErrorViewModel, onDismiss: () -> Unit) {
         }
 
         // Next render a scrollable list of error lines
-        if (lines.value.isNotEmpty()) {
+        if (fields.value.isNotEmpty()) {
 
             Column(
                 modifier = Modifier
                     .verticalScroll(rememberScrollState()),
             ) {
-                lines.value.forEach { errorLine ->
+                fields.value.forEach { errorLine ->
                     ErrorDetailsItemView(errorLine)
                 }
             }

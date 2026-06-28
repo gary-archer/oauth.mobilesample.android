@@ -17,9 +17,9 @@ class ErrorFormatter(private val context: Context) {
      * Return a collection of error lines
      */
     @Suppress("LongMethod")
-    fun getErrorLines(error: UIError): ArrayList<ErrorLine> {
+    fun getErrorFields(error: UIError): ArrayList<ErrorField> {
 
-        val result = ArrayList<ErrorLine>()
+        val result = ArrayList<ErrorField>()
 
         val valueColor = CustomColors.value
         val userActionValueColor = CustomColors.green
@@ -30,7 +30,7 @@ class ErrorFormatter(private val context: Context) {
         // Keep the user informed and suggest an action
         if (!error.message.isNullOrBlank()) {
             result.add(
-                this.createErrorLine(
+                this.createErrorField(
                     R.string.error_user_action,
                     "Please retry the operation",
                     userActionValueColor,
@@ -41,7 +41,7 @@ class ErrorFormatter(private val context: Context) {
         // Give the user summary level info, such as 'Network error'
         if (!error.message.isNullOrBlank()) {
             result.add(
-                this.createErrorLine(
+                this.createErrorField(
                     R.string.error_info,
                     error.message ?: "",
                     valueColor,
@@ -53,7 +53,7 @@ class ErrorFormatter(private val context: Context) {
 
         // Show the time of the error
         result.add(
-            this.createErrorLine(
+            this.createErrorField(
                 R.string.error_utc_time,
                 error.utcTime,
                 valueColor,
@@ -63,7 +63,7 @@ class ErrorFormatter(private val context: Context) {
         // Indicate the area of the system, such as which component failed
         if (error.area.isNotBlank()) {
             result.add(
-                this.createErrorLine(
+                this.createErrorField(
                     R.string.error_area,
                     error.area,
                     valueColor,
@@ -74,7 +74,7 @@ class ErrorFormatter(private val context: Context) {
         // Indicate the type of error
         if (error.errorCode.isNotBlank()) {
             result.add(
-                this.createErrorLine(
+                this.createErrorField(
                     R.string.error_code,
                     error.errorCode,
                     valueColor,
@@ -85,7 +85,7 @@ class ErrorFormatter(private val context: Context) {
         // Show the AppAuth error code if applicable
         if (error.appAuthCode.isNotBlank()) {
             result.add(
-                this.createErrorLine(
+                this.createErrorField(
                     R.string.error_appauth_code,
                     error.appAuthCode,
                     valueColor,
@@ -96,7 +96,7 @@ class ErrorFormatter(private val context: Context) {
         // Link to API logs if applicable
         if (error.instanceId != 0) {
             result.add(
-                this.createErrorLine(
+                this.createErrorField(
                     R.string.error_instance_id,
                     error.instanceId.toString(),
                     errorIdValueColor,
@@ -107,7 +107,7 @@ class ErrorFormatter(private val context: Context) {
         // Show the HTTP status if applicable
         if (error.statusCode != 0) {
             result.add(
-                this.createErrorLine(
+                this.createErrorField(
                     R.string.error_status,
                     error.statusCode.toString(),
                     valueColor,
@@ -121,7 +121,7 @@ class ErrorFormatter(private val context: Context) {
         val errorDetails = error.details
         if (!errorDetails.isNullOrBlank()) {
             result.add(
-                this.createErrorLine(
+                this.createErrorField(
                     R.string.error_details,
                     errorDetails,
                     valueColor,
@@ -132,7 +132,7 @@ class ErrorFormatter(private val context: Context) {
         // Show the URL that failed if applicable
         if (error.url.isNotBlank()) {
             result.add(
-                this.createErrorLine(
+                this.createErrorField(
                     R.string.error_url,
                     error.url,
                     valueColor,
@@ -143,7 +143,7 @@ class ErrorFormatter(private val context: Context) {
         // Show stack trace details in debug builds
         if (BuildConfig.DEBUG) {
             result.add(
-                this.createErrorLine(
+                this.createErrorField(
                     R.string.error_stack,
                     this.getFormattedStackTrace(error),
                     valueColor,
@@ -155,11 +155,11 @@ class ErrorFormatter(private val context: Context) {
     }
 
     /*
-     * Return an error line as an object
+     * Return an error field as an object
      */
-    private fun createErrorLine(labelId: Int, value: String, color: Color): ErrorLine {
+    private fun createErrorField(labelId: Int, value: String, color: Color): ErrorField {
 
-        return ErrorLine(
+        return ErrorField(
             context.getString(labelId),
             value,
             color,

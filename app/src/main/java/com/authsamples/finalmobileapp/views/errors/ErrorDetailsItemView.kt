@@ -14,14 +14,14 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import com.authsamples.finalmobileapp.plumbing.errors.ErrorLine
+import com.authsamples.finalmobileapp.plumbing.errors.ErrorField
 import com.authsamples.finalmobileapp.views.utilities.TextStyles
 
 /*
  * Render a label and value for an error field
  */
 @Composable
-fun ErrorDetailsItemView(errorLine: ErrorLine) {
+fun ErrorDetailsItemView(errorLine: ErrorField) {
 
     val size = remember { mutableStateOf(IntSize.Zero) }
 

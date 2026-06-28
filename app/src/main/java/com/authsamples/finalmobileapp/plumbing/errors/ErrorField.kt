@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.Color
 /*
  * A simple field value pair to be shown on a line
  */
-data class ErrorLine(
+data class ErrorField(
 
     // The label
     val name: String,
