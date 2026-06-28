@@ -24,8 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.authsamples.finalmobileapp.plumbing.errors.ErrorFormatter
 import com.authsamples.finalmobileapp.plumbing.errors.ErrorField
+import com.authsamples.finalmobileapp.plumbing.errors.ErrorFormatter
 import com.authsamples.finalmobileapp.views.utilities.CustomColors
 import com.authsamples.finalmobileapp.views.utilities.TextStyles
 
