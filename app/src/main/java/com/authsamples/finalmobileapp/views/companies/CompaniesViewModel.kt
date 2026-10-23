@@ -6,10 +6,10 @@ import androidx.lifecycle.ViewModel
 import com.authsamples.finalmobileapp.api.client.FetchCacheKeys
 import com.authsamples.finalmobileapp.api.client.FetchClient
 import com.authsamples.finalmobileapp.api.client.FetchOptions
+import com.authsamples.finalmobileapp.api.coordination.ApiRequestCoordinator
 import com.authsamples.finalmobileapp.api.entities.Company
 import com.authsamples.finalmobileapp.plumbing.errors.UIError
 import com.authsamples.finalmobileapp.views.utilities.ViewLoadOptions
-import com.authsamples.finalmobileapp.views.utilities.ViewModelCoordinator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,7 +22,7 @@ import org.greenrobot.eventbus.EventBus
 class CompaniesViewModel(
     private val fetchClient: FetchClient,
     val eventBus: EventBus,
-    private val viewModelCoordinator: ViewModelCoordinator,
+    private val apiRequestCoordinator: ApiRequestCoordinator,
 ) : ViewModel() {
 
     var companiesList: MutableState<List<Company>> = mutableStateOf(ArrayList())
@@ -40,7 +40,7 @@ class CompaniesViewModel(
         )
 
         // Initialize state
-        this.viewModelCoordinator.onMainViewModelLoading()
+        this.apiRequestCoordinator.onApiRequestStart(fetchOptions.cacheKey)
         this.updateError(null)
 
         // Make the remote call on a background thread
@@ -72,7 +72,7 @@ class CompaniesViewModel(
 
                 // Inform the view once complete
                 withContext(Dispatchers.Main) {
-                    that.viewModelCoordinator.onMainViewModelLoaded(fetchOptions.cacheKey)
+                    that.apiRequestCoordinator.onApiRequestEnd()
                 }
             }
         }

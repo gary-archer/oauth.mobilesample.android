@@ -6,11 +6,11 @@ import androidx.lifecycle.ViewModel
 import com.authsamples.finalmobileapp.api.client.FetchCacheKeys
 import com.authsamples.finalmobileapp.api.client.FetchClient
 import com.authsamples.finalmobileapp.api.client.FetchOptions
-import com.authsamples.finalmobileapp.api.entities.Transaction
+import com.authsamples.finalmobileapp.api.coordination.ApiRequestCoordinator
+import com.authsamples.finalmobileapp.api.entities.CompanyTransactions
 import com.authsamples.finalmobileapp.plumbing.errors.ErrorCodes
 import com.authsamples.finalmobileapp.plumbing.errors.UIError
 import com.authsamples.finalmobileapp.views.utilities.ViewLoadOptions
-import com.authsamples.finalmobileapp.views.utilities.ViewModelCoordinator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,31 +23,43 @@ import org.greenrobot.eventbus.EventBus
 class TransactionsViewModel(
     private val fetchClient: FetchClient,
     val eventBus: EventBus,
-    private val viewModelCoordinator: ViewModelCoordinator,
+    private val apiRequestCoordinator: ApiRequestCoordinator,
 ) : ViewModel() {
 
-    // Data once retrieved
-    var companyId: String? = null
-    var transactionsList: MutableState<List<Transaction>> = mutableStateOf(ArrayList())
+    private var companyId: String? = null
+    private var companyWasChanged = false
+    var data: MutableState<CompanyTransactions?> = mutableStateOf(null)
     var error: MutableState<UIError?> = mutableStateOf(null)
+
+    /*
+     * Allow the company ID to be updated during navigation
+     */
+    fun setCompanyId(companyId: String) {
+
+        if (companyId != this.companyId) {
+            this.companyWasChanged = true
+        }
+
+        this.companyId = companyId
+    }
 
     /*
      * A method to do the work of calling the API
      */
-    fun callApi(id: String, options: ViewLoadOptions?, onForbidden: () -> Unit) {
+    fun callApi(options: ViewLoadOptions?, onForbidden: () -> Unit) {
 
         val fetchOptions = FetchOptions(
-            "${FetchCacheKeys.TRANSACTIONS}-$id",
+            "${FetchCacheKeys.TRANSACTIONS}-${this.companyId}",
             options?.forceReload ?: false,
             options?.causeError ?: false,
         )
 
         // Initialize state
-        this.viewModelCoordinator.onMainViewModelLoading()
+        this.apiRequestCoordinator.onApiRequestStart(fetchOptions.cacheKey)
         this.updateError(null)
-        if (this.companyId != id) {
-            this.companyId = id
-            this.updateData(ArrayList())
+        if (this.companyWasChanged) {
+            this.updateData(null)
+            this.companyWasChanged = false
         }
 
         // Make the remote call on a background thread
@@ -62,32 +74,28 @@ class TransactionsViewModel(
                 withContext(Dispatchers.Main) {
 
                     if (data != null) {
-                        that.updateData(data.transactions.toList())
+                        that.updateData(data)
                     }
                 }
 
             } catch (uiError: UIError) {
 
-                // Handle errors on the main thread
                 withContext(Dispatchers.Main) {
 
+                    // Handle errors on the main thread
+                    that.updateData(null)
+                    that.updateError(uiError)
+
+                    // Notify the view if this is a forbidden error
                     if (that.isForbiddenError(uiError)) {
-
-                        // For expected errors, the view redirects back to the home view
                         onForbidden()
-
-                    } else {
-
-                        // Report other types of errors
-                        that.updateData(ArrayList())
-                        that.updateError(uiError)
                     }
                 }
             } finally {
 
                 // Inform the view once complete
                 withContext(Dispatchers.Main) {
-                    that.viewModelCoordinator.onMainViewModelLoaded(fetchOptions.cacheKey)
+                    that.apiRequestCoordinator.onApiRequestEnd()
                 }
             }
         }
@@ -115,8 +123,8 @@ class TransactionsViewModel(
     /*
      * Update the data used by the binding system
      */
-    private fun updateData(transactions: List<Transaction>) {
-        this.transactionsList.value = transactions
+    private fun updateData(data: CompanyTransactions?) {
+        this.data.value = data
     }
 
     /*
