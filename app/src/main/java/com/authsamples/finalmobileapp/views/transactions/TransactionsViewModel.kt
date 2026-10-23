@@ -68,19 +68,15 @@ class TransactionsViewModel(
 
             } catch (uiError: UIError) {
 
-                // Handle errors on the main thread
                 withContext(Dispatchers.Main) {
 
+                    // Handle errors on the main thread
+                    that.updateData(ArrayList())
+                    that.updateError(uiError)
+
+                    // Notify the view if this is a forbidden error
                     if (that.isForbiddenError(uiError)) {
-
-                        // For expected errors, the view redirects back to the home view
                         onForbidden()
-
-                    } else {
-
-                        // Report other types of errors
-                        that.updateData(ArrayList())
-                        that.updateError(uiError)
                     }
                 }
             } finally {

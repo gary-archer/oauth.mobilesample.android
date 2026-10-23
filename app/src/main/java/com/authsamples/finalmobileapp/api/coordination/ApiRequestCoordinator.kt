@@ -8,7 +8,7 @@ import com.authsamples.finalmobileapp.plumbing.events.LoginRequiredEvent
 import org.greenrobot.eventbus.EventBus
 
 /*
- * Coordinates API requests from multiple views, and handles session expiry when required
+ * Called on the main thread to coordinate API requests from multiple views, and handles session expiry when required
  */
 class ApiRequestCoordinator(
     private val eventBus: EventBus,
