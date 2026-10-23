@@ -43,6 +43,8 @@ fun TransactionsView(
     navigationHelper: NavigationHelper,
 ) {
 
+    model.setCompanyId(companyId)
+
     /*
      * Ask the view model to load data
      */
@@ -106,13 +108,13 @@ fun TransactionsView(
         }
 
         // Render a scrollable list on success
-        if (model.transactionsList.value.isNotEmpty()) {
+        if (model.data.value != null) {
 
             Column(
                 modifier = Modifier
                     .verticalScroll(rememberScrollState()),
             ) {
-                model.transactionsList.value.forEach { transaction ->
+                model.data.value!!.transactions.forEach { transaction ->
                     TransactionsItemView(transaction)
                 }
             }

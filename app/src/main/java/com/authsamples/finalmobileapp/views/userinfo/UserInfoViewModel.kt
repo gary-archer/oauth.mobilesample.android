@@ -7,12 +7,12 @@ import androidx.lifecycle.ViewModel
 import com.authsamples.finalmobileapp.api.client.FetchCacheKeys
 import com.authsamples.finalmobileapp.api.client.FetchClient
 import com.authsamples.finalmobileapp.api.client.FetchOptions
+import com.authsamples.finalmobileapp.api.coordination.ApiRequestCoordinator
 import com.authsamples.finalmobileapp.api.entities.ApiUserInfo
 import com.authsamples.finalmobileapp.api.entities.OAuthUserInfo
 import com.authsamples.finalmobileapp.plumbing.errors.ErrorFactory
 import com.authsamples.finalmobileapp.plumbing.errors.UIError
 import com.authsamples.finalmobileapp.views.utilities.ViewLoadOptions
-import com.authsamples.finalmobileapp.api.coordination.ApiRequestCoordinator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async

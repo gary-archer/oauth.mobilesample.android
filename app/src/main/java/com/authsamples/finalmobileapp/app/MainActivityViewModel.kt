@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
 import com.authsamples.finalmobileapp.api.client.FetchCache
 import com.authsamples.finalmobileapp.api.client.FetchClient
+import com.authsamples.finalmobileapp.api.coordination.ApiRequestCoordinator
 import com.authsamples.finalmobileapp.configuration.Configuration
 import com.authsamples.finalmobileapp.configuration.ConfigurationLoader
 import com.authsamples.finalmobileapp.plumbing.errors.ErrorCodes
@@ -20,7 +21,6 @@ import com.authsamples.finalmobileapp.views.companies.CompaniesViewModel
 import com.authsamples.finalmobileapp.views.transactions.TransactionsViewModel
 import com.authsamples.finalmobileapp.views.userinfo.UserInfoViewModel
 import com.authsamples.finalmobileapp.views.utilities.DeviceSecurity
-import com.authsamples.finalmobileapp.api.coordination.ApiRequestCoordinator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
