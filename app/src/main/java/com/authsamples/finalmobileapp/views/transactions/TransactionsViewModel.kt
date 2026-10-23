@@ -46,10 +46,10 @@ class TransactionsViewModel(
     /*
      * A method to do the work of calling the API
      */
-    fun callApi(id: String, options: ViewLoadOptions?, onForbidden: () -> Unit) {
+    fun callApi(options: ViewLoadOptions?, onForbidden: () -> Unit) {
 
         val fetchOptions = FetchOptions(
-            "${FetchCacheKeys.TRANSACTIONS}-$id",
+            "${FetchCacheKeys.TRANSACTIONS}-${this.companyId}",
             options?.forceReload ?: false,
             options?.causeError ?: false,
         )

@@ -56,7 +56,7 @@ fun TransactionsView(
         }
 
         // Ask the model class to do the work
-        model.callApi(companyId, options, onForbidden)
+        model.callApi(options, onForbidden)
     }
 
     /*
