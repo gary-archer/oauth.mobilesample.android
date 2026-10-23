@@ -1,70 +1,52 @@
-package com.authsamples.finalmobileapp.views.utilities
+package com.authsamples.finalmobileapp.api.coordination
 
 import com.authsamples.finalmobileapp.api.client.FetchCache
-import com.authsamples.finalmobileapp.api.client.FetchCacheKeys
 import com.authsamples.finalmobileapp.plumbing.errors.ErrorCodes
 import com.authsamples.finalmobileapp.plumbing.errors.UIError
+import com.authsamples.finalmobileapp.plumbing.events.ApiRequestEvent
 import com.authsamples.finalmobileapp.plumbing.events.LoginRequiredEvent
-import com.authsamples.finalmobileapp.plumbing.events.ViewModelFetchEvent
 import org.greenrobot.eventbus.EventBus
 
 /*
- * Coordinates API requests from multiple views, and notifies once all API calls are complete
- * This ensures that login redirects are only triggered once
+ * Coordinates API requests from multiple views, and handles session expiry when required
  */
-class ViewModelCoordinator(
+class ApiRequestCoordinator(
     private val eventBus: EventBus,
     private val fetchCache: FetchCache,
 ) {
 
-    private var mainCacheKey = ""
+    private val cacheKeys: MutableList<String> = ArrayList()
     private var loadingCount = 0
     private var loadedCount = 0
 
     /*
-     * This is called when the companies or transactions view model start sending API requests
+     * This is called when a view model starts sending API requests
      */
-    fun onMainViewModelLoading() {
+    fun onApiRequestStart(vararg keys: String) {
 
-        // Update stats
+        if (this.loadingCount == 0) {
+            this.eventBus.post(ApiRequestEvent(false))
+        }
         ++this.loadingCount
-
-        // Send an event so that a subscriber can show a UI effect, such as disabling header buttons
-        this.eventBus.post(ViewModelFetchEvent(false))
+        this.cacheKeys.addAll(keys.toList())
     }
 
     /*
-     * This is called when the companies or transactions view model receive an API response
+     * This is called when a view model receives an API response
      */
-    fun onMainViewModelLoaded(cacheKey: String) {
+    fun onApiRequestEnd() {
 
-        // Record the cache key so that we can look up its result later
-        this.mainCacheKey = cacheKey
         ++this.loadedCount
 
         // On success, send an event so that a subscriber can show a UI effect such as enabling header buttons
-        val found = this.fetchCache.getItem(cacheKey)
-        if (found?.getData() != null) {
-            this.eventBus.post(ViewModelFetchEvent(true))
+        val hasData = this.cacheKeys.any { key ->
+            this.fetchCache.getItem(key)?.getData() != null
+        }
+        if (hasData) {
+            this.eventBus.post(ApiRequestEvent(true))
         }
 
         // Perform error logic after all views have loaded
-        this.handleAllViewsLoaded()
-    }
-
-    /*
-     * Called when a non-main view model begins loading
-     */
-    fun onUserInfoViewModelLoading() {
-        ++this.loadingCount
-    }
-
-    /*
-     * This is called when the user info view model receives an API response
-     * If all views have loaded, see if we need to trigger a login redirect
-     */
-    fun onUserInfoViewModelLoaded() {
-        ++this.loadedCount
         this.handleAllViewsLoaded()
     }
 
@@ -81,7 +63,7 @@ class ViewModelCoordinator(
     fun resetState() {
         this.loadingCount = 0
         this.loadedCount = 0
-        this.mainCacheKey = ""
+        this.cacheKeys.clear()
         this.fetchCache.clearAll()
     }
 
@@ -115,15 +97,7 @@ class ViewModelCoordinator(
 
         val errors: MutableList<UIError> = ArrayList()
 
-        val keys: MutableList<String> = ArrayList()
-        if (this.mainCacheKey.isNotBlank()) {
-            keys.add(this.mainCacheKey)
-        }
-        keys.add(FetchCacheKeys.OAUTHUSERINFO)
-        keys.add(FetchCacheKeys.APIUSERINFO)
-
-        keys.forEach { key ->
-
+        this.cacheKeys.forEach { key ->
             val found = this.fetchCache.getItem(key)
             val error = found?.getError()
             if (error != null) {

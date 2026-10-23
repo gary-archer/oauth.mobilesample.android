@@ -12,7 +12,7 @@ import com.authsamples.finalmobileapp.api.entities.OAuthUserInfo
 import com.authsamples.finalmobileapp.plumbing.errors.ErrorFactory
 import com.authsamples.finalmobileapp.plumbing.errors.UIError
 import com.authsamples.finalmobileapp.views.utilities.ViewLoadOptions
-import com.authsamples.finalmobileapp.views.utilities.ViewModelCoordinator
+import com.authsamples.finalmobileapp.api.coordination.ApiRequestCoordinator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -28,7 +28,7 @@ import org.greenrobot.eventbus.EventBus
 class UserInfoViewModel(
     private val fetchClient: FetchClient,
     val eventBus: EventBus,
-    private val viewModelCoordinator: ViewModelCoordinator,
+    private val apiRequestCoordinator: ApiRequestCoordinator,
 ) : ViewModel() {
 
     // Observable data for which the UI must be notified upon change
@@ -54,7 +54,7 @@ class UserInfoViewModel(
         )
 
         // Initialize state
-        this.viewModelCoordinator.onUserInfoViewModelLoading()
+        this.apiRequestCoordinator.onApiRequestStart(oauthFetchOptions.cacheKey, apiFetchOptions.cacheKey)
         this.updateError(null)
 
         // Make the remote call on a background thread
@@ -107,7 +107,7 @@ class UserInfoViewModel(
 
                 // Indicate loaded
                 withContext(Dispatchers.Main) {
-                    that.viewModelCoordinator.onUserInfoViewModelLoaded()
+                    that.apiRequestCoordinator.onApiRequestEnd()
                 }
             }
         }

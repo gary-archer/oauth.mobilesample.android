@@ -20,7 +20,7 @@ import com.authsamples.finalmobileapp.views.companies.CompaniesViewModel
 import com.authsamples.finalmobileapp.views.transactions.TransactionsViewModel
 import com.authsamples.finalmobileapp.views.userinfo.UserInfoViewModel
 import com.authsamples.finalmobileapp.views.utilities.DeviceSecurity
-import com.authsamples.finalmobileapp.views.utilities.ViewModelCoordinator
+import com.authsamples.finalmobileapp.api.coordination.ApiRequestCoordinator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -37,7 +37,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
     val configuration: Configuration
     val oauthClient: OAuthClient
     val fetchClient: FetchClient
-    val viewModelCoordinator: ViewModelCoordinator
+    val apiRequestCoordinator: ApiRequestCoordinator
 
     // Other infrastructure
     val fetchCache: FetchCache
@@ -69,7 +69,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
         // Create global objects for OAuth and API calls
         this.oauthClient = OAuthClientImpl(this.configuration.oauth, this.app.applicationContext)
         this.fetchClient = FetchClient(this.configuration, this.fetchCache, this.oauthClient)
-        this.viewModelCoordinator = ViewModelCoordinator(this.eventBus, this.fetchCache)
+        this.apiRequestCoordinator = ApiRequestCoordinator(this.eventBus, this.fetchCache)
 
         // Initialize child view models
         this.companiesViewModel = null
@@ -120,7 +120,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
         }
 
         // Reset cached state
-        this.viewModelCoordinator.resetState()
+        this.apiRequestCoordinator.resetState()
         this.updateError(null)
 
         // Prevent deep links being processed during login
@@ -205,7 +205,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
         }
 
         // Reset cached state
-        this.viewModelCoordinator.resetState()
+        this.apiRequestCoordinator.resetState()
         this.updateError(null)
 
         // Prevent deep links being processed during logout
@@ -245,7 +245,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
     fun triggerDataReload(causeError: Boolean) {
 
         this.updateError(null)
-        this.viewModelCoordinator.resetState()
+        this.apiRequestCoordinator.resetState()
         this.eventBus.post(ReloadDataEvent(causeError))
     }
 
@@ -253,7 +253,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
      * See if there are any API errors
      */
     fun hasApiError(): Boolean {
-        return (this.error.value != null) || this.viewModelCoordinator.hasErrors()
+        return (this.error.value != null) || this.apiRequestCoordinator.hasErrors()
     }
 
     fun getCompaniesViewModel(): CompaniesViewModel {
@@ -263,7 +263,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
             this.companiesViewModel = CompaniesViewModel(
                 this.fetchClient,
                 this.eventBus,
-                this.viewModelCoordinator,
+                this.apiRequestCoordinator,
             )
         }
 
@@ -277,7 +277,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
             this.transactionsViewModel = TransactionsViewModel(
                 this.fetchClient,
                 this.eventBus,
-                this.viewModelCoordinator,
+                this.apiRequestCoordinator,
             )
         }
 
@@ -291,7 +291,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
             this.userInfoViewModel = UserInfoViewModel(
                 this.fetchClient,
                 this.eventBus,
-                this.viewModelCoordinator,
+                this.apiRequestCoordinator,
             )
         }
 

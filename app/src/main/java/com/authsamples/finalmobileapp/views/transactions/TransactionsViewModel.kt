@@ -10,7 +10,7 @@ import com.authsamples.finalmobileapp.api.entities.Transaction
 import com.authsamples.finalmobileapp.plumbing.errors.ErrorCodes
 import com.authsamples.finalmobileapp.plumbing.errors.UIError
 import com.authsamples.finalmobileapp.views.utilities.ViewLoadOptions
-import com.authsamples.finalmobileapp.views.utilities.ViewModelCoordinator
+import com.authsamples.finalmobileapp.api.coordination.ApiRequestCoordinator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,7 +23,7 @@ import org.greenrobot.eventbus.EventBus
 class TransactionsViewModel(
     private val fetchClient: FetchClient,
     val eventBus: EventBus,
-    private val viewModelCoordinator: ViewModelCoordinator,
+    private val apiRequestCoordinator: ApiRequestCoordinator,
 ) : ViewModel() {
 
     // Data once retrieved
@@ -43,7 +43,7 @@ class TransactionsViewModel(
         )
 
         // Initialize state
-        this.viewModelCoordinator.onMainViewModelLoading()
+        this.apiRequestCoordinator.onApiRequestStart(fetchOptions.cacheKey)
         this.updateError(null)
         if (this.companyId != id) {
             this.companyId = id
@@ -87,7 +87,7 @@ class TransactionsViewModel(
 
                 // Inform the view once complete
                 withContext(Dispatchers.Main) {
-                    that.viewModelCoordinator.onMainViewModelLoaded(fetchOptions.cacheKey)
+                    that.apiRequestCoordinator.onApiRequestEnd()
                 }
             }
         }
