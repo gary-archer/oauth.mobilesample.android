@@ -49,8 +49,6 @@ class UserInfoViewModel(private val apiClient: ApiClient, val eventBus: EventBus
         )
 
         // Initialize state
-        this.apiClient.requestCoordinator.onApiRequestStart(oauthFetchOptions.cacheKey)
-        this.apiClient.requestCoordinator.onApiRequestStart(apiFetchOptions.cacheKey)
         this.updateError(null)
 
         // Make the remote call on a background thread
@@ -97,14 +95,6 @@ class UserInfoViewModel(private val apiClient: ApiClient, val eventBus: EventBus
                 val uiError = ErrorFactory().fromException(ex)
                 withContext(Dispatchers.Main) {
                     that.updateError(uiError)
-                }
-
-            } finally {
-
-                // Indicate that API requests have completed
-                withContext(Dispatchers.Main) {
-                    that.apiClient.requestCoordinator.onApiRequestEnd()
-                    that.apiClient.requestCoordinator.onApiRequestEnd()
                 }
             }
         }

@@ -50,7 +50,6 @@ class TransactionsViewModel(private val apiClient: ApiClient, val eventBus: Even
         )
 
         // Initialize state
-        this.apiClient.requestCoordinator.onApiRequestStart(fetchOptions.cacheKey)
         this.updateError(null)
         if (this.companyWasChanged) {
             this.updateData(null)
@@ -85,13 +84,6 @@ class TransactionsViewModel(private val apiClient: ApiClient, val eventBus: Even
                     } else {
                         that.updateError(uiError)
                     }
-                }
-
-            } finally {
-
-                // Inform the view once complete
-                withContext(Dispatchers.Main) {
-                    that.apiClient.requestCoordinator.onApiRequestEnd()
                 }
             }
         }

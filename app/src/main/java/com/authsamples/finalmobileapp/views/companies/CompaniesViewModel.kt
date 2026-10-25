@@ -35,7 +35,6 @@ class CompaniesViewModel(private val apiClient: ApiClient, val eventBus: EventBu
         )
 
         // Initialize state
-        this.apiClient.requestCoordinator.onApiRequestStart(fetchOptions.cacheKey)
         this.updateError(null)
 
         // Make the remote call on a background thread
@@ -61,13 +60,6 @@ class CompaniesViewModel(private val apiClient: ApiClient, val eventBus: EventBu
                 withContext(Dispatchers.Main) {
                     that.updateData(ArrayList())
                     that.updateError(uiError)
-                }
-
-            } finally {
-
-                // Inform the view once complete
-                withContext(Dispatchers.Main) {
-                    that.apiClient.requestCoordinator.onApiRequestEnd()
                 }
             }
         }

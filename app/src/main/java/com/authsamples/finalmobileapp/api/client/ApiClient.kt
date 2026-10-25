@@ -10,6 +10,8 @@ import com.authsamples.finalmobileapp.configuration.Configuration
 import com.authsamples.finalmobileapp.plumbing.errors.ErrorFactory
 import com.authsamples.finalmobileapp.plumbing.oauth.OAuthClient
 import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaType
@@ -37,8 +39,8 @@ class ApiClient(
     // Cache API GET responses to reduce API requests
     private val fetchCache = FetchCache()
 
-    // Allow view models to use this object to manage multiple concurrent API requests
-    val requestCoordinator = ApiRequestCoordinator(fetchCache, eventBus)
+    // An object to coordinate multiple concurrent API requests
+    private val requestCoordinator = ApiRequestCoordinator(fetchCache, eventBus)
 
     /*
      * Get the list of companies
@@ -128,6 +130,12 @@ class ApiClient(
         // Ensure that the cache item exists for any re-entrant requests that fire after this one
         cacheItem = this.fetchCache.createItem(options.cacheKey)
 
+        // Notify the request coordinator on the main thread that we are sending an API request
+        val that = this@ApiClient
+        withContext(Dispatchers.Main) {
+            that.requestCoordinator.onApiRequestStart(options.cacheKey)
+        }
+
         try {
 
             // Get the data and update the cache item for this request
@@ -141,6 +149,13 @@ class ApiClient(
             val error = ErrorFactory().fromException(e)
             cacheItem.setError(error)
             throw error
+
+        } finally {
+
+            // Notify the request coordinator on the main thread that we sent an API request
+            withContext(Dispatchers.Main) {
+                that.requestCoordinator.onApiRequestEnd()
+            }
         }
     }
 
