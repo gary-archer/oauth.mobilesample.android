@@ -1,4 +1,4 @@
-package com.authsamples.finalmobileapp.api.client
+package com.authsamples.finalmobileapp.api.cache
 
 /*
  * Input when making a cacheable fetch request

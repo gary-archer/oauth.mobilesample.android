@@ -4,10 +4,9 @@ import android.text.TextUtils
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.authsamples.finalmobileapp.api.client.FetchCacheKeys
-import com.authsamples.finalmobileapp.api.client.FetchClient
-import com.authsamples.finalmobileapp.api.client.FetchOptions
-import com.authsamples.finalmobileapp.api.coordination.ApiRequestCoordinator
+import com.authsamples.finalmobileapp.api.cache.FetchCacheKeys
+import com.authsamples.finalmobileapp.api.cache.FetchOptions
+import com.authsamples.finalmobileapp.api.client.ApiClient
 import com.authsamples.finalmobileapp.api.entities.ApiUserInfo
 import com.authsamples.finalmobileapp.api.entities.OAuthUserInfo
 import com.authsamples.finalmobileapp.plumbing.errors.ErrorFactory
@@ -25,11 +24,7 @@ import org.greenrobot.eventbus.EventBus
 /*
  * A simple view model class for the user info view
  */
-class UserInfoViewModel(
-    private val fetchClient: FetchClient,
-    val eventBus: EventBus,
-    private val apiRequestCoordinator: ApiRequestCoordinator,
-) : ViewModel() {
+class UserInfoViewModel(private val apiClient: ApiClient, val eventBus: EventBus) : ViewModel() {
 
     // Observable data for which the UI must be notified upon change
     private var oauthUserInfo: MutableState<OAuthUserInfo?> = mutableStateOf(null)
@@ -54,7 +49,8 @@ class UserInfoViewModel(
         )
 
         // Initialize state
-        this.apiRequestCoordinator.onApiRequestStart(oauthFetchOptions.cacheKey, apiFetchOptions.cacheKey)
+        this.apiClient.requestCoordinator.onApiRequestStart(oauthFetchOptions.cacheKey)
+        this.apiClient.requestCoordinator.onApiRequestStart(apiFetchOptions.cacheKey)
         this.updateError(null)
 
         // Make the remote call on a background thread
@@ -69,12 +65,12 @@ class UserInfoViewModel(
 
                     // Get OAuth user information from the authorization server
                     val oauthUserInfoTask = CoroutineScope(Dispatchers.IO).async {
-                        that.fetchClient.getOAuthUserInfo(oauthFetchOptions)
+                        that.apiClient.getOAuthUserInfo(oauthFetchOptions)
                     }
 
                     // Also get user attributes stored in the API's data
                     val apiUserInfoTask = CoroutineScope(Dispatchers.IO).async {
-                        that.fetchClient.getApiUserInfo(apiFetchOptions)
+                        that.apiClient.getApiUserInfo(apiFetchOptions)
                     }
 
                     // Run tasks in parallel and wait for them both to complete
@@ -105,9 +101,10 @@ class UserInfoViewModel(
 
             } finally {
 
-                // Indicate loaded
+                // Indicate that API requests have completed
                 withContext(Dispatchers.Main) {
-                    that.apiRequestCoordinator.onApiRequestEnd()
+                    that.apiClient.requestCoordinator.onApiRequestEnd()
+                    that.apiClient.requestCoordinator.onApiRequestEnd()
                 }
             }
         }

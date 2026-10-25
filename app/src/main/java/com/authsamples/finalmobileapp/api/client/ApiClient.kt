@@ -1,5 +1,7 @@
 package com.authsamples.finalmobileapp.api.client
 
+import com.authsamples.finalmobileapp.api.cache.FetchCache
+import com.authsamples.finalmobileapp.api.cache.FetchOptions
 import com.authsamples.finalmobileapp.api.entities.ApiUserInfo
 import com.authsamples.finalmobileapp.api.entities.Company
 import com.authsamples.finalmobileapp.api.entities.CompanyTransactions
@@ -16,6 +18,7 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
+import org.greenrobot.eventbus.EventBus
 import java.io.IOException
 import java.util.UUID
 import java.util.concurrent.TimeUnit
@@ -23,13 +26,19 @@ import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 /*
- * Plumbing related to making HTTP calls
+ * An example API client that implements infrastructure to fetch  and cache sensitive data
  */
-class FetchClient(
+class ApiClient(
     private val configuration: Configuration,
-    private val fetchCache: FetchCache,
     private val oauthClient: OAuthClient,
+    private val eventBus: EventBus,
 ) {
+
+    // Cache API GET responses to reduce API requests
+    private val fetchCache = FetchCache()
+
+    // Allow view models to use this object to manage multiple concurrent API requests
+    val requestCoordinator = ApiRequestCoordinator(fetchCache, eventBus)
 
     /*
      * Get the list of companies
@@ -77,6 +86,21 @@ class FetchClient(
             ApiUserInfo::class.java,
             options,
         )
+    }
+
+    /*
+     * Return the overall status after a batch of concurrent API requests complete
+     */
+    fun hasErrors(): Boolean {
+        return this.requestCoordinator.hasErrors()
+    }
+
+    /*
+     * Clear any API state when the user logs out
+     */
+    fun clearLoginState() {
+        this.fetchCache.clearAll()
+        this.requestCoordinator.resetState()
     }
 
     /*
@@ -232,7 +256,8 @@ class FetchClient(
                     } else {
 
                         // Return response errors
-                        val responseError = ErrorFactory().fromHttpResponseError(response, url, "API")
+                        val responseError =
+                            ErrorFactory().fromHttpResponseError(response, url, "API")
                         continuation.resumeWithException(responseError)
                     }
                 }

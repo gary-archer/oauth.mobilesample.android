@@ -1,4 +1,4 @@
-package com.authsamples.finalmobileapp.api.client
+package com.authsamples.finalmobileapp.api.cache
 
 /*
  * String constants used as cache keys

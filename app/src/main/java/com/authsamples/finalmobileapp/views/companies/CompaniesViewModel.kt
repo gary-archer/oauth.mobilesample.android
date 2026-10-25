@@ -3,10 +3,9 @@ package com.authsamples.finalmobileapp.views.companies
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.authsamples.finalmobileapp.api.client.FetchCacheKeys
-import com.authsamples.finalmobileapp.api.client.FetchClient
-import com.authsamples.finalmobileapp.api.client.FetchOptions
-import com.authsamples.finalmobileapp.api.coordination.ApiRequestCoordinator
+import com.authsamples.finalmobileapp.api.cache.FetchCacheKeys
+import com.authsamples.finalmobileapp.api.cache.FetchOptions
+import com.authsamples.finalmobileapp.api.client.ApiClient
 import com.authsamples.finalmobileapp.api.entities.Company
 import com.authsamples.finalmobileapp.plumbing.errors.UIError
 import com.authsamples.finalmobileapp.views.utilities.ViewLoadOptions
@@ -19,11 +18,7 @@ import org.greenrobot.eventbus.EventBus
 /*
  * A simple view model class for the companies view
  */
-class CompaniesViewModel(
-    private val fetchClient: FetchClient,
-    val eventBus: EventBus,
-    private val apiRequestCoordinator: ApiRequestCoordinator,
-) : ViewModel() {
+class CompaniesViewModel(private val apiClient: ApiClient, val eventBus: EventBus) : ViewModel() {
 
     var companiesList: MutableState<List<Company>> = mutableStateOf(ArrayList())
     var error: MutableState<UIError?> = mutableStateOf(null)
@@ -40,7 +35,7 @@ class CompaniesViewModel(
         )
 
         // Initialize state
-        this.apiRequestCoordinator.onApiRequestStart(fetchOptions.cacheKey)
+        this.apiClient.requestCoordinator.onApiRequestStart(fetchOptions.cacheKey)
         this.updateError(null)
 
         // Make the remote call on a background thread
@@ -50,7 +45,7 @@ class CompaniesViewModel(
             try {
 
                 // Make the API call
-                val companies = fetchClient.getCompanyList(fetchOptions)
+                val companies = apiClient.getCompanyList(fetchOptions)
 
                 // Return success results on the main thread
                 withContext(Dispatchers.Main) {
@@ -72,7 +67,7 @@ class CompaniesViewModel(
 
                 // Inform the view once complete
                 withContext(Dispatchers.Main) {
-                    that.apiRequestCoordinator.onApiRequestEnd()
+                    that.apiClient.requestCoordinator.onApiRequestEnd()
                 }
             }
         }

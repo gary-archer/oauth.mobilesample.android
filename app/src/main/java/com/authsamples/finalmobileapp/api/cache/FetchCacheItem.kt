@@ -1,4 +1,4 @@
-package com.authsamples.finalmobileapp.api.client
+package com.authsamples.finalmobileapp.api.cache
 
 import com.authsamples.finalmobileapp.plumbing.errors.UIError
 

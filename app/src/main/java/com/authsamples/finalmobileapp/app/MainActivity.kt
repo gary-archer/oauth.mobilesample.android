@@ -315,7 +315,7 @@ class MainActivity : ComponentActivity() {
             }
 
             // Force a data reload if recovering from errors
-            if (this.model.hasApiError()) {
+            if (this.model.hasErrors()) {
                 this.model.triggerDataReload(false)
             }
         }

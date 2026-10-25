@@ -3,10 +3,9 @@ package com.authsamples.finalmobileapp.views.transactions
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.authsamples.finalmobileapp.api.client.FetchCacheKeys
-import com.authsamples.finalmobileapp.api.client.FetchClient
-import com.authsamples.finalmobileapp.api.client.FetchOptions
-import com.authsamples.finalmobileapp.api.coordination.ApiRequestCoordinator
+import com.authsamples.finalmobileapp.api.cache.FetchCacheKeys
+import com.authsamples.finalmobileapp.api.cache.FetchOptions
+import com.authsamples.finalmobileapp.api.client.ApiClient
 import com.authsamples.finalmobileapp.api.entities.CompanyTransactions
 import com.authsamples.finalmobileapp.plumbing.errors.ErrorCodes
 import com.authsamples.finalmobileapp.plumbing.errors.UIError
@@ -20,11 +19,7 @@ import org.greenrobot.eventbus.EventBus
 /*
  * A simple view model class for the transactions view
  */
-class TransactionsViewModel(
-    private val fetchClient: FetchClient,
-    val eventBus: EventBus,
-    private val apiRequestCoordinator: ApiRequestCoordinator,
-) : ViewModel() {
+class TransactionsViewModel(private val apiClient: ApiClient, val eventBus: EventBus) : ViewModel() {
 
     private var companyId: String? = null
     private var companyWasChanged = false
@@ -55,7 +50,7 @@ class TransactionsViewModel(
         )
 
         // Initialize state
-        this.apiRequestCoordinator.onApiRequestStart(fetchOptions.cacheKey)
+        this.apiClient.requestCoordinator.onApiRequestStart(fetchOptions.cacheKey)
         this.updateError(null)
         if (this.companyWasChanged) {
             this.updateData(null)
@@ -68,7 +63,7 @@ class TransactionsViewModel(
 
             try {
                 // Make the API call
-                val data = that.fetchClient.getCompanyTransactions(that.companyId!!, fetchOptions)
+                val data = that.apiClient.getCompanyTransactions(that.companyId!!, fetchOptions)
 
                 // Update data on the main thread
                 withContext(Dispatchers.Main) {
@@ -96,7 +91,7 @@ class TransactionsViewModel(
 
                 // Inform the view once complete
                 withContext(Dispatchers.Main) {
-                    that.apiRequestCoordinator.onApiRequestEnd()
+                    that.apiClient.requestCoordinator.onApiRequestEnd()
                 }
             }
         }

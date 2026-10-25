@@ -1,6 +1,6 @@
-package com.authsamples.finalmobileapp.api.coordination
+package com.authsamples.finalmobileapp.api.client
 
-import com.authsamples.finalmobileapp.api.client.FetchCache
+import com.authsamples.finalmobileapp.api.cache.FetchCache
 import com.authsamples.finalmobileapp.plumbing.errors.ErrorCodes
 import com.authsamples.finalmobileapp.plumbing.errors.UIError
 import com.authsamples.finalmobileapp.plumbing.events.ApiRequestEvent
@@ -11,35 +11,32 @@ import org.greenrobot.eventbus.EventBus
  * Called on the main thread to coordinate API requests from multiple views, and handles session expiry when required
  */
 class ApiRequestCoordinator(
-    private val eventBus: EventBus,
     private val fetchCache: FetchCache,
+    private val eventBus: EventBus,
 ) {
 
     private var cacheKeys: MutableList<String> = ArrayList()
     private var loadingCount = 0
     private var loadedCount = 0
+    private var errors: List<UIError> = ArrayList()
 
     /*
-     * Called by a view model when it starts an API request
-     * Accepts one or more cache keys to support view models that make concurrent requests
+     * Called when an API request starts
      * Fires ApiRequestEvent(false) on the first request of a batch to signal loading has begun
      */
-    fun onApiRequestStart(vararg keys: String) {
+    fun onApiRequestStart(key: String) {
 
         if (this.loadingCount == 0) {
             this.cacheKeys = ArrayList()
-        }
-
-        this.cacheKeys.addAll(keys.toList())
-        ++this.loadingCount
-
-        if (this.loadingCount == 1) {
             this.eventBus.post(ApiRequestEvent(false))
         }
+
+        this.cacheKeys.add(key)
+        ++this.loadingCount
     }
 
     /*
-     * Called by a view model when its API request completes
+     * Called when an API request ends
      * Fires ApiRequestEvent(true) once all pending requests in the batch have finished
      */
     fun onApiRequestEnd() {
@@ -49,20 +46,20 @@ class ApiRequestCoordinator(
     }
 
     /*
-     * Return true if there were any load errors
+     * Return true if there were any errors on the last batch of API requests
      */
     fun hasErrors(): Boolean {
-        return this.getLoadErrors().isNotEmpty()
+        return this.errors.count() > 0
     }
 
     /*
      * Reset state when the Reload Data button is clicked or on logout
      */
     fun resetState() {
+        this.errors = ArrayList()
+        this.cacheKeys.clear()
         this.loadingCount = 0
         this.loadedCount = 0
-        this.cacheKeys.clear()
-        this.fetchCache.clearAll()
     }
 
     /*
@@ -76,15 +73,17 @@ class ApiRequestCoordinator(
             this.loadingCount = 0
             this.loadedCount = 0
 
+            // Get error details stored in the fetch cache
+            this.errors = this.getAllErrors()
+
             // Notify subscribers when all API requests have completed successfully
-            val errors = this.getLoadErrors()
-            if (errors.count() == 0) {
+            if (this.errors.count() == 0) {
                 this.eventBus.post(ApiRequestEvent(true))
             }
 
             // Login required errors occur when there are no tokens yet or when token refresh fails
             // Raise a single event so that navigation to login required is triggered only once
-            val loginRequired = errors.find { e -> e.errorCode == ErrorCodes.LOGIN_REQUIRED }
+            val loginRequired = this.errors.find { e -> e.errorCode == ErrorCodes.LOGIN_REQUIRED }
             if (loginRequired != null) {
                 this.resetState()
                 this.eventBus.post(LoginRequiredEvent())
@@ -96,7 +95,7 @@ class ApiRequestCoordinator(
     /*
      * Get the result of loading all views
      */
-    private fun getLoadErrors(): List<UIError> {
+    private fun getAllErrors(): List<UIError> {
 
         val errors: MutableList<UIError> = ArrayList()
 

@@ -1,4 +1,4 @@
-package com.authsamples.finalmobileapp.api.client
+package com.authsamples.finalmobileapp.api.cache
 
 import java.util.concurrent.ConcurrentHashMap
 

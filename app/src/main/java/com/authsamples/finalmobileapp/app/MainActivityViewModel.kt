@@ -5,9 +5,7 @@ import android.content.Intent
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.AndroidViewModel
-import com.authsamples.finalmobileapp.api.client.FetchCache
-import com.authsamples.finalmobileapp.api.client.FetchClient
-import com.authsamples.finalmobileapp.api.coordination.ApiRequestCoordinator
+import com.authsamples.finalmobileapp.api.client.ApiClient
 import com.authsamples.finalmobileapp.configuration.Configuration
 import com.authsamples.finalmobileapp.configuration.ConfigurationLoader
 import com.authsamples.finalmobileapp.plumbing.errors.ErrorCodes
@@ -33,12 +31,10 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
     // Global objects
     val configuration: Configuration
     val oauthClient: OAuthClient
-    val fetchClient: FetchClient
-    val apiRequestCoordinator: ApiRequestCoordinator
+    val apiClient: ApiClient
     val viewModelStore: ViewModelStore
 
     // Other infrastructure
-    val fetchCache: FetchCache
     val eventBus: EventBus
 
     // State
@@ -56,14 +52,12 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
         this.configuration = ConfigurationLoader().load(this.app.applicationContext)
 
         // Create objects used for coordination
-        this.fetchCache = FetchCache()
         this.eventBus = EventBus.getDefault()
 
         // Create global objects for OAuth and API calls
         this.oauthClient = OAuthClientImpl(this.configuration.oauth, this.app.applicationContext)
-        this.fetchClient = FetchClient(this.configuration, this.fetchCache, this.oauthClient)
-        this.apiRequestCoordinator = ApiRequestCoordinator(this.eventBus, this.fetchCache)
-        this.viewModelStore = ViewModelStore(this.fetchClient, this.apiRequestCoordinator, this.eventBus)
+        this.apiClient = ApiClient(this.configuration, this.oauthClient, this.eventBus)
+        this.viewModelStore = ViewModelStore(this.apiClient, this.eventBus)
 
         // Initialize state
         this.isLoaded = false
@@ -109,7 +103,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
         }
 
         // Reset cached state
-        this.apiRequestCoordinator.resetState()
+        this.apiClient.clearLoginState()
         this.updateError(null)
 
         // Prevent deep links being processed during login
@@ -194,7 +188,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
         }
 
         // Reset cached state
-        this.apiRequestCoordinator.resetState()
+        this.apiClient.clearLoginState()
         this.updateError(null)
 
         // Prevent deep links being processed during logout
@@ -234,15 +228,14 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
     fun triggerDataReload(causeError: Boolean) {
 
         this.updateError(null)
-        this.apiRequestCoordinator.resetState()
         this.eventBus.post(ReloadDataEvent(causeError))
     }
 
     /*
-     * See if there are any API errors
+     * See if the last batch of API requests resulted in errors
      */
-    fun hasApiError(): Boolean {
-        return (this.error.value != null) || this.apiRequestCoordinator.hasErrors()
+    fun hasErrors(): Boolean {
+        return (this.error.value != null) || this.apiClient.hasErrors()
     }
 
     /*
