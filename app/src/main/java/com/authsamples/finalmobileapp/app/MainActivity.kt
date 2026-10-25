@@ -100,7 +100,7 @@ class MainActivity : ComponentActivity() {
                 Column {
 
                     // The title area and user info
-                    TitleView(that.model.getUserInfoViewModel())
+                    TitleView(that.model.viewModelStore.getUserInfoViewModel())
 
                     // The top row of buttons
                     HeaderButtonsView(
@@ -148,7 +148,7 @@ class MainActivity : ComponentActivity() {
                         }
 
                         composable(MainView.COMPANIES) {
-                            CompaniesView(that.model.getCompaniesViewModel(), navigationHelper)
+                            CompaniesView(that.model.viewModelStore.getCompaniesViewModel(), navigationHelper)
                         }
 
                         composable(
@@ -159,7 +159,7 @@ class MainActivity : ComponentActivity() {
                             val id = it.arguments?.getString("id") ?: ""
                             TransactionsView(
                                 id,
-                                that.model.getTransactionsViewModel(),
+                                that.model.viewModelStore.getTransactionsViewModel(),
                                 navigationHelper,
                             )
                         }

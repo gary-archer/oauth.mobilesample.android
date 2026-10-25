@@ -17,9 +17,6 @@ import com.authsamples.finalmobileapp.plumbing.errors.UIError
 import com.authsamples.finalmobileapp.plumbing.events.ReloadDataEvent
 import com.authsamples.finalmobileapp.plumbing.oauth.OAuthClient
 import com.authsamples.finalmobileapp.plumbing.oauth.OAuthClientImpl
-import com.authsamples.finalmobileapp.views.companies.CompaniesViewModel
-import com.authsamples.finalmobileapp.views.transactions.TransactionsViewModel
-import com.authsamples.finalmobileapp.views.userinfo.UserInfoViewModel
 import com.authsamples.finalmobileapp.views.utilities.DeviceSecurity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -38,6 +35,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
     val oauthClient: OAuthClient
     val fetchClient: FetchClient
     val apiRequestCoordinator: ApiRequestCoordinator
+    val viewModelStore: ViewModelStore
 
     // Other infrastructure
     val fetchCache: FetchCache
@@ -47,11 +45,6 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
     var isLoaded: Boolean
     var isTopMost: Boolean
     var isDeviceSecured: Boolean
-
-    // Child view models
-    private var companiesViewModel: CompaniesViewModel?
-    private var transactionsViewModel: TransactionsViewModel?
-    private var userInfoViewModel: UserInfoViewModel?
 
     // Observable data
     var error: MutableState<UIError?> = mutableStateOf(null)
@@ -70,11 +63,7 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
         this.oauthClient = OAuthClientImpl(this.configuration.oauth, this.app.applicationContext)
         this.fetchClient = FetchClient(this.configuration, this.fetchCache, this.oauthClient)
         this.apiRequestCoordinator = ApiRequestCoordinator(this.eventBus, this.fetchCache)
-
-        // Initialize child view models
-        this.companiesViewModel = null
-        this.transactionsViewModel = null
-        this.userInfoViewModel = null
+        this.viewModelStore = ViewModelStore(this.fetchClient, this.apiRequestCoordinator, this.eventBus)
 
         // Initialize state
         this.isLoaded = false
@@ -254,48 +243,6 @@ class MainActivityViewModel(private val app: Application) : AndroidViewModel(app
      */
     fun hasApiError(): Boolean {
         return (this.error.value != null) || this.apiRequestCoordinator.hasErrors()
-    }
-
-    fun getCompaniesViewModel(): CompaniesViewModel {
-
-        if (this.companiesViewModel == null) {
-
-            this.companiesViewModel = CompaniesViewModel(
-                this.fetchClient,
-                this.eventBus,
-                this.apiRequestCoordinator,
-            )
-        }
-
-        return this.companiesViewModel!!
-    }
-
-    fun getTransactionsViewModel(): TransactionsViewModel {
-
-        if (this.transactionsViewModel == null) {
-
-            this.transactionsViewModel = TransactionsViewModel(
-                this.fetchClient,
-                this.eventBus,
-                this.apiRequestCoordinator,
-            )
-        }
-
-        return this.transactionsViewModel!!
-    }
-
-    fun getUserInfoViewModel(): UserInfoViewModel {
-
-        if (this.userInfoViewModel == null) {
-
-            this.userInfoViewModel = UserInfoViewModel(
-                this.fetchClient,
-                this.eventBus,
-                this.apiRequestCoordinator,
-            )
-        }
-
-        return this.userInfoViewModel!!
     }
 
     /*

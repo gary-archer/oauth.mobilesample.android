@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.authsamples.finalmobileapp.R
+import com.authsamples.finalmobileapp.plumbing.events.ApiRequestEvent
 import com.authsamples.finalmobileapp.plumbing.events.NavigatedEvent
 import com.authsamples.finalmobileapp.plumbing.events.ReloadDataEvent
 import com.authsamples.finalmobileapp.views.errors.ErrorSummaryView
@@ -52,6 +53,7 @@ fun TransactionsView(
 
         // Navigate back to the home view if a deep link tries to access unauthorized data
         val onForbidden = {
+            model.eventBus.post(ApiRequestEvent(true))
             navigationHelper.navigateToPath(MainView.COMPANIES)
         }
 

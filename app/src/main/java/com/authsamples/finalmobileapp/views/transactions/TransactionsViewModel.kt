@@ -80,17 +80,18 @@ class TransactionsViewModel(
 
             } catch (uiError: UIError) {
 
+                // Handle errors on the main thread
                 withContext(Dispatchers.Main) {
 
-                    // Handle errors on the main thread
                     that.updateData(null)
-                    that.updateError(uiError)
-
-                    // Notify the view if this is a forbidden error
                     if (that.isForbiddenError(uiError)) {
+                        that.updateError(null)
                         onForbidden()
+                    } else {
+                        that.updateError(uiError)
                     }
                 }
+
             } finally {
 
                 // Inform the view once complete
