@@ -15,7 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.authsamples.finalmobileapp.R
-import com.authsamples.finalmobileapp.plumbing.events.ApiRequestEvent
+import com.authsamples.finalmobileapp.plumbing.events.ApiRequestsEvent
 import com.authsamples.finalmobileapp.plumbing.events.NavigatedEvent
 import com.authsamples.finalmobileapp.views.utilities.HeaderButton
 import org.greenrobot.eventbus.EventBus
@@ -47,8 +47,8 @@ fun HeaderButtonsView(
          * Update button state during fetch events
          */
         @Subscribe(threadMode = ThreadMode.MAIN)
-        fun onMessageEvent(event: ApiRequestEvent) {
-            hasData.value = event.loaded
+        fun onMessageEvent(event: ApiRequestsEvent) {
+            hasData.value = event.completed
         }
 
         /*

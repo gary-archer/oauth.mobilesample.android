@@ -2,7 +2,7 @@ package com.authsamples.finalmobileapp.api.client
 
 import com.authsamples.finalmobileapp.plumbing.errors.ErrorCodes
 import com.authsamples.finalmobileapp.plumbing.errors.UIError
-import com.authsamples.finalmobileapp.plumbing.events.ApiRequestEvent
+import com.authsamples.finalmobileapp.plumbing.events.ApiRequestsEvent
 import com.authsamples.finalmobileapp.plumbing.events.LoginRequiredEvent
 import org.greenrobot.eventbus.EventBus
 
@@ -11,23 +11,21 @@ import org.greenrobot.eventbus.EventBus
  */
 class ApiRequestCoordinator(private val eventBus: EventBus) {
 
-    private var cacheKeys: MutableList<String> = ArrayList()
     private var loadingCount = 0
     private var loadedCount = 0
-    private var errors: List<UIError> = ArrayList()
+    private var errors = ArrayList<UIError>()
 
     /*
      * Called when an API request starts
      * Fires ApiRequestEvent(false) on the first request of a batch to signal loading has begun
      */
-    fun onApiRequestStart(key: String) {
+    fun onApiRequestStart() {
 
         if (this.loadingCount == 0) {
-            this.cacheKeys = ArrayList()
-            this.eventBus.post(ApiRequestEvent(false))
+            this.errors = ArrayList()
+            this.eventBus.post(ApiRequestsEvent(false))
         }
 
-        this.cacheKeys.add(key)
         ++this.loadingCount
     }
 
@@ -56,7 +54,6 @@ class ApiRequestCoordinator(private val eventBus: EventBus) {
      */
     fun resetState() {
         this.errors = ArrayList()
-        this.cacheKeys.clear()
         this.loadingCount = 0
         this.loadedCount = 0
     }
@@ -74,7 +71,7 @@ class ApiRequestCoordinator(private val eventBus: EventBus) {
 
             // Notify subscribers when all API requests have completed successfully
             if (this.errors.count() == 0) {
-                this.eventBus.post(ApiRequestEvent(true))
+                this.eventBus.post(ApiRequestsEvent(true))
             }
 
             // Login required errors occur when there are no tokens yet or when token refresh fails

@@ -4,8 +4,8 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.authsamples.finalmobileapp.api.cache.FetchCacheKeys
-import com.authsamples.finalmobileapp.api.cache.FetchOptions
 import com.authsamples.finalmobileapp.api.client.ApiClient
+import com.authsamples.finalmobileapp.api.client.GetOptions
 import com.authsamples.finalmobileapp.api.entities.CompanyTransactions
 import com.authsamples.finalmobileapp.plumbing.errors.ErrorCodes
 import com.authsamples.finalmobileapp.plumbing.errors.UIError
@@ -43,7 +43,7 @@ class TransactionsViewModel(private val apiClient: ApiClient, val eventBus: Even
      */
     fun callApi(options: ViewLoadOptions?, onForbidden: () -> Unit) {
 
-        val fetchOptions = FetchOptions(
+        val getOptions = GetOptions(
             "${FetchCacheKeys.TRANSACTIONS}-${this.companyId}",
             options?.forceReload ?: false,
             options?.causeError ?: false,
@@ -62,7 +62,7 @@ class TransactionsViewModel(private val apiClient: ApiClient, val eventBus: Even
 
             try {
                 // Make the API call
-                val data = that.apiClient.getCompanyTransactions(that.companyId!!, fetchOptions)
+                val data = that.apiClient.getCompanyTransactions(that.companyId!!, getOptions)
 
                 // Update data on the main thread
                 withContext(Dispatchers.Main) {

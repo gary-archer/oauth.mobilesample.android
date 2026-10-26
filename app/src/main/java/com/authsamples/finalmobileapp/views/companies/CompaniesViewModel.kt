@@ -4,8 +4,8 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.authsamples.finalmobileapp.api.cache.FetchCacheKeys
-import com.authsamples.finalmobileapp.api.cache.FetchOptions
 import com.authsamples.finalmobileapp.api.client.ApiClient
+import com.authsamples.finalmobileapp.api.client.GetOptions
 import com.authsamples.finalmobileapp.api.entities.Company
 import com.authsamples.finalmobileapp.plumbing.errors.UIError
 import com.authsamples.finalmobileapp.views.utilities.ViewLoadOptions
@@ -28,7 +28,7 @@ class CompaniesViewModel(private val apiClient: ApiClient, val eventBus: EventBu
      */
     fun callApi(options: ViewLoadOptions?) {
 
-        val fetchOptions = FetchOptions(
+        val getOptions = GetOptions(
             FetchCacheKeys.COMPANIES,
             options?.forceReload ?: false,
             options?.causeError ?: false,
@@ -44,7 +44,7 @@ class CompaniesViewModel(private val apiClient: ApiClient, val eventBus: EventBu
             try {
 
                 // Make the API call
-                val companies = apiClient.getCompanyList(fetchOptions)
+                val companies = apiClient.getCompanyList(getOptions)
 
                 // Return success results on the main thread
                 withContext(Dispatchers.Main) {

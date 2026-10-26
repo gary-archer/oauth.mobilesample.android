@@ -5,8 +5,8 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.authsamples.finalmobileapp.api.cache.FetchCacheKeys
-import com.authsamples.finalmobileapp.api.cache.FetchOptions
 import com.authsamples.finalmobileapp.api.client.ApiClient
+import com.authsamples.finalmobileapp.api.client.GetOptions
 import com.authsamples.finalmobileapp.api.entities.ApiUserInfo
 import com.authsamples.finalmobileapp.api.entities.OAuthUserInfo
 import com.authsamples.finalmobileapp.plumbing.errors.ErrorFactory
@@ -36,13 +36,13 @@ class UserInfoViewModel(private val apiClient: ApiClient, val eventBus: EventBus
      */
     fun callApi(options: ViewLoadOptions?) {
 
-        val oauthFetchOptions = FetchOptions(
+        val oauthGetOptions = GetOptions(
             FetchCacheKeys.OAUTHUSERINFO,
             options?.forceReload ?: false,
             options?.causeError ?: false,
         )
 
-        val apiFetchOptions = FetchOptions(
+        val apiGetOptions = GetOptions(
             FetchCacheKeys.APIUSERINFO,
             options?.forceReload ?: false,
             options?.causeError ?: false,
@@ -63,12 +63,12 @@ class UserInfoViewModel(private val apiClient: ApiClient, val eventBus: EventBus
 
                     // Get OAuth user information from the authorization server
                     val oauthUserInfoTask = CoroutineScope(Dispatchers.IO).async {
-                        that.apiClient.getOAuthUserInfo(oauthFetchOptions)
+                        that.apiClient.getOAuthUserInfo(oauthGetOptions)
                     }
 
                     // Also get user attributes stored in the API's data
                     val apiUserInfoTask = CoroutineScope(Dispatchers.IO).async {
-                        that.apiClient.getApiUserInfo(apiFetchOptions)
+                        that.apiClient.getApiUserInfo(apiGetOptions)
                     }
 
                     // Run tasks in parallel and wait for them both to complete

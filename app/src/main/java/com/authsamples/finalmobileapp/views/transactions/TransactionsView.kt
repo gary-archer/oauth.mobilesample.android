@@ -20,7 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.authsamples.finalmobileapp.R
-import com.authsamples.finalmobileapp.plumbing.events.ApiRequestEvent
+import com.authsamples.finalmobileapp.plumbing.events.ApiRequestsEvent
 import com.authsamples.finalmobileapp.plumbing.events.NavigatedEvent
 import com.authsamples.finalmobileapp.plumbing.events.ReloadDataEvent
 import com.authsamples.finalmobileapp.views.errors.ErrorSummaryView
@@ -51,9 +51,13 @@ fun TransactionsView(
      */
     fun loadData(options: ViewLoadOptions? = null) {
 
-        // Navigate back to the home view if a deep link tries to access unauthorized data
+        // The code sample treats forbidden due to unauthorized deep links as a normal, non-error event
         val onForbidden = {
-            model.eventBus.post(ApiRequestEvent(true))
+
+            // Indicate successful completion of the batch of API requests
+            model.eventBus.post(ApiRequestsEvent(true))
+
+            // Navigate back to the home view
             navigationHelper.navigateToPath(MainView.COMPANIES)
         }
 

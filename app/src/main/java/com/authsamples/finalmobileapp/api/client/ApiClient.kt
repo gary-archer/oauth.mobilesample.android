@@ -1,7 +1,6 @@
 package com.authsamples.finalmobileapp.api.client
 
 import com.authsamples.finalmobileapp.api.cache.FetchCache
-import com.authsamples.finalmobileapp.api.cache.FetchOptions
 import com.authsamples.finalmobileapp.api.entities.ApiUserInfo
 import com.authsamples.finalmobileapp.api.entities.Company
 import com.authsamples.finalmobileapp.api.entities.CompanyTransactions
@@ -45,48 +44,48 @@ class ApiClient(
     /*
      * Get the list of companies
      */
-    suspend fun getCompanyList(options: FetchOptions): Array<Company>? {
+    suspend fun getCompanyList(options: GetOptions): Array<Company>? {
 
         return this.getDataFromApi(
             "${this.configuration.app.apiBaseUrl}/companies",
-            Array<Company>::class.java,
             options,
+            Array<Company>::class.java,
         )
     }
 
     /*
      * Get the list of transactions for a company
      */
-    suspend fun getCompanyTransactions(companyId: String, options: FetchOptions): CompanyTransactions? {
+    suspend fun getCompanyTransactions(companyId: String, options: GetOptions): CompanyTransactions? {
 
         return this.getDataFromApi(
             "${this.configuration.app.apiBaseUrl}/companies/$companyId/transactions",
-            CompanyTransactions::class.java,
             options,
+            CompanyTransactions::class.java,
         )
     }
 
     /*
      * Download user attributes from the authorization server
      */
-    suspend fun getOAuthUserInfo(options: FetchOptions): OAuthUserInfo? {
+    suspend fun getOAuthUserInfo(options: GetOptions): OAuthUserInfo? {
 
         return this.getDataFromApi(
             this.configuration.oauth.userInfoEndpoint,
-            OAuthUserInfo::class.java,
             options,
+            OAuthUserInfo::class.java,
         )
     }
 
     /*
      * Download user attributes stored in the API's own data
      */
-    suspend fun getApiUserInfo(options: FetchOptions): ApiUserInfo? {
+    suspend fun getApiUserInfo(options: GetOptions): ApiUserInfo? {
 
         return this.getDataFromApi(
             "${this.configuration.app.apiBaseUrl}/userinfo",
-            ApiUserInfo::class.java,
             options,
+            ApiUserInfo::class.java,
         )
     }
 
@@ -110,8 +109,8 @@ class ApiClient(
      */
     private suspend fun <T> getDataFromApi(
         url: String,
+        options: GetOptions,
         responseType: Class<T>,
-        options: FetchOptions,
     ): T? {
 
         // Remove the item from the cache when a reload is requested
@@ -132,15 +131,15 @@ class ApiClient(
         // Notify the request coordinator on the main thread that we are sending an API request
         val that = this@ApiClient
         withContext(Dispatchers.Main) {
-            that.requestCoordinator.onApiRequestStart(options.cacheKey)
+            that.requestCoordinator.onApiRequestStart()
         }
 
         try {
 
             // Get the data and update the cache item for this request
-            val data = this.getDataFromApiWithTokenRefresh(url, responseType, options)
+            val data = this.callApiWithTokenRefresh("GET", url, null, options.causeError, responseType)
             cacheItem.setData(data)
-            
+
             // Indicate success and return the data
             withContext(Dispatchers.Main) {
                 that.requestCoordinator.onApiRequestEnd()
@@ -162,10 +161,12 @@ class ApiClient(
      * A standard algorithm for token refresh
      */
     @Suppress("ThrowsCount")
-    private suspend fun <T> getDataFromApiWithTokenRefresh(
+    private suspend fun <T> callApiWithTokenRefresh(
+        method: String,
         url: String,
+        dataToSend: Any?,
+        causeError: Boolean,
         responseType: Class<T>,
-        options: FetchOptions,
     ): T? {
 
         // Avoid API requests when there is no access token, and instead trigger a login redirect
@@ -177,7 +178,7 @@ class ApiClient(
         try {
 
             // Call the API and return data on success
-            return this.callApiWithToken("GET", url, null, accessToken, responseType, options)
+            return this.callApiWithToken(method, url, dataToSend, accessToken, causeError, responseType)
 
         } catch (e1: Throwable) {
 
@@ -193,7 +194,7 @@ class ApiClient(
             try {
 
                 // Call the API with the new access token
-                return this.callApiWithToken("GET", url, null, accessToken, responseType, options)
+                return this.callApiWithToken(method, url, dataToSend, accessToken, causeError, responseType)
 
             } catch (e2: Throwable) {
 
@@ -218,17 +219,17 @@ class ApiClient(
     private suspend fun <T> callApiWithToken(
         method: String,
         url: String,
-        data: Any?,
+        dataToSend: Any?,
         accessToken: String,
+        causeError: Boolean,
         responseType: Class<T>,
-        options: FetchOptions? = null,
     ): T {
 
         // Configure the request body
         var body: RequestBody? = null
-        if (data != null) {
+        if (dataToSend != null) {
             val gson = Gson()
-            body = gson.toJson(data).toRequestBody("application/json".toMediaType())
+            body = gson.toJson(dataToSend).toRequestBody("application/json".toMediaType())
         }
 
         // Build the full request
@@ -243,7 +244,7 @@ class ApiClient(
         builder.header("correlation-id", UUID.randomUUID().toString())
 
         // If required, add a header to request that an API simulates a 500 exception
-        if (options != null && options.causeError) {
+        if (causeError) {
             builder.header("api-exception-simulation", "FinalApi")
         }
 
