@@ -1,6 +1,5 @@
 package com.authsamples.finalmobileapp.api.client
 
-import com.authsamples.finalmobileapp.api.cache.FetchCache
 import com.authsamples.finalmobileapp.plumbing.errors.ErrorCodes
 import com.authsamples.finalmobileapp.plumbing.errors.UIError
 import com.authsamples.finalmobileapp.plumbing.events.ApiRequestEvent
@@ -10,10 +9,7 @@ import org.greenrobot.eventbus.EventBus
 /*
  * Called on the main thread to coordinate API requests from multiple views, and handles session expiry when required
  */
-class ApiRequestCoordinator(
-    private val fetchCache: FetchCache,
-    private val eventBus: EventBus,
-) {
+class ApiRequestCoordinator(private val eventBus: EventBus) {
 
     private var cacheKeys: MutableList<String> = ArrayList()
     private var loadingCount = 0
@@ -39,9 +35,12 @@ class ApiRequestCoordinator(
      * Called when an API request ends
      * Fires ApiRequestEvent(true) once all pending requests in the batch have finished
      */
-    fun onApiRequestEnd() {
+    fun onApiRequestEnd(error: UIError? = null) {
 
         ++this.loadedCount
+        if (error != null) {
+            this.errors.add(error)
+        }
         this.handleAllRequestsComplete()
     }
 
@@ -73,9 +72,6 @@ class ApiRequestCoordinator(
             this.loadingCount = 0
             this.loadedCount = 0
 
-            // Get error details stored in the fetch cache
-            this.errors = this.getAllErrors()
-
             // Notify subscribers when all API requests have completed successfully
             if (this.errors.count() == 0) {
                 this.eventBus.post(ApiRequestEvent(true))
@@ -90,23 +86,5 @@ class ApiRequestCoordinator(
                 return
             }
         }
-    }
-
-    /*
-     * Get the result of loading all views
-     */
-    private fun getAllErrors(): List<UIError> {
-
-        val errors: MutableList<UIError> = ArrayList()
-
-        this.cacheKeys.forEach { key ->
-            val found = this.fetchCache.getItem(key)
-            val error = found?.getError()
-            if (error != null) {
-                errors.add(error)
-            }
-        }
-
-        return errors
     }
 }

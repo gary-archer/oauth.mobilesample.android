@@ -1,20 +1,14 @@
 package com.authsamples.finalmobileapp.api.cache
 
-import com.authsamples.finalmobileapp.plumbing.errors.UIError
-
 /*
- * A cache item represents an API response
+ * A cache item represents a successful API response
  */
 class FetchCacheItem {
 
-    var isLoading: Boolean
     private var data: Any?
-    private var error: UIError?
 
     init {
-        this.isLoading = true
         this.data = null
-        this.error = null
     }
 
     fun getData(): Any? {
@@ -22,18 +16,6 @@ class FetchCacheItem {
     }
 
     fun setData(value: Any?) {
-        this.isLoading = false
         this.data = value
-        this.error = null
-    }
-
-    fun getError(): UIError? {
-        return this.error
-    }
-
-    fun setError(value: UIError?) {
-        this.isLoading = false
-        this.error = value
-        this.data = null
     }
 }

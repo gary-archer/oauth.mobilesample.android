@@ -40,7 +40,7 @@ class ApiClient(
     private val fetchCache = FetchCache()
 
     // An object to coordinate multiple concurrent API requests
-    private val requestCoordinator = ApiRequestCoordinator(fetchCache, eventBus)
+    private val requestCoordinator = ApiRequestCoordinator(eventBus)
 
     /*
      * Get the list of companies
@@ -120,14 +120,13 @@ class ApiClient(
         }
 
         // Return existing data from the memory cache when available
-        // If a view is created whiles its API requests are in flight, this returns null to the view model
         var cacheItem = this.fetchCache.getItem(options.cacheKey)
-        if (cacheItem != null && cacheItem.getError() == null) {
+        if (cacheItem != null) {
             @Suppress("UNCHECKED_CAST")
             return cacheItem.getData() as T?
         }
 
-        // Ensure that the cache item exists for any re-entrant requests that fire after this one
+        // Create the cache item with a null value, so that any additional view requests return null
         cacheItem = this.fetchCache.createItem(options.cacheKey)
 
         // Notify the request coordinator on the main thread that we are sending an API request
@@ -141,21 +140,21 @@ class ApiClient(
             // Get the data and update the cache item for this request
             val data = this.getDataFromApiWithTokenRefresh(url, responseType, options)
             cacheItem.setData(data)
+            
+            // Indicate success and return the data
+            withContext(Dispatchers.Main) {
+                that.requestCoordinator.onApiRequestEnd()
+            }
             return data
 
         } catch (e: Throwable) {
 
-            // Get the error and update the cache item for this request
+            // Indicate failure and throw the error
             val error = ErrorFactory().fromException(e)
-            cacheItem.setError(error)
-            throw error
-
-        } finally {
-
-            // Notify the request coordinator on the main thread that we sent an API request
             withContext(Dispatchers.Main) {
-                that.requestCoordinator.onApiRequestEnd()
+                that.requestCoordinator.onApiRequestEnd(error)
             }
+            throw error
         }
     }
 
