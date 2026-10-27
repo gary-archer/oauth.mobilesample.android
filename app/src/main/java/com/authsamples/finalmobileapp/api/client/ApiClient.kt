@@ -115,18 +115,18 @@ class ApiClient(
 
         // Remove the item from the cache when a reload is requested
         if (options.forceReload) {
-            this.fetchCache.removeItem(options.cacheKey)
+            this.fetchCache.removeItem(url)
         }
 
         // Return existing data from the memory cache when available
-        var cacheItem = this.fetchCache.getItem(options.cacheKey)
+        var cacheItem = this.fetchCache.getItem(url)
         if (cacheItem != null) {
             @Suppress("UNCHECKED_CAST")
             return cacheItem.getData() as T?
         }
 
         // Create the cache item with a null value, so that any additional view requests return null
-        cacheItem = this.fetchCache.createItem(options.cacheKey)
+        cacheItem = this.fetchCache.createItem(url)
 
         // Notify the request coordinator on the main thread that we are sending an API request
         val that = this@ApiClient

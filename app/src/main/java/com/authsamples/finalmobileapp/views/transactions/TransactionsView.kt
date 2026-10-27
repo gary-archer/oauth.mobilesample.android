@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.authsamples.finalmobileapp.R
+import com.authsamples.finalmobileapp.api.client.GetOptions
 import com.authsamples.finalmobileapp.plumbing.events.ApiRequestsEvent
 import com.authsamples.finalmobileapp.plumbing.events.NavigatedEvent
 import com.authsamples.finalmobileapp.plumbing.events.ReloadDataEvent
@@ -29,7 +30,6 @@ import com.authsamples.finalmobileapp.views.utilities.CustomColors
 import com.authsamples.finalmobileapp.views.utilities.MainView
 import com.authsamples.finalmobileapp.views.utilities.NavigationHelper
 import com.authsamples.finalmobileapp.views.utilities.TextStyles
-import com.authsamples.finalmobileapp.views.utilities.ViewLoadOptions
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
@@ -49,7 +49,7 @@ fun TransactionsView(
     /*
      * Ask the view model to load data
      */
-    fun loadData(options: ViewLoadOptions? = null) {
+    fun loadData(options: GetOptions) {
 
         // The code sample treats forbidden due to unauthorized deep links as a normal, non-error event
         val onForbidden = {
@@ -72,7 +72,7 @@ fun TransactionsView(
 
         @Subscribe(threadMode = ThreadMode.MAIN)
         fun onMessageEvent(event: ReloadDataEvent) {
-            loadData(ViewLoadOptions(true, event.causeError))
+            loadData(GetOptions(true, event.causeError))
         }
     }
 
@@ -84,7 +84,7 @@ fun TransactionsView(
         model.eventBus.post(NavigatedEvent(true))
 
         // Do the initial data load
-        loadData()
+        loadData(GetOptions(false, false))
 
         // Unregister for events on disposal
         onDispose {

@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.authsamples.finalmobileapp.R
+import com.authsamples.finalmobileapp.api.client.GetOptions
 import com.authsamples.finalmobileapp.plumbing.events.NavigatedEvent
 import com.authsamples.finalmobileapp.plumbing.events.ReloadDataEvent
 import com.authsamples.finalmobileapp.views.errors.ErrorSummaryView
@@ -27,7 +28,6 @@ import com.authsamples.finalmobileapp.views.errors.ErrorViewModel
 import com.authsamples.finalmobileapp.views.utilities.CustomColors
 import com.authsamples.finalmobileapp.views.utilities.NavigationHelper
 import com.authsamples.finalmobileapp.views.utilities.TextStyles
-import com.authsamples.finalmobileapp.views.utilities.ViewLoadOptions
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 
@@ -41,7 +41,7 @@ fun CompaniesView(model: CompaniesViewModel, navigationHelper: NavigationHelper)
     /*
      * Ask the view model to load data
      */
-    fun loadData(options: ViewLoadOptions? = null) {
+    fun loadData(options: GetOptions) {
         model.callApi(options)
     }
 
@@ -52,7 +52,7 @@ fun CompaniesView(model: CompaniesViewModel, navigationHelper: NavigationHelper)
 
         @Subscribe(threadMode = ThreadMode.MAIN)
         fun onMessageEvent(event: ReloadDataEvent) {
-            loadData(ViewLoadOptions(true, event.causeError))
+            loadData(GetOptions(true, event.causeError))
         }
     }
 
@@ -64,7 +64,7 @@ fun CompaniesView(model: CompaniesViewModel, navigationHelper: NavigationHelper)
         model.eventBus.post(NavigatedEvent(true))
 
         // Do the initial data load
-        loadData()
+        loadData(GetOptions(false, false))
 
         // Unregister for events on disposal
         onDispose {

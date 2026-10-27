@@ -4,14 +4,12 @@ import android.text.TextUtils
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.authsamples.finalmobileapp.api.cache.FetchCacheKeys
 import com.authsamples.finalmobileapp.api.client.ApiClient
 import com.authsamples.finalmobileapp.api.client.GetOptions
 import com.authsamples.finalmobileapp.api.entities.ApiUserInfo
 import com.authsamples.finalmobileapp.api.entities.OAuthUserInfo
 import com.authsamples.finalmobileapp.plumbing.errors.ErrorFactory
 import com.authsamples.finalmobileapp.plumbing.errors.UIError
-import com.authsamples.finalmobileapp.views.utilities.ViewLoadOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -34,19 +32,7 @@ class UserInfoViewModel(private val apiClient: ApiClient, val eventBus: EventBus
     /*
      * A method to do the work of calling the API
      */
-    fun callApi(options: ViewLoadOptions?) {
-
-        val oauthGetOptions = GetOptions(
-            FetchCacheKeys.OAUTHUSERINFO,
-            options?.forceReload ?: false,
-            options?.causeError ?: false,
-        )
-
-        val apiGetOptions = GetOptions(
-            FetchCacheKeys.APIUSERINFO,
-            options?.forceReload ?: false,
-            options?.causeError ?: false,
-        )
+    fun callApi(options: GetOptions) {
 
         // Initialize state
         this.updateError(null)
@@ -63,12 +49,12 @@ class UserInfoViewModel(private val apiClient: ApiClient, val eventBus: EventBus
 
                     // Get OAuth user information from the authorization server
                     val oauthUserInfoTask = CoroutineScope(Dispatchers.IO).async {
-                        that.apiClient.getOAuthUserInfo(oauthGetOptions)
+                        that.apiClient.getOAuthUserInfo(options)
                     }
 
                     // Also get user attributes stored in the API's data
                     val apiUserInfoTask = CoroutineScope(Dispatchers.IO).async {
-                        that.apiClient.getApiUserInfo(apiGetOptions)
+                        that.apiClient.getApiUserInfo(options)
                     }
 
                     // Run tasks in parallel and wait for them both to complete

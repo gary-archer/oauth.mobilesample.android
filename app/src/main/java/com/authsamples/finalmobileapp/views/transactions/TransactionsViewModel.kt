@@ -3,13 +3,11 @@ package com.authsamples.finalmobileapp.views.transactions
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.authsamples.finalmobileapp.api.cache.FetchCacheKeys
 import com.authsamples.finalmobileapp.api.client.ApiClient
 import com.authsamples.finalmobileapp.api.client.GetOptions
 import com.authsamples.finalmobileapp.api.entities.CompanyTransactions
 import com.authsamples.finalmobileapp.plumbing.errors.ErrorCodes
 import com.authsamples.finalmobileapp.plumbing.errors.UIError
-import com.authsamples.finalmobileapp.views.utilities.ViewLoadOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,13 +39,7 @@ class TransactionsViewModel(private val apiClient: ApiClient, val eventBus: Even
     /*
      * A method to do the work of calling the API
      */
-    fun callApi(options: ViewLoadOptions?, onForbidden: () -> Unit) {
-
-        val getOptions = GetOptions(
-            "${FetchCacheKeys.TRANSACTIONS}-${this.companyId}",
-            options?.forceReload ?: false,
-            options?.causeError ?: false,
-        )
+    fun callApi(options: GetOptions, onForbidden: () -> Unit) {
 
         // Initialize state
         this.updateError(null)
@@ -62,7 +54,7 @@ class TransactionsViewModel(private val apiClient: ApiClient, val eventBus: Even
 
             try {
                 // Make the API call
-                val data = that.apiClient.getCompanyTransactions(that.companyId!!, getOptions)
+                val data = that.apiClient.getCompanyTransactions(that.companyId!!, options)
 
                 // Update data on the main thread
                 withContext(Dispatchers.Main) {

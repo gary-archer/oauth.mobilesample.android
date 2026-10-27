@@ -18,13 +18,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.authsamples.finalmobileapp.R
+import com.authsamples.finalmobileapp.api.client.GetOptions
 import com.authsamples.finalmobileapp.plumbing.events.NavigatedEvent
 import com.authsamples.finalmobileapp.plumbing.events.ReloadDataEvent
 import com.authsamples.finalmobileapp.views.errors.ErrorSummaryView
 import com.authsamples.finalmobileapp.views.errors.ErrorViewModel
 import com.authsamples.finalmobileapp.views.utilities.CustomColors
 import com.authsamples.finalmobileapp.views.utilities.TextStyles
-import com.authsamples.finalmobileapp.views.utilities.ViewLoadOptions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -41,7 +41,7 @@ fun UserInfoView(model: UserInfoViewModel, modifier: Modifier) {
     /*
      * Ask the view model to load data
      */
-    fun loadData(options: ViewLoadOptions? = null) {
+    fun loadData(options: GetOptions) {
         model.callApi(options)
     }
 
@@ -59,7 +59,7 @@ fun UserInfoView(model: UserInfoViewModel, modifier: Modifier) {
             if (event.isAuthenticatedView) {
 
                 // Load user info if required after navigating to a main view
-                loadData()
+                loadData(GetOptions(false, false))
 
             } else {
 
@@ -73,7 +73,7 @@ fun UserInfoView(model: UserInfoViewModel, modifier: Modifier) {
          */
         @Subscribe(threadMode = ThreadMode.MAIN)
         fun onMessageEvent(event: ReloadDataEvent) {
-            loadData(ViewLoadOptions(true, event.causeError))
+            loadData(GetOptions(true, event.causeError))
         }
     }
 
