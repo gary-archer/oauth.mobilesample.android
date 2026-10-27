@@ -148,6 +148,9 @@ class ApiClient(
 
         } catch (e: Throwable) {
 
+            // Make sure we clear the item from the cache
+            this.fetchCache.removeItem(url);
+
             // Indicate failure and throw the error
             val error = ErrorFactory().fromException(e)
             withContext(Dispatchers.Main) {
