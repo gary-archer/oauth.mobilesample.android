@@ -10,27 +10,19 @@ import java.util.concurrent.ConcurrentHashMap
 class FetchCache {
 
     // A map of cache keys to API responses
-    private val cache: ConcurrentHashMap<String, FetchCacheItem> = ConcurrentHashMap<String, FetchCacheItem>()
+    private val cache: ConcurrentHashMap<String, Any> = ConcurrentHashMap<String, Any>()
 
     /*
      * Create an item with no data when an API request is triggered
      */
-    fun createItem(key: String): FetchCacheItem {
-
-        var item = this.getItem(key)
-        if (item == null) {
-
-            item = FetchCacheItem()
-            this.cache[key] = item
-        }
-
-        return item
+    fun setItem(key: String, data: Any) {
+        this.cache[key] = data
     }
 
     /*
      * Get an item if it exists
      */
-    fun getItem(key: String): FetchCacheItem? {
+    fun getItem(key: String): Any? {
         return this.cache[key]
     }
 

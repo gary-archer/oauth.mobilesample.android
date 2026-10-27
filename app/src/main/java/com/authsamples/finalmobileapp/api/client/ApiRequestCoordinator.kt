@@ -8,6 +8,7 @@ import org.greenrobot.eventbus.EventBus
 
 /*
  * Called on the main thread to coordinate API requests from multiple views, and handles session expiry when required
+ * This relies on views firing all API requests together, so that the first completion is after the last request
  */
 class ApiRequestCoordinator(private val eventBus: EventBus) {
 

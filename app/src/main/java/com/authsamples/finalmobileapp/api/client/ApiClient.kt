@@ -111,7 +111,7 @@ class ApiClient(
         url: String,
         options: GetOptions,
         responseType: Class<T>,
-    ): T? {
+    ): T {
 
         // Remove the item from the cache when a reload is requested
         if (options.forceReload) {
@@ -119,14 +119,11 @@ class ApiClient(
         }
 
         // Return existing data from the memory cache when available
-        var cacheItem = this.fetchCache.getItem(url)
-        if (cacheItem != null) {
+        val cachedData = this.fetchCache.getItem(url)
+        if (cachedData != null) {
             @Suppress("UNCHECKED_CAST")
-            return cacheItem.getData() as T?
+            return cachedData as T
         }
-
-        // Create the cache item with a null value, so that any additional view requests return null
-        cacheItem = this.fetchCache.createItem(url)
 
         // Notify the request coordinator on the main thread that we are sending an API request
         val that = this@ApiClient
@@ -138,7 +135,7 @@ class ApiClient(
 
             // Get the data and update the cache item for this request
             val data = this.callApiWithTokenRefresh("GET", url, null, options.causeError, responseType)
-            cacheItem.setData(data)
+            fetchCache.setItem(url, data as Any)
 
             // Indicate success and return the data
             withContext(Dispatchers.Main) {
@@ -147,9 +144,6 @@ class ApiClient(
             return data
 
         } catch (e: Throwable) {
-
-            // Make sure we clear the item from the cache
-            this.fetchCache.removeItem(url);
 
             // Indicate failure and throw the error
             val error = ErrorFactory().fromException(e)
@@ -170,7 +164,7 @@ class ApiClient(
         dataToSend: Any?,
         causeError: Boolean,
         responseType: Class<T>,
-    ): T? {
+    ): T {
 
         // Avoid API requests when there is no access token, and instead trigger a login redirect
         var accessToken = this.oauthClient.getAccessToken()
