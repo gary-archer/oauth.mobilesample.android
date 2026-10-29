@@ -1,4 +1,4 @@
-package com.authsamples.finalmobileapp.plumbing.errors
+package com.authsamples.finalmobileapp.errors
 
 import com.google.gson.JsonParser
 import net.openid.appauth.AuthorizationException

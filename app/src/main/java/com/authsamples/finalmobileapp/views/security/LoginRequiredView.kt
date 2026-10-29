@@ -10,7 +10,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.authsamples.finalmobileapp.R
-import com.authsamples.finalmobileapp.plumbing.events.NavigatedEvent
+import com.authsamples.finalmobileapp.events.NavigatedEvent
 import com.authsamples.finalmobileapp.views.utilities.TextStyles
 import org.greenrobot.eventbus.EventBus
 

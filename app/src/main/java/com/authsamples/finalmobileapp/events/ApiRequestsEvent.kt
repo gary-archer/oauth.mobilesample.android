@@ -1,4 +1,4 @@
-package com.authsamples.finalmobileapp.plumbing.events
+package com.authsamples.finalmobileapp.events
 
 /*
  * An event sent when a batch of API requests starts or ends

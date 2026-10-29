@@ -1,7 +1,7 @@
-package com.authsamples.finalmobileapp.plumbing.oauth.logout
+package com.authsamples.finalmobileapp.oauth.logout
 
 import com.authsamples.finalmobileapp.configuration.OAuthConfiguration
-import com.authsamples.finalmobileapp.plumbing.errors.ErrorFactory
+import com.authsamples.finalmobileapp.errors.ErrorFactory
 import net.openid.appauth.AuthorizationServiceConfiguration
 import java.net.URLEncoder
 

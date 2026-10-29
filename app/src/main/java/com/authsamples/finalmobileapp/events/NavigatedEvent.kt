@@ -1,4 +1,4 @@
-package com.authsamples.finalmobileapp.plumbing.events
+package com.authsamples.finalmobileapp.events
 
 /*
  * An event to notify when main view navigation occurs

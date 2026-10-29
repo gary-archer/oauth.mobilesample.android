@@ -1,4 +1,4 @@
-package com.authsamples.finalmobileapp.views.utilities
+package com.authsamples.finalmobileapp.utilities
 
 import android.app.KeyguardManager
 import android.content.Context

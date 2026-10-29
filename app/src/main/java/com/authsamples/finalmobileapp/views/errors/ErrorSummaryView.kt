@@ -14,7 +14,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.authsamples.finalmobileapp.plumbing.errors.ErrorCodes
+import com.authsamples.finalmobileapp.errors.ErrorCodes
 import com.authsamples.finalmobileapp.views.utilities.TextStyles
 
 /*

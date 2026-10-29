@@ -1,4 +1,4 @@
-package com.authsamples.finalmobileapp.plumbing.oauth.logout
+package com.authsamples.finalmobileapp.oauth.logout
 
 import android.app.Activity
 import android.content.Intent

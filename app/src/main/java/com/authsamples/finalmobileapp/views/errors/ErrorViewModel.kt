@@ -1,6 +1,6 @@
 package com.authsamples.finalmobileapp.views.errors
 
-import com.authsamples.finalmobileapp.plumbing.errors.UIError
+import com.authsamples.finalmobileapp.errors.UIError
 
 /*
  * Data supplied by views that render errors

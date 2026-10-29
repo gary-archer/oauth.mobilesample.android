@@ -1,4 +1,4 @@
-package com.authsamples.finalmobileapp.plumbing.errors
+package com.authsamples.finalmobileapp.errors
 
 import android.content.Context
 

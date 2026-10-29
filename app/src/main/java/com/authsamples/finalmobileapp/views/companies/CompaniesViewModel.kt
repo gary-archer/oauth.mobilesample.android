@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.authsamples.finalmobileapp.api.client.ApiClient
 import com.authsamples.finalmobileapp.api.client.GetOptions
 import com.authsamples.finalmobileapp.api.entities.Company
-import com.authsamples.finalmobileapp.plumbing.errors.UIError
+import com.authsamples.finalmobileapp.errors.UIError
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -40,10 +40,7 @@ class CompaniesViewModel(private val apiClient: ApiClient, val eventBus: EventBu
 
                 // Return success results on the main thread
                 withContext(Dispatchers.Main) {
-
-                    if (companies != null) {
-                        that.updateData(companies.toList())
-                    }
+                    that.updateData(companies.toList())
                 }
 
             } catch (uiError: UIError) {

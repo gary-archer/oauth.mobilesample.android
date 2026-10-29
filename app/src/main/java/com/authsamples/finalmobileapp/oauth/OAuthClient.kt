@@ -1,4 +1,4 @@
-package com.authsamples.finalmobileapp.plumbing.oauth
+package com.authsamples.finalmobileapp.oauth
 
 import android.content.Intent
 

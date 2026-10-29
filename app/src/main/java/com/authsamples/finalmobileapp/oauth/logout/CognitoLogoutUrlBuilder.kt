@@ -1,4 +1,4 @@
-package com.authsamples.finalmobileapp.plumbing.oauth.logout
+package com.authsamples.finalmobileapp.oauth.logout
 
 import com.authsamples.finalmobileapp.configuration.OAuthConfiguration
 import net.openid.appauth.AuthorizationServiceConfiguration

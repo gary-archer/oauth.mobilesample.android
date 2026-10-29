@@ -14,7 +14,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
-import com.authsamples.finalmobileapp.plumbing.errors.ErrorField
+import com.authsamples.finalmobileapp.errors.ErrorField
 import com.authsamples.finalmobileapp.views.utilities.TextStyles
 
 /*

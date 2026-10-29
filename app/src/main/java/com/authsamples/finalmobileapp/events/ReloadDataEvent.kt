@@ -1,4 +1,4 @@
-package com.authsamples.finalmobileapp.plumbing.events
+package com.authsamples.finalmobileapp.events
 
 /*
  * Represents a user requesting a data reload

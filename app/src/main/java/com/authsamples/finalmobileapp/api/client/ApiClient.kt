@@ -6,8 +6,8 @@ import com.authsamples.finalmobileapp.api.entities.Company
 import com.authsamples.finalmobileapp.api.entities.CompanyTransactions
 import com.authsamples.finalmobileapp.api.entities.OAuthUserInfo
 import com.authsamples.finalmobileapp.configuration.Configuration
-import com.authsamples.finalmobileapp.plumbing.errors.ErrorFactory
-import com.authsamples.finalmobileapp.plumbing.oauth.OAuthClient
+import com.authsamples.finalmobileapp.errors.ErrorFactory
+import com.authsamples.finalmobileapp.oauth.OAuthClient
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -44,7 +44,7 @@ class ApiClient(
     /*
      * Get the list of companies
      */
-    suspend fun getCompanyList(options: GetOptions): Array<Company>? {
+    suspend fun getCompanyList(options: GetOptions): Array<Company> {
 
         return this.getDataFromApi(
             "${this.configuration.app.apiBaseUrl}/companies",
@@ -56,7 +56,7 @@ class ApiClient(
     /*
      * Get the list of transactions for a company
      */
-    suspend fun getCompanyTransactions(companyId: String, options: GetOptions): CompanyTransactions? {
+    suspend fun getCompanyTransactions(companyId: String, options: GetOptions): CompanyTransactions {
 
         return this.getDataFromApi(
             "${this.configuration.app.apiBaseUrl}/companies/$companyId/transactions",
@@ -68,7 +68,7 @@ class ApiClient(
     /*
      * Download user attributes from the authorization server
      */
-    suspend fun getOAuthUserInfo(options: GetOptions): OAuthUserInfo? {
+    suspend fun getOAuthUserInfo(options: GetOptions): OAuthUserInfo {
 
         return this.getDataFromApi(
             this.configuration.oauth.userInfoEndpoint,
@@ -80,7 +80,7 @@ class ApiClient(
     /*
      * Download user attributes stored in the API's own data
      */
-    suspend fun getApiUserInfo(options: GetOptions): ApiUserInfo? {
+    suspend fun getApiUserInfo(options: GetOptions): ApiUserInfo {
 
         return this.getDataFromApi(
             "${this.configuration.app.apiBaseUrl}/userinfo",

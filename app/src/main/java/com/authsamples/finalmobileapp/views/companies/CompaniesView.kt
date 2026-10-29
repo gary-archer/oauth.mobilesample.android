@@ -21,8 +21,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.authsamples.finalmobileapp.R
 import com.authsamples.finalmobileapp.api.client.GetOptions
-import com.authsamples.finalmobileapp.plumbing.events.NavigatedEvent
-import com.authsamples.finalmobileapp.plumbing.events.ReloadDataEvent
+import com.authsamples.finalmobileapp.events.NavigatedEvent
+import com.authsamples.finalmobileapp.events.ReloadDataEvent
 import com.authsamples.finalmobileapp.views.errors.ErrorSummaryView
 import com.authsamples.finalmobileapp.views.errors.ErrorViewModel
 import com.authsamples.finalmobileapp.views.utilities.CustomColors

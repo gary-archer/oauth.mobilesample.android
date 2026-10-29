@@ -19,7 +19,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.authsamples.finalmobileapp.R
-import com.authsamples.finalmobileapp.plumbing.events.LoginRequiredEvent
+import com.authsamples.finalmobileapp.events.LoginRequiredEvent
+import com.authsamples.finalmobileapp.utilities.DeviceSecurity
 import com.authsamples.finalmobileapp.views.companies.CompaniesView
 import com.authsamples.finalmobileapp.views.errors.ErrorSummaryView
 import com.authsamples.finalmobileapp.views.errors.ErrorViewModel
@@ -29,7 +30,6 @@ import com.authsamples.finalmobileapp.views.headings.TitleView
 import com.authsamples.finalmobileapp.views.security.DeviceNotSecuredView
 import com.authsamples.finalmobileapp.views.security.LoginRequiredView
 import com.authsamples.finalmobileapp.views.transactions.TransactionsView
-import com.authsamples.finalmobileapp.views.utilities.DeviceSecurity
 import com.authsamples.finalmobileapp.views.utilities.MainView
 import com.authsamples.finalmobileapp.views.utilities.NavigationHelper
 import org.greenrobot.eventbus.Subscribe

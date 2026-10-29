@@ -1,9 +1,9 @@
 package com.authsamples.finalmobileapp.api.client
 
-import com.authsamples.finalmobileapp.plumbing.errors.ErrorCodes
-import com.authsamples.finalmobileapp.plumbing.errors.UIError
-import com.authsamples.finalmobileapp.plumbing.events.ApiRequestsEvent
-import com.authsamples.finalmobileapp.plumbing.events.LoginRequiredEvent
+import com.authsamples.finalmobileapp.errors.ErrorCodes
+import com.authsamples.finalmobileapp.errors.UIError
+import com.authsamples.finalmobileapp.events.ApiRequestsEvent
+import com.authsamples.finalmobileapp.events.LoginRequiredEvent
 import org.greenrobot.eventbus.EventBus
 
 /*

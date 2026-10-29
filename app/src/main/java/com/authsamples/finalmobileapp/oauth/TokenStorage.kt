@@ -1,9 +1,9 @@
-package com.authsamples.finalmobileapp.plumbing.oauth
+package com.authsamples.finalmobileapp.oauth
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
-import com.authsamples.finalmobileapp.plumbing.errors.ErrorConsoleReporter
-import com.authsamples.finalmobileapp.plumbing.errors.ErrorFactory
+import com.authsamples.finalmobileapp.errors.ErrorConsoleReporter
+import com.authsamples.finalmobileapp.errors.ErrorFactory
 import com.google.gson.Gson
 
 /*

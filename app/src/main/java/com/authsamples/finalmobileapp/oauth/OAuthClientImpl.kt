@@ -1,16 +1,16 @@
-package com.authsamples.finalmobileapp.plumbing.oauth
+package com.authsamples.finalmobileapp.oauth
 
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.core.net.toUri
 import com.authsamples.finalmobileapp.configuration.OAuthConfiguration
-import com.authsamples.finalmobileapp.plumbing.errors.ErrorCodes
-import com.authsamples.finalmobileapp.plumbing.errors.ErrorFactory
-import com.authsamples.finalmobileapp.plumbing.oauth.logout.CognitoLogoutUrlBuilder
-import com.authsamples.finalmobileapp.plumbing.oauth.logout.LogoutUrlBuilder
-import com.authsamples.finalmobileapp.plumbing.oauth.logout.StandardLogoutUrlBuilder
-import com.authsamples.finalmobileapp.plumbing.utilities.ConcurrentActionHandler
+import com.authsamples.finalmobileapp.errors.ErrorCodes
+import com.authsamples.finalmobileapp.errors.ErrorFactory
+import com.authsamples.finalmobileapp.oauth.logout.CognitoLogoutUrlBuilder
+import com.authsamples.finalmobileapp.oauth.logout.LogoutUrlBuilder
+import com.authsamples.finalmobileapp.oauth.logout.StandardLogoutUrlBuilder
+import com.authsamples.finalmobileapp.utilities.ConcurrentActionHandler
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import net.openid.appauth.AppAuthConfiguration

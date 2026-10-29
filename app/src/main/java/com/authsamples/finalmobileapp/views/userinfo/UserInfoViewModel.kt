@@ -8,8 +8,8 @@ import com.authsamples.finalmobileapp.api.client.ApiClient
 import com.authsamples.finalmobileapp.api.client.GetOptions
 import com.authsamples.finalmobileapp.api.entities.ApiUserInfo
 import com.authsamples.finalmobileapp.api.entities.OAuthUserInfo
-import com.authsamples.finalmobileapp.plumbing.errors.ErrorFactory
-import com.authsamples.finalmobileapp.plumbing.errors.UIError
+import com.authsamples.finalmobileapp.errors.ErrorFactory
+import com.authsamples.finalmobileapp.errors.UIError
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -59,19 +59,13 @@ class UserInfoViewModel(private val apiClient: ApiClient, val eventBus: EventBus
 
                     // Run tasks in parallel and wait for them both to complete
                     val results = awaitAll(oauthUserInfoTask, apiUserInfoTask)
-                    val oauthUserData = results[0] as OAuthUserInfo?
-                    val apiUserData = results[1] as ApiUserInfo?
+                    val oauthUserData = results[0] as OAuthUserInfo
+                    val apiUserData = results[1] as ApiUserInfo
 
                     // Update the view model on success
                     withContext(Dispatchers.Main) {
-
-                        // Update data
-                        if (oauthUserData != null) {
-                            that.updateOAuthUserInfo(oauthUserData)
-                        }
-                        if (apiUserData != null) {
-                            that.updateApiUserInfo(apiUserData)
-                        }
+                        that.updateOAuthUserInfo(oauthUserData)
+                        that.updateApiUserInfo(apiUserData)
                     }
                 }
 

@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import com.authsamples.finalmobileapp.api.client.ApiClient
 import com.authsamples.finalmobileapp.api.client.GetOptions
 import com.authsamples.finalmobileapp.api.entities.CompanyTransactions
-import com.authsamples.finalmobileapp.plumbing.errors.ErrorCodes
-import com.authsamples.finalmobileapp.plumbing.errors.UIError
+import com.authsamples.finalmobileapp.errors.ErrorCodes
+import com.authsamples.finalmobileapp.errors.UIError
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -58,10 +58,7 @@ class TransactionsViewModel(private val apiClient: ApiClient, val eventBus: Even
 
                 // Update data on the main thread
                 withContext(Dispatchers.Main) {
-
-                    if (data != null) {
-                        that.updateData(data)
-                    }
+                    that.updateData(data)
                 }
 
             } catch (uiError: UIError) {

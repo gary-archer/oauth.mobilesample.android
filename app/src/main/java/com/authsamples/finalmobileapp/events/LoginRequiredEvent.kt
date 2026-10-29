@@ -1,4 +1,4 @@
-package com.authsamples.finalmobileapp.plumbing.events
+package com.authsamples.finalmobileapp.events
 
 /*
  * An event raised when the main view needs to present login options or trigger a redirect

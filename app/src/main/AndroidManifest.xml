@@ -47,7 +47,7 @@
 
         <!-- Our custom receiver activity for logout responses -->
         <activity
-            android:name=".plumbing.oauth.logout.LogoutRedirectUriReceiverActivity"
+            android:name="com.authsamples.finalmobileapp.oauth.logout.LogoutRedirectUriReceiverActivity"
             android:exported="true">
 
             <intent-filter android:autoVerify="true">

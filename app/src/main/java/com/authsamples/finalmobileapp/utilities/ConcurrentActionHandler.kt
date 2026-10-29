@@ -1,4 +1,4 @@
-package com.authsamples.finalmobileapp.plumbing.utilities
+package com.authsamples.finalmobileapp.utilities
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
